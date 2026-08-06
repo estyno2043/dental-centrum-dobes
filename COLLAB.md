@@ -5,14 +5,22 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Complete
+- Status: In progress
 - Owner: Claude
-- Branch: `claude/environment-onboarding`
-- Task: Second-machine environment onboarding and integration verification
+- Branch: `claude/hero-video-quality`
+- Task: Replace the hero preview video with production encodes from the 4K master
 
 ## File Reservations
 
-No files are reserved.
+Reserved by Claude on `claude/hero-video-quality`:
+
+- `components/hero/Hero.tsx`
+- `components/hero/Hero.test.tsx`
+- `components/hero/useMediaQuery.ts`
+- `scripts/extract-hero-assets.mjs`
+- `scripts/encode-hero-video.sh`
+- `public/media/`
+- `README.md`
 
 Claim a task and its files here before editing. Do not edit files reserved by
 the other agent unless that agent has handed them off.
