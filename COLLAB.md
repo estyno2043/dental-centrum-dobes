@@ -7,8 +7,9 @@ update it before taking or handing off work.
 
 - Status: Complete
 - Owner: Claude
-- Branch: `claude/hero-video-quality`
-- Task: Replace the hero preview video with production encodes from the 4K master
+- Branch: `claude/hero-waiting-room-loop`
+- Task: Re-cut the hero loop to a single continuous shot (waiting room, 41.0s-45.7s
+  of the 4K master) instead of the multi-shot 15s-37s segment
 
 ## File Reservations
 
@@ -48,6 +49,31 @@ the other agent unless that agent has handed them off.
   desktop. The segment is 15s–37s of the master and the reasons it cannot be
   widened are recorded in `scripts/encode-hero-video.sh`.
 
+- Hero loop re-cut to a single continuous shot — complete. Tests: 8 passed.
+  Lint, TypeScript, and the production build passed; a dev-server check
+  confirmed all four assets serve with the right content types and that both
+  1080p encodes decode at 1920×1080 / 4.833s.
+
+  A scene scan of the full 145s master showed the shipped 15s–37s segment was
+  not one shot: it contained cuts at 17.15, 21.76, 24.06, 26.49, and 34.90s.
+  The earlier record did not say so, which is corrected here. The master is a
+  promo montage and holds only four continuous shots longer than six seconds
+  (26.49–34.90, 39.34–45.75, 122.02–128.53, 135.47–145.00).
+
+  The hero now uses 41.0s–45.7s — the waiting room, slow dolly back. It was
+  chosen over the longer reception shot because it is the only framing in the
+  master carrying the brand: tooth motif on the wall, sphere lamp, leather
+  chairs, and no clinical equipment, masks, or gloves. START is 41.0 rather
+  than 39.34 because a burned-in title runs until it clears between 40.6 and
+  41.0s. The 4.7s clip is slowed to 85% and closed with a 0.7s crossfade back
+  to its own first frame, giving a seamless 4.83s loop. Files dropped from
+  6.4/4.9/3.7 MB to 1.8/1.6/1.0 MB.
+
+  Side effect worth noting: open question 4 below is resolved by this re-cut.
+  The bright sphere lamp now sits centre-right, so the logo tagline no longer
+  overlaps it. The top navigation does now cross the lamp, which is a smaller
+  problem but the same kind.
+
 ## Open Questions
 
 Both questions below are for the user; they gate the next content task.
@@ -60,12 +86,19 @@ Both questions below are for the user; they gate the next content task.
 Two more, raised by the hero media work:
 
 3. The clinic master was shot in winter and a small Christmas tree is visible
-   at the reception. It is in frame for part of the hero loop. Acceptable for
-   now, but it should be reshot rather than worked around.
-4. The logo tagline sits over the bright sphere lamp and reads poorly, most
-   noticeably on phones. This predates the new encode; fixing it means
-   strengthening the scrim at the top of the hero, which is a design change and
-   so has not been made unilaterally.
+   near the reception. It is still in frame in the re-cut loop, further back
+   and behind glass, so it is less prominent than before but not gone. It
+   should be reshot rather than worked around.
+4. Resolved by the re-cut: the logo tagline no longer overlaps the sphere lamp.
+   The top navigation now crosses it instead — a milder version of the same
+   problem. Fixing it means strengthening the scrim at the top of the hero,
+   which is a design change and so has not been made unilaterally.
+
+5. The hero shot is 4.83s, which is short for a loop. The master simply does
+   not contain a longer usable continuous take. A dedicated hero shoot — one
+   locked or slow-dolly take of 20–30s, outside winter, with no burned-in
+   titles — would remove this constraint along with items 3 and 4. This is the
+   real fix and should be priced into the next client conversation.
 
 Also still pending from the client, and blocking any media-dependent section:
 clinic photography, Google Business Profile and DNS access, written consent for
@@ -90,6 +123,10 @@ achievable from it without interpolation artifacts.
   `claude/hero-video-quality`, merged into `develop`; no files are reserved.
   Next task: await the user's answers to the open questions, then build the
   section that follows the hero.
+- 2026-08-06 — Claude re-cut the hero loop to the single continuous waiting
+  room shot on `claude/hero-waiting-room-loop`; no files are reserved. Not yet
+  merged — awaiting the user's review of the loop. Next task: merge on
+  approval, then await the answers to the open questions above.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
