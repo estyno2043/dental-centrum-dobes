@@ -56,20 +56,31 @@ the other agent unless that agent has handed them off.
   console at 1440px and at phone width.
 
   The hero is no longer cut from the raw 145s clinic promo. It is a finished
-  19.2s edit supplied by the studio as a ProRes 422 HQ master
-  (`0724.mov`), used start to end. `scripts/encode-hero-video.sh` now takes
-  that master and only encodes — it no longer selects a segment, and the raw
-  4K file is not an input to it any more.
+  edit supplied by the studio as a ProRes 422 HQ master, used start to end.
+  `scripts/encode-hero-video.sh` now takes that master and only encodes — it no
+  longer selects a segment, and the raw 4K file is not an input to it any more.
+  Current master: `0724(1).mov`, 1920×1080, 30 fps, 79.03s, ~2.0 GB.
 
-  Encoded at 30 fps although the master is 60 fps: ~40% of the master's frames
-  are exact duplicates (689 unique of 1153, measured with mpdecimate) because
-  the underlying footage is 29.97 fps, so 60 fps would cost bitrate for no
+  Four sources were tried before this one settled, and the last three were
+  rejected by the user, so do not re-litigate the cut:
+  1. the shipped 15s–37s window — turned out to contain five internal cuts;
+  2. a 4.83s single-shot waiting room loop — too repetitive;
+  3. the studio's 19.2s edit — 10 shots, too fast behind the headline;
+  4. a 15.2s cut proposed from the calm shots of the current master.
+  The user asked explicitly for the supplied edit, whole and unmodified. The
+  waiting room work is kept on `claude/hero-waiting-room-loop`, unmerged.
+
+  Encoded at 30 fps. An earlier master was exported at 60 fps, but ~40% of its
+  frames were exact duplicates (689 unique of 1153, measured with mpdecimate)
+  because the footage under it is 29.97 fps, so 60 fps cost bitrate for no
   visible gain.
 
-  Two earlier alternatives were tried and rejected by the user: the shipped
-  15s–37s window (five internal cuts) and a 4.83s single-shot waiting room
-  loop, which was rejected as too repetitive. The waiting room work is kept on
-  `claude/hero-waiting-room-loop`, unmerged, in case it is wanted later.
+  CRF was raised from 25/34/24 to 29/38/28 because 79s is long for a background
+  loop. At the old settings the 1080p H.264 came out at 25.18 MiB — over
+  Cloudflare's 25 MiB per-asset limit, so it would not have deployed — and
+  phones were pulling 14.37 MiB. Now 15.80 / 15.52 / 9.04 MiB. The loss is not
+  visible under the hero scrim, but 9 MiB on a phone is still heavy and is the
+  strongest practical argument for a shorter edit later.
 
 ## Open Questions
 
@@ -89,13 +100,18 @@ Two more, raised by the hero media work:
    noticeably on phones. Fixing it means strengthening the scrim at the top of
    the hero, which is a design change and so has not been made unilaterally.
 
-5. Noted, not blocking, and the user's call: the edit runs 10 shots in 19.2s,
-   so a hard cut lands behind the headline roughly every two seconds, and two
-   shots are clinical — an intraoral macro at 12.3–14.2s and an instrument tray
-   at 14.2–16.3s. This was raised before the edit was adopted and the user
-   chose it knowingly, so it is recorded rather than reopened. If it is ever
-   revisited, the fix is a dedicated hero shoot: one locked or slow-dolly take
-   of 20–30s, outside winter, with no burned-in titles.
+5. Settled by the user, recorded so it is not "fixed" by another agent: the
+   hero edit runs 29 shots in 79s (2.73s average), so a hard cut lands behind
+   the headline every few seconds, and a good part of it is procedural
+   footage — including four intraoral macro shots at roughly 43.8s, 60.4s,
+   62.7s and 69.0s. Alternatives were proposed and declined. Do not re-cut it.
+
+   Two consequences are worth revisiting only if the user raises them: phones
+   download 9.04 MiB for the background loop, and the Lighthouse ≥90 target has
+   not been re-measured since the file grew. If it ever is reopened, the fix is
+   a dedicated hero shoot — one locked or slow-dolly take of 20–30s, outside
+   winter, with no burned-in titles — not another pass over this footage, which
+   has now been searched exhaustively.
 
 Also still pending from the client, and blocking any media-dependent section:
 clinic photography, Google Business Profile and DNS access, written consent for
