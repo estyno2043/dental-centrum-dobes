@@ -344,14 +344,14 @@ git commit -m "docs: add multi-agent collaboration workflow"
 
 ---
 
-### Task 4: Validate, branch, and publish private GitHub repository
+### Task 4: Validate and prepare repository publication
 
 **Files:**
 - Modify: `COLLAB.md`
 
 **Interfaces:**
 - Consumes: Tested application and repository documentation from Tasks 1–3.
-- Produces: Private GitHub repository with stable `main` and integration `develop` branches.
+- Produces: Fully validated feature branch and clean collaboration handoff ready for final review and merge.
 
 - [ ] **Step 1: Run full verification**
 
@@ -381,15 +381,34 @@ git add COLLAB.md
 git commit -m "docs: hand off project foundation"
 ```
 
-- [ ] **Step 4: Create integration branch**
+- [ ] **Step 4: Confirm feature branch is ready for final review**
 
 ```bash
-git branch develop
+git status --short --branch
+git log --oneline --decorate -8
 ```
 
-Expected: `main` and `develop` point to validated foundation commit.
+Expected: clean `codex/project-foundation` branch with all task commits present. Publishing waits until final whole-branch review and fast-forward merge into `main`.
 
-- [ ] **Step 5: Authenticate without placing token in repository or command history**
+---
+
+## Post-review merge and publication
+
+The controller performs these steps only after the SDD final whole-branch review passes.
+
+- [ ] **Step 1: Fast-forward stable branch and create integration branch**
+
+Run from the primary checkout `/Users/goat/Documents/ChatGPT/DOBES`:
+
+```bash
+git checkout main
+git merge --ff-only codex/project-foundation
+git branch -f develop main
+```
+
+Expected: `main` and `develop` point to the validated foundation commit.
+
+- [ ] **Step 2: Authenticate without placing token in repository or command history**
 
 Use an interactive standard-input flow for GitHub CLI. Never place token in command arguments, files, shell history, remote URL, or documentation.
 
@@ -399,7 +418,7 @@ gh auth login --hostname github.com --git-protocol https --with-token
 
 Expected: `gh auth status` reports authenticated account. If token is rejected, stop publishing and request a new narrowly scoped token from user.
 
-- [ ] **Step 6: Create private repository and push both branches**
+- [ ] **Step 3: Create private repository from `main` and push both branches**
 
 ```bash
 gh repo create dental-centrum-dobes --private --source=. --remote=origin --push
@@ -409,7 +428,6 @@ gh repo view --json nameWithOwner,isPrivate,url,defaultBranchRef
 
 Expected: repository name ends in `dental-centrum-dobes`, `isPrivate` is `true`, and both branches exist remotely.
 
-- [ ] **Step 7: Return security handoff**
+- [ ] **Step 4: Return security handoff**
 
 Tell user to revoke exposed token immediately and create a new fine-grained token for future work. Do not repeat token value.
-
