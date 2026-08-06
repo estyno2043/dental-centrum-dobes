@@ -3,7 +3,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid -- The approved hero uses placeholder anchors until the corresponding sections exist. */
 /* eslint-disable @next/next/no-img-element -- Preserve the approved logo markup and extracted asset without an image-service rewrite. */
 
-import { useEffect, useState, type JSX } from "react";
+import { useEffect, useState, useSyncExternalStore, type JSX } from "react";
 import { RotatingHeadline } from "./RotatingHeadline";
 import {
   headlineVariants,
@@ -12,8 +12,33 @@ import {
 } from "./heroContent";
 import styles from "./hero.module.css";
 
+const reducedMotionQuery = "(prefers-reduced-motion: reduce)";
+
+function subscribeToReducedMotion(onPreferenceChange: () => void) {
+  const motionPreference = globalThis.matchMedia?.(reducedMotionQuery);
+
+  if (!motionPreference) return () => undefined;
+
+  motionPreference.addEventListener("change", onPreferenceChange);
+  return () =>
+    motionPreference.removeEventListener("change", onPreferenceChange);
+}
+
+function getReducedMotionPreference() {
+  return globalThis.matchMedia?.(reducedMotionQuery).matches ?? false;
+}
+
+function getServerReducedMotionPreference() {
+  return true;
+}
+
 export function Hero(): JSX.Element {
   const [isScrolled, setIsScrolled] = useState(false);
+  const prefersReducedMotion = useSyncExternalStore(
+    subscribeToReducedMotion,
+    getReducedMotionPreference,
+    getServerReducedMotionPreference,
+  );
 
   useEffect(() => {
     const updateNavigation = () => setIsScrolled(window.scrollY > 40);
@@ -57,17 +82,27 @@ export function Hero(): JSX.Element {
       </nav>
 
       <header className={styles.hero} id="hero">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          poster="/media/hero-poster.jpg"
-        >
-          <source src="/media/hero-video.mp4" type="video/mp4" />
-          Váš prehliadač nepodporuje video.
-        </video>
+        {!prefersReducedMotion ? (
+          <video
+            className={styles.backgroundMedia}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            poster="/media/hero-poster.jpg"
+          >
+            <source src="/media/hero-video.mp4" type="video/mp4" />
+            Váš prehliadač nepodporuje video.
+          </video>
+        ) : (
+          <img
+            className={styles.backgroundMedia}
+            src="/media/hero-poster.jpg"
+            alt=""
+            aria-hidden="true"
+          />
+        )}
         <div className={styles.scrim} />
 
         <div className={styles.content}>

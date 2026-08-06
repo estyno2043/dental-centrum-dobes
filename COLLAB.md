@@ -8,7 +8,7 @@ update it before taking or handing off work.
 - Status: Complete
 - Owner: Codex
 - Branch: `codex/project-foundation`
-- Task: Project foundation
+- Task: Final review fix wave
 
 ## File Reservations
 
@@ -31,6 +31,10 @@ the other agent unless that agent has handed them off.
 - Project foundation — complete. Tests run: `npm test` (4 passed),
   `npm run build` (passed), `git diff --check` (passed), and tracked-content
   credential scan (no matches). Final commit: `docs: hand off project foundation`.
+- Final review fix wave — complete. Tests: 5 passed. Lint, standalone
+  TypeScript, production build, runtime audit, tracked-content credential scan,
+  and whitespace validation passed. The full development audit retains 16
+  tooling advisories, reported separately in the final fix report.
 
 ## Open Questions
 
@@ -42,6 +46,9 @@ None.
 - 2026-08-06 — Codex completed Project foundation on
   `codex/project-foundation`; no files are reserved. Next task: Await user
   instruction.
+- 2026-08-06 — Codex completed the final review fix wave on
+  `codex/project-foundation`; no files are reserved. Next task: controller
+  review and integration.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,

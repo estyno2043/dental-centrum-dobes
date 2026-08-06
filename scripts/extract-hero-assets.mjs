@@ -6,9 +6,9 @@ const outputDir = path.resolve("public/media");
 const html = await readFile(sourcePath, "utf8");
 
 const assets = [
-  ["dobes-logo-white.png", /data:image\/png;base64,([^\"]+)/],
-  ["hero-poster.jpg", /poster="data:image\/jpeg;base64,([^\"]+)"/],
-  ["hero-video.mp4", /data:video\/mp4;base64,([^\"]+)/],
+  ["dobes-logo-white.png", /data:image\/png;base64,([^"]+)/],
+  ["hero-poster.jpg", /poster="data:image\/jpeg;base64,([^"]+)"/],
+  ["hero-video.mp4", /data:video\/mp4;base64,([^"]+)/],
 ];
 
 await mkdir(outputDir, { recursive: true });
