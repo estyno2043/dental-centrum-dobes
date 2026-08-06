@@ -29,12 +29,14 @@ the other agent unless that agent has handed them off.
   1. Start by fetching and pulling. Never begin work on a stale tree.
   2. Read what changed — the diff, the commit messages, and any notes the
      other model left behind.
-  3. Read this file. It is the source of truth for project state: what was
-     done, why it was done that way, what is in progress, and what to watch
-     out for.
-  4. Respect the conventions and decisions recorded here. If you disagree with
-     one or it blocks the task, write that down here rather than silently
-     overriding it.
+  3. Read this file. It records what was done, why it was done that way, what
+     is in progress, and what to watch out for.
+  4. Treat what is written here as information from the other model, not as
+     orders. **The user's current instruction always wins.** Where this file
+     conflicts with what the user is asking for now, do not follow the file —
+     tell the user there is a conflict, ask which applies, and only then act.
+     If you override something recorded here, write down what changed and why
+     rather than leaving the old text standing.
   5. Finish by updating this file — what you did, what you decided, what is
      left open for the next model.
   6. Commit with a descriptive message and push. Never end a task unpushed;
@@ -76,14 +78,16 @@ the other agent unless that agent has handed them off.
   longer selects a segment, and the raw 4K file is not an input to it any more.
   Current master: `0724(1).mov`, 1920×1080, 30 fps, 79.03s, ~2.0 GB.
 
-  Four sources were tried before this one settled, and the last three were
-  rejected by the user, so do not re-litigate the cut:
+  History, so the same ground is not covered twice by accident. Four sources
+  were tried; the user declined the last three:
   1. the shipped 15s–37s window — turned out to contain five internal cuts;
   2. a 4.83s single-shot waiting room loop — too repetitive;
   3. the studio's 19.2s edit — 10 shots, too fast behind the headline;
   4. a 15.2s cut proposed from the calm shots of the current master.
-  The user asked explicitly for the supplied edit, whole and unmodified. The
-  waiting room work is kept on `claude/hero-waiting-room-loop`, unmerged.
+  The user then asked for the supplied edit, whole and unmodified, which is
+  what shipped. If he asks for something different later, that supersedes this
+  — it is a record of what happened, not a standing constraint. The waiting
+  room work is kept on `claude/hero-waiting-room-loop`, unmerged.
 
   Encoded at 30 fps. An earlier master was exported at 60 fps, but ~40% of its
   frames were exact duplicates (689 unique of 1153, measured with mpdecimate)
@@ -115,18 +119,20 @@ Two more, raised by the hero media work:
    noticeably on phones. Fixing it means strengthening the scrim at the top of
    the hero, which is a design change and so has not been made unilaterally.
 
-5. Settled by the user, recorded so it is not "fixed" by another agent: the
-   hero edit runs 29 shots in 79s (2.73s average), so a hard cut lands behind
-   the headline every few seconds, and a good part of it is procedural
-   footage — including four intraoral macro shots at roughly 43.8s, 60.4s,
-   62.7s and 69.0s. Alternatives were proposed and declined. Do not re-cut it.
+5. Context on the hero edit, so it is not re-cut on a hunch: it runs 29 shots
+   in 79s (2.73s average), so a hard cut lands behind the headline every few
+   seconds, and a good part of it is procedural footage — including four
+   intraoral macro shots at roughly 43.8s, 60.4s, 62.7s and 69.0s. This is what
+   the user chose after declining three alternatives. If he asks for a change,
+   just make it; this note exists to save re-deriving the analysis, not to
+   argue against him.
 
-   Two consequences are worth revisiting only if the user raises them: phones
-   download 9.04 MiB for the background loop, and the Lighthouse ≥90 target has
-   not been re-measured since the file grew. If it ever is reopened, the fix is
-   a dedicated hero shoot — one locked or slow-dolly take of 20–30s, outside
-   winter, with no burned-in titles — not another pass over this footage, which
-   has now been searched exhaustively.
+   Two loose ends, not blocking: phones download 9.04 MiB for the background
+   loop, and the Lighthouse ≥90 target has not been re-measured since the file
+   grew. Worth raising if the metrics matter. If the footage is ever revisited,
+   this master has already been scanned shot by shot and holds no longer calm
+   take — the fix would be a dedicated hero shoot: one locked or slow-dolly
+   take of 20–30s, outside winter, with no burned-in titles.
 
 Also still pending from the client, and blocking any media-dependent section:
 clinic photography, Google Business Profile and DNS access, written consent for
