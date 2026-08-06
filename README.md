@@ -38,3 +38,20 @@ handoff-log entry.
 The approved source materials are preserved under `docs/source/`, including the
 original hero prototype and transcript. Treat them as reference material; do
 not replace them with generated substitutes.
+
+## Hero media
+
+`public/media/hero-*` is encoded from the 4K clinic master, which is far too
+large to track here. Regenerate it with:
+
+```bash
+./scripts/encode-hero-video.sh "/path/to/Zubná ambulancia Dobeš - 4K.mp4"
+```
+
+The script header records why the segment is what it is — the master carries
+burned-in titles, clinical close-ups, and an end card that cannot appear behind
+the hero headline. Read it before changing the window. `hero-poster.jpg` must
+stay the clip's first frame so the poster does not jump when playback starts.
+
+`scripts/extract-hero-assets.mjs` only recovers the logo from the archived
+prototype; it deliberately no longer writes the video or poster.

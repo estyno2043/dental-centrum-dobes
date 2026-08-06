@@ -3,42 +3,46 @@
 /* eslint-disable jsx-a11y/anchor-is-valid -- The approved hero uses placeholder anchors until the corresponding sections exist. */
 /* eslint-disable @next/next/no-img-element -- Preserve the approved logo markup and extracted asset without an image-service rewrite. */
 
-import { useEffect, useState, useSyncExternalStore, type JSX } from "react";
+import { useEffect, useState, type JSX } from "react";
 import { RotatingHeadline } from "./RotatingHeadline";
 import {
   headlineVariants,
   navigationItems,
   trustItems,
 } from "./heroContent";
+import { useMediaQuery } from "./useMediaQuery";
 import styles from "./hero.module.css";
 
 const reducedMotionQuery = "(prefers-reduced-motion: reduce)";
+const wideViewportQuery = "(min-width: 768px)";
 
-function subscribeToReducedMotion(onPreferenceChange: () => void) {
-  const motionPreference = globalThis.matchMedia?.(reducedMotionQuery);
+/**
+ * Phones get the 720p encode: it is a third of the desktop file, and the
+ * difference is invisible at that size. WebM leads because VP9 is meaningfully
+ * smaller than H.264 here; the MP4 covers browsers that cannot play it.
+ */
+const wideSources = [
+  { src: "/media/hero-1080.webm", type: "video/webm" },
+  { src: "/media/hero-1080.mp4", type: "video/mp4" },
+] as const;
 
-  if (!motionPreference) return () => undefined;
-
-  motionPreference.addEventListener("change", onPreferenceChange);
-  return () =>
-    motionPreference.removeEventListener("change", onPreferenceChange);
-}
-
-function getReducedMotionPreference() {
-  return globalThis.matchMedia?.(reducedMotionQuery).matches ?? false;
-}
-
-function getServerReducedMotionPreference() {
-  return true;
-}
+const narrowSources = [
+  { src: "/media/hero-720.mp4", type: "video/mp4" },
+] as const;
 
 export function Hero(): JSX.Element {
   const [isScrolled, setIsScrolled] = useState(false);
-  const prefersReducedMotion = useSyncExternalStore(
-    subscribeToReducedMotion,
-    getReducedMotionPreference,
-    getServerReducedMotionPreference,
+  const prefersReducedMotion = useMediaQuery(reducedMotionQuery, true);
+
+  // Read once rather than subscribed: following the breakpoint would restart
+  // the video and pull a second encode over the wire every time a phone is
+  // rotated, which costs a visitor more than the sharper frame is worth. The
+  // value never reaches the hydrated markup, because the server always renders
+  // the poster instead of the video.
+  const [isWideViewport] = useState(
+    () => globalThis.matchMedia?.(wideViewportQuery).matches ?? false,
   );
+  const sources = isWideViewport ? wideSources : narrowSources;
 
   useEffect(() => {
     const updateNavigation = () => setIsScrolled(window.scrollY > 40);
@@ -84,6 +88,7 @@ export function Hero(): JSX.Element {
       <header className={styles.hero} id="hero">
         {!prefersReducedMotion ? (
           <video
+            key={isWideViewport ? "wide" : "narrow"}
             className={styles.backgroundMedia}
             autoPlay
             muted
@@ -92,7 +97,9 @@ export function Hero(): JSX.Element {
             preload="auto"
             poster="/media/hero-poster.jpg"
           >
-            <source src="/media/hero-video.mp4" type="video/mp4" />
+            {sources.map((source) => (
+              <source key={source.src} src={source.src} type={source.type} />
+            ))}
             Váš prehliadač nepodporuje video.
           </video>
         ) : (
