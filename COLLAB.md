@@ -8,7 +8,7 @@ update it before taking or handing off work.
 - Status: Complete
 - Owner: Claude
 - Branch: `claude/hero-client-cut`
-- Task: Replace the hero media with the studio's own 19.2s edit, supplied as a
+- Task: Replace the hero media with the studio's own 79s edit, supplied as a
   ProRes master, instead of a segment selected from the raw 4K master
 
 ## File Reservations
@@ -25,6 +25,21 @@ the other agent unless that agent has handed them off.
 - Codex uses `codex/<topic>` working branches; Claude uses
   `claude/<topic>` working branches.
 - Integrate work through small, descriptive commits.
+- **Git workflow, required for every task** (set by the user, 2026-08-06):
+  1. Start by fetching and pulling. Never begin work on a stale tree.
+  2. Read what changed — the diff, the commit messages, and any notes the
+     other model left behind.
+  3. Read this file. It is the source of truth for project state: what was
+     done, why it was done that way, what is in progress, and what to watch
+     out for.
+  4. Respect the conventions and decisions recorded here. If you disagree with
+     one or it blocks the task, write that down here rather than silently
+     overriding it.
+  5. Finish by updating this file — what you did, what you decided, what is
+     left open for the next model.
+  6. Commit with a descriptive message and push. Never end a task unpushed;
+     work that only exists locally is invisible to the other model and to the
+     user's second machine.
 
 ## Completed
 
@@ -52,7 +67,7 @@ the other agent unless that agent has handed them off.
 - Hero media replaced with the studio's own edit — complete. Tests: 8 passed.
   Lint, TypeScript, and the production build passed; a dev-server check
   confirmed all four assets serve with the right content types, both 1080p
-  encodes decode at 1920×1080 / 19.23s, and the hero plays with a clean
+  encodes decode at 1920×1080 / 79.03s, and the hero plays with a clean
   console at 1440px and at phone width.
 
   The hero is no longer cut from the raw 145s clinic promo. It is a finished
@@ -136,11 +151,12 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   `claude/hero-video-quality`, merged into `develop`; no files are reserved.
   Next task: await the user's answers to the open questions, then build the
   section that follows the hero.
-- 2026-08-06 — Claude replaced the hero media with the studio's own 19.2s edit
-  on `claude/hero-client-cut`; no files are reserved. Not yet merged — awaiting
-  the user's review. A rejected alternative, the single-shot waiting room loop,
-  sits unmerged on `claude/hero-waiting-room-loop`. Next task: merge on
-  approval, then await the answers to the open questions above.
+- 2026-08-06 — Claude replaced the hero media with the studio's own 79s edit on
+  `claude/hero-client-cut`, pushed to origin; no files are reserved. Not yet
+  merged — awaiting the user's review. A rejected alternative, the single-shot
+  waiting room loop, sits unmerged on `claude/hero-waiting-room-loop`, also
+  pushed so the other machine can see it. Next task: merge on approval, then
+  await the answers to the open questions above.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
