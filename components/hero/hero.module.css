@@ -1,0 +1,468 @@
+.navigation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 26px 44px;
+  transition:
+    background 0.4s var(--ease),
+    backdrop-filter 0.4s var(--ease);
+}
+
+.navigation.scrolled {
+  padding-top: 16px;
+  padding-bottom: 14px;
+  background: rgb(28 28 31 / 74%);
+  backdrop-filter: blur(14px);
+}
+
+.logo {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.logo img {
+  display: block;
+  width: auto;
+  height: 46px;
+  align-self: flex-start;
+}
+
+.tagline {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  color: var(--taupe);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.tagline::before {
+  width: 30px;
+  height: 1.5px;
+  flex: none;
+  background: var(--taupe);
+  content: "";
+}
+
+.navigationRight {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+  padding-top: 8px;
+}
+
+.navigationLinks {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+
+.navigationLinks a {
+  color: rgb(255 255 255 / 82%);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition: color 0.2s var(--ease);
+}
+
+.navigationLinks a:hover {
+  color: #fff;
+}
+
+.navigationButton {
+  padding: 12px 22px;
+  border: 1px solid rgb(255 255 255 / 45%);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    border-color 0.2s var(--ease),
+    background 0.2s var(--ease);
+}
+
+.navigationButton:hover {
+  border-color: #fff;
+  background: rgb(255 255 255 / 8%);
+}
+
+.hero {
+  position: relative;
+  display: flex;
+  min-height: 100svh;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+}
+
+.hero video {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.scrim {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgb(28 28 31 / 86%) 0%,
+    rgb(28 28 31 / 34%) 46%,
+    rgb(28 28 31 / 30%) 100%
+  );
+}
+
+.scrim::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    rgb(28 28 31 / 42%) 0%,
+    rgb(28 28 31 / 0%) 55%
+  );
+  content: "";
+}
+
+.content {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 44px 54px;
+}
+
+.heading {
+  max-width: 21ch;
+  height: 3.55em;
+  overflow: visible;
+  font-size: clamp(28px, 4.2vw, 52px);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.16;
+}
+
+.headingLead {
+  display: inline;
+  opacity: 0;
+  transform: translateY(16px);
+  animation: headingLeadIn 0.8s var(--ease) 0.15s forwards;
+}
+
+.rotating {
+  position: relative;
+  display: inline;
+}
+
+.variant {
+  color: transparent;
+  background: linear-gradient(100deg, #fff 15%, #efe3cc 50%, #c9b593 85%);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.variant.out {
+  animation: variantOut 0.55s var(--ease) forwards;
+}
+
+.variant.in {
+  animation: variantIn 0.65s var(--ease) forwards;
+}
+
+.subheading {
+  max-width: 50ch;
+  margin-top: 16px;
+  color: rgb(255 255 255 / 82%);
+  font-size: 15.5px;
+  font-weight: 400;
+  line-height: 1.65;
+  opacity: 0;
+  transform: translateY(18px);
+  animation: fadeUp 0.8s var(--ease) 0.4s forwards;
+}
+
+.ctaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  margin-top: 30px;
+  opacity: 0;
+  transform: translateY(18px);
+  animation: fadeUp 0.8s var(--ease) 0.55s forwards;
+}
+
+.packageButton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 20px 36px;
+  border: 1px solid rgb(255 255 255 / 35%);
+  border-radius: 12px;
+  background: rgb(28 28 31 / 82%);
+  backdrop-filter: blur(4px);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: border-color 0.25s var(--ease);
+}
+
+.packageButton::before {
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgb(174 155 126 / 0%);
+  border-radius: 8px;
+  content: "";
+  pointer-events: none;
+  transition:
+    border-color 0.25s var(--ease),
+    inset 0.25s var(--ease);
+}
+
+.packageButton::after {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  background: var(--taupe-deep);
+  content: "";
+  transition: width 0.35s var(--ease);
+}
+
+.packageButton:hover {
+  border-color: rgb(255 255 255 / 70%);
+}
+
+.packageButton:hover::before {
+  border-color: rgb(255 255 255 / 35%);
+}
+
+.packageButton:hover::after {
+  width: 100%;
+}
+
+.phoneButton {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.phoneLabel {
+  color: var(--taupe);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.phoneNumber {
+  padding-bottom: 3px;
+  border-bottom: 1px solid rgb(255 255 255 / 35%);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  transition: border-color 0.2s var(--ease);
+}
+
+.phoneButton:hover .phoneNumber {
+  border-color: var(--taupe);
+}
+
+.trustStrip {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(22px, 4.5vw, 60px);
+  margin-top: 44px;
+  padding-top: 20px;
+  border-top: 1px solid rgb(255 255 255 / 13%);
+  opacity: 0;
+  animation: fadeUp 0.8s var(--ease) 0.75s forwards;
+}
+
+.trustItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.trustValue {
+  font-size: clamp(16px, 1.7vw, 20px);
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+
+.trustAccent {
+  color: var(--taupe);
+  font-style: normal;
+}
+
+.trustLabel {
+  color: rgb(255 255 255 / 58%);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.scrollCue {
+  position: absolute;
+  z-index: 3;
+  right: 44px;
+  bottom: 54px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  color: rgb(255 255 255 / 55%);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  opacity: 0;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  animation: fadeUp 0.8s var(--ease) 0.95s forwards;
+}
+
+.scrollCue::after {
+  width: 1.5px;
+  height: 46px;
+  background: linear-gradient(to bottom, var(--taupe), transparent);
+  content: "";
+  animation: cueLine 1.8s var(--ease) infinite;
+}
+
+@keyframes headingLeadIn {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes variantIn {
+  from {
+    opacity: 0;
+    transform: translateY(1.1em);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes variantOut {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-1.1em);
+  }
+}
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes cueLine {
+  0% {
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+
+  45% {
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+
+  55% {
+    transform: scaleY(1);
+    transform-origin: bottom;
+  }
+
+  100% {
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+}
+
+@media (max-width: 960px) {
+  .navigationLinks {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .scrollCue {
+    display: none;
+  }
+
+  .content {
+    padding: 0 24px 40px;
+  }
+
+  .navigation {
+    padding: 20px 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navigation,
+  .navigationLinks a,
+  .navigationButton,
+  .packageButton,
+  .packageButton::before,
+  .packageButton::after,
+  .phoneNumber,
+  .headingLead,
+  .variant,
+  .subheading,
+  .ctaRow,
+  .trustStrip,
+  .scrollCue,
+  .scrollCue::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .headingLead,
+  .subheading,
+  .ctaRow,
+  .trustStrip,
+  .scrollCue {
+    opacity: 1;
+    transform: none;
+  }
+}
