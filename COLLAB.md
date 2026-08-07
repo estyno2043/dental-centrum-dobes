@@ -5,14 +5,14 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: In progress
-- Owner: Codex
-- Branch: `codex/mobile-hero-menu`
-- Task: Promote approved website to main and make main the deployment source
+- Status: Complete
+- Owner: None
+- Branch: `main`
+- Task: Await next user instruction
 
 ## File Reservations
 
-- Codex: `COLLAB.md`, `AI_WORKFLOW.md`, `AGENTS.md`, `CLAUDE.md`
+- None.
 
 Claim a task and its files here before editing. Do not edit files reserved by
 the other agent unless that agent has handed them off.
@@ -110,6 +110,14 @@ the other agent unless that agent has handed them off.
   body scroll locks while open, and Browser console has no page errors. Branch
   was kept local until user approval and is now published in draft PR #3.
 
+- Production branch consolidation — complete. PR #3 promoted the full approved
+  website to `main`; PR #1 and PR #2 are also recorded as merged after
+  `develop` was fast-forwarded to the same commit. `main` is now the Netlify
+  source of truth and `develop` only mirrors it. The rejected waiting-room loop
+  remains excluded. Post-merge verification on `main`: 13 tests passed, lint,
+  TypeScript, production build, localhost HTTP check, and Browser interaction
+  check at 400 × 664 passed with no console errors.
+
 ## Open Questions
 
 Both questions below are for the user; they gate the next content task.
@@ -193,6 +201,13 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   localhost hot-reload and Browser review loop to `AI_WORKFLOW.md` for Codex and
   Claude. No files are reserved. Next task: await user instruction; future
   frontend batches must be reviewed locally before push.
+- 2026-08-07 — User selected `main` as the Netlify deployment and single source
+  branch. Codex retargeted and merged PR #3 into `main`, fast-forwarded
+  `develop` to match it, and confirmed PR #1 and PR #2 as merged. Updated
+  `AI_WORKFLOW.md`, `AGENTS.md`, and `CLAUDE.md`: new work starts from
+  `origin/main`, localhost review precedes production merge, and approved work
+  ends pushed on `main`. No files are reserved. Next task: await user
+  instruction.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
