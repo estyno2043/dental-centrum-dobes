@@ -76,6 +76,21 @@ For every frontend or visual task, both Codex and Claude must use this loop:
 5. Record the tested viewport sizes and visual result in `COLLAB.md` before
    handoff or publication.
 
+## Claude, Codex, and Netlify synchronization
+
+- Before either developer starts, fetch GitHub and update from `origin/main`.
+  This prevents Claude from missing Codex changes and Codex from missing Claude
+  changes made on another machine.
+- Claude may build on `claude/<topic>`, but an approved Claude change is not
+  complete while it exists only on that branch. Merge it into `main`, push
+  `main`, and confirm the remote `main` commit.
+- Codex follows the same rule for `codex/<topic>` work. Both developers review
+  each other's published changes from `origin/main`, not from private local
+  state.
+- When the Netlify site is connected, wait for the `main` deployment result and
+  verify the live URL before reporting the change as live. Share that URL so
+  the user, Codex, and Claude inspect the same deployed version.
+
 ## Security
 
 - Never store credentials, personal access tokens, API keys, or secrets in

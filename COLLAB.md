@@ -33,6 +33,11 @@ the other agent unless that agent has handed them off.
   Codex and Claude browser-check meaningful visual batches and request local
   user approval before merging design-sensitive work into `main`, unless the
   user asks to skip that review.
+- Claude and Codex must pull from `origin/main` before starting and must put
+  user-approved work back on pushed `main`. A completed feature cannot remain
+  only on an agent branch. When Netlify is connected, both developers verify
+  the resulting live deployment and share its URL so everyone reviews the same
+  version.
 
 ## Completed
 
@@ -208,6 +213,11 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   `origin/main`, localhost review precedes production merge, and approved work
   ends pushed on `main`. No files are reserved. Next task: await user
   instruction.
+- 2026-08-07 — User clarified cross-device review expectations for Claude.
+  Added an explicit rule to `AI_WORKFLOW.md`, `CLAUDE.md`, and this record:
+  Claude and Codex fetch `origin/main` before work, approved changes must reach
+  pushed `main`, and the Netlify live URL is verified and shared after deploy.
+  No files are reserved. Next task: await user instruction.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
