@@ -5,7 +5,7 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Ready to publish
+- Status: Complete
 - Owner: Codex
 - Branch: `codex/sync-claude-pr`
 - Task: Bring PR #1 into the shared local workspace and harden Codex/Claude
@@ -13,8 +13,7 @@ update it before taking or handing off work.
 
 ## File Reservations
 
-- Codex: `COLLAB.md`, `AI_WORKFLOW.md`, `AGENTS.md`, `CLAUDE.md` until the
-  synchronization-rule change is committed and pushed
+No files are reserved.
 
 Claim a task and its files here before editing. Do not edit files reserved by
 the other agent unless that agent has handed them off.
@@ -94,7 +93,8 @@ the other agent unless that agent has handed them off.
   workflow and pointed both model entrypoints at it. Tests: 8 passed. Lint,
   TypeScript, production build, `git diff --check`, media metadata checks, and
   tracked-content credential scan passed. PR #1 now targets `develop` instead
-  of stable `main`.
+  of stable `main`. Workflow commit `d82b256` is pushed; draft PR #2 targets
+  `develop` and is stacked on PR #1.
 
 ## Open Questions
 
@@ -160,10 +160,10 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   await the answers to the open questions above.
 - 2026-08-07 — Codex fetched PR #1 and checked it out through
   `codex/sync-claude-pr`, making Claude's changes live in the shared local
-  workspace. Added one canonical workflow for both models. The workflow files
-  remain reserved until the local change is committed and pushed. GitHub
-  authentication is restored and PR #1 now targets `develop`. Next task: push
-  this synchronization-rule commit for the second machine.
+  workspace. Added one canonical workflow for both models, pushed commit
+  `d82b256`, retargeted PR #1 to `develop`, and opened stacked draft PR #2 for
+  the workflow. No files are reserved. Next task: merge PR #1 after review;
+  then PR #2 will contain only the shared workflow change.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
