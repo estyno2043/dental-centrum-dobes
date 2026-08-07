@@ -5,22 +5,24 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Complete
-- Owner: None
+- Status: In progress
+- Owner: Codex
 - Branch: `codex/mobile-hero-menu`
-- Task: Await next user instruction
+- Task: Promote approved website to main and make main the deployment source
 
 ## File Reservations
 
-- None.
+- Codex: `COLLAB.md`, `AI_WORKFLOW.md`, `AGENTS.md`, `CLAUDE.md`
 
 Claim a task and its files here before editing. Do not edit files reserved by
 the other agent unless that agent has handed them off.
 
 ## Decisions
 
-- `main` is the stable branch; `develop` is the shared integration and
-  development branch.
+- `main` is the single source of truth and Netlify production branch. Approved
+  changes must be merged and pushed there after localhost review.
+- `develop` is retained only as a compatibility mirror and must be
+  fast-forwarded from `main`; new work does not start there.
 - Codex uses `codex/<topic>` working branches; Claude uses
   `claude/<topic>` working branches.
 - Integrate work through small, descriptive commits.
@@ -29,8 +31,8 @@ the other agent unless that agent has handed them off.
   state, decisions, reservations, and handoffs.
 - Every frontend change stays live on the active branch's localhost server.
   Codex and Claude browser-check meaningful visual batches and request local
-  user approval before pushing design-sensitive work, unless the user asks to
-  skip that review.
+  user approval before merging design-sensitive work into `main`, unless the
+  user asks to skip that review.
 
 ## Completed
 
