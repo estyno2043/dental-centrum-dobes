@@ -4,6 +4,8 @@
 /* eslint-disable @next/next/no-img-element -- Preserve the approved logo markup and extracted asset without an image-service rewrite. */
 
 import { useEffect, useState, type JSX } from "react";
+import { motion } from "motion/react";
+import { MobileMenu } from "./MobileMenu";
 import { RotatingHeadline } from "./RotatingHeadline";
 import {
   headlineVariants,
@@ -15,6 +17,7 @@ import styles from "./hero.module.css";
 
 const reducedMotionQuery = "(prefers-reduced-motion: reduce)";
 const wideViewportQuery = "(min-width: 768px)";
+const premiumEase = [0.22, 1, 0.36, 1] as const;
 
 /**
  * Phones get the 720p encode: it is a third of the desktop file, and the
@@ -74,14 +77,15 @@ export function Hero(): JSX.Element {
         <div className={styles.navigationRight}>
           <div className={styles.navigationLinks}>
             {navigationItems.map((item) => (
-              <a href="#" key={item}>
-                {item}
+              <a href={item.href} key={item.label}>
+                {item.label}
               </a>
             ))}
           </div>
           <a className={styles.navigationButton} href="#">
             Prehliadka kliniky
           </a>
+          <MobileMenu />
         </div>
       </nav>
 
@@ -113,19 +117,34 @@ export function Hero(): JSX.Element {
         <div className={styles.scrim} />
 
         <div className={styles.content}>
-          <h1 className={styles.heading}>
+          <motion.h1
+            className={styles.heading}
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.65, delay: 0.12, ease: premiumEase }}
+          >
             <span className={styles.headingLead}>Sme&nbsp;</span>
             <RotatingHeadline
               variants={headlineVariants}
               intervalMs={2600}
               finalHoldMs={4600}
             />
-          </h1>
-          <p className={styles.subheading}>
+          </motion.h1>
+          <motion.p
+            className={styles.subheading}
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.62, delay: 0.26, ease: premiumEase }}
+          >
             Moderní. Bez bolesti. Bezpeční. S úsmevom na tvári.
-          </p>
+          </motion.p>
 
-          <div className={styles.ctaRow}>
+          <motion.div
+            className={styles.ctaRow}
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.62, delay: 0.4, ease: premiumEase }}
+          >
             <a className={styles.packageButton} href="#">
               Vstupný balík pre nových pacientov
             </a>
@@ -133,9 +152,14 @@ export function Hero(): JSX.Element {
               <span className={styles.phoneLabel}>Objednajte sa</span>
               <span className={styles.phoneNumber}>0918 800 002</span>
             </a>
-          </div>
+          </motion.div>
 
-          <div className={styles.trustStrip}>
+          <motion.div
+            className={styles.trustStrip}
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.62, delay: 0.54, ease: premiumEase }}
+          >
             {trustItems.map((item) => (
               <div className={styles.trustItem} key={item.label}>
                 <span className={styles.trustValue}>
@@ -147,7 +171,7 @@ export function Hero(): JSX.Element {
                 <span className={styles.trustLabel}>{item.label}</span>
               </div>
             ))}
-          </div>
+          </motion.div>
         </div>
 
         <div className={styles.scrollCue}>scrollujte</div>
