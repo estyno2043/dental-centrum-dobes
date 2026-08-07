@@ -1,3 +1,10 @@
+// Extracts the approved logo from the archived hero prototype.
+//
+// The prototype also embeds a poster and a heavily compressed preview video.
+// Those are no longer the production assets — the hero media is encoded from
+// the 4K master by scripts/encode-hero-video.sh — so this script deliberately
+// leaves them alone rather than overwriting the production files.
+
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -5,11 +12,7 @@ const sourcePath = path.resolve("docs/source/Hero_v7_Dobes.html");
 const outputDir = path.resolve("public/media");
 const html = await readFile(sourcePath, "utf8");
 
-const assets = [
-  ["dobes-logo-white.png", /data:image\/png;base64,([^"]+)/],
-  ["hero-poster.jpg", /poster="data:image\/jpeg;base64,([^"]+)"/],
-  ["hero-video.mp4", /data:video\/mp4;base64,([^"]+)/],
-];
+const assets = [["dobes-logo-white.png", /data:image\/png;base64,([^"]+)/]];
 
 await mkdir(outputDir, { recursive: true });
 

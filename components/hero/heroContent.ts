@@ -6,11 +6,11 @@ export const headlineVariants = [
 ] as const;
 
 export const navigationItems = [
-  "Služby",
-  "Cenník",
-  "Tím",
-  "Ambulancia",
-  "Kontakt",
+  { label: "Služby", href: "#" },
+  { label: "Cenník", href: "#" },
+  { label: "Tím", href: "#" },
+  { label: "Ambulancia", href: "#" },
+  { label: "Kontakt", href: "#" },
 ] as const;
 
 export const trustItems = [
