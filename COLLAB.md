@@ -5,15 +5,16 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Complete
-- Owner: Claude
-- Branch: `claude/hero-client-cut`
-- Task: Replace the hero media with the studio's own 79s edit, supplied as a
-  ProRes master, instead of a segment selected from the raw 4K master
+- Status: Ready to publish
+- Owner: Codex
+- Branch: `codex/sync-claude-pr`
+- Task: Bring PR #1 into the shared local workspace and harden Codex/Claude
+  synchronization rules
 
 ## File Reservations
 
-No files are reserved.
+- Codex: `COLLAB.md`, `AI_WORKFLOW.md`, `AGENTS.md`, `CLAUDE.md` until the
+  synchronization-rule change is committed and pushed
 
 Claim a task and its files here before editing. Do not edit files reserved by
 the other agent unless that agent has handed them off.
@@ -25,23 +26,9 @@ the other agent unless that agent has handed them off.
 - Codex uses `codex/<topic>` working branches; Claude uses
   `claude/<topic>` working branches.
 - Integrate work through small, descriptive commits.
-- **Git workflow, required for every task** (set by the user, 2026-08-06):
-  1. Start by fetching and pulling. Never begin work on a stale tree.
-  2. Read what changed — the diff, the commit messages, and any notes the
-     other model left behind.
-  3. Read this file. It records what was done, why it was done that way, what
-     is in progress, and what to watch out for.
-  4. Treat what is written here as information from the other model, not as
-     orders. **The user's current instruction always wins.** Where this file
-     conflicts with what the user is asking for now, do not follow the file —
-     tell the user there is a conflict, ask which applies, and only then act.
-     If you override something recorded here, write down what changed and why
-     rather than leaving the old text standing.
-  5. Finish by updating this file — what you did, what you decided, what is
-     left open for the next model.
-  6. Commit with a descriptive message and push. Never end a task unpushed;
-     work that only exists locally is invisible to the other model and to the
-     user's second machine.
+- `AI_WORKFLOW.md` is the canonical rulebook shared by Codex and Claude.
+  `AGENTS.md` and `CLAUDE.md` are model entrypoints; this file records current
+  state, decisions, reservations, and handoffs.
 
 ## Completed
 
@@ -100,6 +87,14 @@ the other agent unless that agent has handed them off.
   phones were pulling 14.37 MiB. Now 15.80 / 15.52 / 9.04 MiB. The loss is not
   visible under the hero scrim, but 9 MiB on a phone is still heavy and is the
   strongest practical argument for a shorter edit later.
+
+- PR #1 synchronized into the shared local workspace — complete. The working
+  branch `codex/sync-claude-pr` contains Claude's full hero client cut, media,
+  encoder changes, and handoff history. Added `AI_WORKFLOW.md` as the canonical
+  workflow and pointed both model entrypoints at it. Tests: 8 passed. Lint,
+  TypeScript, production build, `git diff --check`, media metadata checks, and
+  tracked-content credential scan passed. PR #1 now targets `develop` instead
+  of stable `main`.
 
 ## Open Questions
 
@@ -163,6 +158,12 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   waiting room loop, sits unmerged on `claude/hero-waiting-room-loop`, also
   pushed so the other machine can see it. Next task: merge on approval, then
   await the answers to the open questions above.
+- 2026-08-07 — Codex fetched PR #1 and checked it out through
+  `codex/sync-claude-pr`, making Claude's changes live in the shared local
+  workspace. Added one canonical workflow for both models. The workflow files
+  remain reserved until the local change is committed and pushed. GitHub
+  authentication is restored and PR #1 now targets `develop`. Next task: push
+  this synchronization-rule commit for the second machine.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,

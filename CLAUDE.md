@@ -1,12 +1,10 @@
-# Claude workflow
+# Claude entrypoint
 
-Follow this sequence for every task:
+Before every task, read `COLLAB.md` first and then read `AI_WORKFLOW.md` in
+full. Follow the shared workflow without skipping its fetch, diff review, file
+reservation, verification, and handoff steps.
 
-1. Read `COLLAB.md` before inspecting or editing project files.
-2. Record owner, branch, task, and reserved files before editing.
-3. Do not edit files reserved by another agent.
-4. Run relevant tests and update `COLLAB.md` before handoff.
-5. Never write credentials or tokens into repository files, commits, logs, or examples.
-
-Use `main` only for stable work and `develop` for shared integration. Create
-Codex work on `codex/<topic>` and Claude work on `claude/<topic>`.
+Claude owns only `claude/<topic>` feature branches. New Claude work starts from
+current `origin/develop`; pull requests target `develop`. Never treat files in
+an open GitHub pull request as locally available until its exact head has been
+fetched and inspected.
