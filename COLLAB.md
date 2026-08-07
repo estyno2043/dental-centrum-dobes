@@ -5,15 +5,15 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Complete
+- Status: Awaiting design-spec review
 - Owner: Codex
-- Branch: `codex/sync-claude-pr`
-- Task: Bring PR #1 into the shared local workspace and harden Codex/Claude
-  synchronization rules
+- Branch: `codex/mobile-hero-menu`
+- Task: Design and implement compact mobile hero with signature dental menu
 
 ## File Reservations
 
-No files are reserved.
+- Codex: `COLLAB.md`,
+  `docs/superpowers/specs/2026-08-07-mobile-hero-menu-design.md`
 
 Claim a task and its files here before editing. Do not edit files reserved by
 the other agent unless that agent has handed them off.
@@ -164,6 +164,10 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   `d82b256`, retargeted PR #1 to `develop`, and opened stacked draft PR #2 for
   the workflow. No files are reserved. Next task: merge PR #1 after review;
   then PR #2 will contain only the shared workflow change.
+- 2026-08-07 — Codex completed the approved mobile hero and Dental Menu Mark
+  design on `codex/mobile-hero-menu`. The design spec is reserved pending user
+  review; production hero files have not been edited. Next task: after spec
+  approval, write the implementation plan and build through TDD.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
