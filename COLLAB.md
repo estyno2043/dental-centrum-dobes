@@ -5,21 +5,14 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Publishing approved implementation
-- Owner: Codex
+- Status: Complete
+- Owner: None
 - Branch: `codex/mobile-hero-menu`
-- Task: Publish approved mobile hero menu and establish local preview loop
+- Task: Await next user instruction
 
 ## File Reservations
 
-- Codex: `COLLAB.md`,
-  `AI_WORKFLOW.md`,
-  `docs/superpowers/specs/2026-08-07-mobile-hero-menu-design.md`,
-  `docs/superpowers/plans/2026-08-07-mobile-hero-menu.md`,
-  `package.json`, `package-lock.json`,
-  `components/hero/Hero.tsx`, `components/hero/Hero.test.tsx`,
-  `components/hero/MobileMenu.tsx`, `components/hero/MobileMenu.test.tsx`,
-  `components/hero/hero.module.css`, `components/hero/heroContent.ts`
+- None.
 
 Claim a task and its files here before editing. Do not edit files reserved by
 the other agent unless that agent has handed them off.
@@ -113,7 +106,7 @@ the other agent unless that agent has handed them off.
   credential-pattern scan, and Browser checks at 320, 375, 400, 430, 768, 960,
   961, and 1440px passed. Escape closes the dialog, focus returns to trigger,
   body scroll locks while open, and Browser console has no page errors. Branch
-  remains local and unpushed until user approval.
+  was kept local until user approval and is now published in draft PR #3.
 
 ## Open Questions
 
@@ -192,6 +185,12 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   Browser audit passed. Files remain reserved while the user reviews localhost;
   branch has not been pushed. Next task: apply visual feedback, or push and open
   a PR against `develop` after approval.
+- 2026-08-07 — User approved the localhost result. Codex pushed
+  `codex/mobile-hero-menu` and opened draft PR #3 against `develop`:
+  https://github.com/estyno2043/dental-centrum-dobes/pull/3. Added the mandatory
+  localhost hot-reload and Browser review loop to `AI_WORKFLOW.md` for Codex and
+  Claude. No files are reserved. Next task: await user instruction; future
+  frontend batches must be reviewed locally before push.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
