@@ -5,14 +5,21 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Complete
-- Owner: None
-- Branch: `main`
-- Task: Await next user instruction
+- Status: Complete, awaiting user review
+- Owner: Claude
+- Branch: `claude/netlify-migration`
+- Task: Migrate the app off vinext/Cloudflare Workers to standard Next.js so it
+  can actually deploy on Netlify
 
 ## File Reservations
 
-- None.
+No files are reserved.
+
+> **Read this before touching the build.** The framework changed. The project
+> no longer runs on `vinext` or Cloudflare Workers — it is now standard
+> **Next.js 16**, and `npm run dev` is `next dev`, not `vinext dev`. Anything
+> you remember about `wrangler`, `worker/index.ts`, D1 bindings, or
+> `vite.config.ts` no longer applies.
 
 Claim a task and its files here before editing. Do not edit files reserved by
 the other agent unless that agent has handed them off.
@@ -123,6 +130,41 @@ the other agent unless that agent has handed them off.
   TypeScript, production build, localhost HTTP check, and Browser interaction
   check at 400 × 664 passed with no console errors.
 
+- Migration off vinext to standard Next.js — complete, pending user review.
+  Tests: 13 passed. Lint, TypeScript, and `next build` passed; a fresh-tab
+  localhost check at 1440px and 375px had a clean console, the hero resolves
+  `hero-1080.webm` (79.03s) on desktop, and Codex's mobile menu still opens,
+  locks body scroll, lists all five links plus the CTA and phone, closes on
+  Escape, and returns focus to its trigger.
+
+  **Why this was necessary.** Netlify cannot host a Cloudflare Worker. Under
+  `vinext` the build produced `dist/client/` with zero HTML files and
+  `dist/server/wrangler.json` declaring a workerd worker with `nodejs_compat`;
+  Netlify Functions run on AWS Lambda and Deno Edge, and no vinext→Netlify
+  adapter exists. The recorded decision that `main` is the Netlify production
+  branch was therefore not achievable as the project stood. The user was shown
+  the evidence, was offered Cloudflare Workers as the alternative that would
+  have worked with no code change, and chose to migrate to Netlify instead.
+
+  **What changed.** Added `next@16` and `@netlify/plugin-nextjs` plus
+  `netlify.toml`. Removed `vinext`, `@cloudflare/vite-plugin`,
+  `@cloudflare/workers-types`, `wrangler`, `vite`, `@vitejs/plugin-rsc`, and
+  `react-server-dom-webpack`. Deleted `vite.config.ts`, `worker/`, `build/`,
+  and `.openai/`. Scripts are now `next dev` / `next build` / `next start`.
+  Package renamed from `site-creator-vinext-starter` to `dental-centrum-dobes`.
+
+  **What was deleted as dead scaffolding**, after confirming nothing in `app/`
+  or `components/` imported it: `db/`, `drizzle/`, `drizzle.config.ts`,
+  `drizzle-orm`, `drizzle-kit`, and `examples/`. The D1 database was never
+  wired to anything — `getDb()` had no callers. If a database is needed later
+  it has to be chosen fresh; Netlify has no D1 equivalent. `app/chatgpt-auth.ts`
+  is also unused but was left in place as it costs nothing and is outside this
+  change.
+
+  **Result.** `/` prerenders as static content, so Netlify serves it from CDN
+  with no function invocation. `vitest.config.ts` needed no change — it always
+  had its own React plugin and never read `vite.config.ts`.
+
 ## Open Questions
 
 Both questions below are for the user; they gate the next content task.
@@ -218,6 +260,14 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   Claude and Codex fetch `origin/main` before work, approved changes must reach
   pushed `main`, and the Netlify live URL is verified and shared after deploy.
   No files are reserved. Next task: await user instruction.
+
+- 2026-08-07 — Claude migrated the app off vinext/Cloudflare Workers to
+  standard Next.js 16 on `claude/netlify-migration`, pushed to origin; no files
+  are reserved. Not merged — awaiting user review, and the Netlify site is not
+  connected yet. Connecting it needs a Netlify account and GitHub authorization
+  in Netlify's own UI, which only the user can do. Next task: user connects
+  Netlify to this branch or to `main` after merge, then whoever is on shift
+  verifies the deployed URL and records it here.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,

@@ -1,0 +1,11 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Netlify's Next.js runtime turns the App Router build into Netlify Functions.
+# It replaces the Cloudflare Worker the project used to compile to under vinext.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
