@@ -53,6 +53,25 @@ rules. The user's current instruction always has highest priority.
 5. Open or update a PR targeting `develop`. Leave `main` unchanged until the
    integration branch is approved as stable.
 
+## Local preview and visual approval
+
+For every frontend or visual task, both Codex and Claude must use this loop:
+
+1. Keep the development server running from the active working branch. Reuse
+   the existing server when it already serves this checkout; do not start a
+   duplicate process on another port without need.
+2. Make saved changes immediately visible at `http://localhost:3000/` through
+   the development server's hot reload. If the browser looks stale, reload it
+   before treating the result as a code failure.
+3. After each meaningful visual batch, inspect localhost in a browser at the
+   relevant desktop and mobile sizes. Check layout, interaction, overflow,
+   focus behavior, and console errors.
+4. Give the user a local visual review point before pushing design-sensitive
+   changes. Do not push those changes until the user approves the localhost
+   result, unless the user explicitly asks to skip review.
+5. Record the tested viewport sizes and visual result in `COLLAB.md` before
+   handoff or publication.
+
 ## Security
 
 - Never store credentials, personal access tokens, API keys, or secrets in

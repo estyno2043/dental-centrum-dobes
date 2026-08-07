@@ -5,14 +5,15 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Awaiting user visual review
+- Status: Publishing approved implementation
 - Owner: Codex
 - Branch: `codex/mobile-hero-menu`
-- Task: Design and implement compact mobile hero with signature dental menu
+- Task: Publish approved mobile hero menu and establish local preview loop
 
 ## File Reservations
 
 - Codex: `COLLAB.md`,
+  `AI_WORKFLOW.md`,
   `docs/superpowers/specs/2026-08-07-mobile-hero-menu-design.md`,
   `docs/superpowers/plans/2026-08-07-mobile-hero-menu.md`,
   `package.json`, `package-lock.json`,
@@ -33,6 +34,10 @@ the other agent unless that agent has handed them off.
 - `AI_WORKFLOW.md` is the canonical rulebook shared by Codex and Claude.
   `AGENTS.md` and `CLAUDE.md` are model entrypoints; this file records current
   state, decisions, reservations, and handoffs.
+- Every frontend change stays live on the active branch's localhost server.
+  Codex and Claude browser-check meaningful visual batches and request local
+  user approval before pushing design-sensitive work, unless the user asks to
+  skip that review.
 
 ## Completed
 
