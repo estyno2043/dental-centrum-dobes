@@ -1,0 +1,231 @@
+/*
+ * Horizontal filmstrip of clinic photography.
+ *
+ * The section is deliberately taller than the viewport; the surplus is the
+ * scroll distance the pan consumes. `.pin` sticks for that stretch, so the
+ * page scrolls vertically while the strip moves sideways.
+ */
+
+.section {
+  /*
+   * Written by `PhotoStrip.tsx`. The defaults matter: with no script the strip
+   * sits at full height, unpanned and fully readable, rather than collapsed.
+   */
+  --p: 0;
+  --travel: 0px;
+  --grow-phase: 0.22;
+
+  /* Growth runs over the first slice of the pan, then holds at 1. */
+  --grow: clamp(0, calc(var(--p) / var(--grow-phase)), 1);
+
+  position: relative;
+
+  /*
+   * The surplus over one viewport is the scroll the pan consumes, so this
+   * number is the pan's speed. At 320svh the strip crossed 4688px in 1892px of
+   * scrolling — two and a half times faster than the finger, which reads as
+   * slippery. Around 480svh brings it near 1.4:1, close to the reference.
+   * Raise it to slow the pan, lower it to quicken.
+   */
+  height: 480svh;
+  background: var(--ink);
+}
+
+.pin {
+  position: sticky;
+  top: 0;
+  display: flex;
+  height: 100vh;
+  height: 100dvh;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  gap: clamp(20px, 3vw, 40px);
+}
+
+/* --------------------------------------------------------------- intro --- */
+
+.intro {
+  padding: 0 clamp(20px, 5vw, 88px);
+  opacity: calc(1 - var(--grow) * 0.35);
+}
+
+.eyebrow {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 14px;
+  color: var(--taupe);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.eyebrowRule {
+  display: block;
+  width: clamp(28px, 5vw, 64px);
+  height: 1px;
+  background: var(--taupe);
+}
+
+.headline {
+  max-width: 18ch;
+  color: var(--porcelain);
+  font-size: clamp(1.5rem, 3.4vw, 2.6rem);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.14;
+}
+
+/* --------------------------------------------------------------- track --- */
+
+/*
+ * The row is laid out at its natural width and slid left.
+ *
+ * Frame widths are fixed and frame *heights* animate. That split matters: an
+ * earlier version sized each frame by aspect ratio against an animated height,
+ * so every frame got wider as the strip grew, the track's total width changed
+ * mid-animation, and the distance left to pan moved with it. Width now derives
+ * from `--frame-h`, a constant, so the travel measured once stays correct.
+ *
+ * Growing the height alone crops the photograph rather than stretching it,
+ * which is what the reference does.
+ */
+.track {
+  --frame-h: 76svh;
+
+  display: flex;
+  height: var(--frame-h);
+  align-items: center;
+  padding: 0 clamp(20px, 5vw, 88px);
+  gap: clamp(10px, 1.4vw, 20px);
+  list-style: none;
+  transform: translate3d(calc(var(--p) * var(--travel) * -1), 0, 0);
+  will-change: transform;
+}
+
+.frame {
+  position: relative;
+  overflow: hidden;
+  width: calc(var(--ratio) * var(--frame-h));
+  height: calc(55% + var(--grow) * 45%);
+  flex: none;
+  border-radius: 3px;
+}
+
+/*
+ * Phones swipe instead of being pinned.
+ *
+ * Driving a horizontal pan from vertical scroll needs frames narrow enough
+ * that more than one is visible, and on a phone a landscape frame at any
+ * useful height is already wider than the screen — capping every frame to fit
+ * flattened them all to one width and lost the uneven rhythm that makes it a
+ * filmstrip. Since most of this site's traffic is mobile, the strip becomes
+ * what a phone does natively: a snapping horizontal scroller the reader moves
+ * with a thumb. The pin, the growth and the pan all stand down.
+ */
+@media (max-width: 767px) {
+  .section {
+    --grow: 1;
+
+    height: auto;
+  }
+
+  .pin {
+    position: static;
+    height: auto;
+    padding: clamp(56px, 10vw, 90px) 0;
+  }
+
+  .track {
+    --frame-h: 56svh;
+
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    transform: none;
+  }
+
+  .frame {
+    width: min(calc(var(--ratio) * var(--frame-h)), 82vw);
+    height: 100%;
+    scroll-snap-align: center;
+  }
+}
+
+.photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --------------------------------------------------------- placeholder --- */
+
+/*
+ * Empty frames are a deliberate state, not a broken one: photography is still
+ * outstanding, so each frame is numbered and named for the shot that belongs
+ * in it. Replacing one means adding a `src` in `photoStripContent.ts`.
+ */
+.placeholder {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(174 155 126 / 34%);
+  background:
+    repeating-linear-gradient(
+      128deg,
+      rgb(255 255 255 / 3%) 0 1px,
+      transparent 1px 9px
+    ),
+    linear-gradient(160deg, rgb(174 155 126 / 12%), rgb(28 28 31 / 92%));
+  gap: 10px;
+}
+
+.placeholderIndex {
+  color: var(--taupe);
+  font-size: clamp(1.4rem, 2.4vw, 2.2rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.placeholderLabel {
+  padding: 0 12px;
+  color: rgb(255 255 255 / 52%);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* ----------------------------------------------------------------- a11y --- */
+
+/*
+ * With motion reduced the script holds `--p` at 0, so the strip never pans.
+ * A row that can only be reached by scrolling would then be unreachable, so it
+ * becomes an ordinary horizontal scroller the reader can move themselves.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .section {
+    height: auto;
+  }
+
+  .pin {
+    position: static;
+    height: auto;
+    padding: clamp(48px, 8vw, 96px) 0;
+  }
+
+  .track {
+    overflow-x: auto;
+    transform: none;
+  }
+
+  .frame {
+    height: 100%;
+  }
+}

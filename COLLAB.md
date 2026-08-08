@@ -8,8 +8,8 @@ update it before taking or handing off work.
 - Status: Complete, awaiting user review
 - Owner: Claude
 - Branch: `claude/section-restart`
-- Task: Statement band under the hero, rebuilt to match the reference
-  recording the user supplied
+- Task: Statement band under the hero, plus the horizontal photo strip below
+  it — both built from the reference recording the user supplied
 
 > **Everything built on 2026-08-08 below the hero was discarded at the user's
 > request** — the statement band and the Tím page both. They live on
@@ -213,6 +213,39 @@ the other agent unless that agent has handed them off.
   the small viewport height and is shorter than what is on screen whenever
   browser UI is collapsed, which previously left a strip of the band showing
   under the hero on the first screen.
+
+- Horizontal photo strip — complete, pending user review and photography.
+  Tests: 13 passed. Lint, TypeScript and `next build` passed; measured at
+  1400×860 and 375×812 with a clean console and no horizontal overflow.
+
+  From the same recording: a row of frames rises as a narrow band, grows to
+  near full height, then pans sideways while the page scrolls down, with the
+  section pinned for the length of the pan. Measured here — the pin holds at 0,
+  `--p` runs 0→1, frames grow 359→654px through the first fifth and then hold,
+  and frame widths stay varied (1046/490/1162/523/980/654/1046) so it reads as
+  a filmstrip rather than a table.
+
+  **Photography is not in yet.** Every frame renders a numbered placeholder
+  naming the shot that belongs there. Filling one in means adding `src` to that
+  entry in `photoStripContent.ts` and nothing else.
+
+  **Frame widths are fixed and heights animate**, not the reverse. Sizing each
+  frame by aspect ratio against an animated height made every frame widen as
+  the strip grew, so the track's total width — and therefore the distance left
+  to pan — moved during the animation. `--travel` came out 4688px against a
+  true 2048px. Width now derives from a constant, so travel measured once stays
+  correct.
+
+  **Phones swipe instead of being pinned.** A landscape frame at any useful
+  height is wider than a phone screen, and capping every frame to fit flattened
+  them all to one width and killed the rhythm. Below 768px the section drops
+  the pin, the growth and the pan, and becomes a snapping horizontal scroller —
+  which is also what a phone does natively, and most of this site's traffic is
+  mobile.
+
+  Pan speed is one number: `height` on `.section` in `photoStrip.module.css`.
+  The surplus over one viewport is the scroll the pan consumes. 480svh gives
+  1.43:1 on desktop; 320svh gave 2.5:1 and felt slippery.
 
 ## Open Questions
 
