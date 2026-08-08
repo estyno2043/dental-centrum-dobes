@@ -5,22 +5,21 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Complete, awaiting user review
-- Owner: Claude
-- Branch: `claude/section-restart`
-- Task: Statement band under the hero, plus the horizontal photo strip below
-  it — both built from the reference recording the user supplied
+- Status: Complete, user-approved for production
+- Owner: Codex integrating Claude's work
+- Branch: `main` (source: `claude/section-restart`)
+- Task: Next.js/Netlify migration, statement band under the hero, and the
+  horizontal photo strip below it
 
-> **Everything built on 2026-08-08 below the hero was discarded at the user's
-> request** — the statement band and the Tím page both. They live on
-> `claude/experience-band` and `claude/team-page`; neither is approved and
-> neither should be merged or used as a starting point. This branch is
-> `claude/netlify-migration` (Next.js, hero only) with nothing added.
+> The user approved the rebuilt statement band and horizontal photo strip on
+> localhost on 2026-08-08. The earlier rejected experiments remain isolated on
+> `claude/experience-band` and `claude/team-page`; do not merge those branches.
+> The approved implementation is the one from `claude/section-restart`.
 >
-> One thing to know before building anything that pins or sticks: `globals.css`
-> here still has `overflow-x: hidden` on `html, body`. That makes the root a
-> scroll container and silently disables `position: sticky` across the whole
-> site, with no error to explain it.
+> Production integration checks: 13 tests passed; lint, TypeScript,
+> `next build`, `git diff --check`, tracked credential-pattern scan, desktop and
+> mobile Browser checks, mobile menu interaction, and localhost console check
+> passed.
 
 ## File Reservations
 
