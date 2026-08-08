@@ -1,0 +1,101 @@
+/*
+ * Statement band under the hero.
+ *
+ * The photograph is bright — white coats, daylight, a lit monitor — so the
+ * scrim does the legibility work rather than the type colour. Two stops rather
+ * than one flat overlay, so the middle darkens most, where the sentence sits,
+ * while the edges keep some of the room readable.
+ */
+
+/*
+ * Full viewport height: the band has to cover the hero completely once it
+ * settles, so anything shorter leaves the hero showing underneath. `dvh` to
+ * match the pinned layer — see `home.module.css` for why it is not `svh`.
+ */
+.band {
+  /*
+   * Drives the reveal. Defaults to 1 — fully revealed — so the sentence is
+   * visible on a page that never runs the script. `ExperienceBand.tsx` lowers
+   * it to 0 and raises it back as the band rises over the hero.
+   */
+  --reveal: 1;
+
+  position: relative;
+  display: grid;
+  min-height: 100vh;
+  min-height: 100dvh;
+  align-items: center;
+  background: var(--ink);
+  isolation: isolate;
+}
+
+.media {
+  position: absolute;
+  z-index: -2;
+  background-image: url("/media/ambulancia-blur-mobile.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  inset: 0;
+}
+
+@media (min-width: 768px) {
+  .media {
+    background-image: url("/media/ambulancia-blur.jpg");
+  }
+}
+
+.scrim {
+  position: absolute;
+  z-index: -1;
+  background:
+    radial-gradient(80% 62% at 50% 50%, rgb(20 20 23 / 76%), transparent 78%),
+    linear-gradient(
+      180deg,
+      rgb(20 20 23 / 82%) 0%,
+      rgb(20 20 23 / 58%) 42%,
+      rgb(20 20 23 / 58%) 58%,
+      rgb(20 20 23 / 86%) 100%
+    );
+  inset: 0;
+}
+
+/*
+ * On a phone the sentence wraps to three lines and covers more of the frame,
+ * including its brightest part — the lit white coat. A little more darkening
+ * in the middle keeps the top line off that highlight.
+ */
+@media (max-width: 767px) {
+  .scrim {
+    background:
+      radial-gradient(96% 52% at 50% 46%, rgb(20 20 23 / 86%), transparent 82%),
+      linear-gradient(
+        180deg,
+        rgb(20 20 23 / 84%) 0%,
+        rgb(20 20 23 / 62%) 42%,
+        rgb(20 20 23 / 62%) 58%,
+        rgb(20 20 23 / 88%) 100%
+      );
+  }
+}
+
+.inner {
+  max-width: 1180px;
+  padding: clamp(64px, 12vw, 140px) clamp(20px, 5vw, 88px);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.headline {
+  max-width: 22ch;
+  margin: 0 auto;
+  opacity: var(--reveal);
+  color: var(--porcelain);
+  transform: translateY(calc((1 - var(--reveal)) * 40px));
+  font-size: clamp(1.75rem, 4.6vw, 3.6rem);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.16;
+  text-shadow: 0 2px 30px rgb(0 0 0 / 35%);
+  text-wrap: balance;
+}

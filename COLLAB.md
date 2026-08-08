@@ -5,11 +5,11 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Clean base, waiting for direction
+- Status: Complete, awaiting user review
 - Owner: Claude
 - Branch: `claude/section-restart`
-- Task: Homepage is back to the hero alone. The section below it is to be built
-  again from scratch.
+- Task: Statement band under the hero, rebuilt to match the reference
+  recording the user supplied
 
 > **Everything built on 2026-08-08 below the hero was discarded at the user's
 > request** — the statement band and the Tím page both. They live on
@@ -175,6 +175,44 @@ the other agent unless that agent has handed them off.
   **Result.** `/` prerenders as static content, so Netlify serves it from CDN
   with no function invocation. `vitest.config.ts` needed no change — it always
   had its own React plugin and never read `vite.config.ts`.
+
+- Statement band, rebuilt — complete, pending user review. Tests: 13 passed.
+  Lint, TypeScript and `next build` passed; localhost measured at 1400×860 and
+  375×812 with a clean console.
+
+  Built against a screen recording of lavadental.lv the user supplied. Frame
+  analysis of that recording: the hero does **not** scroll away — it stays put
+  and is progressively cut off from the bottom as the next section rises over
+  it (at 2.1s the hero headline reads only "Dentistry that will"). The
+  sentence fades in *during* that rise and drifts upward, reaching full
+  strength exactly as the section lands full screen.
+
+  Measured behaviour here, matching that:
+
+  | scroll | band top | hero pinned | text opacity | text offset |
+  |--------|----------|-------------|--------------|-------------|
+  | 0      | 678      | yes         | 0.00         | 40px        |
+  | 339    | 339      | yes         | 0.33         | 27px        |
+  | 509    | 169      | yes         | 0.67         | 13px        |
+  | 678    | 0        | yes         | 1.00         | 0px         |
+
+  **The reveal is a scroll listener writing one custom property**, not
+  `motion`'s `useScroll` and not a CSS `view()` timeline. Both of those were
+  built first and discarded. The CSS timeline needs Chrome 115+/Safari 26+ and
+  does nothing at all where it is missing; more importantly neither could be
+  measured before shipping, and shipping an unverified reveal once already
+  wasted a review round. The stylesheet defaults `--reveal: 1`, so a page that
+  never runs the script shows the sentence outright — verified, the server HTML
+  contains no `opacity:0`.
+
+  `overflow-x: hidden` is gone from `html, body`. It makes the root a scroll
+  container and silently disables `position: sticky` site-wide, which the
+  pinned hero depends on. Nothing overflows horizontally at either width.
+
+  Both the pinned layer and the band are sized in `dvh`, not `svh`: `svh` is
+  the small viewport height and is shorter than what is on screen whenever
+  browser UI is collapsed, which previously left a strip of the band showing
+  under the hero on the first screen.
 
 ## Open Questions
 

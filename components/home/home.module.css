@@ -1,0 +1,51 @@
+/*
+ * Homepage section stacking.
+ *
+ * The hero is pinned and the section below rides up over it, covering it from
+ * the bottom edge upwards — matching the reference recording, where the hero
+ * headline stays put and is progressively cut off rather than scrolling away.
+ *
+ * A sticky layer plus an overlapping section, so the browser composites it.
+ * Nothing here runs per frame.
+ */
+
+.stack {
+  position: relative;
+}
+
+/*
+ * Pinned, not fixed: sticky releases by itself once `.stack` ends, so the hero
+ * stops travelling the moment the band has fully covered it.
+ *
+ * `height`, not `min-height` — a sticky box taller than the viewport scrolls
+ * past its own bottom before it ever pins.
+ *
+ * `dvh` rather than `svh`. `svh` is the *small* viewport height, the height
+ * the viewport would have with browser UI expanded, so wherever that is
+ * shorter than what is actually on screen the hero stops short and the section
+ * below shows through as a strip along the bottom of the first screen.
+ */
+.heroLayer {
+  position: sticky;
+  z-index: 0;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/*
+ * The hero carries its own `min-height: 100svh`, which comes up short for the
+ * same reason and would leave a dark strip under the video. Filling the layer
+ * here keeps the fix on the homepage rather than changing the hero's height
+ * everywhere it is used.
+ */
+.heroLayer > header {
+  min-height: 100%;
+}
+
+/* Rides over the pinned hero. */
+.overlay {
+  position: relative;
+  z-index: 1;
+}
