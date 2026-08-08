@@ -207,16 +207,38 @@ the other agent unless that agent has handed them off.
   at 0 while the band travels the full viewport height and releases correctly
   once it has covered it, at both 1440px and 375px.
 
-  **This required one global change, and it is load-bearing.** `app/globals.css`
-  had `overflow-x: hidden` on `html, body`, which makes the root a scroll
-  container — computed `overflow-y` becomes `auto` — and that silently disables
-  `position: sticky` for the entire site. It is now `overflow-x: clip`, which
-  clips the same way without creating a scroll container. Do not change it back
-  to `hidden`: any sticky element anywhere on the site will stop working, with
-  no error to explain why. The trade-off is Safari &lt; 16, where `clip` is not
-  supported and the declaration is ignored, so horizontal overflow would scroll
-  rather than be cut off; no horizontal overflow exists at present, checked at
-  both widths.
+  **`overflow-x` is gone from the root, and that is load-bearing.**
+  `app/globals.css` had `overflow-x: hidden` on `html, body`, which makes the
+  root a scroll container — computed `overflow-y` becomes `auto` — and that
+  silently disables `position: sticky` for the entire site. `overflow-x: clip`
+  fixes sticky but was also removed. Nothing overflows horizontally, measured
+  at 1440px and 375px. If something ever does, clip that element rather than
+  the root: the root's overflow is load-bearing for sticky positioning and for
+  scroll-driven animation, and neither reports an error when it breaks.
+
+  Review round two, from the user's screenshots:
+  1. **The hero was no longer full height and the photo showed as a strip
+     under it.** Both the hero and the layer used `svh` — the *small* viewport
+     height, which is shorter than what is on screen whenever browser UI is
+     collapsed, so the hero ended early and the band filled the difference.
+     Both are now `dvh`, with `vh` as the fallback, and the layer forces its
+     header child to fill it. Measured: hero, layer and viewport all agree and
+     the gap to the band is 0 at 1440×820 and 375×812.
+  2. **The dark frame around the photo** was a `box-shadow` on `.overlay`,
+     added to sell the slide. Removed.
+  3. **The sentence now reveals as the band rises**, on a named view timeline
+     published by the band (`--band-slide`), so both the text and the
+     photograph's push-in read the same progress.
+
+  **Not verified, and the user was told so.** Neither the reveal nor the
+  push-in could be confirmed in this environment: programmatic `scrollTo` does
+  not emit scroll events in the preview pane, and scroll-driven timelines stay
+  inactive there, so both a CSS and a `motion`/`useScroll` implementation
+  measured as frozen. What is verified is the geometry, that the animation is
+  attached with the intended timeline and range, and that the base state is
+  `opacity: 1` — so the worst case is a sentence that sits still, never one
+  that disappears. The `useScroll` version was written and discarded precisely
+  because it fails the other way.
 
 ## Open Questions
 

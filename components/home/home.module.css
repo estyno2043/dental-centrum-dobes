@@ -18,22 +18,35 @@
  *
  * `height` rather than `min-height`: a sticky box taller than the viewport
  * would scroll past its own bottom before it pinned.
+ *
+ * `dvh`, not `svh`. `svh` is the *small* viewport height — the height the
+ * viewport would have with browser UI expanded — so on any browser where that
+ * is shorter than what is actually on screen, the hero stops short and the
+ * band shows through the gap at the bottom of the first screen. `dvh` is the
+ * height that is visible right now, which is what "fullscreen" has to mean
+ * here. `vh` stays as the fallback for browsers without `dvh`.
  */
 .heroLayer {
   position: sticky;
   z-index: 0;
   top: 0;
-  height: 100svh;
+  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
 }
 
 /*
- * Rides over the pinned hero. The shadow reads as an edge lifting over
- * something behind it, which is what sells the movement — without it the band
- * looks like it simply follows in the flow.
+ * The hero carries its own `min-height: 100svh`, which for the same reason can
+ * come up short of the layer and leave a dark strip under the video. Filling
+ * the layer here keeps that fix local to the homepage stacking rather than
+ * changing the hero's height for every context it might appear in.
  */
+.heroLayer > header {
+  min-height: 100%;
+}
+
+/* Rides over the pinned hero. */
 .overlay {
   position: relative;
   z-index: 1;
-  box-shadow: 0 -40px 90px rgb(0 0 0 / 55%);
 }

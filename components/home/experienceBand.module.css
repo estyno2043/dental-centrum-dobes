@@ -10,13 +10,14 @@
 /*
  * Full viewport height: the band's job is to cover the hero completely as it
  * slides up, so anything shorter would leave the hero visible underneath.
- * `svh` matches the hero's own unit, so the two agree while mobile browser
- * chrome collapses.
+ * `dvh` to match the pinned hero layer — see `home.module.css` for why it is
+ * not `svh`.
  */
 .band {
   position: relative;
   display: grid;
-  min-height: 100svh;
+  min-height: 100vh;
+  min-height: 100dvh;
   align-items: center;
   background: var(--ink);
   isolation: isolate;
@@ -92,28 +93,71 @@
 }
 
 /*
- * The sentence is not animated, deliberately.
+ * The sentence reveals as the band slides up over the pinned hero.
  *
- * A scroll-driven fade was tried twice and stranded it part-way both times —
- * at 39% opacity with a long range, still only 84% with a short one. The cause
- * is structural rather than a wrong number: this band is the last section and
- * is nearly as tall as the viewport, so the page runs out of scroll before any
- * range completes, and the figures shift with every window height. A statement
- * that sometimes fails to arrive is worse than one that is simply present, so
- * the movement lives in the photograph instead.
+ * This works now only because of that slide. An earlier attempt, before the
+ * band was pinned, stranded the text at 39% and then 84% opacity: the band was
+ * the last section and nearly as tall as the viewport, so the page ran out of
+ * scroll before any range finished. Sliding over a sticky hero gives the band
+ * a full viewport height of travel, so an `entry` range now has real room and
+ * completes well before the band settles.
+ *
+ * The reveal is still opt-in through @supports and the default is visible, so
+ * a browser without scroll-driven animation shows the sentence outright rather
+ * than hiding it.
+ */
+/*
+ * The sentence reveals as the band slides up over the pinned hero.
+ *
+ * Opt-in through @supports, and the default state above is fully visible, so
+ * a browser without scroll-driven animation shows the sentence outright rather
+ * than hiding it. That failure direction is the reason this is CSS and not a
+ * `useScroll` binding: a script-driven version holds the text at `opacity: 0`
+ * whenever the script does not run, and this one line is the whole section.
  */
 @supports (animation-timeline: view()) {
   @media not (prefers-reduced-motion: reduce) {
-    /* Decorative only — harmless if the page ends before it finishes. */
+    /*
+     * A *named* timeline published by the band, not `view()` on each element.
+     * `view()` measures the element's own box, so the headline would have been
+     * driven by its own ~130px of height rather than by the band's slide —
+     * which is the movement the reveal is supposed to follow. Declaring the
+     * timeline on the band means both children read the same progress: 0% when
+     * the band's top sits at the bottom of the screen, 100% once it has fully
+     * covered the hero.
+     */
+    .band {
+      view-timeline-axis: block;
+      view-timeline-name: --band-slide;
+    }
+
+    .headline {
+      animation: bandRise linear both;
+      animation-range: entry 30% entry 92%;
+      animation-timeline: --band-slide;
+    }
+
     .media {
       animation: bandDrift linear both;
-      animation-range: cover 0% cover 100%;
-      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+      animation-timeline: --band-slide;
     }
   }
 }
 
-/* A slow push-in as the band crosses the viewport, in place of parallax. */
+@keyframes bandRise {
+  from {
+    opacity: 0;
+    transform: translateY(34px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* A slow push-in as the band rises, in place of parallax. */
 @keyframes bandDrift {
   from {
     transform: scale(1.12);
