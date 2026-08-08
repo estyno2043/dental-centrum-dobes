@@ -7,9 +7,13 @@ update it before taking or handing off work.
 
 - Status: Complete, awaiting user review
 - Owner: Claude
-- Branch: `claude/netlify-migration`
-- Task: Migrate the app off vinext/Cloudflare Workers to standard Next.js so it
-  can actually deploy on Netlify
+- Branch: `claude/team-page`
+- Task: Build the Tím subpage — design, motion and interaction
+
+> **Branch order matters here.** `claude/team-page` is built on top of
+> `claude/netlify-migration`, not on `main`. `main` is still the vinext build,
+> so branching the page from `main` would have meant writing it twice. Merge
+> the migration first, then this.
 
 ## File Reservations
 
@@ -165,6 +169,43 @@ the other agent unless that agent has handed them off.
   with no function invocation. `vitest.config.ts` needed no change — it always
   had its own React plugin and never read `vite.config.ts`.
 
+- Tím subpage — complete, pending user review. Route `/tim`, prerendered as
+  static content. Tests: 17 passed (4 new). Lint, TypeScript and `next build`
+  passed; localhost checked at 1440px and 390px with a clean console.
+
+  **The idea.** The reference the user supplied (lavadental.lv) uses a grid of
+  headshots, which shows everyone at once and says nothing about anyone. This
+  leads with an index of names in display type and lets one large portrait
+  follow the reader's attention. Pointer and keyboard drive the same state, so
+  tabbing the list is the same experience rather than a degraded one. Below
+  900px the stage would fight the list for the fold, so rows carry their own
+  portrait and the stage is not rendered.
+
+  **Placeholder content, deliberately fictional.** Every person in
+  `teamContent.ts` is invented — names, roles, focus lines, biographies,
+  languages, years. The clinic's real roster was not available, and writing
+  invented qualifications against real named staff is not something to leave
+  lying in a repo. Replace the file wholesale when the real roster arrives.
+
+  **No photography exists**, so `PortraitPlate` draws a designed plate from the
+  brand's own parts (tooth outline, taupe wash, monogram, woven texture) rather
+  than showing an empty frame. Adding a real photo is one optional field —
+  `portrait` — per member; the plate is the fallback, not the design's
+  assumption.
+
+  **Three decisions worth not undoing:**
+  1. The h1 reveal is CSS, not `motion`. A JS-driven reveal ships the server
+     HTML with `opacity: 0`, so a hydration failure deletes the page's heading.
+     Same reasoning for the quote and the stats strip, which are now plain
+     server components with CSS scroll-driven reveals behind `@supports`.
+  2. The stats strip is **not** a count-up. Two figures are a price and a
+     minimum treatment age; counting them from zero puts "od 0 r." and a wrong
+     fee on screen for the length of the animation. A clinic page should not
+     state something untrue for an effect.
+  3. `.dialogPanel` is centred with `inset: 0; margin: auto`, not a translate.
+     `motion` animates `transform` on that element and overwrites any centring
+     transform — which is exactly the bug that showed up in review.
+
 ## Open Questions
 
 Both questions below are for the user; they gate the next content task.
@@ -268,6 +309,12 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   in Netlify's own UI, which only the user can do. Next task: user connects
   Netlify to this branch or to `main` after merge, then whoever is on shift
   verifies the deployed URL and records it here.
+
+- 2026-08-08 — Claude built the Tím subpage on `claude/team-page`, stacked on
+  `claude/netlify-migration`, pushed to origin; no files are reserved. Neither
+  branch is merged. All team copy is placeholder and the portraits are designed
+  plates, both pending client content. Next task: user reviews localhost, then
+  merge the migration and this page in that order.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,

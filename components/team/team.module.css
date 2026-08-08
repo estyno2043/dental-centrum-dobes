@@ -1,0 +1,674 @@
+/*
+ * Tím page.
+ *
+ * Shares the hero's tokens (--taupe, --ink, --ease) rather than redefining a
+ * palette, so the subpage reads as the same site. Type is fluid via clamp()
+ * throughout: the display sizes here are large enough that fixed breakpoints
+ * would leave awkward middle widths.
+ */
+
+.page {
+  --gutter: clamp(20px, 5vw, 88px);
+  --rule: rgb(255 255 255 / 10%);
+
+  position: relative;
+  min-height: 100vh;
+  padding-bottom: clamp(80px, 12vw, 180px);
+  background:
+    radial-gradient(120% 80% at 12% -10%, rgb(174 155 126 / 16%), transparent 60%),
+    radial-gradient(90% 60% at 100% 8%, rgb(174 155 126 / 8%), transparent 55%),
+    var(--ink);
+  color: #fff;
+}
+
+/* ---------------------------------------------------------------- nav ---- */
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26px var(--gutter);
+}
+
+.navLogo img {
+  display: block;
+  width: auto;
+  height: 44px;
+}
+
+.navBack {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  color: rgb(255 255 255 / 62%);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.25s var(--ease);
+}
+
+.navBack:hover,
+.navBack:focus-visible {
+  color: var(--taupe);
+}
+
+/* -------------------------------------------------------------- intro ---- */
+
+.intro {
+  max-width: 1180px;
+  padding: clamp(48px, 9vw, 130px) var(--gutter) clamp(40px, 6vw, 80px);
+}
+
+.eyebrow {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  animation: introFade 0.6s var(--ease) both;
+  margin-bottom: clamp(24px, 3vw, 40px);
+  color: var(--taupe);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.eyebrowRule {
+  display: block;
+  width: clamp(28px, 5vw, 64px);
+  height: 1px;
+  background: var(--taupe);
+}
+
+.headline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.28em;
+  max-width: 16ch;
+  font-size: clamp(2.4rem, 6.4vw, 5.6rem);
+  font-weight: 700;
+  line-height: 1.03;
+  letter-spacing: -0.03em;
+}
+
+.wordMask {
+  display: inline-block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+  vertical-align: bottom;
+}
+
+.word {
+  display: inline-block;
+  animation: wordRise 0.85s var(--ease) both;
+  animation-delay: calc(0.12s + var(--word-index) * 0.055s);
+}
+
+.headline .wordMask:nth-last-child(-n + 3) .word {
+  color: var(--taupe);
+}
+
+.lead {
+  max-width: 54ch;
+  animation: introRise 0.8s var(--ease) both;
+  animation-delay: calc(0.12s + var(--word-index) * 0.055s);
+  margin-top: clamp(24px, 3.4vw, 44px);
+  color: rgb(255 255 255 / 66%);
+  font-size: clamp(1rem, 1.4vw, 1.22rem);
+  line-height: 1.62;
+}
+
+@keyframes wordRise {
+  from {
+    opacity: 0;
+    transform: translateY(0.9em) rotate(1.5deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+@keyframes introRise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes introFade {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ------------------------------------------------------------- roster ---- */
+
+.roster {
+  display: grid;
+  gap: clamp(32px, 5vw, 72px);
+  align-items: start;
+  padding: clamp(32px, 5vw, 72px) var(--gutter) clamp(56px, 8vw, 120px);
+  border-top: 1px solid var(--rule);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 900px) {
+  .roster {
+    grid-template-columns: minmax(300px, 0.85fr) minmax(0, 1.15fr);
+  }
+}
+
+.stage {
+  position: sticky;
+  top: clamp(24px, 5vw, 56px);
+}
+
+.stageFrame {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: rgb(255 255 255 / 3%);
+}
+
+.stageLayer {
+  position: absolute;
+  inset: 0;
+}
+
+.stageMeta {
+  display: flex;
+  gap: 20px;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.stageIndex {
+  color: var(--taupe);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.16em;
+}
+
+.stageCount {
+  color: rgb(255 255 255 / 34%);
+}
+
+.stageFocus {
+  color: rgb(255 255 255 / 60%);
+  font-size: 13px;
+  text-align: right;
+}
+
+/* ------------------------------------------------------------- index ---- */
+
+.group + .group {
+  margin-top: clamp(36px, 5vw, 60px);
+}
+
+.groupLabel {
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 6px;
+  color: rgb(255 255 255 / 40%);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.list {
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  padding: clamp(16px, 2.2vw, 26px) 0;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  gap: clamp(14px, 2vw, 24px);
+  text-align: left;
+  transition: padding-left 0.5s var(--ease);
+}
+
+.row:hover,
+.row:focus-visible {
+  outline: none;
+}
+
+@media (min-width: 900px) {
+  .row:hover,
+  .row:focus-visible {
+    padding-left: 18px;
+  }
+}
+
+.row:focus-visible {
+  outline: 1px solid var(--taupe);
+  outline-offset: 6px;
+}
+
+.rowPortrait {
+  display: block;
+  overflow: hidden;
+  width: clamp(64px, 18vw, 92px);
+  flex: none;
+  border-radius: 3px;
+  aspect-ratio: 1 / 1;
+}
+
+.rowBody {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rowName {
+  font-size: clamp(1.25rem, 2.6vw, 2.1rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  transition: color 0.4s var(--ease);
+}
+
+.rowActive .rowName {
+  color: var(--taupe);
+}
+
+.rowRole {
+  color: rgb(255 255 255 / 46%);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.rowFocus {
+  color: rgb(255 255 255 / 60%);
+  font-size: 14px;
+}
+
+.rowMarker {
+  width: 26px;
+  height: 1px;
+  flex: none;
+  background: rgb(255 255 255 / 26%);
+  transform-origin: right center;
+  transition:
+    background 0.4s var(--ease),
+    transform 0.5s var(--ease);
+}
+
+.rowActive .rowMarker,
+.row:hover .rowMarker,
+.row:focus-visible .rowMarker {
+  background: var(--taupe);
+  transform: scaleX(1.9);
+}
+
+/* ---------------------------------------------------------- portrait ---- */
+
+.portraitImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.portraitPlate {
+  position: relative;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(78% 58% at 50% 28%, rgb(196 176 143 / 62%), transparent 70%),
+    linear-gradient(155deg, rgb(174 155 126 / 60%) 0%, rgb(120 103 80 / 42%) 42%, rgb(30 30 34 / 96%) 100%);
+  place-items: center;
+}
+
+/* A fine diagonal weave keeps the plate from reading as a flat empty swatch. */
+.portraitPlate::after {
+  position: absolute;
+  background-image: repeating-linear-gradient(
+    128deg,
+    rgb(255 255 255 / 5%) 0 1px,
+    transparent 1px 7px
+  );
+  content: "";
+  inset: 0;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+.portraitTooth {
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  width: 58%;
+  height: auto;
+  color: rgb(255 255 255 / 60%);
+  filter: drop-shadow(0 2px 18px rgb(0 0 0 / 35%));
+  transform: translate(-50%, -50%);
+}
+
+.portraitMonogram {
+  position: relative;
+  color: #fff;
+  font-size: clamp(0.95rem, 5cqw, 1.6rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-shadow: 0 2px 20px rgb(0 0 0 / 45%);
+}
+
+.stageFrame .portraitMonogram {
+  font-size: clamp(2.2rem, 4.4vw, 3.4rem);
+}
+
+.dialogPortrait .portraitMonogram {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+}
+
+/* ------------------------------------------------------------ dialog ---- */
+
+.dialogOverlay {
+  position: fixed;
+  z-index: 90;
+  background: rgb(12 12 14 / 72%);
+  backdrop-filter: blur(10px);
+  inset: 0;
+}
+
+/*
+ * Centred with `inset: 0; margin: auto` rather than a translate, because
+ * `motion` animates `transform` on this element and would overwrite any
+ * centring transform — leaving the panel pinned to the viewport's midpoint by
+ * its top-left corner instead of its centre.
+ */
+.dialogPanel {
+  position: fixed;
+  z-index: 91;
+  display: grid;
+  overflow-y: auto;
+  width: min(940px, calc(100vw - 32px));
+  height: fit-content;
+  max-height: min(86vh, 760px);
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 6px;
+  margin: auto;
+  background: #202024;
+  gap: 0;
+  grid-template-columns: 1fr;
+  inset: 0;
+}
+
+@media (min-width: 760px) {
+  .dialogPanel {
+    grid-template-columns: 0.85fr 1.15fr;
+  }
+}
+
+.dialogPortrait {
+  overflow: hidden;
+  min-height: 240px;
+  aspect-ratio: 4 / 5;
+}
+
+.dialogBody {
+  padding: clamp(26px, 4vw, 52px);
+}
+
+.dialogRole {
+  color: var(--taupe);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.dialogName {
+  margin-top: 14px;
+  font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+}
+
+.dialogFocus {
+  margin-top: 10px;
+  color: rgb(255 255 255 / 62%);
+  font-size: 1rem;
+}
+
+.dialogBio {
+  padding-top: clamp(20px, 3vw, 30px);
+  border-top: 1px solid var(--rule);
+  margin-top: clamp(20px, 3vw, 30px);
+  color: rgb(255 255 255 / 74%);
+  font-size: 0.98rem;
+  line-height: 1.66;
+}
+
+.dialogFacts {
+  display: flex;
+  gap: clamp(24px, 5vw, 56px);
+  margin-top: clamp(22px, 3vw, 34px);
+}
+
+.dialogFacts dt {
+  color: rgb(255 255 255 / 40%);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.dialogFacts dd {
+  margin-top: 8px;
+  font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.dialogClose {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgb(255 255 255 / 16%);
+  border-radius: 50%;
+  background: rgb(20 20 23 / 70%);
+  color: #fff;
+  cursor: pointer;
+  place-items: center;
+  transition:
+    border-color 0.3s var(--ease),
+    background 0.3s var(--ease);
+}
+
+.dialogClose:hover,
+.dialogClose:focus-visible {
+  border-color: var(--taupe);
+  background: rgb(174 155 126 / 22%);
+}
+
+/* ------------------------------------------------------------- quote ---- */
+
+/*
+ * Scroll-driven reveals below are opt-in through @supports, so the default in
+ * every browser is simply "visible". Nothing here hides content that a failed
+ * animation could not bring back.
+ */
+.quote {
+  max-width: 1000px;
+  padding: clamp(56px, 9vw, 120px) var(--gutter);
+  margin: 0 auto;
+  text-align: center;
+}
+
+@supports (animation-timeline: view()) {
+  @media not (prefers-reduced-motion: reduce) {
+    .quote {
+      animation: introRise linear both;
+      animation-range: entry 8% cover 34%;
+      animation-timeline: view();
+    }
+
+    .stat {
+      animation: introRise linear both;
+      animation-range: entry 4% cover 30%;
+      animation-timeline: view();
+    }
+  }
+}
+
+.quoteText {
+  font-size: clamp(1.4rem, 3.4vw, 2.55rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.28;
+  text-wrap: balance;
+}
+
+.quoteBy {
+  margin-top: clamp(20px, 3vw, 32px);
+  color: var(--taupe);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+/* ------------------------------------------------------------- stats ---- */
+
+.stats {
+  display: grid;
+  padding: clamp(36px, 5vw, 64px) var(--gutter);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  gap: clamp(28px, 4vw, 48px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 820px) {
+  .stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.statValue {
+  display: block;
+  font-size: clamp(1.9rem, 4vw, 3.1rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.statLabel {
+  display: block;
+  margin-top: 12px;
+  color: rgb(255 255 255 / 50%);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+/* --------------------------------------------------------------- cta ---- */
+
+.cta {
+  max-width: 720px;
+  padding: clamp(64px, 10vw, 140px) var(--gutter) 0;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.ctaHeadline {
+  font-size: clamp(1.8rem, 4.4vw, 3.2rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+}
+
+.ctaBody {
+  margin-top: 20px;
+  color: rgb(255 255 255 / 62%);
+  font-size: 1.02rem;
+  line-height: 1.62;
+}
+
+.ctaAction {
+  display: inline-block;
+  padding: 18px 40px;
+  border: 1px solid var(--taupe);
+  border-radius: 999px;
+  margin-top: clamp(28px, 4vw, 40px);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    background 0.4s var(--ease),
+    color 0.4s var(--ease);
+}
+
+.ctaAction:hover,
+.ctaAction:focus-visible {
+  background: var(--taupe);
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------- a11y --- */
+
+.visuallyHidden {
+  position: absolute;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  margin: -1px;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row,
+  .rowName,
+  .rowMarker,
+  .navBack,
+  .ctaAction,
+  .dialogClose {
+    transition: none;
+  }
+
+  .word,
+  .lead,
+  .eyebrow {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
