@@ -16,7 +16,15 @@
 html,
 body {
   max-width: 100vw;
-  overflow-x: hidden;
+
+  /*
+   * `clip`, not `hidden`. `overflow-x: hidden` makes the root a scroll
+   * container — the computed `overflow-y` becomes `auto` — and that breaks
+   * `position: sticky` for everything on the page, including the pinned hero
+   * the homepage stacking depends on. `clip` cuts off horizontal overflow the
+   * same way without creating a scroll container.
+   */
+  overflow-x: clip;
 }
 
 body {

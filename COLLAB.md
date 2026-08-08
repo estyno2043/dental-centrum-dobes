@@ -200,6 +200,24 @@ the other agent unless that agent has handed them off.
   `background-attachment: fixed` is avoided — it janks on iOS and is ignored in
   several mobile browsers.
 
+  **The band now slides up over the hero**, matching the reference's slide. The
+  hero sits in a `position: sticky` layer and the band overlaps it at a higher
+  z-index, so the browser composites the whole effect — no scroll listener and
+  no JS-driven transform. Verified by measurement: the hero layer stays pinned
+  at 0 while the band travels the full viewport height and releases correctly
+  once it has covered it, at both 1440px and 375px.
+
+  **This required one global change, and it is load-bearing.** `app/globals.css`
+  had `overflow-x: hidden` on `html, body`, which makes the root a scroll
+  container — computed `overflow-y` becomes `auto` — and that silently disables
+  `position: sticky` for the entire site. It is now `overflow-x: clip`, which
+  clips the same way without creating a scroll container. Do not change it back
+  to `hidden`: any sticky element anywhere on the site will stop working, with
+  no error to explain why. The trade-off is Safari &lt; 16, where `clip` is not
+  supported and the declaration is ignored, so horizontal overflow would scroll
+  rather than be cut off; no horizontal overflow exists at present, checked at
+  both widths.
+
 ## Open Questions
 
 Both questions below are for the user; they gate the next content task.

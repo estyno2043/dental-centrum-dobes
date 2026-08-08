@@ -7,10 +7,16 @@
  * where the sentence sits, while the edges keep some of the room visible.
  */
 
+/*
+ * Full viewport height: the band's job is to cover the hero completely as it
+ * slides up, so anything shorter would leave the hero visible underneath.
+ * `svh` matches the hero's own unit, so the two agree while mobile browser
+ * chrome collapses.
+ */
 .band {
   position: relative;
   display: grid;
-  min-height: clamp(420px, 78vh, 780px);
+  min-height: 100svh;
   align-items: center;
   background: var(--ink);
   isolation: isolate;

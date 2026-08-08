@@ -1,0 +1,39 @@
+/*
+ * Homepage section stacking.
+ *
+ * The hero is pinned while the band below scrolls up over it and takes the
+ * full viewport, following the reference's slide behaviour. This is a sticky
+ * layer plus an overlapping section — no scroll listener, no transform driven
+ * from JavaScript, so the browser composites it and the effect costs nothing
+ * per frame.
+ */
+
+.stack {
+  position: relative;
+}
+
+/*
+ * Pinned, not fixed. Sticky releases on its own when `.stack` ends, so the
+ * hero stops travelling once the band has fully covered it.
+ *
+ * `height` rather than `min-height`: a sticky box taller than the viewport
+ * would scroll past its own bottom before it pinned.
+ */
+.heroLayer {
+  position: sticky;
+  z-index: 0;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+}
+
+/*
+ * Rides over the pinned hero. The shadow reads as an edge lifting over
+ * something behind it, which is what sells the movement — without it the band
+ * looks like it simply follows in the flow.
+ */
+.overlay {
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 -40px 90px rgb(0 0 0 / 55%);
+}
