@@ -7,9 +7,17 @@ update it before taking or handing off work.
 
 - Status: Complete, awaiting user review
 - Owner: Claude
-- Branch: `claude/netlify-migration`
-- Task: Migrate the app off vinext/Cloudflare Workers to standard Next.js so it
-  can actually deploy on Netlify
+- Branch: `claude/experience-band`
+- Task: Add the statement band under the hero — full-bleed blurred surgery
+  photograph carrying a single sentence
+
+> **Branch order.** `claude/experience-band` is built on
+> `claude/netlify-migration`, because `main` is still the vinext build. Merge
+> the migration first.
+>
+> **The Tím page was rejected by the user** and is parked unmerged on
+> `claude/team-page`. Do not merge or build on it. The user asked to proceed
+> section by section instead.
 
 ## File Reservations
 
@@ -165,6 +173,33 @@ the other agent unless that agent has handed them off.
   with no function invocation. `vitest.config.ts` needed no change — it always
   had its own React plugin and never read `vite.config.ts`.
 
+- Statement band under the hero — complete, pending user review. Tests: 13
+  passed. Lint, TypeScript and `next build` passed; localhost checked at 1440px
+  and 375px on a fresh tab with a clean console.
+
+  Follows the reference the studio supplied (lavadental.lv), which uses a
+  full-screen slide with one sentence — but on the clinic's own photograph
+  instead of a flat colour field, per the user's direction.
+
+  **The blur is baked into the asset, not a CSS filter.** A runtime `blur()`
+  over a full-bleed background repaints every scroll frame and is among the
+  most expensive things a phone can be asked to do. Baking it also collapses
+  the file size, since there is no fine detail left to encode: 1920px lands at
+  95 KB and the 1080px phone variant at 41 KB, from a 5.5 MB source. Source
+  images are in `~/Downloads` and are not tracked.
+
+  **No reveal animation on the sentence, deliberately.** A scroll-driven fade
+  was tried twice and stranded it part-way both times — 39% opacity with a long
+  range, 84% with a short one. The cause is structural, not a wrong number: the
+  band is the last section and is nearly as tall as the viewport, so the page
+  runs out of scroll before any range completes, and the figures move with
+  every window height. The movement lives in the photograph (a slow push-in)
+  where failing to finish is harmless. Revisit only once sections exist below
+  it.
+
+  `background-attachment: fixed` is avoided — it janks on iOS and is ignored in
+  several mobile browsers.
+
 ## Open Questions
 
 Both questions below are for the user; they gate the next content task.
@@ -268,6 +303,13 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   in Netlify's own UI, which only the user can do. Next task: user connects
   Netlify to this branch or to `main` after merge, then whoever is on shift
   verifies the deployed URL and records it here.
+
+- 2026-08-08 — Claude added the statement band on `claude/experience-band`,
+  stacked on `claude/netlify-migration`, pushed to origin; no files are
+  reserved. Not merged. The Tím page on `claude/team-page` was rejected by the
+  user and is parked — do not merge it. Next task: user reviews localhost, then
+  merge the migration and this band in that order, and continue section by
+  section down the homepage.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
