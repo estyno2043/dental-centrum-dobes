@@ -5,11 +5,22 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Complete, awaiting user review
+- Status: Clean base, waiting for direction
 - Owner: Claude
-- Branch: `claude/netlify-migration`
-- Task: Migrate the app off vinext/Cloudflare Workers to standard Next.js so it
-  can actually deploy on Netlify
+- Branch: `claude/section-restart`
+- Task: Homepage is back to the hero alone. The section below it is to be built
+  again from scratch.
+
+> **Everything built on 2026-08-08 below the hero was discarded at the user's
+> request** — the statement band and the Tím page both. They live on
+> `claude/experience-band` and `claude/team-page`; neither is approved and
+> neither should be merged or used as a starting point. This branch is
+> `claude/netlify-migration` (Next.js, hero only) with nothing added.
+>
+> One thing to know before building anything that pins or sticks: `globals.css`
+> here still has `overflow-x: hidden` on `html, body`. That makes the root a
+> scroll container and silently disables `position: sticky` across the whole
+> site, with no error to explain it.
 
 ## File Reservations
 
