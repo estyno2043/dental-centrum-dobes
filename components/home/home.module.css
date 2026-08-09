@@ -1,31 +1,30 @@
 /*
- * Homepage section stacking.
+ * Homepage slide stack.
  *
- * The hero is pinned and the section below rides up over it, covering it from
- * the bottom edge upwards — matching the reference recording, where the hero
- * headline stays put and is progressively cut off rather than scrolling away.
+ * Each slide pins at the top and the next rides up over it. `HomeStack.tsx`
+ * publishes `--band-in` and `--strip-in` here; everything below is arithmetic
+ * on those two numbers, so nothing runs per frame beyond one style write.
  *
- * A sticky layer plus an overlapping section, so the browser composites it.
- * Nothing here runs per frame.
+ * The defaults are the *arrived* state on purpose: with no script every slide
+ * simply sits where it belongs, fully visible, rather than dimmed or shrunk.
  */
 
 .stack {
+  --band-in: 1;
+  --strip-in: 0;
+
   position: relative;
 }
 
+/* ------------------------------------------------------------------ hero --- */
+
 /*
- * Pinned, not fixed: sticky releases by itself once `.stack` ends, so the hero
- * stops travelling the moment the band has fully covered it.
- *
- * `height`, not `min-height` — a sticky box taller than the viewport scrolls
- * past its own bottom before it ever pins.
- *
- * `dvh` rather than `svh`. `svh` is the *small* viewport height, the height
- * the viewport would have with browser UI expanded, so wherever that is
- * shorter than what is actually on screen the hero stops short and the section
- * below shows through as a strip along the bottom of the first screen.
+ * `dvh`, not `svh`. `svh` is the *small* viewport height — the height the
+ * viewport would have with browser UI expanded — so wherever that is shorter
+ * than what is actually on screen, the hero stops short and the slide below
+ * shows through as a strip along the bottom of the first screen.
  */
-.heroLayer {
+.heroSlot {
   position: sticky;
   z-index: 0;
   top: 0;
@@ -36,16 +35,118 @@
 
 /*
  * The hero carries its own `min-height: 100svh`, which comes up short for the
- * same reason and would leave a dark strip under the video. Filling the layer
- * here keeps the fix on the homepage rather than changing the hero's height
- * everywhere it is used.
+ * same reason. Filling the slot keeps that fix here rather than changing the
+ * hero's height everywhere it is used.
  */
-.heroLayer > header {
+.heroSlot > header {
   min-height: 100%;
 }
 
-/* Rides over the pinned hero. */
-.overlay {
+/*
+ * Receding as it is covered is what stops the band reading as a cut. The hero
+ * settles back and darkens by the time the band has landed, so the two look
+ * stacked in depth rather than butted against each other.
+ */
+.heroSlot > header,
+.heroSlot > nav {
+  transform: scale(calc(1 - var(--band-in) * 0.05));
+  transform-origin: 50% 42%;
+  transition: transform 60ms linear;
+}
+
+.heroDim {
+  position: absolute;
+  z-index: 40;
+  background: var(--ink);
+  inset: 0;
+  opacity: calc(var(--band-in) * 0.55);
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------------ band --- */
+
+/*
+ * Three viewports against a one-viewport pinned child, and the strip below is
+ * pulled up over the last of them. That buys two separate things:
+ *
+ *   rise    scroll 1→2 viewports, band climbing over the hero
+ *   dwell   scroll 2→3, band exactly full screen with nothing moving
+ *   cover   scroll 3→4, strip climbing over a band that is still pinned
+ *
+ * The pinned child releases where its slot ends, so without the overlap the
+ * band would start scrolling away at the very moment the strip began to
+ * arrive — both moving at once, which is the hard cut from below.
+ */
+.bandSlot {
   position: relative;
   z-index: 1;
+  height: 300vh;
+  height: 300dvh;
+}
+
+.bandPin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+
+  /*
+   * Rounded while it is still travelling and flat once it lands, so the
+   * leading edge reads as a panel arriving rather than a hard horizon. The
+   * radius is gone by the time the band is full screen.
+   */
+  border-top-left-radius: calc((1 - var(--band-in)) * 30px);
+  border-top-right-radius: calc((1 - var(--band-in)) * 30px);
+
+  /* And it recedes in turn as the strip covers it. */
+  transform: scale(calc(1 - var(--strip-in) * 0.05));
+  transform-origin: 50% 42%;
+}
+
+.bandDim {
+  position: absolute;
+  z-index: 5;
+  background: var(--ink);
+  inset: 0;
+  opacity: calc(var(--strip-in) * 0.55);
+  pointer-events: none;
+}
+
+/* ----------------------------------------------------------------- strip --- */
+
+/*
+ * Pulled up over the band slot's final viewport, so it climbs across a band
+ * that is still pinned rather than pushing it out of the way.
+ */
+.stripSlot {
+  position: relative;
+  z-index: 2;
+  margin-top: -100vh;
+  margin-top: -100dvh;
+  border-top-left-radius: calc((1 - var(--strip-in)) * 30px);
+  border-top-right-radius: calc((1 - var(--strip-in)) * 30px);
+  overflow: hidden;
+}
+
+/*
+ * Nothing recedes or rounds when motion is reduced — every slide is simply
+ * present at full size.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .heroSlot > header,
+  .heroSlot > nav,
+  .bandPin {
+    transform: none;
+  }
+
+  .heroDim,
+  .bandDim {
+    display: none;
+  }
+
+  .bandPin,
+  .stripSlot {
+    border-radius: 0;
+  }
 }

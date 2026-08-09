@@ -14,11 +14,13 @@
  */
 .band {
   /*
-   * Drives the reveal. Defaults to 1 — fully revealed — so the sentence is
-   * visible on a page that never runs the script. `ExperienceBand.tsx` lowers
-   * it to 0 and raises it back as the band rises over the hero.
+   * Derived from the band's arrival, which `HomeStack` publishes as
+   * `--band-in`. The sentence holds back through the first quarter of the rise
+   * and is fully there as the band lands. `--band-in` defaults to 1 on the
+   * stack, so with no script running this resolves to 1 and the sentence is
+   * simply visible.
    */
-  --reveal: 1;
+  --reveal: clamp(0, calc((var(--band-in, 1) - 0.25) / 0.75), 1);
 
   position: relative;
   display: grid;
