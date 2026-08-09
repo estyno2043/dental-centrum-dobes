@@ -33,5 +33,11 @@ export const photoFrames: readonly PhotoFrame[] = [
   { id: "mikroskop", label: "Mikroskop", ratio: 4 / 5 },
   { id: "chodba", label: "Chodba", ratio: 3 / 2 },
   { id: "sterilizacia", label: "Sterilizácia", ratio: 1 },
-  { id: "detail", label: "Detail interiéru", ratio: 16 / 10 },
+  // Ratio matches the photograph's own 3:2 so nothing is cropped away.
+  {
+    id: "detail",
+    label: "Detail ordinácie",
+    ratio: 3 / 2,
+    src: "/media/strip-07-detail.jpg",
+  },
 ] as const;

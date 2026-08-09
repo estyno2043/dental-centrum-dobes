@@ -96,12 +96,24 @@ export function PhotoStrip(): JSX.Element {
               style={{ "--ratio": frame.ratio } as CSSProperties}
             >
               {frame.src ? (
+                /*
+                 * Not `loading="lazy"`. Lazy loading is decided from the
+                 * element's layout position, and this strip moves by transform
+                 * — the frames never change layout position, so the browser
+                 * goes on believing they are off-screen and the photographs
+                 * never load, even once they are plainly in view. Verified:
+                 * a frame sitting at x=419 with the viewport at 1400 still
+                 * reported naturalWidth 0.
+                 *
+                 * `fetchpriority="low"` keeps them behind the hero video
+                 * instead, which is what lazy loading was there for.
+                 */
                 // eslint-disable-next-line @next/next/no-img-element -- Pre-cropped static assets; the image service adds nothing here.
                 <img
                   className={styles.photo}
                   src={frame.src}
                   alt={`${frame.label} — Dental Centrum Dobeš`}
-                  loading="lazy"
+                  fetchPriority="low"
                   decoding="async"
                 />
               ) : (
