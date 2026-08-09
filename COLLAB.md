@@ -5,7 +5,7 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: In progress, localhost review required before integration
+- Status: Implemented and verified, awaiting user localhost review
 - Owner: Codex
 - Branch: `codex/scroll-sections-v2`
 - Task: Restore the stable homepage stack, then add the approved square
@@ -30,6 +30,18 @@ update it before taking or handing off work.
 > `http://localhost:3000/` ran from the Phase 1 worktree. Automated Browser
 > inspection remained blocked by Browser URL policy, so user visual review is
 > the merge gate.
+>
+> Phase 2 verification: 26 tests passed; lint, TypeScript, production build,
+> `git diff --check`, tracked credential-pattern scan, homepage HTTP, and all
+> three affected JPEG asset checks passed. Browser measurements passed at
+> 1440×900 and 375×812 with no console errors or warnings and no horizontal
+> page overflow. Desktop square reveal measured `50% → 25% → 0%`; copy stayed
+> hidden until the photograph opened; statement veil reached opacity `1` over
+> the statement photograph while the hero remained absent. Gallery pin held at
+> `top: 0`; frames ended 71px above the viewport bottom; grow ended before pan.
+> Mobile menu, Escape focus return, and native gallery swipe all passed.
+> Localhost runs from this branch at `http://localhost:3000/`. Merge/push to
+> `main` remains blocked on user visual approval.
 
 ## File Reservations
 
@@ -44,6 +56,7 @@ Codex reserves these files for the active scroll-transition task:
 - `components/home/experienceBand.module.css`
 - `components/home/home.module.css`
 - `components/home/PhotoStrip.tsx`
+- `components/home/PhotoStrip.test.tsx`
 - `components/home/photoStrip.module.css`
 - `components/home/scrollMotion.ts`
 - `components/home/scrollMotion.test.ts`
@@ -392,6 +405,17 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   Files remain reserved while the user reviews localhost. Next task: merge
   Phase 1 into `main` after approval, then begin the isolated Phase 2 dwell and
   sequential grow-pan implementation.
+
+- 2026-08-09 — Codex implemented the user-approved square center reveal and
+  gradient statement exit on `codex/scroll-sections-v2`, starting from current
+  `origin/main` and carrying forward the stable rollback without rewriting
+  history. Motion 13 drives the statement timeline through tested pure progress
+  mapping. The photo strip now grows during `0–22%`, pans during `22–100%`,
+  keeps its intro and full-grown cards inside the viewport, and becomes a real
+  width-constrained native scroller on phones. Browser testing also caught and
+  fixed the transparent overlay blocking the hero menu. Full verification is
+  recorded under Current Task. Files remain reserved while the user reviews
+  localhost; nothing has been merged or pushed to `main`.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
