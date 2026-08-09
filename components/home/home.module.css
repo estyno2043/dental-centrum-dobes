@@ -48,4 +48,13 @@
 .overlay {
   position: relative;
   z-index: 1;
+  margin-top: -100vh;
+  margin-top: -100dvh;
+}
+
+/* Reduced motion returns to ordinary sequential full-screen sections. */
+@media (prefers-reduced-motion: reduce) {
+  .overlay {
+    margin-top: 0;
+  }
 }

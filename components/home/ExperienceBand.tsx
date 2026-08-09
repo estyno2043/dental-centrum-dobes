@@ -1,67 +1,62 @@
 "use client";
 
-import { useEffect, useRef, type JSX } from "react";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "motion/react";
+import { useRef, type JSX } from "react";
+import { mapExperienceMotion } from "./scrollMotion";
 import styles from "./experienceBand.module.css";
 
-/** Fraction of the slide already spent before the sentence starts appearing. */
-const REVEAL_START = 0.25;
-
 /**
- * The statement band under the hero.
+ * Scroll-led statement scene between the hero and the clinic photo strip.
  *
- * Matches the reference recording: the hero stays pinned while this section
- * rises over it, and the sentence fades in *during* that rise, reaching full
- * strength as the section lands exactly full screen. It also drifts upward as
- * it appears, which is what stops the fade reading as a plain opacity ramp.
- *
- * The photograph is blurred in the asset itself, not with a CSS filter. A
- * runtime `blur()` over a full-bleed background repaints on every scroll frame
- * and is one of the most expensive things a phone can be asked to do; baking it
- * also collapses the file, since there is no fine detail left to encode —
- * 1920px wide lands at 95 KB.
- *
- * The reveal is a scroll listener writing one custom property, rather than
- * `motion`'s `useScroll` or a CSS `view()` timeline. Both of those were tried:
- * the CSS timeline needs Chrome 115+/Safari 26+ and simply does nothing where
- * it is missing, and both proved impossible to verify before shipping. This
- * runs in every browser, and its effect can be measured. The stylesheet
- * defaults `--reveal` to 1, so a page that never runs the script shows the
- * sentence outright.
+ * Only this component clips its own statement surface. The section remains a
+ * direct sibling of `PhotoStrip`, so the gallery's sticky positioning never
+ * inherits an overflow or transformed containing block.
  */
 export function ExperienceBand(): JSX.Element {
   const bandRef = useRef<HTMLElement>(null);
+  const prefersReducedMotion = useReducedMotion() ?? false;
+  const { scrollYProgress } = useScroll({
+    target: bandRef,
+    offset: ["start start", "end end"],
+  });
 
-  useEffect(() => {
-    const band = bandRef.current;
-    if (!band) return;
-
-    const reduced = globalThis.matchMedia?.(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    if (reduced) return; // leave --reveal at its visible default
-
-    const update = () => {
-      // 0 while the band's top edge is still at the bottom of the screen,
-      // 1 once it has risen to cover the hero — the span of the slide.
-      const slide = 1 - band.getBoundingClientRect().top / window.innerHeight;
-      const progress = Math.min(1, Math.max(0, slide));
-      const revealed = (progress - REVEAL_START) / (1 - REVEAL_START);
-
-      band.style.setProperty(
-        "--reveal",
-        String(Math.min(1, Math.max(0, revealed))),
-      );
-    };
-
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-
-    return () => {
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-    };
-  }, []);
+  const clipPath = useTransform(
+    scrollYProgress,
+    (value) => mapExperienceMotion(value).clipPath,
+  );
+  const edgeInset = useTransform(
+    scrollYProgress,
+    (value) => mapExperienceMotion(value).edgeInset,
+  );
+  const edgeOpacity = useTransform(
+    scrollYProgress,
+    (value) => mapExperienceMotion(value).edgeOpacity,
+  );
+  const mediaScale = useTransform(
+    scrollYProgress,
+    (value) => mapExperienceMotion(value).mediaScale,
+  );
+  const copyOpacity = useTransform(
+    scrollYProgress,
+    (value) => mapExperienceMotion(value).copyOpacity,
+  );
+  const copyY = useTransform(
+    scrollYProgress,
+    (value) => mapExperienceMotion(value).copyY,
+  );
+  const storyScale = useTransform(
+    scrollYProgress,
+    (value) => mapExperienceMotion(value).storyScale,
+  );
+  const veilOpacity = useTransform(
+    scrollYProgress,
+    (value) => mapExperienceMotion(value).veilOpacity,
+  );
 
   return (
     <section
@@ -69,13 +64,61 @@ export function ExperienceBand(): JSX.Element {
       ref={bandRef}
       aria-labelledby="experience-heading"
     >
-      <div className={styles.media} aria-hidden="true" />
-      <div className={styles.scrim} aria-hidden="true" />
+      <div className={styles.pin}>
+        <motion.div
+          className={styles.storySurface}
+          data-testid="statement-motion-surface"
+          style={{
+            clipPath: prefersReducedMotion
+              ? "inset(0% 0% 0% 0% round 0px)"
+              : clipPath,
+          }}
+        >
+          <motion.div
+            className={styles.storyContent}
+            style={{ scale: prefersReducedMotion ? 1 : storyScale }}
+          >
+            <motion.div
+              className={styles.media}
+              aria-hidden="true"
+              style={{ scale: prefersReducedMotion ? 1 : mediaScale }}
+            />
+            <div className={styles.scrim} aria-hidden="true" />
 
-      <div className={styles.inner}>
-        <h2 className={styles.headline} id="experience-heading">
-          Meníme zážitok u zubára a vraciame vám sebavedomie.
-        </h2>
+            <motion.div
+              className={styles.inner}
+              style={{
+                opacity: prefersReducedMotion ? 1 : copyOpacity,
+                y: prefersReducedMotion ? 0 : copyY,
+              }}
+            >
+              <p className={styles.kicker}>Nový zážitok</p>
+              <h2 className={styles.headline} id="experience-heading">
+                Meníme zážitok u zubára a vraciame vám sebavedomie.
+              </h2>
+            </motion.div>
+          </motion.div>
+
+          <motion.div
+            className={styles.exitVeil}
+            data-testid="statement-gradient-veil"
+            aria-hidden="true"
+            style={{ opacity: prefersReducedMotion ? 0 : veilOpacity }}
+          />
+        </motion.div>
+
+        <motion.div
+          className={styles.revealEdge}
+          aria-hidden="true"
+          style={
+            prefersReducedMotion
+              ? { opacity: 0 }
+              : {
+                  inset: edgeInset,
+                  opacity: edgeOpacity,
+                }
+          }
+        />
       </div>
     </section>
   );
