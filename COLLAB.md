@@ -18,6 +18,18 @@ update it before taking or handing off work.
 > never reappear under the second transition. Work started from current
 > `origin/main` at `e0a50cd`; stable rollback commit `ffb6ecc` will be applied
 > without rewriting shared history.
+>
+> The user rejected the new nested slide stack because its overflow wrapper
+> disables the photo strip's sticky positioning. Phase 1 restores the proven
+> homepage composition without rewriting history. That stable composition is
+> the baseline for this approved transition work.
+>
+> Phase 1 verification: 14 tests passed; lint, TypeScript, `next build`,
+> `git diff --check`, tracked credential-pattern scan, homepage HTTP, and the
+> retained photograph's HTTP/content-type check passed. The dev server at
+> `http://localhost:3000/` ran from the Phase 1 worktree. Automated Browser
+> inspection remained blocked by Browser URL policy, so user visual review is
+> the merge gate.
 
 ## File Reservations
 
@@ -369,6 +381,17 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   the first clinic photograph. No files are reserved. Automated Browser
   inspection was blocked by Browser URL policy; user review continues at
   `http://localhost:3000/`.
+
+- 2026-08-09 — Codex completed Phase 1 of the approved scroll-animation
+  recovery on `codex/restore-photo-strip-baseline`. The behavioral changes from
+  `f09a090` are reverted without rewriting history; the photograph from
+  `0832b5a` remains. A regression test proves the statement band and photo
+  strip again share the stable overlay instead of separate clipping wrappers.
+  Verification passed: 14 tests, lint, TypeScript, production build,
+  whitespace, tracked credential patterns, homepage HTTP, and photograph HTTP.
+  Files remain reserved while the user reviews localhost. Next task: merge
+  Phase 1 into `main` after approval, then begin the isolated Phase 2 dwell and
+  sequential grow-pan implementation.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
