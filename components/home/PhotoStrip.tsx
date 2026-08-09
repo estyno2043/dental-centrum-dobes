@@ -71,6 +71,7 @@ export function PhotoStrip(): JSX.Element {
       className={styles.section}
       ref={sectionRef}
       aria-labelledby="strip-heading"
+      style={{ pointerEvents: "auto" }}
     >
       <div className={styles.pin}>
         <header className={styles.intro}>
@@ -83,7 +84,11 @@ export function PhotoStrip(): JSX.Element {
           </h2>
         </header>
 
-        <ul className={styles.track} ref={trackRef}>
+        <ul
+          className={styles.track}
+          ref={trackRef}
+          style={{ maxWidth: "100%", minWidth: 0, width: "100%" }}
+        >
           {photoFrames.map((frame, index) => (
             <li
               className={styles.frame}

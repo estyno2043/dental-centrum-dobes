@@ -29,3 +29,18 @@ test("keeps the statement motion surface and exit veil inside the statement regi
     within(statementBand).getByTestId("statement-gradient-veil"),
   ).toBeInTheDocument();
 });
+
+test("lets hero controls receive clicks through the non-interactive statement slot", () => {
+  render(<HomePage />);
+
+  const statementBand = screen.getByRole("region", {
+    name: "Meníme zážitok u zubára a vraciame vám sebavedomie.",
+  });
+  const photoStrip = screen.getByRole("region", {
+    name: "Miesto, kde sa nikto neponáhľa.",
+  });
+
+  expect(statementBand).toHaveStyle({ pointerEvents: "none" });
+  expect(statementBand.parentElement).toHaveStyle({ pointerEvents: "none" });
+  expect(photoStrip).toHaveStyle({ pointerEvents: "auto" });
+});

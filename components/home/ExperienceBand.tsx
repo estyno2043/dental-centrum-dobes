@@ -63,6 +63,7 @@ export function ExperienceBand(): JSX.Element {
       className={styles.band}
       ref={bandRef}
       aria-labelledby="experience-heading"
+      style={{ pointerEvents: "none" }}
     >
       <div className={styles.pin}>
         <motion.div

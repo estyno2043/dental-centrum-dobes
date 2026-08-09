@@ -10,6 +10,12 @@ test("finishes card growth before mapping the remaining scroll to horizontal pan
   });
   const track = screen.getByRole("list");
 
+  expect(track).toHaveStyle({
+    maxWidth: "100%",
+    minWidth: "0",
+    width: "100%",
+  });
+
   Object.defineProperty(window, "innerHeight", {
     configurable: true,
     value: 1000,

@@ -9,7 +9,7 @@ export default function HomePage() {
       <div className={styles.heroLayer}>
         <Hero />
       </div>
-      <div className={styles.overlay}>
+      <div className={styles.overlay} style={{ pointerEvents: "none" }}>
         <ExperienceBand />
         <PhotoStrip />
       </div>
