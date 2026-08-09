@@ -5,26 +5,62 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Complete, user-directed production integration
-- Owner: Codex integrating Claude's work
-- Branch: `main` (source: `claude/section-restart` at `f09a090`)
-- Task: Add first clinic photograph and give each stacked homepage slide a
-  full-screen dwell phase
+- Status: User approved; publishing to `main`
+- Owner: Codex
+- Branch: `codex/scroll-sections-v2`
+- Task: Restore the stable homepage stack, then add the approved square
+  center-reveal from hero to statement, centered fade-up copy, and a
+  statement-owned gradient transition into the clinic photo strip.
 
-> On 2026-08-09 the user explicitly requested that the latest changes from
-> `claude/section-restart` be merged into `main` and opened on localhost. The
-> earlier rejected experiments remain isolated on `claude/experience-band` and
-> `claude/team-page`; do not merge those branches.
+> The user approved the combined motion direction on 2026-08-09: square
+> center reveal for hero → statement, then gradient veil for statement → photo
+> strip. The statement photograph must appear before its copy; the hero must
+> never reappear under the second transition. Work started from current
+> `origin/main` at `e0a50cd`; stable rollback commit `ffb6ecc` will be applied
+> without rewriting shared history.
 >
-> Production integration checks: 13 tests passed; lint, TypeScript,
-> `next build`, `git diff --check`, tracked credential-pattern scan, homepage
-> HTTP check, and new photograph HTTP/content-type check passed. Automated
-> Browser inspection was blocked by Browser URL policy; localhost remains the
-> review surface for the user.
+> The user rejected the new nested slide stack because its overflow wrapper
+> disables the photo strip's sticky positioning. Phase 1 restores the proven
+> homepage composition without rewriting history. That stable composition is
+> the baseline for this approved transition work.
+>
+> Phase 1 verification: 14 tests passed; lint, TypeScript, `next build`,
+> `git diff --check`, tracked credential-pattern scan, homepage HTTP, and the
+> retained photograph's HTTP/content-type check passed. The dev server at
+> `http://localhost:3000/` ran from the Phase 1 worktree. Automated Browser
+> inspection remained blocked by Browser URL policy, so user visual review is
+> the merge gate.
+>
+> Phase 2 verification: 26 tests passed; lint, TypeScript, production build,
+> `git diff --check`, tracked credential-pattern scan, homepage HTTP, and all
+> three affected JPEG asset checks passed. Browser measurements passed at
+> 1440×900 and 375×812 with no console errors or warnings and no horizontal
+> page overflow. Desktop square reveal measured `50% → 25% → 0%`; copy stayed
+> hidden until the photograph opened; statement veil reached opacity `1` over
+> the statement photograph while the hero remained absent. Gallery pin held at
+> `top: 0`; frames ended 71px above the viewport bottom; grow ended before pan.
+> Mobile menu, Escape focus return, and native gallery swipe all passed.
+> Localhost runs from this branch at `http://localhost:3000/`. The user
+> approved the result on 2026-08-09 and explicitly requested publication to
+> `main` before work begins on the jaw-animation section.
 
 ## File Reservations
 
-No files are reserved.
+Codex reserves these files for the active scroll-transition task:
+
+- `COLLAB.md`
+- `docs/superpowers/specs/2026-08-09-home-scroll-transitions-design.md`
+- `docs/superpowers/plans/2026-08-09-home-scroll-transitions.md`
+- `app/page.tsx`
+- `app/page.test.tsx`
+- `components/home/ExperienceBand.tsx`
+- `components/home/experienceBand.module.css`
+- `components/home/home.module.css`
+- `components/home/PhotoStrip.tsx`
+- `components/home/PhotoStrip.test.tsx`
+- `components/home/photoStrip.module.css`
+- `components/home/scrollMotion.ts`
+- `components/home/scrollMotion.test.ts`
 
 > **Read this before touching the build.** The framework changed. The project
 > no longer runs on `vinext` or Cloudflare Workers — it is now standard
@@ -359,6 +395,35 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   the first clinic photograph. No files are reserved. Automated Browser
   inspection was blocked by Browser URL policy; user review continues at
   `http://localhost:3000/`.
+
+- 2026-08-09 — Codex completed Phase 1 of the approved scroll-animation
+  recovery on `codex/restore-photo-strip-baseline`. The behavioral changes from
+  `f09a090` are reverted without rewriting history; the photograph from
+  `0832b5a` remains. A regression test proves the statement band and photo
+  strip again share the stable overlay instead of separate clipping wrappers.
+  Verification passed: 14 tests, lint, TypeScript, production build,
+  whitespace, tracked credential patterns, homepage HTTP, and photograph HTTP.
+  Files remain reserved while the user reviews localhost. Next task: merge
+  Phase 1 into `main` after approval, then begin the isolated Phase 2 dwell and
+  sequential grow-pan implementation.
+
+- 2026-08-09 — Codex implemented the user-approved square center reveal and
+  gradient statement exit on `codex/scroll-sections-v2`, starting from current
+  `origin/main` and carrying forward the stable rollback without rewriting
+  history. Motion 13 drives the statement timeline through tested pure progress
+  mapping. The photo strip now grows during `0–22%`, pans during `22–100%`,
+  keeps its intro and full-grown cards inside the viewport, and becomes a real
+  width-constrained native scroller on phones. Browser testing also caught and
+  fixed the transparent overlay blocking the hero menu. Full verification is
+  recorded under Current Task. Files remain reserved while the user reviews
+  localhost; nothing has been merged or pushed to `main`.
+
+- 2026-08-09 — User approved the homepage transition result and explicitly
+  requested publication before the jaw-animation section begins. Fresh
+  pre-publication verification passed: 26 tests, lint, TypeScript, production
+  build, `git diff --check`, and changed-file credential-pattern scan. Next
+  step: publish this branch through a pull request to `main`, confirm
+  `origin/main`, then fast-forward `develop`.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,

@@ -1,33 +1,125 @@
-import type { JSX } from "react";
+"use client";
+
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "motion/react";
+import { useRef, type JSX } from "react";
+import { mapExperienceMotion } from "./scrollMotion";
 import styles from "./experienceBand.module.css";
 
 /**
- * The statement band under the hero.
+ * Scroll-led statement scene between the hero and the clinic photo strip.
  *
- * The sentence appears while the band rises over the pinned hero and is fully
- * there by the time it lands full screen. It needs no script of its own:
- * `HomeStack` already measures the rise and publishes it as `--band-in`, and
- * the reveal is arithmetic on that in the stylesheet.
- *
- * The photograph is blurred in the asset itself, not with a CSS filter. A
- * runtime `blur()` over a full-bleed background repaints on every scroll frame
- * and is one of the most expensive things a phone can be asked to do; baking it
- * also collapses the file, since there is no fine detail left to encode —
- * 1920px wide lands at 95 KB.
- *
- * `background-attachment` is deliberately not `fixed`: it janks badly on iOS
- * and is ignored outright in several mobile browsers.
+ * Only this component clips its own statement surface. The section remains a
+ * direct sibling of `PhotoStrip`, so the gallery's sticky positioning never
+ * inherits an overflow or transformed containing block.
  */
 export function ExperienceBand(): JSX.Element {
-  return (
-    <section className={styles.band} aria-labelledby="experience-heading">
-      <div className={styles.media} aria-hidden="true" />
-      <div className={styles.scrim} aria-hidden="true" />
+  const bandRef = useRef<HTMLElement>(null);
+  const prefersReducedMotion = useReducedMotion() ?? false;
+  const { scrollYProgress } = useScroll({
+    target: bandRef,
+    offset: ["start start", "end end"],
+  });
 
-      <div className={styles.inner}>
-        <h2 className={styles.headline} id="experience-heading">
-          Meníme zážitok u zubára a vraciame vám sebavedomie.
-        </h2>
+  const clipPath = useTransform(
+    scrollYProgress,
+    (value) => mapExperienceMotion(value).clipPath,
+  );
+  const edgeInset = useTransform(
+    scrollYProgress,
+    (value) => mapExperienceMotion(value).edgeInset,
+  );
+  const edgeOpacity = useTransform(
+    scrollYProgress,
+    (value) => mapExperienceMotion(value).edgeOpacity,
+  );
+  const mediaScale = useTransform(
+    scrollYProgress,
+    (value) => mapExperienceMotion(value).mediaScale,
+  );
+  const copyOpacity = useTransform(
+    scrollYProgress,
+    (value) => mapExperienceMotion(value).copyOpacity,
+  );
+  const copyY = useTransform(
+    scrollYProgress,
+    (value) => mapExperienceMotion(value).copyY,
+  );
+  const storyScale = useTransform(
+    scrollYProgress,
+    (value) => mapExperienceMotion(value).storyScale,
+  );
+  const veilOpacity = useTransform(
+    scrollYProgress,
+    (value) => mapExperienceMotion(value).veilOpacity,
+  );
+
+  return (
+    <section
+      className={styles.band}
+      ref={bandRef}
+      aria-labelledby="experience-heading"
+      style={{ pointerEvents: "none" }}
+    >
+      <div className={styles.pin}>
+        <motion.div
+          className={styles.storySurface}
+          data-testid="statement-motion-surface"
+          style={{
+            clipPath: prefersReducedMotion
+              ? "inset(0% 0% 0% 0% round 0px)"
+              : clipPath,
+          }}
+        >
+          <motion.div
+            className={styles.storyContent}
+            style={{ scale: prefersReducedMotion ? 1 : storyScale }}
+          >
+            <motion.div
+              className={styles.media}
+              aria-hidden="true"
+              style={{ scale: prefersReducedMotion ? 1 : mediaScale }}
+            />
+            <div className={styles.scrim} aria-hidden="true" />
+
+            <motion.div
+              className={styles.inner}
+              style={{
+                opacity: prefersReducedMotion ? 1 : copyOpacity,
+                y: prefersReducedMotion ? 0 : copyY,
+              }}
+            >
+              <p className={styles.kicker}>Nový zážitok</p>
+              <h2 className={styles.headline} id="experience-heading">
+                Meníme zážitok u zubára a vraciame vám sebavedomie.
+              </h2>
+            </motion.div>
+          </motion.div>
+
+          <motion.div
+            className={styles.exitVeil}
+            data-testid="statement-gradient-veil"
+            aria-hidden="true"
+            style={{ opacity: prefersReducedMotion ? 0 : veilOpacity }}
+          />
+        </motion.div>
+
+        <motion.div
+          className={styles.revealEdge}
+          aria-hidden="true"
+          style={
+            prefersReducedMotion
+              ? { opacity: 0 }
+              : {
+                  inset: edgeInset,
+                  opacity: edgeOpacity,
+                }
+          }
+        />
       </div>
     </section>
   );

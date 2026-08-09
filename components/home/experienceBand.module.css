@@ -1,34 +1,46 @@
 /*
- * Statement band under the hero.
+ * Scroll slot for the statement scene.
  *
- * The photograph is bright — white coats, daylight, a lit monitor — so the
- * scrim does the legibility work rather than the type colour. Two stops rather
- * than one flat overlay, so the middle darkens most, where the sentence sits,
- * while the edges keep some of the room readable.
- */
-
-/*
- * Full viewport height: the band has to cover the hero completely once it
- * settles, so anything shorter leaves the hero showing underneath. `dvh` to
- * match the pinned layer — see `home.module.css` for why it is not `svh`.
+ * The outer section remains transparent so the pinned hero is visible before
+ * the square opens. Only `.storySurface` is clipped. That clipping context is
+ * local and cannot interfere with the sticky photo strip that follows.
  */
 .band {
-  /*
-   * Derived from the band's arrival, which `HomeStack` publishes as
-   * `--band-in`. The sentence holds back through the first quarter of the rise
-   * and is fully there as the band lands. `--band-in` defaults to 1 on the
-   * stack, so with no script running this resolves to 1 and the sentence is
-   * simply visible.
-   */
-  --reveal: clamp(0, calc((var(--band-in, 1) - 0.25) / 0.75), 1);
-
   position: relative;
-  display: grid;
-  min-height: 100vh;
-  min-height: 100dvh;
-  align-items: center;
-  background: var(--ink);
+  height: 380vh;
+  height: 380dvh;
+}
+
+.pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
   isolation: isolate;
+}
+
+.storySurface {
+  position: absolute;
+  z-index: 1;
+  overflow: hidden;
+  background: var(--ink);
+  inset: 0;
+  will-change: clip-path;
+}
+
+/*
+ * The surface stays full-size and opaque after opening. Only its inner visual
+ * settles back during the exit, exposing `var(--ink)` at the edges instead of
+ * exposing the hero underneath.
+ */
+.storyContent {
+  position: absolute;
+  overflow: hidden;
+  transform-origin: 50% 50%;
+  inset: 0;
+  isolation: isolate;
+  will-change: transform;
 }
 
 .media {
@@ -38,7 +50,8 @@
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  inset: 0;
+  inset: -3%;
+  will-change: transform;
 }
 
 @media (min-width: 768px) {
@@ -54,50 +67,116 @@
     radial-gradient(80% 62% at 50% 50%, rgb(20 20 23 / 76%), transparent 78%),
     linear-gradient(
       180deg,
-      rgb(20 20 23 / 82%) 0%,
-      rgb(20 20 23 / 58%) 42%,
-      rgb(20 20 23 / 58%) 58%,
-      rgb(20 20 23 / 86%) 100%
+      rgb(20 20 23 / 76%) 0%,
+      rgb(20 20 23 / 54%) 42%,
+      rgb(20 20 23 / 56%) 58%,
+      rgb(20 20 23 / 82%) 100%
     );
   inset: 0;
 }
 
-/*
- * On a phone the sentence wraps to three lines and covers more of the frame,
- * including its brightest part — the lit white coat. A little more darkening
- * in the middle keeps the top line off that highlight.
- */
-@media (max-width: 767px) {
-  .scrim {
-    background:
-      radial-gradient(96% 52% at 50% 46%, rgb(20 20 23 / 86%), transparent 82%),
-      linear-gradient(
-        180deg,
-        rgb(20 20 23 / 84%) 0%,
-        rgb(20 20 23 / 62%) 42%,
-        rgb(20 20 23 / 62%) 58%,
-        rgb(20 20 23 / 88%) 100%
-      );
-  }
+.inner {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  width: min(100%, 1180px);
+  align-content: center;
+  justify-items: center;
+  padding: clamp(64px, 12vw, 140px) clamp(20px, 5vw, 88px);
+  text-align: center;
+  inset: 0;
+  margin: auto;
+  will-change: transform, opacity;
 }
 
-.inner {
-  max-width: 1180px;
-  padding: clamp(64px, 12vw, 140px) clamp(20px, 5vw, 88px);
-  margin: 0 auto;
-  text-align: center;
+.kicker {
+  margin-bottom: clamp(14px, 2vw, 22px);
+  color: var(--taupe);
+  font-size: clamp(0.62rem, 0.8vw, 0.75rem);
+  font-weight: 650;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
 }
 
 .headline {
   max-width: 22ch;
   margin: 0 auto;
-  opacity: var(--reveal);
   color: var(--porcelain);
-  transform: translateY(calc((1 - var(--reveal)) * 40px));
   font-size: clamp(1.75rem, 4.6vw, 3.6rem);
   font-weight: 600;
   letter-spacing: -0.025em;
   line-height: 1.16;
   text-shadow: 0 2px 30px rgb(0 0 0 / 35%);
   text-wrap: balance;
+}
+
+/*
+ * This veil belongs to the statement surface. Its lower edge resolves to the
+ * exact gallery background, so the next section cannot reveal the hero or a
+ * contrasting horizontal cut.
+ */
+.exitVeil {
+  position: absolute;
+  z-index: 3;
+  background:
+    radial-gradient(
+      86% 68% at 50% 18%,
+      transparent 0%,
+      rgb(28 28 31 / 12%) 42%,
+      rgb(28 28 31 / 70%) 78%,
+      var(--ink) 100%
+    ),
+    linear-gradient(180deg, transparent 0%, rgb(28 28 31 / 28%) 48%, var(--ink) 100%);
+  inset: 0;
+  pointer-events: none;
+}
+
+.revealEdge {
+  position: absolute;
+  z-index: 2;
+  border: 1px solid rgb(206 177 127 / 72%);
+  box-shadow: 0 0 30px rgb(206 177 127 / 8%);
+  pointer-events: none;
+  will-change: inset, opacity;
+}
+
+@media (max-width: 767px) {
+  .scrim {
+    background:
+      radial-gradient(96% 52% at 50% 46%, rgb(20 20 23 / 86%), transparent 82%),
+      linear-gradient(
+        180deg,
+        rgb(20 20 23 / 82%) 0%,
+        rgb(20 20 23 / 60%) 42%,
+        rgb(20 20 23 / 62%) 58%,
+        rgb(20 20 23 / 86%) 100%
+      );
+  }
+
+  .headline {
+    max-width: 16ch;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .band {
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .pin {
+    position: relative;
+  }
+
+  .storySurface,
+  .storyContent,
+  .media,
+  .inner {
+    transform: none;
+  }
+
+  .revealEdge {
+    display: none;
+  }
 }
