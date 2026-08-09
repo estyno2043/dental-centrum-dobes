@@ -5,21 +5,22 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Complete, user-approved for production
+- Status: Complete, user-directed production integration
 - Owner: Codex integrating Claude's work
-- Branch: `main` (source: `claude/section-restart`)
-- Task: Next.js/Netlify migration, statement band under the hero, and the
-  horizontal photo strip below it
+- Branch: `main` (source: `claude/section-restart` at `f09a090`)
+- Task: Add first clinic photograph and give each stacked homepage slide a
+  full-screen dwell phase
 
-> The user approved the rebuilt statement band and horizontal photo strip on
-> localhost on 2026-08-08. The earlier rejected experiments remain isolated on
-> `claude/experience-band` and `claude/team-page`; do not merge those branches.
-> The approved implementation is the one from `claude/section-restart`.
+> On 2026-08-09 the user explicitly requested that the latest changes from
+> `claude/section-restart` be merged into `main` and opened on localhost. The
+> earlier rejected experiments remain isolated on `claude/experience-band` and
+> `claude/team-page`; do not merge those branches.
 >
 > Production integration checks: 13 tests passed; lint, TypeScript,
-> `next build`, `git diff --check`, tracked credential-pattern scan, desktop and
-> mobile Browser checks, mobile menu interaction, and localhost console check
-> passed.
+> `next build`, `git diff --check`, tracked credential-pattern scan, homepage
+> HTTP check, and new photograph HTTP/content-type check passed. Automated
+> Browser inspection was blocked by Browser URL policy; localhost remains the
+> review surface for the user.
 
 ## File Reservations
 
@@ -349,6 +350,15 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   in Netlify's own UI, which only the user can do. Next task: user connects
   Netlify to this branch or to `main` after merge, then whoever is on shift
   verifies the deployed URL and records it here.
+
+- 2026-08-09 — Codex fetched `claude/section-restart` at `f09a090`, inspected
+  its two new commits, integrated them with current `main`, and verified 13
+  tests, lint, TypeScript, production build, whitespace, tracked credential
+  patterns, homepage HTTP, and the new clinic photograph asset. The change adds
+  a full-screen dwell between stacked homepage slides and fills frame 7 with
+  the first clinic photograph. No files are reserved. Automated Browser
+  inspection was blocked by Browser URL policy; user review continues at
+  `http://localhost:3000/`.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
