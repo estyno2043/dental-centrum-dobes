@@ -5,26 +5,36 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Complete, user-directed production integration
-- Owner: Codex integrating Claude's work
-- Branch: `main` (source: `claude/section-restart` at `f09a090`)
-- Task: Add first clinic photograph and give each stacked homepage slide a
-  full-screen dwell phase
+- Status: In progress, localhost review required before integration
+- Owner: Codex
+- Branch: `codex/scroll-sections-v2`
+- Task: Restore the stable homepage stack, then add the approved square
+  center-reveal from hero to statement, centered fade-up copy, and a
+  statement-owned gradient transition into the clinic photo strip.
 
-> On 2026-08-09 the user explicitly requested that the latest changes from
-> `claude/section-restart` be merged into `main` and opened on localhost. The
-> earlier rejected experiments remain isolated on `claude/experience-band` and
-> `claude/team-page`; do not merge those branches.
->
-> Production integration checks: 13 tests passed; lint, TypeScript,
-> `next build`, `git diff --check`, tracked credential-pattern scan, homepage
-> HTTP check, and new photograph HTTP/content-type check passed. Automated
-> Browser inspection was blocked by Browser URL policy; localhost remains the
-> review surface for the user.
+> The user approved the combined motion direction on 2026-08-09: square
+> center reveal for hero → statement, then gradient veil for statement → photo
+> strip. The statement photograph must appear before its copy; the hero must
+> never reappear under the second transition. Work started from current
+> `origin/main` at `e0a50cd`; stable rollback commit `ffb6ecc` will be applied
+> without rewriting shared history.
 
 ## File Reservations
 
-No files are reserved.
+Codex reserves these files for the active scroll-transition task:
+
+- `COLLAB.md`
+- `docs/superpowers/specs/2026-08-09-home-scroll-transitions-design.md`
+- `docs/superpowers/plans/2026-08-09-home-scroll-transitions.md`
+- `app/page.tsx`
+- `app/page.test.tsx`
+- `components/home/ExperienceBand.tsx`
+- `components/home/experienceBand.module.css`
+- `components/home/home.module.css`
+- `components/home/PhotoStrip.tsx`
+- `components/home/photoStrip.module.css`
+- `components/home/scrollMotion.ts`
+- `components/home/scrollMotion.test.ts`
 
 > **Read this before touching the build.** The framework changed. The project
 > no longer runs on `vinext` or Cloudflare Workers — it is now standard
