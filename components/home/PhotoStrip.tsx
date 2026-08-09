@@ -2,10 +2,8 @@
 
 import { useEffect, useRef, type CSSProperties, type JSX } from "react";
 import { photoFrames, photoStripIntro } from "./photoStripContent";
+import { mapPhotoStripMotion } from "./scrollMotion";
 import styles from "./photoStrip.module.css";
-
-/** Fraction of the scroll spent growing the strip before it starts panning. */
-const GROW_PHASE = 0.22;
 
 /**
  * The horizontal filmstrip of clinic photography.
@@ -15,11 +13,9 @@ const GROW_PHASE = 0.22;
  * The section is pinned for the length of that pan, so vertical scrolling is
  * what drives the horizontal movement.
  *
- * Two values are written to the DOM and everything else is CSS arithmetic:
- * `--p` is progress through the pinned stretch, and `--travel` is how far the
+ * Three values are written to the DOM and everything else is CSS arithmetic:
+ * `--grow` and `--pan` are sequential phases, while `--travel` is how far the
  * track has to move, which can only be known once the frames have laid out.
- * Writing custom properties rather than transforms keeps this to one style
- * write per scroll event, and keeps the motion legible in the stylesheet.
  *
  * Not a scroll-driven CSS animation: those need Chrome 115+/Safari 26+ and do
  * nothing where they are missing. This runs everywhere, and its effect can be
@@ -44,7 +40,8 @@ export function PhotoStrip(): JSX.Element {
       section.style.setProperty("--travel", `${travel}px`);
 
       if (reduced) {
-        section.style.setProperty("--p", "0");
+        section.style.setProperty("--grow", "1");
+        section.style.setProperty("--pan", "0");
         return;
       }
 
@@ -54,10 +51,9 @@ export function PhotoStrip(): JSX.Element {
       const scrolled = -section.getBoundingClientRect().top;
       const progress = pinned > 0 ? scrolled / pinned : 0;
 
-      section.style.setProperty(
-        "--p",
-        String(Math.min(1, Math.max(0, progress))),
-      );
+      const { grow, pan } = mapPhotoStripMotion(progress);
+      section.style.setProperty("--grow", String(grow));
+      section.style.setProperty("--pan", String(pan));
     };
 
     update();
@@ -75,7 +71,6 @@ export function PhotoStrip(): JSX.Element {
       className={styles.section}
       ref={sectionRef}
       aria-labelledby="strip-heading"
-      style={{ "--grow-phase": GROW_PHASE } as CSSProperties}
     >
       <div className={styles.pin}>
         <header className={styles.intro}>

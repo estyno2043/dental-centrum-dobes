@@ -11,12 +11,9 @@
    * Written by `PhotoStrip.tsx`. The defaults matter: with no script the strip
    * sits at full height, unpanned and fully readable, rather than collapsed.
    */
-  --p: 0;
+  --grow: 1;
+  --pan: 0;
   --travel: 0px;
-  --grow-phase: 0.22;
-
-  /* Growth runs over the first slice of the pan, then holds at 1. */
-  --grow: clamp(0, calc(var(--p) / var(--grow-phase)), 1);
 
   position: relative;
 
@@ -34,11 +31,11 @@
 .pin {
   position: sticky;
   top: 0;
-  display: flex;
+  display: grid;
   height: 100vh;
   height: 100dvh;
-  flex-direction: column;
-  justify-content: center;
+  grid-template-rows: auto minmax(0, 1fr);
+  padding: clamp(56px, 7dvh, 88px) 0 clamp(24px, 3dvh, 40px);
   overflow: hidden;
   gap: clamp(20px, 3vw, 40px);
 }
@@ -93,15 +90,17 @@
  * which is what the reference does.
  */
 .track {
-  --frame-h: 76svh;
+  --frame-h: clamp(280px, 62dvh, 620px);
 
   display: flex;
   height: var(--frame-h);
+  max-height: 100%;
   align-items: center;
+  align-self: center;
   padding: 0 clamp(20px, 5vw, 88px);
   gap: clamp(10px, 1.4vw, 20px);
   list-style: none;
-  transform: translate3d(calc(var(--p) * var(--travel) * -1), 0, 0);
+  transform: translate3d(calc(var(--pan) * var(--travel) * -1), 0, 0);
   will-change: transform;
 }
 
@@ -128,13 +127,16 @@
 @media (max-width: 767px) {
   .section {
     --grow: 1;
+    --pan: 0;
 
     height: auto;
   }
 
   .pin {
     position: static;
+    display: flex;
     height: auto;
+    flex-direction: column;
     padding: clamp(56px, 10vw, 90px) 0;
   }
 
@@ -211,12 +213,17 @@
  */
 @media (prefers-reduced-motion: reduce) {
   .section {
+    --grow: 1;
+    --pan: 0;
+
     height: auto;
   }
 
   .pin {
     position: static;
+    display: flex;
     height: auto;
+    flex-direction: column;
     padding: clamp(48px, 8vw, 96px) 0;
   }
 
