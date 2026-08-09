@@ -5,7 +5,7 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Implemented and verified, awaiting user localhost review
+- Status: User approved; publishing to `main`
 - Owner: Codex
 - Branch: `codex/scroll-sections-v2`
 - Task: Restore the stable homepage stack, then add the approved square
@@ -40,8 +40,9 @@ update it before taking or handing off work.
 > the statement photograph while the hero remained absent. Gallery pin held at
 > `top: 0`; frames ended 71px above the viewport bottom; grow ended before pan.
 > Mobile menu, Escape focus return, and native gallery swipe all passed.
-> Localhost runs from this branch at `http://localhost:3000/`. Merge/push to
-> `main` remains blocked on user visual approval.
+> Localhost runs from this branch at `http://localhost:3000/`. The user
+> approved the result on 2026-08-09 and explicitly requested publication to
+> `main` before work begins on the jaw-animation section.
 
 ## File Reservations
 
@@ -416,6 +417,13 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   fixed the transparent overlay blocking the hero menu. Full verification is
   recorded under Current Task. Files remain reserved while the user reviews
   localhost; nothing has been merged or pushed to `main`.
+
+- 2026-08-09 — User approved the homepage transition result and explicitly
+  requested publication before the jaw-animation section begins. Fresh
+  pre-publication verification passed: 26 tests, lint, TypeScript, production
+  build, `git diff --check`, and changed-file credential-pattern scan. Next
+  step: publish this branch through a pull request to `main`, confirm
+  `origin/main`, then fast-forward `develop`.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
