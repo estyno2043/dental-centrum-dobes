@@ -5,26 +5,27 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Complete, user-directed production integration
-- Owner: Codex integrating Claude's work
-- Branch: `main` (source: `claude/section-restart` at `f09a090`)
-- Task: Add first clinic photograph and give each stacked homepage slide a
-  full-screen dwell phase
+- Status: In progress, Phase 1 awaiting localhost review
+- Owner: Codex
+- Branch: `codex/restore-photo-strip-baseline`
+- Task: Revert the faulty `f09a090` slide stack while preserving the first
+  clinic photograph from `0832b5a`
 
-> On 2026-08-09 the user explicitly requested that the latest changes from
-> `claude/section-restart` be merged into `main` and opened on localhost. The
-> earlier rejected experiments remain isolated on `claude/experience-band` and
-> `claude/team-page`; do not merge those branches.
->
-> Production integration checks: 13 tests passed; lint, TypeScript,
-> `next build`, `git diff --check`, tracked credential-pattern scan, homepage
-> HTTP check, and new photograph HTTP/content-type check passed. Automated
-> Browser inspection was blocked by Browser URL policy; localhost remains the
-> review surface for the user.
+> The user rejected the new nested slide stack because its overflow wrapper
+> disables the photo strip's sticky positioning. Phase 1 restores the proven
+> homepage composition without rewriting history. It must stay off `main`
+> until the user confirms the localhost baseline.
 
 ## File Reservations
 
-No files are reserved.
+Reserved by Codex on `codex/restore-photo-strip-baseline`:
+
+- `COLLAB.md`
+- `app/page.tsx`
+- `components/home/ExperienceBand.tsx`
+- `components/home/HomeStack.tsx`
+- `components/home/experienceBand.module.css`
+- `components/home/home.module.css`
 
 > **Read this before touching the build.** The framework changed. The project
 > no longer runs on `vinext` or Cloudflare Workers — it is now standard
