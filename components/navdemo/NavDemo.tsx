@@ -32,6 +32,12 @@ const cases = [
     note: "Odkazy vyletia spod spúšťača, každý inou dráhou. Najvýraznejšie z troch.",
     group: styles.groupFan,
   },
+  {
+    letter: "D",
+    name: "Vejár zprava",
+    note: "Umiestnenie z B, animácia z C. Spúšťač sedí pri tlačidle a odkazy sa vejárovito rozvinú doľava — tlačidlo sa nepohne.",
+    group: styles.groupCombo,
+  },
 ] as const;
 
 function Trigger(): JSX.Element {
@@ -59,11 +65,11 @@ export function NavDemo(): JSX.Element {
   return (
     <main className={styles.page}>
       <div className={styles.intro}>
-        <h1 className={styles.introTitle}>Rozbaľovacie menu — tri návrhy</h1>
+        <h1 className={styles.introTitle}>Rozbaľovacie menu — návrhy</h1>
         <p className={styles.introText}>
           Prejdi kurzorom cez „Menu“ v každej lište. Tlačidlo Prehliadka kliniky
-          ostáva vo všetkých troch nedotknuté. Každé sa otvorí aj tabulátorom,
-          nielen myšou.
+          ostáva vo všetkých nedotknuté. Každé sa otvorí aj tabulátorom, nielen
+          myšou. D spája umiestnenie z B s animáciou z C.
         </p>
       </div>
 
@@ -97,6 +103,16 @@ export function NavDemo(): JSX.Element {
                 <>
                   <Trigger />
                   <Links className={styles.fan} />
+                </>
+              ) : null}
+
+              {/* Links before the trigger, so they unfold towards the logo. */}
+              {item.letter === "D" ? (
+                <>
+                  <div className={styles.combo}>
+                    <Links className={styles.comboInner} />
+                  </div>
+                  <Trigger />
                 </>
               ) : null}
             </div>

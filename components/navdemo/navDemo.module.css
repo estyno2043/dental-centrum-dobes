@@ -257,6 +257,64 @@
 .fan .link:nth-child(2) { --shift: 160px; transition-delay: 0.22s; }
 .fan .link:nth-child(1) { --shift: 200px; transition-delay: 0.28s; }
 
+/* ------------------------------------------------------------ variant D --- */
+
+/*
+ * B's placement with C's motion.
+ *
+ * Closed, the links occupy no width at all, so the trigger sits right beside
+ * the button — that is the resting look from B. Opening runs C's fan: each
+ * link travels its own distance out from under the trigger, on its own delay,
+ * with a slight scale.
+ *
+ * The links sit *before* the trigger in the markup, so they unfold leftwards,
+ * towards the logo. With the bar right-aligned that means the button never
+ * moves — it is the only element in the row whose position is fixed, which is
+ * what the brief asks for.
+ *
+ * The container still animates `grid-template-columns`, so this inherits B's
+ * one real cost: a relayout per frame. Five short links make that cheap, and
+ * it buys the collapse that `clip-path` alone cannot give.
+ */
+.combo {
+  display: grid;
+  grid-template-columns: 0fr;
+  transition: grid-template-columns 0.66s var(--ease);
+}
+
+.groupCombo:hover .combo,
+.groupCombo:focus-within .combo {
+  grid-template-columns: 1fr;
+}
+
+.comboInner {
+  display: flex;
+  overflow: hidden;
+  gap: 30px;
+  align-items: center;
+}
+
+.comboInner .link {
+  opacity: 0;
+  transform: translateX(var(--shift)) scale(0.94);
+  transition:
+    opacity 0.4s var(--ease),
+    transform 0.66s var(--ease);
+}
+
+.groupCombo:hover .comboInner .link,
+.groupCombo:focus-within .comboInner .link {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+}
+
+/* Nearest the trigger leaves first and travels least. */
+.comboInner .link:nth-child(5) { --shift: 40px; transition-delay: 0.04s; }
+.comboInner .link:nth-child(4) { --shift: 80px; transition-delay: 0.1s; }
+.comboInner .link:nth-child(3) { --shift: 120px; transition-delay: 0.16s; }
+.comboInner .link:nth-child(2) { --shift: 160px; transition-delay: 0.22s; }
+.comboInner .link:nth-child(1) { --shift: 200px; transition-delay: 0.28s; }
+
 /* --------------------------------------------------------------- a11y --- */
 
 /*
@@ -269,6 +327,8 @@
   .drawer,
   .drawerInner .link,
   .fan .link,
+  .combo,
+  .comboInner .link,
   .triggerRule {
     clip-path: none;
     opacity: 1;
@@ -276,7 +336,8 @@
     transition: none;
   }
 
-  .drawer {
+  .drawer,
+  .combo {
     grid-template-columns: 1fr;
   }
 }
