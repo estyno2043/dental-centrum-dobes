@@ -75,12 +75,27 @@ export function Hero(): JSX.Element {
         </a>
 
         <div className={styles.navigationRight}>
-          <div className={styles.navigationLinks}>
-            {navigationItems.map((item) => (
-              <a href={item.href} key={item.label}>
-                {item.label}
-              </a>
-            ))}
+          {/*
+            The links stay in the document and keep their tab order; only their
+            width collapses. The label is a plain span rather than a button so
+            there is no control that does nothing when activated — the drawer
+            answers hover, and `:focus-within` opens it the moment a link is
+            tabbed to.
+          */}
+          <div className={styles.navMenu}>
+            <span className={styles.navTrigger}>
+              <span className={styles.navTriggerRule} aria-hidden="true" />
+              Menu
+            </span>
+            <div className={styles.navDrawer}>
+              <div className={styles.navigationLinks}>
+                {navigationItems.map((item) => (
+                  <a href={item.href} key={item.label}>
+                    {item.label}
+                  </a>
+                ))}
+              </div>
+            </div>
           </div>
           <a className={styles.navigationButton} href="#">
             Prehliadka kliniky

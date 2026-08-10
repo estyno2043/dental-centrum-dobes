@@ -61,8 +61,64 @@
   padding-top: 8px;
 }
 
+/*
+ * Collapsing desktop navigation.
+ *
+ * The links rest at no width beside the "Prehliadka kliniky" button and unfold
+ * on hover. Because the whole right-hand group is right-aligned, growing it
+ * extends leftwards and the button never moves.
+ *
+ * `grid-template-columns: 0fr → 1fr` is the one honest way to animate a box to
+ * its own natural width — `max-width` has to guess a number, and `width: auto`
+ * does not interpolate at all. It relayouts each frame, which for five short
+ * links is cheap, and it buys a genuine collapse that `clip-path` cannot.
+ */
+.navMenu {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+
+.navTrigger {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  color: rgb(255 255 255 / 86%);
+  cursor: default;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.navTriggerRule {
+  display: block;
+  width: 26px;
+  height: 1px;
+  background: currentcolor;
+  transition: width 0.5s var(--ease);
+}
+
+.navMenu:hover .navTriggerRule,
+.navMenu:focus-within .navTriggerRule {
+  width: 12px;
+}
+
+.navDrawer {
+  display: grid;
+  grid-template-columns: 0fr;
+  transition: grid-template-columns 0.62s var(--ease);
+}
+
+.navMenu:hover .navDrawer,
+.navMenu:focus-within .navDrawer {
+  grid-template-columns: 1fr;
+}
+
 .navigationLinks {
   display: flex;
+  overflow: hidden;
   gap: 30px;
   align-items: center;
 }
@@ -73,8 +129,27 @@
   font-weight: 500;
   letter-spacing: 0.02em;
   text-decoration: none;
-  transition: color 0.2s var(--ease);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(14px);
+  transition:
+    color 0.2s var(--ease),
+    opacity 0.45s var(--ease),
+    transform 0.55s var(--ease);
 }
+
+.navMenu:hover .navigationLinks a,
+.navMenu:focus-within .navigationLinks a {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Nearest the trigger arrives first, so the row unfolds outward from it. */
+.navigationLinks a:nth-child(5) { transition-delay: 0.06s; }
+.navigationLinks a:nth-child(4) { transition-delay: 0.12s; }
+.navigationLinks a:nth-child(3) { transition-delay: 0.18s; }
+.navigationLinks a:nth-child(2) { transition-delay: 0.24s; }
+.navigationLinks a:nth-child(1) { transition-delay: 0.3s; }
 
 .navigationLinks a:hover {
   color: #fff;
@@ -665,7 +740,8 @@
 }
 
 @media (max-width: 960px) {
-  .navigationLinks {
+  /* The whole collapsing group goes; `MobileMenu` takes over below this. */
+  .navMenu {
     display: none;
   }
 
@@ -832,6 +908,24 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /*
+   * The menu is simply open. A reveal that has to be triggered is worse than
+   * no reveal for someone who cannot comfortably use the trigger.
+   */
+  .navDrawer {
+    grid-template-columns: 1fr;
+  }
+
+  .navigationLinks a {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .navTriggerRule {
+    transition: none;
+  }
+
   .navigation,
   .navigationLinks a,
   .navigationButton,
