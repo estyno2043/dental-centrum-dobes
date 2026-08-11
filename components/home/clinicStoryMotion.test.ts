@@ -8,51 +8,75 @@ import {
 
 describe("mapClinicStoryMotion desktop", () => {
   test.each([
-    [0, { grow: 0, pan: 0, zoom: 0, blur: 0, jawOpacity: 0, globalTime: 0 }],
-    [84, { grow: 1, pan: 0, zoom: 0, blur: 0, jawOpacity: 0, globalTime: 0 }],
-    [232, { grow: 1, pan: 0.5, zoom: 0, blur: 0, jawOpacity: 0, globalTime: 0 }],
-    [380, { grow: 1, pan: 1, zoom: 0, blur: 0, jawOpacity: 0, globalTime: 0 }],
-    [442, { grow: 1, pan: 1, zoom: 0.62, blur: 0, jawOpacity: 0, globalTime: 0 }],
-    [480, { grow: 1, pan: 1, zoom: 1, blur: 1, jawOpacity: 1, globalTime: 0 }],
-    [705, { grow: 1, pan: 1, zoom: 1, blur: 1, jawOpacity: 1, globalTime: 4 }],
-    [930, { grow: 1, pan: 1, zoom: 1, blur: 1, jawOpacity: 1, globalTime: 8 }],
-    [1030, { grow: 1, pan: 1, zoom: 1, blur: 1, jawOpacity: 1, globalTime: 8 }],
+    [0, { grow: 0, pan: 0, zoom: 0, blur: 0, jawOpacity: 0 }],
+    [84, { grow: 1, pan: 0, zoom: 0, blur: 0, jawOpacity: 0 }],
+    [232, { grow: 1, pan: 0.5, zoom: 0, blur: 0, jawOpacity: 0 }],
+    [380, { grow: 1, pan: 1, zoom: 0, blur: 0, jawOpacity: 0 }],
+    [442, { grow: 1, pan: 1, zoom: 0.62, blur: 0, jawOpacity: 0 }],
+    [480, { grow: 1, pan: 1, zoom: 1, blur: 1, jawOpacity: 1 }],
   ])("maps %svh to locked desktop phases", (scrollVh, expected) => {
     expect(mapClinicStoryMotion(scrollVh, "desktop")).toMatchObject(expected);
   });
 
+  test.each([
+    [447, { jawOpacity: 0, jawOpen: 0, jawSeparation: 0, interactive: false }],
+    [480, { jawOpacity: 1, jawOpen: 0, jawSeparation: 0, interactive: false }],
+    [570, { jawOpacity: 1, jawOpen: 0.5, jawSeparation: 0, interactive: false }],
+    [660, { jawOpacity: 1, jawOpen: 1, jawSeparation: 0, interactive: false }],
+    [750, { jawOpacity: 1, jawOpen: 1, jawSeparation: 0.5, interactive: false }],
+    [840, { jawOpacity: 1, jawOpen: 1, jawSeparation: 1, interactive: true }],
+    [1020, { jawOpacity: 1, jawOpen: 1, jawSeparation: 1, interactive: true }],
+  ])("maps desktop %svh jaw phases", (scrollVh, expected) => {
+    expect(mapClinicStoryMotion(scrollVh, "desktop")).toMatchObject(expected);
+  });
+
   test("clamps both directions and reproduces state while scrolling backwards", () => {
+    const earlierState = mapClinicStoryMotion(510, "desktop");
+
     expect(mapClinicStoryMotion(-100, "desktop")).toEqual(
       mapClinicStoryMotion(0, "desktop"),
     );
     expect(mapClinicStoryMotion(9999, "desktop")).toEqual(
       mapClinicStoryMotion(DESKTOP_STORY_SCROLL_VH, "desktop"),
     );
-    expect(mapClinicStoryMotion(510, "desktop")).toEqual(
-      mapClinicStoryMotion(510, "desktop"),
-    );
+    mapClinicStoryMotion(900, "desktop");
+    expect(mapClinicStoryMotion(510, "desktop")).toEqual(earlierState);
   });
 
-  test("fades final statement from decoded time 6.7 to 7.4 seconds", () => {
-    expect(mapClinicStoryMotion(480 + (450 * 6.7) / 8, "desktop").finalOpacity).toBe(0);
-    expect(mapClinicStoryMotion(480 + (450 * 7.05) / 8, "desktop").finalOpacity).toBe(0.5);
-    expect(mapClinicStoryMotion(480 + (450 * 7.4) / 8, "desktop").finalOpacity).toBe(1);
+  test("reveals labels during the final two thirds of separation", () => {
+    expect(mapClinicStoryMotion(720, "desktop").labelsOpacity).toBe(0);
+    expect(mapClinicStoryMotion(780, "desktop").labelsOpacity).toBe(0.5);
+    expect(mapClinicStoryMotion(840, "desktop").labelsOpacity).toBe(1);
   });
 });
 
 describe("mapClinicStoryMotion mobile", () => {
   test.each([
-    [0, { grow: 1, pan: 0, snap: 0, zoom: 0, blur: 0, jawOpacity: 0, globalTime: 0 }],
-    [90, { grow: 1, pan: 0, snap: 0, zoom: 0, blur: 0, jawOpacity: 0, globalTime: 0 }],
-    [110, { grow: 1, pan: 0, snap: 0.5, zoom: 0, blur: 0, jawOpacity: 0, globalTime: 0 }],
-    [130, { grow: 1, pan: 0, snap: 1, zoom: 0, blur: 0, jawOpacity: 0, globalTime: 0 }],
-    [192, { grow: 1, pan: 0, snap: 1, zoom: 0.62, blur: 0, jawOpacity: 0, globalTime: 0 }],
-    [230, { grow: 1, pan: 0, snap: 1, zoom: 1, blur: 1, jawOpacity: 1, globalTime: 0 }],
-    [455, { grow: 1, pan: 0, snap: 1, zoom: 1, blur: 1, jawOpacity: 1, globalTime: 4 }],
-    [680, { grow: 1, pan: 0, snap: 1, zoom: 1, blur: 1, jawOpacity: 1, globalTime: 8 }],
-    [780, { grow: 1, pan: 0, snap: 1, zoom: 1, blur: 1, jawOpacity: 1, globalTime: 8 }],
+    [0, { grow: 1, pan: 0, snap: 0, zoom: 0, blur: 0, jawOpacity: 0 }],
+    [90, { grow: 1, pan: 0, snap: 0, zoom: 0, blur: 0, jawOpacity: 0 }],
+    [110, { grow: 1, pan: 0, snap: 0.5, zoom: 0, blur: 0, jawOpacity: 0 }],
+    [130, { grow: 1, pan: 0, snap: 1, zoom: 0, blur: 0, jawOpacity: 0 }],
+    [192, { grow: 1, pan: 0, snap: 1, zoom: 0.62, blur: 0, jawOpacity: 0 }],
+    [230, { grow: 1, pan: 0, snap: 1, zoom: 1, blur: 1, jawOpacity: 1 }],
   ])("maps %svh to swipe, snap, handoff and scrub", (scrollVh, expected) => {
     expect(mapClinicStoryMotion(scrollVh, "mobile")).toMatchObject(expected);
+  });
+
+  test.each([
+    [230, { jawOpen: 0, jawSeparation: 0, interactive: false }],
+    [320, { jawOpen: 0.5, jawSeparation: 0, interactive: false }],
+    [410, { jawOpen: 1, jawSeparation: 0, interactive: false }],
+    [500, { jawOpen: 1, jawSeparation: 0.5, interactive: false }],
+    [590, { jawOpen: 1, jawSeparation: 1, interactive: true }],
+    [750, { jawOpen: 1, jawSeparation: 1, interactive: true }],
+  ])("maps mobile %svh jaw phases", (scrollVh, expected) => {
+    expect(mapClinicStoryMotion(scrollVh, "mobile")).toMatchObject(expected);
+  });
+
+  test("reveals labels during the final two thirds of separation", () => {
+    expect(mapClinicStoryMotion(470, "mobile").labelsOpacity).toBe(0);
+    expect(mapClinicStoryMotion(530, "mobile").labelsOpacity).toBe(0.5);
+    expect(mapClinicStoryMotion(590, "mobile").labelsOpacity).toBe(1);
   });
 
   test("clamps mobile range", () => {

@@ -1,5 +1,5 @@
-export const DESKTOP_STORY_SCROLL_VH = 1030;
-export const MOBILE_STORY_SCROLL_VH = 780;
+export const DESKTOP_STORY_SCROLL_VH = 1020;
+export const MOBILE_STORY_SCROLL_VH = 750;
 
 export type ClinicStoryProfile = "desktop" | "mobile";
 
@@ -10,8 +10,10 @@ export type ClinicStoryMotionState = Readonly<{
   zoom: number;
   blur: number;
   jawOpacity: number;
-  globalTime: number;
-  finalOpacity: number;
+  jawOpen: number;
+  jawSeparation: number;
+  labelsOpacity: number;
+  interactive: boolean;
 }>;
 
 export type DampedMotionState = Readonly<{
@@ -30,7 +32,6 @@ const round = (value: number, precision = 4): number =>
 
 function mapDesktop(scrollVh: number): ClinicStoryMotionState {
   const value = clamp(scrollVh, 0, DESKTOP_STORY_SCROLL_VH);
-  const globalTime = round(phase(value, 480, 930) * 8);
 
   return {
     grow: round(phase(value, 0, 84)),
@@ -39,14 +40,15 @@ function mapDesktop(scrollVh: number): ClinicStoryMotionState {
     zoom: round(phase(value, 380, 480)),
     blur: round(phase(value, 442, 480)),
     jawOpacity: round(phase(value, 447, 480)),
-    globalTime,
-    finalOpacity: round(phase(globalTime, 6.7, 7.4)),
+    jawOpen: round(phase(value, 480, 660)),
+    jawSeparation: round(phase(value, 660, 840)),
+    labelsOpacity: round(phase(value, 720, 840)),
+    interactive: value >= 840,
   };
 }
 
 function mapMobile(scrollVh: number): ClinicStoryMotionState {
   const value = clamp(scrollVh, 0, MOBILE_STORY_SCROLL_VH);
-  const globalTime = round(phase(value, 230, 680) * 8);
 
   return {
     grow: 1,
@@ -55,8 +57,10 @@ function mapMobile(scrollVh: number): ClinicStoryMotionState {
     zoom: round(phase(value, 130, 230)),
     blur: round(phase(value, 192, 230)),
     jawOpacity: round(phase(value, 197, 230)),
-    globalTime,
-    finalOpacity: round(phase(globalTime, 6.7, 7.4)),
+    jawOpen: round(phase(value, 230, 410)),
+    jawSeparation: round(phase(value, 410, 590)),
+    labelsOpacity: round(phase(value, 470, 590)),
+    interactive: value >= 590,
   };
 }
 
