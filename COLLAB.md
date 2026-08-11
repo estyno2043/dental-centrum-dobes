@@ -5,8 +5,8 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Awaiting user review of the committed runtime 3D jaw design spec;
-  implementation plan has not started
+- Status: Runtime 3D jaw implementation plan complete; awaiting execution
+  approach selection
 - Owner: Codex
 - Branch: `codex/runtime-jaw-3d-design`
 - Task: Specify the approved replacement of the jaw-video scrub with a
@@ -33,6 +33,22 @@ update it before taking or handing off work.
 > full diff review passed. No application code, model asset, dependency, or
 > production branch changed. User review of the written spec remains the gate
 > before `writing-plans` and implementation.
+
+> The user approved the written spec on 2026-08-11. Codex is now creating the
+> task-level implementation plan. No application code or model asset may be
+> changed during this planning pass.
+
+> Planning handoff on 2026-08-11: detailed TDD plan is at
+> `docs/superpowers/plans/2026-08-11-runtime-jaw-3d-implementation.md`. It has
+> ten reviewable tasks covering licensed source preparation, Blender export,
+> asset validation, pure motion contracts, direct Three.js runtime, patient
+> content, Netlify form detection/submission, accessible overlay/panel,
+> single-sticky integration, fallbacks/performance, localhost approval, and
+> production cleanup/publication. Self-review confirmed spec coverage, 32
+> teeth/two gums/seven anchors/seven hit proxies, consistent imperative motion
+> interfaces, no placeholders, balanced code fences, clean credential scan,
+> and no application edits. Current machine lacks Blender; execution Task 1
+> requires Blender 4.0.5 or newer before model generation.
 
 > Implementation approval on 2026-08-11 locks one reversible 1030vh desktop
 > timeline: grow 0–84, pan 84–380, frame-07 zoom 380–480, blur 442–480,
@@ -132,9 +148,8 @@ update it before taking or handing off work.
 
 ## File Reservations
 
-No active file reservations. Codex completed the approved design document at
-`docs/superpowers/specs/2026-08-11-runtime-jaw-3d-design.md`; next gate is user
-review before an implementation plan is written.
+No active file reservations. Planning is complete; implementation must claim a
+fresh `codex/runtime-jaw-3d` branch/worktree and exact files before edits.
 
 > **Read this before touching the build.** The framework changed. The project
 > no longer runs on `vinext` or Cloudflare Workers — it is now standard
