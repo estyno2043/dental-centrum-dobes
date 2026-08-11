@@ -14,7 +14,7 @@ import styles from "./experienceBand.module.css";
  * Scroll-led statement scene between the hero and the clinic photo strip.
  *
  * Only this component clips its own statement surface. The section remains a
- * direct sibling of `PhotoStrip`, so the gallery's sticky positioning never
+ * direct sibling of `ClinicStory`, so the gallery's sticky positioning never
  * inherits an overflow or transformed containing block.
  */
 export function ExperienceBand(): JSX.Element {
@@ -36,6 +36,10 @@ export function ExperienceBand(): JSX.Element {
   const edgeOpacity = useTransform(
     scrollYProgress,
     (value) => mapExperienceMotion(value).edgeOpacity,
+  );
+  const cornerRadius = useTransform(
+    scrollYProgress,
+    (value) => mapExperienceMotion(value).cornerRadius,
   );
   const mediaScale = useTransform(
     scrollYProgress,
@@ -88,12 +92,13 @@ export function ExperienceBand(): JSX.Element {
 
             <motion.div
               className={styles.inner}
+              data-testid="statement-copy"
+              data-centered="true"
               style={{
                 opacity: prefersReducedMotion ? 1 : copyOpacity,
                 y: prefersReducedMotion ? 0 : copyY,
               }}
             >
-              <p className={styles.kicker}>Nový zážitok</p>
               <h2 className={styles.headline} id="experience-heading">
                 Meníme zážitok u zubára a vraciame vám sebavedomie.
               </h2>
@@ -117,6 +122,7 @@ export function ExperienceBand(): JSX.Element {
               : {
                   inset: edgeInset,
                   opacity: edgeOpacity,
+                  borderRadius: cornerRadius,
                 }
           }
         />
