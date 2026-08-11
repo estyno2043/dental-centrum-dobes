@@ -5,10 +5,10 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Runtime 3D jaw implementation plan complete; awaiting execution
-  approach selection
+- Status: Subagent-driven implementation setup complete; Task 1 waits for
+  Blender 4.0.5+ preflight
 - Owner: Codex
-- Branch: `codex/runtime-jaw-3d-design`
+- Branch: `codex/runtime-jaw-3d`
 - Task: Specify the approved replacement of the jaw-video scrub with a
   licensed realtime Three.js jaw built from Sketchfab model B, including model
   preparation, scroll choreography, interactive zones, patient problem flow,
@@ -49,6 +49,14 @@ update it before taking or handing off work.
 > interfaces, no placeholders, balanced code fences, clean credential scan,
 > and no application edits. Current machine lacks Blender; execution Task 1
 > requires Blender 4.0.5 or newer before model generation.
+
+> Execution setup on 2026-08-11: user selected subagent-driven development.
+> Isolated worktree is
+> `/Users/goat/Documents/ChatGPT/DOBES/.worktrees/runtime-jaw-3d` on branch
+> `codex/runtime-jaw-3d`, created from `origin/main` at `d82ef41`. Design and
+> plan docs were cherry-picked as `dae34c4` and `1672850`. `npm install`
+> completed and baseline `npm test` passed 74/74 tests. Task 1 has not started
+> because `/Applications/Blender.app/Contents/MacOS/Blender` is absent.
 
 > Implementation approval on 2026-08-11 locks one reversible 1030vh desktop
 > timeline: grow 0–84, pan 84–380, frame-07 zoom 380–480, blur 442–480,
@@ -148,8 +156,11 @@ update it before taking or handing off work.
 
 ## File Reservations
 
-No active file reservations. Planning is complete; implementation must claim a
-fresh `codex/runtime-jaw-3d` branch/worktree and exact files before edits.
+- Codex reserves `COLLAB.md` for Task 1 coordination.
+- Task 1 implementer will reserve `package.json`, `package-lock.json`,
+  `assets/jaw-source/`, `scripts/prepare-jaw-model.py`,
+  `scripts/validate-jaw-model.mjs`, and `public/media/jaw/` after Blender
+  preflight passes.
 
 > **Read this before touching the build.** The framework changed. The project
 > no longer runs on `vinext` or Cloudflare Workers — it is now standard
