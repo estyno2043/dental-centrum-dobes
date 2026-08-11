@@ -5,12 +5,11 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Task 1 in progress; Blender 5.2.0 LTS preflight passed
+- Status: Task 1 approved; Task 2 in progress
 - Owner: Codex
 - Branch: `codex/runtime-jaw-3d`
-- Task: Implement the approved replacement of the jaw-video scrub with a
-  licensed realtime Three.js jaw built from Sketchfab model B. Task 1 prepares
-  and validates the source, desktop/mobile GLBs, and poster/fallback assets.
+- Task: Implement pure clinic-story phase mapping and deterministic realtime
+  jaw pose contracts, including desktop/mobile boundaries and reverse scroll.
 
 > On 2026-08-11 the user approved model B, `Free Teeth Base Mesh` by
 > ferrumiron6, as the production source and approved proceeding without an
@@ -61,6 +60,18 @@ update it before taking or handing off work.
 > `f233e4cd8c75b976eae3dc1542694cd23d7a98a7411bcb2d7d6c439ac09b42b8`,
 > matching the recorded audit. Task 1 may now generate and validate licensed
 > source, desktop/mobile GLBs, and poster/fallback assets.
+
+> Task 1 handoff on 2026-08-11: licensed deterministic asset pipeline is in
+> commits `d59f53d` and `88690bb`. Independent review passed spec compliance
+> and approved code quality after the front zone was corrected to include FDI
+> canines 13/23/33/43. Final assets contain 32 separate teeth, two gums, seven
+> anchors, and seven hit proxies. Desktop is 17,113 triangles / 136,788 bytes;
+> mobile is 10,110 triangles / 116,532 bytes. Exact semantic membership,
+> proxy coverage, attribution, bounds, budgets, and deterministic hashes are
+> validated. `jaw:build`, 74/74 tests, lint, typecheck, Next build, glTF
+> validation, whitespace scan, and credential scan passed. Poster/fallback
+> visual audit passed. Non-blocking Sharp/libvips and Blender deprecation
+> warnings remain; npm audit reports one low and five high transitive findings.
 
 > Implementation approval on 2026-08-11 locks one reversible 1030vh desktop
 > timeline: grow 0–84, pan 84–380, frame-07 zoom 380–480, blur 442–480,
@@ -160,10 +171,10 @@ update it before taking or handing off work.
 
 ## File Reservations
 
-- Codex reserves `COLLAB.md` for Task 1 coordination.
-- Task 1 implementer reserves `package.json`, `package-lock.json`,
-  `assets/jaw-source/`, `scripts/prepare-jaw-model.py`,
-  `scripts/validate-jaw-model.mjs`, and `public/media/jaw/`.
+- Codex reserves `COLLAB.md` for Task 2 coordination.
+- Task 2 implementer reserves `components/home/clinicStoryMotion.ts`,
+  `components/home/clinicStoryMotion.test.ts`, and
+  `components/home/jaw/jawPose.ts` plus its test.
 
 > **Read this before touching the build.** The framework changed. The project
 > no longer runs on `vinext` or Cloudflare Workers — it is now standard
