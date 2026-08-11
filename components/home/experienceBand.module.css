@@ -89,15 +89,6 @@
   will-change: transform, opacity;
 }
 
-.kicker {
-  margin-bottom: clamp(14px, 2vw, 22px);
-  color: var(--taupe);
-  font-size: clamp(0.62rem, 0.8vw, 0.75rem);
-  font-weight: 650;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-}
-
 .headline {
   max-width: 22ch;
   margin: 0 auto;
