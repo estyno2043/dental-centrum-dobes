@@ -5,15 +5,12 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Subagent-driven implementation setup complete; Task 1 waits for
-  Blender 4.0.5+ preflight
+- Status: Task 1 in progress; Blender 5.2.0 LTS preflight passed
 - Owner: Codex
 - Branch: `codex/runtime-jaw-3d`
-- Task: Specify the approved replacement of the jaw-video scrub with a
-  licensed realtime Three.js jaw built from Sketchfab model B, including model
-  preparation, scroll choreography, interactive zones, patient problem flow,
-  performance fallbacks, accessibility, and verification. No implementation
-  starts before the written spec is reviewed.
+- Task: Implement the approved replacement of the jaw-video scrub with a
+  licensed realtime Three.js jaw built from Sketchfab model B. Task 1 prepares
+  and validates the source, desktop/mobile GLBs, and poster/fallback assets.
 
 > On 2026-08-11 the user approved model B, `Free Teeth Base Mesh` by
 > ferrumiron6, as the production source and approved proceeding without an
@@ -57,6 +54,13 @@ update it before taking or handing off work.
 > plan docs were cherry-picked as `dae34c4` and `1672850`. `npm install`
 > completed and baseline `npm test` passed 74/74 tests. Task 1 has not started
 > because `/Applications/Blender.app/Contents/MacOS/Blender` is absent.
+
+> Blender preflight on 2026-08-11: Blender 5.2.0 LTS is available at
+> `/Applications/Blender.app/Contents/MacOS/Blender`. The approved source
+> archive is `/Users/goat/Downloads/free-teeth-base-mesh.zip`; its SHA-256 is
+> `f233e4cd8c75b976eae3dc1542694cd23d7a98a7411bcb2d7d6c439ac09b42b8`,
+> matching the recorded audit. Task 1 may now generate and validate licensed
+> source, desktop/mobile GLBs, and poster/fallback assets.
 
 > Implementation approval on 2026-08-11 locks one reversible 1030vh desktop
 > timeline: grow 0–84, pan 84–380, frame-07 zoom 380–480, blur 442–480,
@@ -157,10 +161,9 @@ update it before taking or handing off work.
 ## File Reservations
 
 - Codex reserves `COLLAB.md` for Task 1 coordination.
-- Task 1 implementer will reserve `package.json`, `package-lock.json`,
+- Task 1 implementer reserves `package.json`, `package-lock.json`,
   `assets/jaw-source/`, `scripts/prepare-jaw-model.py`,
-  `scripts/validate-jaw-model.mjs`, and `public/media/jaw/` after Blender
-  preflight passes.
+  `scripts/validate-jaw-model.mjs`, and `public/media/jaw/`.
 
 > **Read this before touching the build.** The framework changed. The project
 > no longer runs on `vinext` or Cloudflare Workers — it is now standard
