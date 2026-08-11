@@ -5,13 +5,34 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Complete; user approved the higher-quality jaw story for publication
-  to `main`
+- Status: Awaiting user review of the committed runtime 3D jaw design spec;
+  implementation plan has not started
 - Owner: Codex
-- Branch: `codex/jaw-scroll-demo`
-- Task: Replace separate `PhotoStrip` and `JawStory` pins with one `ClinicStory`
-  sticky viewport, precise decoded-frame callout tracking, GOP-1 media, and the
-  approved centered/radiused statement reveal.
+- Branch: `codex/runtime-jaw-3d-design`
+- Task: Specify the approved replacement of the jaw-video scrub with a
+  licensed realtime Three.js jaw built from Sketchfab model B, including model
+  preparation, scroll choreography, interactive zones, patient problem flow,
+  performance fallbacks, accessibility, and verification. No implementation
+  starts before the written spec is reviewed.
+
+> On 2026-08-11 the user approved model B, `Free Teeth Base Mesh` by
+> ferrumiron6, as the production source and approved proceeding without an
+> external 3D artist. Technical inspection confirmed that one clean source
+> assembly contains 32 disconnected tooth components, two independently
+> transformable gum meshes, and 17,056 rendered triangles. The formal
+> Sketchfab license is CC BY 4.0 and therefore requires attribution even though
+> the author's description says attribution is optional. The visual direction
+> is four sequential phases: clinic-photo handoff and small closed jaw,
+> opening/tilting, symmetric zone separation, then a fixed interactive dwell.
+> Click interaction begins only after geometry stops changing.
+
+> Design-spec handoff on 2026-08-11: the approved design is written at
+> `docs/superpowers/specs/2026-08-11-runtime-jaw-3d-design.md`. Self-review
+> found and fixed ambiguous FDI zone ranges and an imprecise motion assertion.
+> Placeholder scan, `git diff --check`, changed-document credential scan, and
+> full diff review passed. No application code, model asset, dependency, or
+> production branch changed. User review of the written spec remains the gate
+> before `writing-plans` and implementation.
 
 > Implementation approval on 2026-08-11 locks one reversible 1030vh desktop
 > timeline: grow 0–84, pan 84–380, frame-07 zoom 380–480, blur 442–480,
@@ -111,8 +132,9 @@ update it before taking or handing off work.
 
 ## File Reservations
 
-No active file reservations. Jaw-scroll work is approved and handed off for
-publication to `main`.
+No active file reservations. Codex completed the approved design document at
+`docs/superpowers/specs/2026-08-11-runtime-jaw-3d-design.md`; next gate is user
+review before an implementation plan is written.
 
 > **Read this before touching the build.** The framework changed. The project
 > no longer runs on `vinext` or Cloudflare Workers — it is now standard
