@@ -5,11 +5,12 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Task 1 approved; Task 2 in progress
+- Status: Tasks 1–2 approved; Task 3 in progress
 - Owner: Codex
 - Branch: `codex/runtime-jaw-3d`
-- Task: Implement pure clinic-story phase mapping and deterministic realtime
-  jaw pose contracts, including desktop/mobile boundaries and reverse scroll.
+- Task: Implement validated runtime model contract and direct Three.js jaw
+  scene controller with deterministic motion, projection, hit testing, and
+  complete lifecycle cleanup.
 
 > On 2026-08-11 the user approved model B, `Free Teeth Base Mesh` by
 > ferrumiron6, as the production source and approved proceeding without an
@@ -72,6 +73,18 @@ update it before taking or handing off work.
 > validation, whitespace scan, and credential scan passed. Poster/fallback
 > visual audit passed. Non-blocking Sharp/libvips and Blender deprecation
 > warnings remain; npm audit reports one low and five high transitive findings.
+
+> Task 2 handoff on 2026-08-11: pure motion contracts are in commits
+> `31501ea` and `0a57fc3`. Independent review passed spec compliance and
+> approved code quality after deprecated `globalTime`/`finalOpacity` mappings
+> were restored as a temporary bridge for the existing video consumer. New
+> canonical fields are `jawOpen`, `jawSeparation`, `labelsOpacity`, and
+> `interactive`; desktop ends at 1020vh and mobile at 750vh. Jaw pose is pure,
+> clamped, reversible, and Three/DOM-free. Symmetric arch travel is ±12% of
+> model height; premolar/molar/gum offsets are 8% width, 18% width, and 3%
+> depth. 103/103 tests, lint, typecheck, production build, whitespace scan,
+> and credential scan passed. Task 7 must remove the deprecated bridge with
+> the old video consumer.
 
 > Implementation approval on 2026-08-11 locks one reversible 1030vh desktop
 > timeline: grow 0–84, pan 84–380, frame-07 zoom 380–480, blur 442–480,
@@ -171,10 +184,9 @@ update it before taking or handing off work.
 
 ## File Reservations
 
-- Codex reserves `COLLAB.md` for Task 2 coordination.
-- Task 2 implementer reserves `components/home/clinicStoryMotion.ts`,
-  `components/home/clinicStoryMotion.test.ts`, and
-  `components/home/jaw/jawPose.ts` plus its test.
+- Codex reserves `COLLAB.md` for Task 3 coordination.
+- Task 3 implementer reserves `components/home/jaw/jawModelContract.ts`, its
+  test, `components/home/jaw/JawSceneController.ts`, and its test.
 
 > **Read this before touching the build.** The framework changed. The project
 > no longer runs on `vinext` or Cloudflare Workers — it is now standard
