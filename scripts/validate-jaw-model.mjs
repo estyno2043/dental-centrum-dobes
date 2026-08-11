@@ -20,6 +20,19 @@ const REQUIRED_HIT_PROXIES = [
 ];
 const REQUIRED_NODES = ["gum.upper", "gum.lower", ...REQUIRED_ANCHORS, ...REQUIRED_HIT_PROXIES];
 
+const EXPECTED_SEMANTIC_MEMBERS = {
+  front: [
+    "tooth.11", "tooth.12", "tooth.13", "tooth.21", "tooth.22", "tooth.23",
+    "tooth.31", "tooth.32", "tooth.33", "tooth.41", "tooth.42", "tooth.43",
+  ],
+  "premolar.left": ["tooth.24", "tooth.25", "tooth.34", "tooth.35"],
+  "premolar.right": ["tooth.14", "tooth.15", "tooth.44", "tooth.45"],
+  "molar.left": ["tooth.26", "tooth.27", "tooth.28", "tooth.36", "tooth.37", "tooth.38"],
+  "molar.right": ["tooth.16", "tooth.17", "tooth.18", "tooth.46", "tooth.47", "tooth.48"],
+  "gum.upper": ["gum.upper"],
+  "gum.lower": ["gum.lower"],
+};
+
 const ATTRIBUTION = {
   title: "Free Teeth Base Mesh",
   author: "ferrumiron6",
@@ -62,6 +75,64 @@ function countTriangles(mesh) {
 function formatBounds(bounds) {
   return `[${bounds.min.map((value) => value.toFixed(4)).join(", ")}]` +
     ` → [${bounds.max.map((value) => value.toFixed(4)).join(", ")}]`;
+}
+
+function parseSemanticMembers(node, label) {
+  const serialized = node.getExtras().members;
+  if (typeof serialized !== "string") fail(`${label}: missing semantic member metadata`);
+  let members;
+  try {
+    members = JSON.parse(serialized);
+  } catch {
+    fail(`${label}: semantic member metadata is not valid JSON`);
+  }
+  if (!Array.isArray(members) || members.some((member) => typeof member !== "string")) {
+    fail(`${label}: semantic member metadata must be a JSON string array`);
+  }
+  return members;
+}
+
+function boundsContain(outer, inner, tolerance = 1e-4) {
+  return outer.min.every((value, axis) => value <= inner.min[axis] + tolerance) &&
+    outer.max.every((value, axis) => value >= inner.max[axis] - tolerance);
+}
+
+function validateSemanticGroups(config, nodesByName) {
+  for (const [semantic, expectedMembers] of Object.entries(EXPECTED_SEMANTIC_MEMBERS)) {
+    const anchor = nodesByName.get(`anchor.${semantic}`);
+    const hit = nodesByName.get(`hit.${semantic}`);
+    const expectedJson = JSON.stringify(expectedMembers);
+
+    for (const [kind, node] of [["anchor", anchor], ["hit", hit]]) {
+      const label = `${config.label}: ${kind}.${semantic}`;
+      const members = parseSemanticMembers(node, label);
+      if (JSON.stringify(members) !== expectedJson) {
+        fail(`${label}: expected members ${expectedMembers.join(", ")}; found ${members.join(", ")}`);
+      }
+      if (node.getExtras().semantic !== semantic) {
+        fail(`${label}: semantic metadata must equal ${semantic}`);
+      }
+    }
+
+    const memberNodes = expectedMembers.map((name) => nodesByName.get(name));
+    if (memberNodes.some((node) => !node?.getMesh())) {
+      fail(`${config.label}: ${semantic} references a missing semantic mesh`);
+    }
+    const memberBounds = memberNodes.map((node) => getBounds(node));
+    const hitBounds = getBounds(hit);
+    if (memberBounds.some((bounds) => !boundsContain(hitBounds, bounds))) {
+      fail(`${config.label}: hit.${semantic} does not cover every declared semantic member`);
+    }
+
+    const union = {
+      min: Array.from({ length: 3 }, (_, axis) => Math.min(...memberBounds.map((bounds) => bounds.min[axis]))),
+      max: Array.from({ length: 3 }, (_, axis) => Math.max(...memberBounds.map((bounds) => bounds.max[axis]))),
+    };
+    const anchorPosition = anchor.getWorldTranslation();
+    if (anchorPosition.some((value, axis) => value < union.min[axis] || value > union.max[axis])) {
+      fail(`${config.label}: anchor.${semantic} lies outside its declared member bounds`);
+    }
+  }
 }
 
 async function validateAsset(io, config) {
@@ -110,6 +181,7 @@ async function validateAsset(io, config) {
     return !hit.getMesh() || hit.getExtras().hitProxy !== true;
   });
   if (invalidHits.length) fail(`${config.label}: hit proxies must be marked meshes ${invalidHits.join(", ")}`);
+  validateSemanticGroups(config, nodesByName);
 
   const scene = root.getDefaultScene();
   if (!scene) fail(`${config.label}: no default scene`);

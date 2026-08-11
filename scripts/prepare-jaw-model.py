@@ -48,6 +48,18 @@ REQUIRED_HIT_PROXIES = (
     "hit.gum.upper",
     "hit.gum.lower",
 )
+SEMANTIC_GROUP_MEMBERS = {
+    "front": (
+        "tooth.11", "tooth.12", "tooth.13", "tooth.21", "tooth.22", "tooth.23",
+        "tooth.31", "tooth.32", "tooth.33", "tooth.41", "tooth.42", "tooth.43",
+    ),
+    "premolar.left": ("tooth.24", "tooth.25", "tooth.34", "tooth.35"),
+    "premolar.right": ("tooth.14", "tooth.15", "tooth.44", "tooth.45"),
+    "molar.left": ("tooth.26", "tooth.27", "tooth.28", "tooth.36", "tooth.37", "tooth.38"),
+    "molar.right": ("tooth.16", "tooth.17", "tooth.18", "tooth.46", "tooth.47", "tooth.48"),
+    "gum.upper": ("gum.upper",),
+    "gum.lower": ("gum.lower",),
+}
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = REPO_ROOT / "public" / "media" / "jaw"
@@ -208,13 +220,14 @@ def bounds_for_objects(objects: list[bpy.types.Object]) -> tuple[Vector, Vector]
     return lower, upper
 
 
-def create_anchor(name: str, position: Vector) -> bpy.types.Object:
+def create_anchor(name: str, position: Vector, members: tuple[str, ...]) -> bpy.types.Object:
     anchor = bpy.data.objects.new(name, None)
     bpy.context.scene.collection.objects.link(anchor)
     anchor.empty_display_type = "PLAIN_AXES"
     anchor.empty_display_size = 0.025
     anchor.location = position
     anchor["semantic"] = name.removeprefix("anchor.")
+    anchor["members"] = json.dumps(members, separators=(",", ":"))
     return anchor
 
 
@@ -222,6 +235,7 @@ def create_convex_box(
     name: str,
     target_objects: list[bpy.types.Object],
     material: bpy.types.Material,
+    members: tuple[str, ...],
 ) -> bpy.types.Object:
     lower, upper = bounds_for_objects(target_objects)
     padding = Vector((0.012, 0.012, 0.012))
@@ -244,6 +258,7 @@ def create_convex_box(
     bpy.context.scene.collection.objects.link(proxy)
     proxy["hitProxy"] = True
     proxy["semantic"] = name.removeprefix("hit.")
+    proxy["members"] = json.dumps(members, separators=(",", ":"))
     return proxy
 
 
@@ -253,19 +268,22 @@ def create_semantic_nodes(
     gum_lower: bpy.types.Object,
     hit_material: bpy.types.Material,
 ) -> tuple[list[bpy.types.Object], list[bpy.types.Object]]:
-    groups = {
-        "front": [tooth_by_fdi[fdi] for fdi in (11, 12, 21, 22, 31, 32, 41, 42)],
-        "premolar.left": [tooth_by_fdi[fdi] for fdi in (24, 25, 34, 35)],
-        "premolar.right": [tooth_by_fdi[fdi] for fdi in (14, 15, 44, 45)],
-        "molar.left": [tooth_by_fdi[fdi] for fdi in (26, 27, 28, 36, 37, 38)],
-        "molar.right": [tooth_by_fdi[fdi] for fdi in (16, 17, 18, 46, 47, 48)],
-        "gum.upper": [gum_upper],
-        "gum.lower": [gum_lower],
+    objects_by_name = {
+        **{f"tooth.{fdi}": tooth for fdi, tooth in tooth_by_fdi.items()},
+        "gum.upper": gum_upper,
+        "gum.lower": gum_lower,
     }
-    anchors = [create_anchor(f"anchor.{name}", average_centers(objects)) for name, objects in groups.items()]
+    groups = {
+        semantic: [objects_by_name[name] for name in members]
+        for semantic, members in SEMANTIC_GROUP_MEMBERS.items()
+    }
+    anchors = [
+        create_anchor(f"anchor.{semantic}", average_centers(groups[semantic]), members)
+        for semantic, members in SEMANTIC_GROUP_MEMBERS.items()
+    ]
     proxies = [
-        create_convex_box(f"hit.{name}", objects, hit_material)
-        for name, objects in groups.items()
+        create_convex_box(f"hit.{semantic}", groups[semantic], hit_material, members)
+        for semantic, members in SEMANTIC_GROUP_MEMBERS.items()
     ]
     return anchors, proxies
 
@@ -429,6 +447,10 @@ def validate_pre_export(
     lower_arch_x = tuple((fdi, round(centers[fdi].x, 6)) for fdi in (48, 41, 31, 38))
     assert centers[48].x < centers[41].x < centers[31].x < centers[38].x, lower_arch_x
     assert all(math.isfinite(value) for center in centers.values() for value in center)
+    for semantic, expected_members in SEMANTIC_GROUP_MEMBERS.items():
+        for prefix in ("anchor", "hit"):
+            node = bpy.data.objects[f"{prefix}.{semantic}"]
+            assert tuple(json.loads(node["members"])) == expected_members
 
 
 def main() -> None:
