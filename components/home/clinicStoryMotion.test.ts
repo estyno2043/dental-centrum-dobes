@@ -48,6 +48,18 @@ describe("mapClinicStoryMotion desktop", () => {
     expect(mapClinicStoryMotion(780, "desktop").labelsOpacity).toBe(0.5);
     expect(mapClinicStoryMotion(840, "desktop").labelsOpacity).toBe(1);
   });
+
+  test.each([
+    [480, { globalTime: 0, finalOpacity: 0 }],
+    [705, { globalTime: 4, finalOpacity: 0 }],
+    [856.875, { globalTime: 6.7, finalOpacity: 0 }],
+    [876.5625, { globalTime: 7.05, finalOpacity: 0.5 }],
+    [896.25, { globalTime: 7.4, finalOpacity: 1 }],
+    [930, { globalTime: 8, finalOpacity: 1 }],
+    [1020, { globalTime: 8, finalOpacity: 1 }],
+  ])("retains the deprecated desktop video mapping at %svh", (scrollVh, expected) => {
+    expect(mapClinicStoryMotion(scrollVh, "desktop")).toMatchObject(expected);
+  });
 });
 
 describe("mapClinicStoryMotion mobile", () => {
@@ -77,6 +89,18 @@ describe("mapClinicStoryMotion mobile", () => {
     expect(mapClinicStoryMotion(470, "mobile").labelsOpacity).toBe(0);
     expect(mapClinicStoryMotion(530, "mobile").labelsOpacity).toBe(0.5);
     expect(mapClinicStoryMotion(590, "mobile").labelsOpacity).toBe(1);
+  });
+
+  test.each([
+    [230, { globalTime: 0, finalOpacity: 0 }],
+    [455, { globalTime: 4, finalOpacity: 0 }],
+    [606.875, { globalTime: 6.7, finalOpacity: 0 }],
+    [626.5625, { globalTime: 7.05, finalOpacity: 0.5 }],
+    [646.25, { globalTime: 7.4, finalOpacity: 1 }],
+    [680, { globalTime: 8, finalOpacity: 1 }],
+    [750, { globalTime: 8, finalOpacity: 1 }],
+  ])("retains the deprecated mobile video mapping at %svh", (scrollVh, expected) => {
+    expect(mapClinicStoryMotion(scrollVh, "mobile")).toMatchObject(expected);
   });
 
   test("clamps mobile range", () => {

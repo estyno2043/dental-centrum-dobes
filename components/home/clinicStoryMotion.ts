@@ -14,6 +14,10 @@ export type ClinicStoryMotionState = Readonly<{
   jawSeparation: number;
   labelsOpacity: number;
   interactive: boolean;
+  /** @deprecated Remove in Task 7 when the video consumer is replaced. */
+  globalTime: number;
+  /** @deprecated Remove in Task 7 when the video consumer is replaced. */
+  finalOpacity: number;
 }>;
 
 export type DampedMotionState = Readonly<{
@@ -32,6 +36,7 @@ const round = (value: number, precision = 4): number =>
 
 function mapDesktop(scrollVh: number): ClinicStoryMotionState {
   const value = clamp(scrollVh, 0, DESKTOP_STORY_SCROLL_VH);
+  const globalTime = round(phase(value, 480, 930) * 8);
 
   return {
     grow: round(phase(value, 0, 84)),
@@ -44,11 +49,14 @@ function mapDesktop(scrollVh: number): ClinicStoryMotionState {
     jawSeparation: round(phase(value, 660, 840)),
     labelsOpacity: round(phase(value, 720, 840)),
     interactive: value >= 840,
+    globalTime,
+    finalOpacity: round(phase(globalTime, 6.7, 7.4)),
   };
 }
 
 function mapMobile(scrollVh: number): ClinicStoryMotionState {
   const value = clamp(scrollVh, 0, MOBILE_STORY_SCROLL_VH);
+  const globalTime = round(phase(value, 230, 680) * 8);
 
   return {
     grow: 1,
@@ -61,6 +69,8 @@ function mapMobile(scrollVh: number): ClinicStoryMotionState {
     jawSeparation: round(phase(value, 410, 590)),
     labelsOpacity: round(phase(value, 470, 590)),
     interactive: value >= 590,
+    globalTime,
+    finalOpacity: round(phase(globalTime, 6.7, 7.4)),
   };
 }
 
