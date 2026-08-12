@@ -1,6 +1,31 @@
 import { render, screen, within } from "@testing-library/react";
-import { expect, test } from "vitest";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import HomePage from "./page";
+
+class NoopIntersectionObserver {
+  readonly observe = vi.fn();
+  readonly disconnect = vi.fn();
+}
+
+class NoopResizeObserver {
+  readonly observe = vi.fn();
+  readonly disconnect = vi.fn();
+}
+
+beforeEach(() => {
+  vi.stubGlobal(
+    "IntersectionObserver",
+    NoopIntersectionObserver as unknown as typeof IntersectionObserver,
+  );
+  vi.stubGlobal(
+    "ResizeObserver",
+    NoopResizeObserver as unknown as typeof ResizeObserver,
+  );
+});
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
 
 test("keeps the unified clinic story beside the statement band so sticky binds to viewport", () => {
   render(<HomePage />);
@@ -53,6 +78,14 @@ test("keeps gallery handoff and jaw inside the same sticky viewport", () => {
   });
 
   expect(within(clinicStory).getByTestId("clinic-story-handoff")).toBeInTheDocument();
-  expect(within(clinicStory).getByText(/Jeden plán\. Každý zub/)).toBeInTheDocument();
+  expect(within(clinicStory).getByTestId("jaw-experience-host")).toBeInTheDocument();
+  expect(
+    within(clinicStory).getAllByRole("button", {
+      name: /^(Predné zuby|Črenové zuby|Stoličky|Ďasná)$/,
+    }),
+  ).toHaveLength(4);
+  expect(
+    clinicStory.querySelector('form[name="jaw-appointment"]'),
+  ).toBeInTheDocument();
   expect(screen.getAllByTestId("clinic-story-pin")).toHaveLength(1);
 });

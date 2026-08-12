@@ -1,6 +1,44 @@
-import { act, render, screen } from "@testing-library/react";
-import { afterEach, expect, test, vi } from "vitest";
-import { ClinicStory, jawSegments } from "./ClinicStory";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { ClinicStory } from "./ClinicStory";
+
+class NoopIntersectionObserver {
+  readonly observe = vi.fn();
+  readonly disconnect = vi.fn();
+}
+
+class NoopResizeObserver {
+  readonly observe = vi.fn();
+  readonly disconnect = vi.fn();
+}
+
+let animationFrameCallbacks = new Map<number, FrameRequestCallback>();
+let nextAnimationFrameId = 1;
+
+beforeEach(() => {
+  animationFrameCallbacks = new Map();
+  nextAnimationFrameId = 1;
+  vi.stubGlobal(
+    "IntersectionObserver",
+    NoopIntersectionObserver as unknown as typeof IntersectionObserver,
+  );
+  vi.stubGlobal(
+    "ResizeObserver",
+    NoopResizeObserver as unknown as typeof ResizeObserver,
+  );
+  vi.stubGlobal(
+    "requestAnimationFrame",
+    vi.fn((callback: FrameRequestCallback) => {
+      const id = nextAnimationFrameId++;
+      animationFrameCallbacks.set(id, callback);
+      return id;
+    }),
+  );
+  vi.stubGlobal(
+    "cancelAnimationFrame",
+    vi.fn((id: number) => animationFrameCallbacks.delete(id)),
+  );
+});
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -22,7 +60,35 @@ function stubMatchMedia(reduced: boolean, wide = true) {
   );
 }
 
-test("uses one region and one sticky viewport for gallery, handoff and jaw", () => {
+function flushAnimationFrame(now = 16): void {
+  const callbacks = [...animationFrameCallbacks.values()];
+  animationFrameCallbacks.clear();
+  for (const callback of callbacks) callback(now);
+}
+
+function setSectionScrollVh(section: HTMLElement, scrollVh: number): void {
+  const top = -scrollVh * (window.innerHeight / 100);
+  section.getBoundingClientRect = () =>
+    ({
+      bottom: top + section.offsetHeight,
+      height: section.offsetHeight,
+      left: 0,
+      right: window.innerWidth,
+      top,
+      width: window.innerWidth,
+      x: 0,
+      y: top,
+      toJSON: () => ({}),
+    }) satisfies DOMRect;
+}
+
+function zoneButtons(): HTMLButtonElement[] {
+  return screen.getAllByRole("button", {
+    name: /^(Predné zuby|Črenové zuby|Stoličky|Ďasná)$/,
+  });
+}
+
+test("uses one sticky viewport for seven gallery frames and the realtime jaw", () => {
   stubMatchMedia(false);
   const { container } = render(<ClinicStory />);
 
@@ -36,13 +102,16 @@ test("uses one region and one sticky viewport for gallery, handoff and jaw", () 
     "src",
     "/media/strip-07-detail.jpg",
   );
-  expect(screen.getAllByTestId("jaw-video-layer")).toHaveLength(2);
-  expect(screen.getByText("Prirodzený zhryz")).toBeInTheDocument();
-  expect(screen.getByText("Zachovať vlastný zub")).toBeInTheDocument();
-  expect(screen.getByText("Zdravý základ")).toBeInTheDocument();
+  expect(screen.getByTestId("jaw-experience-host")).toBeInTheDocument();
+  expect(zoneButtons()).toHaveLength(4);
+  for (const button of zoneButtons()) {
+    expect(button).toHaveAttribute("aria-disabled", "true");
+    expect(button).toHaveAttribute("tabindex", "-1");
+  }
+  expect(container.querySelector("video")).not.toBeInTheDocument();
 });
 
-test("maps physical desktop scroll to sequential grow and pan phases", () => {
+test("maps physical desktop scroll to sequential grow and pan phases in animation frames", () => {
   stubMatchMedia(false);
   render(<ClinicStory />);
 
@@ -53,50 +122,65 @@ test("maps physical desktop scroll to sequential grow and pan phases", () => {
   Object.defineProperty(window, "innerHeight", { configurable: true, value: 1000 });
   Object.defineProperty(window, "innerWidth", { configurable: true, value: 1440 });
   Object.defineProperty(track, "scrollWidth", { configurable: true, value: 4200 });
-  section.getBoundingClientRect = () =>
-    ({
-      bottom: 8980,
-      height: 11300,
-      left: 0,
-      right: 1440,
-      top: -2320,
-      width: 1440,
-      x: 0,
-      y: -2320,
-      toJSON: () => ({}),
-    }) satisfies DOMRect;
+  setSectionScrollVh(section, 232);
 
-  act(() => window.dispatchEvent(new Event("scroll")));
+  act(() => {
+    window.dispatchEvent(new Event("scroll"));
+    flushAnimationFrame();
+  });
 
   expect(section.style.getPropertyValue("--grow")).toBe("1");
   expect(section.style.getPropertyValue("--pan")).toBe("0.5");
   expect(section.style.getPropertyValue("--travel")).toBe("2760px");
 });
 
-test("declares four independently seekable clips per asset profile", () => {
-  expect(jawSegments).toHaveLength(4);
-  expect(jawSegments.map((segment) => segment.desktop)).toEqual([
-    "/media/jaw-story/jaw-01-1080.mp4",
-    "/media/jaw-story/jaw-02-1080.mp4",
-    "/media/jaw-story/jaw-03-1080.mp4",
-    "/media/jaw-story/jaw-04-1080.mp4",
-  ]);
-  expect(jawSegments.map((segment) => segment.mobile)).toEqual([
-    "/media/jaw-story/jaw-01-720.mp4",
-    "/media/jaw-story/jaw-02-720.mp4",
-    "/media/jaw-story/jaw-03-720.mp4",
-    "/media/jaw-story/jaw-04-720.mp4",
-  ]);
+test("enables interaction at 840vh and closes it when reverse scroll crosses below", () => {
+  stubMatchMedia(false);
+  render(<ClinicStory />);
+
+  const section = screen.getByRole("region", {
+    name: "Miesto, kde sa nikto neponáhľa.",
+  });
+  Object.defineProperty(window, "innerHeight", { configurable: true, value: 1000 });
+  Object.defineProperty(window, "innerWidth", { configurable: true, value: 1440 });
+  setSectionScrollVh(section, 840);
+
+  act(() => {
+    window.dispatchEvent(new Event("scroll"));
+    flushAnimationFrame();
+  });
+
+  for (const button of zoneButtons()) {
+    expect(button).toHaveAttribute("aria-disabled", "false");
+    expect(button).toHaveAttribute("tabindex", "0");
+  }
+
+  fireEvent.click(screen.getByRole("button", { name: "Predné zuby" }));
+  expect(screen.getByRole("dialog", { name: "Predné zuby" })).toBeVisible();
+
+  setSectionScrollVh(section, 839);
+  act(() => {
+    window.dispatchEvent(new Event("scroll"));
+    flushAnimationFrame(32);
+  });
+
+  expect(screen.queryByRole("dialog", { name: "Predné zuby" })).not.toBeInTheDocument();
+  for (const button of zoneButtons()) {
+    expect(button).toHaveAttribute("aria-disabled", "true");
+    expect(button).toHaveAttribute("tabindex", "-1");
+  }
 });
 
-test("uses static readable fallback with manual swipe under reduced motion", () => {
+test("keeps the static realtime-jaw fallback and native gallery swipe under reduced motion", () => {
   stubMatchMedia(true);
   const { container } = render(<ClinicStory />);
 
   expect(container.querySelector("video")).not.toBeInTheDocument();
   expect(
-    container.querySelector('img[src="/media/jaw-story/jaw-poster.jpg"]'),
-  ).toBeInTheDocument();
+    screen.getByRole("img", { name: /statický model chrupu/i }),
+  ).toHaveAttribute("src", "/media/jaw/jaw-fallback.webp");
   expect(screen.getByRole("list")).toHaveAttribute("data-native-swipe", "true");
-  expect(screen.getByText("Prirodzený zhryz")).toBeVisible();
+  for (const button of zoneButtons()) {
+    expect(button).toHaveAttribute("aria-disabled", "false");
+  }
 });

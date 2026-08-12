@@ -3,22 +3,16 @@
   --pan: 0;
   --snap: 0;
   --zoom: 0;
-  --photo-blur: 0;
-  --jaw-opacity: 0;
   --travel: 0px;
   --handoff-left: 0px;
   --handoff-top: 0px;
   --handoff-width: 0px;
   --handoff-height: 0px;
   --handoff-blur: 0;
-  --bite-opacity: 0;
-  --tooth-opacity: 0;
-  --gum-opacity: 0;
-  --final-opacity: 0;
 
   position: relative;
-  height: 1130vh;
-  height: 1130dvh;
+  height: 1120vh;
+  height: 1120dvh;
   background: var(--ink);
 }
 
@@ -165,176 +159,16 @@
   will-change: top, left, width, height, filter, transform;
 }
 
-.jawLayer {
+.jawHost {
   position: absolute;
   z-index: 3;
-  opacity: var(--jaw-opacity);
   inset: 0;
-  pointer-events: none;
-  will-change: opacity;
-}
-
-.poster,
-.mediaDeck,
-.videoLayer,
-.scrim {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  inset: 0;
-}
-
-.poster,
-.videoLayer {
-  display: block;
-  object-fit: cover;
-}
-
-.mediaDeck {
-  z-index: 1;
-}
-
-.videoLayer {
-  border: 0;
-  opacity: 0;
-  transition: opacity 70ms linear;
-  will-change: opacity;
-}
-
-.scrim {
-  z-index: 2;
-  background:
-    linear-gradient(90deg, rgb(28 28 31 / 43%) 0%, transparent 42% 70%, rgb(28 28 31 / 18%) 100%),
-    linear-gradient(180deg, rgb(28 28 31 / 16%), transparent 31% 68%, rgb(28 28 31 / 34%));
-}
-
-.annotations,
-.callout,
-.leader {
-  position: absolute;
-  z-index: 4;
-  width: 100%;
-  height: 100%;
-  inset: 0;
-  pointer-events: none;
-}
-
-.callout {
-  opacity: var(--callout-opacity);
-  transform: translate3d(0, calc((1 - var(--callout-opacity)) * 18px), 0);
-  transition: opacity 70ms linear;
-  will-change: opacity, transform;
-}
-
-.bite {
-  --callout-opacity: var(--bite-opacity);
-}
-
-.tooth {
-  --callout-opacity: var(--tooth-opacity);
-}
-
-.gum {
-  --callout-opacity: var(--gum-opacity);
-}
-
-.leader {
-  overflow: visible;
-}
-
-.leader path {
-  fill: none;
-  stroke: rgb(214 194 160 / 94%);
-  stroke-dasharray: 1;
-  stroke-dashoffset: calc(1 - var(--callout-opacity));
-  stroke-linecap: square;
-  stroke-linejoin: bevel;
-  stroke-width: 1.5;
-  vector-effect: non-scaling-stroke;
-  filter: drop-shadow(0 1px 2px rgb(28 28 31 / 58%));
-}
-
-.leader circle {
-  fill: var(--taupe);
-  stroke: rgb(255 255 255 / 68%);
-  stroke-width: 1;
-  vector-effect: non-scaling-stroke;
-}
-
-.calloutCard {
-  position: absolute;
-  width: min(30rem, 31vw);
-  padding: clamp(18px, 2vw, 28px) clamp(20px, 2.4vw, 34px);
-  border: 1px solid rgb(174 155 126 / 48%);
-  background:
-    linear-gradient(125deg, rgb(28 28 31 / 90%), rgb(28 28 31 / 64%)),
-    rgb(28 28 31 / 78%);
-  backdrop-filter: blur(14px);
-  box-shadow: 0 24px 70px rgb(0 0 0 / 22%);
-  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
-  transform: translate3d(-50%, -50%, 0);
-  will-change: left, top;
-}
-
-.calloutEyebrow {
-  margin-bottom: 10px;
-  color: var(--taupe);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-}
-
-.calloutCard h3 {
-  margin-bottom: 8px;
-  color: var(--porcelain);
-  font-size: clamp(1.25rem, 2.2vw, 2rem);
-  font-weight: 600;
-  letter-spacing: -0.025em;
-  line-height: 1.08;
-}
-
-.calloutCard > p:last-child {
-  max-width: 37ch;
-  color: rgb(255 255 255 / 72%);
-  font-size: clamp(0.82rem, 1vw, 1rem);
-  line-height: 1.55;
-}
-
-.finalCopy {
-  position: absolute;
-  z-index: 5;
-  top: 50%;
-  left: 50%;
-  width: min(900px, 84vw);
-  color: var(--porcelain);
-  opacity: var(--final-opacity);
-  text-align: center;
-  transform: translate3d(-50%, calc(-50% + (1 - var(--final-opacity)) * 24px), 0);
-  pointer-events: none;
-}
-
-.finalCopy p {
-  margin-bottom: 18px;
-  color: var(--taupe);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-}
-
-.finalCopy h2 {
-  font-size: clamp(2.2rem, 5.4vw, 5.2rem);
-  font-weight: 600;
-  letter-spacing: -0.045em;
-  line-height: 0.98;
-  text-wrap: balance;
 }
 
 @media (max-width: 767px) {
   .section {
-    height: 880vh;
-    height: 880dvh;
+    height: 850vh;
+    height: 850dvh;
   }
 
   .galleryLayer {
@@ -378,32 +212,6 @@
     object-position: center;
   }
 
-  .scrim {
-    background:
-      linear-gradient(180deg, rgb(28 28 31 / 12%), transparent 28% 57%, rgb(28 28 31 / 62%)),
-      linear-gradient(90deg, rgb(28 28 31 / 9%), transparent 70%);
-  }
-
-  .calloutCard {
-    width: calc(100vw - 32px);
-    padding: 18px 20px 20px;
-  }
-
-  .calloutCard h3 {
-    font-size: clamp(1.25rem, 6vw, 1.7rem);
-  }
-
-  .calloutCard > p:last-child {
-    font-size: 0.84rem;
-  }
-
-  .finalCopy {
-    width: calc(100vw - 36px);
-  }
-
-  .finalCopy h2 {
-    font-size: clamp(2.2rem, 11vw, 3.7rem);
-  }
 }
 
 .reduced {
@@ -438,56 +246,7 @@
   display: none;
 }
 
-.reduced .jawLayer {
+.reduced .jawHost {
   position: relative;
   height: min(72dvh, 720px);
-  opacity: 1;
-}
-
-.reduced .annotations {
-  position: relative;
-  display: grid;
-  width: auto;
-  height: auto;
-  padding: 24px 20px;
-  background: var(--ink);
-  gap: 12px;
-}
-
-.reduced .callout {
-  position: relative;
-  width: auto;
-  height: auto;
-  opacity: 1;
-  transform: none;
-}
-
-.reduced .leader {
-  display: none;
-}
-
-.reduced .calloutCard {
-  position: relative;
-  top: auto !important;
-  left: auto !important;
-  width: min(100%, 760px);
-  transform: none;
-}
-
-.reduced .finalCopy {
-  position: relative;
-  top: auto;
-  left: auto;
-  width: auto;
-  padding: 56px 20px 80px;
-  background: var(--ink);
-  opacity: 1;
-  transform: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .videoLayer,
-  .callout {
-    transition: none;
-  }
 }
