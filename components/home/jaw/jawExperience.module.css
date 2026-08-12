@@ -95,6 +95,21 @@
   list-style: none;
 }
 
+.zoneInstruction {
+  position: absolute;
+  top: clamp(136px, 20dvh, 190px);
+  left: 50%;
+  width: min(88vw, 420px);
+  margin: 0;
+  color: #fffaf1;
+  font-size: clamp(0.86rem, 1.25vw, 1rem);
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: center;
+  text-shadow: 0 2px 16px rgb(0 0 0 / 76%);
+  transform: translateX(-50%);
+}
+
 .zoneButton {
   position: absolute;
   display: inline-flex;

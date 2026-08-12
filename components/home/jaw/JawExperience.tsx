@@ -58,8 +58,6 @@ const RESTING_MOTION: ClinicStoryMotionState = {
   jawSeparation: 0,
   labelsOpacity: 0,
   interactive: false,
-  globalTime: 0,
-  finalOpacity: 0,
 };
 
 const FINAL_MOTION: ClinicStoryMotionState = {
@@ -283,6 +281,8 @@ export const JawExperience = forwardRef<
     let loadFailed = false;
     let createdController: JawSceneController | null = null;
     let loadStarted = false;
+    let contextSuspended = false;
+    let sceneGeneration = 0;
     const host = hostRef.current;
     const canvas = canvasRef.current;
 
@@ -342,6 +342,32 @@ export const JawExperience = forwardRef<
       overlayRef.current?.setProjectedAnchors(fallbackAnchors(profile));
     };
 
+    let startController = (): void => {};
+
+    const suspendForContextLoss = (): void => {
+      if (cancelled || loadFailed || contextSuspended) return;
+      contextSuspended = true;
+      sceneGeneration += 1;
+      loadStarted = false;
+      frameReadyRef.current = false;
+      controlsEnabledRef.current = true;
+      setInteractive(true);
+      setLoadState("fallback");
+      setVisualOpacities(posterRef.current, canvas, 1, false, true);
+      overlayRef.current?.setProjectedAnchors(fallbackAnchors(profile));
+    };
+
+    const restoreAfterContextLoss = (): void => {
+      if (cancelled || loadFailed || !contextSuspended) return;
+      contextSuspended = false;
+      disposeController();
+      frameReadyRef.current = false;
+      loadStarted = false;
+      controlsEnabledRef.current = motionRef.current.interactive;
+      setInteractive(motionRef.current.interactive);
+      startController();
+    };
+
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
@@ -352,52 +378,79 @@ export const JawExperience = forwardRef<
           renderAndProject();
           return;
         }
-        if (loadStarted) return;
-        loadStarted = true;
-
-        void (async () => {
-          try {
-            const { JawSceneController } = await import("./JawSceneController");
-            if (cancelled) return;
-            const controller = await JawSceneController.create(canvas, {
-              profile,
-              modelUrl: `/media/jaw/jaw-${profile}.glb`,
-              onFirstFrame: () => {
-                if (cancelled) return;
-                frameReadyRef.current = true;
-                setVisualOpacities(
-                  posterRef.current,
-                  canvas,
-                  motionRef.current.jawOpacity,
-                  true,
-                );
-                setLoadState("ready");
-              },
-              onFatalError: failToFallback,
-              requestRender: renderAndProject,
-            });
-            if (cancelled || loadFailed) {
-              controller.dispose();
-              return;
-            }
-            createdController = controller;
-            controllerRef.current = controller;
-            controller.setMotion(motionRef.current);
-            controller.setPanelOpen(Boolean(selectedZoneRef.current));
-            controller.setActiveZone(selectedZoneRef.current);
-            renderAndProject();
-          } catch {
-            failToFallback();
-          }
-        })();
+        startController();
       },
       { rootMargin: "150% 0px" },
     );
+
+    startController = (): void => {
+      if (
+        cancelled ||
+        loadFailed ||
+        contextSuspended ||
+        loadStarted ||
+        !intersectingRef.current ||
+        !visibleRef.current
+      ) {
+        return;
+      }
+      loadStarted = true;
+      const generation = sceneGeneration;
+
+      void (async () => {
+        try {
+          const { JawSceneController } = await import("./JawSceneController");
+          if (cancelled || generation !== sceneGeneration) return;
+          const controller = await JawSceneController.create(canvas, {
+            profile,
+            modelUrl: `/media/jaw/jaw-${profile}.glb`,
+            onFirstFrame: () => {
+              if (cancelled || generation !== sceneGeneration) return;
+              frameReadyRef.current = true;
+              setVisualOpacities(
+                posterRef.current,
+                canvas,
+                motionRef.current.jawOpacity,
+                true,
+              );
+              setLoadState("ready");
+            },
+            onFatalError: failToFallback,
+            onContextLost: suspendForContextLoss,
+            onContextRestored: restoreAfterContextLoss,
+            requestRender: renderAndProject,
+          });
+          if (
+            cancelled ||
+            loadFailed ||
+            contextSuspended ||
+            generation !== sceneGeneration
+          ) {
+            controller.dispose();
+            return;
+          }
+          createdController = controller;
+          controllerRef.current = controller;
+          controller.setMotion(motionRef.current);
+          controller.setPanelOpen(Boolean(selectedZoneRef.current));
+          controller.setActiveZone(selectedZoneRef.current);
+          renderAndProject();
+        } catch {
+          if (generation === sceneGeneration) failToFallback();
+        }
+      })();
+    };
     observer.observe(host);
+
+    const onVisibilityChange = (): void => {
+      if (document.visibilityState !== "hidden") startController();
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
       cancelled = true;
       observer.disconnect();
+      document.removeEventListener("visibilitychange", onVisibilityChange);
       disposeController();
     };
   }, [prefersReducedMotion, profile, renderAndProject]);

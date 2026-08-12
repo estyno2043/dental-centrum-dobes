@@ -22,6 +22,8 @@ export interface JawSceneOptions {
   modelUrl: string;
   onFirstFrame(): void;
   onFatalError(error: Error): void;
+  onContextLost(): void;
+  onContextRestored(): void;
   requestRender(): void;
 }
 
@@ -202,14 +204,15 @@ export class JawSceneController {
 
   private readonly handleContextLost = (event: Event): void => {
     event.preventDefault();
-    if (this.disposed) return;
+    if (this.disposed || this.contextLost) return;
     this.contextLost = true;
+    this.options.onContextLost();
   };
 
   private readonly handleContextRestored = (): void => {
-    if (this.disposed) return;
+    if (this.disposed || !this.contextLost) return;
     this.contextLost = false;
-    this.requestRender();
+    this.options.onContextRestored();
   };
 
   private constructor(

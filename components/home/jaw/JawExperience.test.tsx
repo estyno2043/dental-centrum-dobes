@@ -40,6 +40,8 @@ type SceneOptions = {
   modelUrl: string;
   onFirstFrame(): void;
   onFatalError(error: Error): void;
+  onContextLost(): void;
+  onContextRestored(): void;
   requestRender(): void;
 };
 
@@ -143,8 +145,6 @@ function motion(
     jawSeparation: 1,
     labelsOpacity: 1,
     interactive: false,
-    globalTime: 8,
-    finalOpacity: 1,
     ...overrides,
   };
 }
@@ -582,6 +582,52 @@ test("a fatal error after startup disposes the failed controller and retains fal
   expect(controller.dispose).toHaveBeenCalledTimes(1);
 });
 
+test("context loss retains the selected panel and restores one eligible fresh scene", async () => {
+  const originalController = createController();
+  const restoredController = createController();
+  let originalOptions: SceneOptions | undefined;
+  runtime.create
+    .mockImplementationOnce(
+      async (_canvas: HTMLCanvasElement, options: SceneOptions) => {
+        originalOptions = options;
+        return originalController;
+      },
+    )
+    .mockResolvedValueOnce(restoredController);
+
+  const ref = createRef<JawExperienceHandle>();
+  render(
+    <JawExperience
+      ref={ref}
+      profile="desktop"
+      prefersReducedMotion={false}
+    />,
+  );
+  act(() => ref.current?.setMotion(motion({ interactive: true })));
+  await intersectHost();
+  await userEvent.click(screen.getByRole("button", { name: "Stoličky" }));
+  expect(await screen.findByRole("dialog", { name: "Stoličky" })).toBeVisible();
+
+  act(() => originalOptions?.onContextLost());
+  expect(screen.getByTestId("jaw-canvas").previousElementSibling).toHaveAttribute(
+    "src",
+    "/media/jaw/jaw-fallback.webp",
+  );
+  expect(screen.getByRole("dialog", { name: "Stoličky" })).toBeVisible();
+
+  act(() => originalOptions?.onContextRestored());
+  await waitFor(() => expect(runtime.create).toHaveBeenCalledTimes(2));
+  expect(originalController.dispose).toHaveBeenCalledTimes(1);
+  expect(restoredController.setMotion).toHaveBeenLastCalledWith(
+    motion({ interactive: true }),
+  );
+  expect(restoredController.setActiveZone).toHaveBeenLastCalledWith("molar");
+  expect(restoredController.setPanelOpen).toHaveBeenLastCalledWith(true);
+
+  act(() => originalOptions?.onContextRestored());
+  expect(runtime.create).toHaveBeenCalledTimes(2);
+});
+
 test("keeps fatal controller disposal exact-once across a profile change", async () => {
   const failedController = createController();
   const mobileController = createController();
@@ -634,6 +680,7 @@ test("projects seven leaders while exposing only four semantic zone buttons", ()
   expect(
     screen.getByRole("group", { name: "Vyberte oblasť, ktorá vás trápi" }),
   ).toBeVisible();
+  expect(screen.getByText("Vyberte oblasť, ktorá vás trápi")).toBeVisible();
 });
 
 test("uses the exact nearest-card-edge intersection for leader starts", () => {

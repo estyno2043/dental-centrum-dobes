@@ -154,6 +154,9 @@ export const JawZoneOverlay = forwardRef<
         role="group"
         aria-label="Vyberte oblasť, ktorá vás trápi"
       >
+        <p className={styles.zoneInstruction}>
+          Vyberte oblasť, ktorá vás trápi
+        </p>
         {jawZones.map((zone) => (
           <button
             key={zone.id}

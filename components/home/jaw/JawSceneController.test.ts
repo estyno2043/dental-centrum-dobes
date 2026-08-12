@@ -218,6 +218,8 @@ function createOptions(profile: "desktop" | "mobile" = "desktop") {
     modelUrl: `/jaw-${profile}.glb`,
     onFirstFrame: vi.fn(),
     onFatalError: vi.fn(),
+    onContextLost: vi.fn(),
+    onContextRestored: vi.fn(),
     requestRender: vi.fn(),
   } satisfies JawSceneOptions;
 }
@@ -312,8 +314,6 @@ function motion(
     jawSeparation: 0,
     labelsOpacity: 0,
     interactive: false,
-    globalTime: 0,
-    finalOpacity: 0,
     ...values,
   };
 }
@@ -426,7 +426,7 @@ describe("JawSceneController", () => {
     controller.dispose();
   });
 
-  test("applies canonical jaw motion directly and ignores deprecated video fields", async () => {
+  test("applies canonical jaw motion directly", async () => {
     const root = createJawRoot();
     const upper = root.getObjectByName("tooth.11") as THREE.Mesh;
     const premolarRight = root.getObjectByName("tooth.14") as THREE.Mesh;
@@ -448,7 +448,7 @@ describe("JawSceneController", () => {
     options.requestRender.mockClear();
 
     controller.setMotion(
-      motion({ jawOpen: 1, jawSeparation: 1, globalTime: 2, finalOpacity: 0.1 }),
+      motion({ jawOpen: 1, jawSeparation: 1 }),
     );
 
     expect(root.scale.x).toBe(1);
@@ -474,7 +474,7 @@ describe("JawSceneController", () => {
       molar: molarLeft.position.clone(),
     };
     controller.setMotion(
-      motion({ jawOpen: 1, jawSeparation: 1, globalTime: 8, finalOpacity: 1 }),
+      motion({ jawOpen: 1, jawSeparation: 1 }),
     );
     expect(root.scale).toEqual(canonicalTransforms.scale);
     expect(root.rotation.x).toBe(canonicalTransforms.rotation.x);
@@ -576,7 +576,7 @@ describe("JawSceneController", () => {
     controller.dispose();
   });
 
-  test("suspends rendering across WebGL context loss and resumes on restoration", async () => {
+  test("delegates context recovery after preventing default rendering loss", async () => {
     const canvas = createCanvas();
     const options = createOptions();
     const setup = createFactories();
@@ -588,11 +588,13 @@ describe("JawSceneController", () => {
     controller.setActiveZone("front");
     controller.render();
     expect(lost.defaultPrevented).toBe(true);
+    expect(options.onContextLost).toHaveBeenCalledTimes(1);
     expect(options.requestRender).not.toHaveBeenCalled();
     expect(setup.renderer.renderCount).toBe(0);
 
     canvas.dispatchEvent(new Event("webglcontextrestored"));
-    expect(options.requestRender).toHaveBeenCalledTimes(1);
+    expect(options.onContextRestored).toHaveBeenCalledTimes(1);
+    expect(options.requestRender).not.toHaveBeenCalled();
     controller.render();
     expect(setup.renderer.renderCount).toBe(1);
     controller.dispose();
