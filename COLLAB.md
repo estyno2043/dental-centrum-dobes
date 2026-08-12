@@ -5,11 +5,11 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Tasks 1–6 approved; Task 7 in progress
+- Status: Tasks 1–7 approved; Task 8 in progress
 - Owner: Codex
 - Branch: `codex/runtime-jaw-3d`
-- Task: Replace the legacy segmented jaw video with one sticky realtime 3D
-  `ClinicStory`, retaining gallery continuity and native scroll behavior.
+- Task: Harden realtime jaw lifecycle, fallback, accessibility, performance,
+  and motion-contract cleanup before localhost visual approval.
 
 > On 2026-08-11 the user approved model B, `Free Teeth Base Mesh` by
 > ferrumiron6, as the production source and approved proceeding without an
@@ -131,6 +131,19 @@ update it before taking or handing off work.
 > unmount, and profile changes. 188/188 tests, jaw validation, lint, typecheck,
 > production build, whitespace scan, and credential scan passed.
 
+> Task 7 handoff on 2026-08-12: single-sticky realtime integration is in
+> commits `d4b0d28` and `fb2e343`. Independent review passed spec compliance
+> and approved code quality after restoring a persistent approximately 180ms
+> critically damped progress follower and making the full-viewport jaw host
+> pointer-transparent to native mobile gallery swipes. One sticky pin now owns
+> seven gallery frames, the sharp frame-07 handoff, realtime jaw, controls,
+> panel, and static Netlify form. Raw reverse below the canonical 840vh desktop
+> boundary disables interaction and closes the panel immediately; forward
+> interaction waits until the damped final geometry settles. Six obsolete
+> video seek/motion/tracking modules and tests were deleted. 165/165 tests,
+> jaw validation, lint, typecheck, production build, SSR form inspection,
+> whitespace scan, obsolete-runtime scan, and credential scan passed.
+
 > Implementation approval on 2026-08-11 locks one reversible 1030vh desktop
 > timeline: grow 0–84, pan 84–380, frame-07 zoom 380–480, blur 442–480,
 > jaw fade 447–480, eight-second scrub 480–930, dwell 930–1030. Mobile keeps
@@ -229,10 +242,13 @@ update it before taking or handing off work.
 
 ## File Reservations
 
-- Codex reserves `COLLAB.md` for Task 7 coordination.
-- Task 7 implementer reserves `components/home/ClinicStory.tsx`, its test,
-  `components/home/clinicStory.module.css`, `app/page.test.tsx`, and deletion
-  of legacy `jawSeekQueue`, `jawStoryMotion`, and `jawTracking` modules/tests.
+- Codex reserves `COLLAB.md` for Task 8 coordination.
+- Task 8 implementer reserves `components/home/jaw/JawSceneController.ts`,
+  `JawExperience.tsx` and its test, `JawZoneOverlay.tsx`,
+  `JawDetailPanel.tsx`, `jawExperience.module.css`,
+  `components/home/ClinicStory.test.tsx`, plus
+  `components/home/clinicStoryMotion.ts` and its test for removal of the now
+  dead `globalTime`/`finalOpacity` video-compatibility bridge.
 
 > **Read this before touching the build.** The framework changed. The project
 > no longer runs on `vinext` or Cloudflare Workers — it is now standard
