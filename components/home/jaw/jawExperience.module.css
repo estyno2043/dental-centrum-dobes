@@ -35,22 +35,12 @@
 .poster {
   display: block;
   object-fit: contain;
-  opacity: 1;
   transition: opacity 360ms ease;
-}
-
-.poster[data-faded="true"] {
-  opacity: calc(1 - var(--jaw-opacity));
 }
 
 .canvas {
   display: block;
-  opacity: 0;
   transition: opacity 360ms ease;
-}
-
-.experience[data-load-state="ready"] .canvas {
-  opacity: var(--jaw-opacity);
 }
 
 .heading {
@@ -74,6 +64,10 @@
   z-index: 4;
   opacity: var(--labels-opacity);
   pointer-events: none;
+}
+
+.zoneOverlay:focus-within {
+  opacity: 1;
 }
 
 .leaders {

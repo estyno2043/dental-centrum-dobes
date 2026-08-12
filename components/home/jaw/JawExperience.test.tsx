@@ -7,6 +7,7 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createRef } from "react";
+import { renderToString } from "react-dom/server";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import type { ClinicStoryMotionState } from "../clinicStoryMotion";
 import {
@@ -252,6 +253,54 @@ test("keeps the poster visible until the first valid decorative-canvas frame", a
   expect(screen.getByRole("img", { name: /model chrupu sa načítava/i })).toBeInTheDocument();
 });
 
+test("gates both loading layers by jaw motion before and after the first frame", async () => {
+  const controller = createController();
+  let options: SceneOptions | undefined;
+  runtime.create.mockImplementation(
+    async (_canvas: HTMLCanvasElement, nextOptions: SceneOptions) => {
+      options = nextOptions;
+      return controller;
+    },
+  );
+  const ref = createRef<JawExperienceHandle>();
+  render(
+    <JawExperience
+      ref={ref}
+      profile="desktop"
+      prefersReducedMotion={false}
+    />,
+  );
+
+  const poster = screen.getByRole("img", { name: /model chrupu sa načítava/i });
+  const canvas = screen.getByTestId("jaw-canvas");
+  expect(poster).toHaveStyle({ opacity: "0" });
+  expect(canvas).toHaveStyle({ opacity: "0" });
+  for (const opacity of [0, 0.4, 1]) {
+    act(() => ref.current?.setMotion(motion({ jawOpacity: opacity })));
+    expect(poster).toHaveStyle({ opacity: String(opacity) });
+    expect(canvas).toHaveStyle({ opacity: "0" });
+  }
+
+  await intersectHost();
+  expect(options).toBeDefined();
+  act(() => options?.onFirstFrame());
+
+  for (const opacity of [0, 0.4, 1]) {
+    act(() => ref.current?.setMotion(motion({ jawOpacity: opacity })));
+    expect(poster).toHaveStyle({ opacity: "0" });
+    expect(canvas).toHaveStyle({ opacity: String(opacity) });
+  }
+});
+
+test("server markup starts both animated jaw layers hidden", () => {
+  const html = renderToString(
+    <JawExperience profile="desktop" prefersReducedMotion={false} />,
+  );
+
+  expect(html).toMatch(/<img[^>]+style="opacity:0"/);
+  expect(html).toMatch(/<canvas[^>]+style="opacity:0"/);
+});
+
 test("WebGL failure switches to a usable fallback without removing the four controls", async () => {
   runtime.create.mockImplementation(
     (_canvas: HTMLCanvasElement, options: SceneOptions) => {
@@ -299,7 +348,9 @@ test("a fatal error after startup disposes the failed controller and retains fal
     },
   );
 
-  render(<JawExperience profile="desktop" prefersReducedMotion={false} />);
+  const { unmount } = render(
+    <JawExperience profile="desktop" prefersReducedMotion={false} />,
+  );
   await intersectHost();
   expect(options).toBeDefined();
   act(() => options?.onFatalError(new Error("render failed")));
@@ -311,6 +362,32 @@ test("a fatal error after startup disposes the failed controller and retains fal
   for (const button of zoneButtons()) {
     expect(button).toHaveAttribute("aria-disabled", "false");
   }
+  unmount();
+  expect(controller.dispose).toHaveBeenCalledTimes(1);
+});
+
+test("keeps fatal controller disposal exact-once across a profile change", async () => {
+  const failedController = createController();
+  const mobileController = createController();
+  let failedOptions: SceneOptions | undefined;
+  runtime.create
+    .mockImplementationOnce(
+      async (_canvas: HTMLCanvasElement, options: SceneOptions) => {
+        failedOptions = options;
+        return failedController;
+      },
+    )
+    .mockResolvedValueOnce(mobileController);
+
+  const { rerender } = render(
+    <JawExperience profile="desktop" prefersReducedMotion={false} />,
+  );
+  await intersectHost();
+  act(() => failedOptions?.onFatalError(new Error("render failed")));
+  expect(failedController.dispose).toHaveBeenCalledTimes(1);
+
+  rerender(<JawExperience profile="mobile" prefersReducedMotion={false} />);
+  expect(failedController.dispose).toHaveBeenCalledTimes(1);
 });
 
 test("projects seven leaders while exposing only four semantic zone buttons", () => {
@@ -406,7 +483,7 @@ test.each([
   expect(zoneIdForHit(hitId)).toBe(zoneId);
 });
 
-test("reversing below the interactive boundary closes the panel and restores zone focus", async () => {
+test("reverse with hidden labels closes the panel and keeps restored zone focus visible", async () => {
   const controller = createController();
   runtime.create.mockResolvedValue(controller);
   const ref = createRef<JawExperienceHandle>();
@@ -424,9 +501,14 @@ test("reversing below the interactive boundary closes the panel and restores zon
   await userEvent.click(trigger);
   expect(await screen.findByRole("dialog", { name: "Stoličky" })).toBeVisible();
 
-  act(() => ref.current?.setMotion(motion({ interactive: false })));
+  act(() =>
+    ref.current?.setMotion(
+      motion({ interactive: false, labelsOpacity: 0 }),
+    ),
+  );
   await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   await waitFor(() => expect(trigger).toHaveFocus());
+  expect(screen.getByTestId("jaw-zone-overlay")).toHaveStyle({ opacity: "1" });
   expect(trigger).toHaveAttribute("aria-disabled", "true");
   expect(trigger).toHaveAttribute("tabindex", "-1");
 });
@@ -508,6 +590,45 @@ test("renders and reprojects only while intersecting and visible, including resi
   expect(controller.resize).toHaveBeenLastCalledWith(640, 480, 1);
   expect(controller.render).toHaveBeenCalled();
   expect(controller.projectAnchor).toHaveBeenCalled();
+});
+
+test("preserves live projected leaders across ready, interactive, and panel rerenders", async () => {
+  const controller = createController();
+  let options: SceneOptions | undefined;
+  runtime.create.mockImplementation(
+    async (_canvas: HTMLCanvasElement, nextOptions: SceneOptions) => {
+      options = nextOptions;
+      return controller;
+    },
+  );
+  const ref = createRef<JawExperienceHandle>();
+  render(
+    <JawExperience
+      ref={ref}
+      profile="desktop"
+      prefersReducedMotion={false}
+    />,
+  );
+  await intersectHost();
+
+  const frontLeader = screen.getByTestId("jaw-leader-front");
+  await waitFor(() => {
+    expect(frontLeader).toHaveAttribute("x2", "400");
+    expect(frontLeader).toHaveAttribute("y2", "260");
+  });
+
+  act(() => options?.onFirstFrame());
+  expect(frontLeader).toHaveAttribute("x2", "400");
+  expect(frontLeader).toHaveAttribute("y2", "260");
+
+  act(() => ref.current?.setMotion(motion({ interactive: true })));
+  expect(frontLeader).toHaveAttribute("x2", "400");
+  expect(frontLeader).toHaveAttribute("y2", "260");
+
+  await userEvent.click(screen.getByRole("button", { name: "Predné zuby" }));
+  expect(await screen.findByRole("dialog", { name: "Predné zuby" })).toBeVisible();
+  expect(frontLeader).toHaveAttribute("x2", "400");
+  expect(frontLeader).toHaveAttribute("y2", "260");
 });
 
 test("shows linked model and CC BY credit in the interactive layer", () => {

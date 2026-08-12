@@ -124,6 +124,15 @@ export const JawZoneOverlay = forwardRef<
       ref={rootRef}
       className={styles.zoneOverlay}
       data-profile={profile}
+      data-testid="jaw-zone-overlay"
+      onFocusCapture={(event) => {
+        event.currentTarget.style.opacity = "1";
+      }}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          event.currentTarget.style.removeProperty("opacity");
+        }
+      }}
     >
       <svg className={styles.leaders} aria-hidden="true">
         {LEADERS.map((leader) => (

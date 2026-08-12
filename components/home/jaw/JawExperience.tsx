@@ -5,6 +5,7 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
   type JSX,
@@ -136,6 +137,18 @@ function setMotionVariables(
   );
 }
 
+function setVisualOpacities(
+  poster: HTMLImageElement | null,
+  canvas: HTMLCanvasElement | null,
+  jawOpacity: number,
+  frameReady: boolean,
+  fallback = false,
+): void {
+  const opacity = Math.min(1, Math.max(0, jawOpacity));
+  if (poster) poster.style.opacity = String(fallback ? 1 : frameReady ? 0 : opacity);
+  if (canvas) canvas.style.opacity = String(fallback ? 0 : frameReady ? opacity : 0);
+}
+
 export const JawExperience = forwardRef<
   JawExperienceHandle,
   JawExperienceProps
@@ -144,11 +157,13 @@ export const JawExperience = forwardRef<
   ref,
 ): JSX.Element {
   const hostRef = useRef<HTMLDivElement>(null);
+  const posterRef = useRef<HTMLImageElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const overlayRef = useRef<JawZoneOverlayHandle>(null);
   const controllerRef = useRef<JawSceneController | null>(null);
   const motionRef = useRef<ClinicStoryMotionState>(RESTING_MOTION);
   const fallbackModeRef = useRef(prefersReducedMotion);
+  const frameReadyRef = useRef(false);
   const interactiveRef = useRef(prefersReducedMotion);
   const controlsEnabledRef = useRef(prefersReducedMotion);
   const selectedZoneRef = useRef<JawZoneId | null>(null);
@@ -162,6 +177,7 @@ export const JawExperience = forwardRef<
   const [selectedZoneId, setSelectedZoneId] = useState<JawZoneId | null>(null);
   const [activeProblemId, setActiveProblemId] = useState<string | null>(null);
   const [activeSolutionId, setActiveSolutionId] = useState<string | null>(null);
+  const initialAnchors = useMemo(() => fallbackAnchors(profile), [profile]);
 
   const focusSelectedTrigger = useCallback((): void => {
     window.setTimeout(() => selectedTriggerRef.current?.focus(), 0);
@@ -203,6 +219,12 @@ export const JawExperience = forwardRef<
         if (prefersReducedMotion || fallbackModeRef.current) return;
         motionRef.current = state;
         setMotionVariables(hostRef.current, state);
+        setVisualOpacities(
+          posterRef.current,
+          canvasRef.current,
+          state.jawOpacity,
+          frameReadyRef.current,
+        );
         controllerRef.current?.setMotion(state);
 
         if (interactiveRef.current === state.interactive) return;
@@ -248,13 +270,25 @@ export const JawExperience = forwardRef<
 
   useEffect(() => {
     let cancelled = false;
+    let loadFailed = false;
     let createdController: JawSceneController | null = null;
     let loadStarted = false;
     const host = hostRef.current;
     const canvas = canvasRef.current;
 
-    controllerRef.current?.dispose();
-    controllerRef.current = null;
+    const takeController = (): JawSceneController | null => {
+      const controller = createdController ?? controllerRef.current;
+      createdController = null;
+      if (controllerRef.current === controller) controllerRef.current = null;
+      return controller;
+    };
+
+    const disposeController = (): void => {
+      takeController()?.dispose();
+    };
+
+    disposeController();
+    frameReadyRef.current = false;
     intersectingRef.current = false;
 
     if (prefersReducedMotion) {
@@ -265,6 +299,7 @@ export const JawExperience = forwardRef<
       setInteractive(true);
       setLoadState("fallback");
       setMotionVariables(host, FINAL_MOTION);
+      setVisualOpacities(posterRef.current, canvas, 1, false, true);
       overlayRef.current?.setProjectedAnchors(fallbackAnchors(profile));
       return;
     }
@@ -275,18 +310,25 @@ export const JawExperience = forwardRef<
     setInteractive(motionRef.current.interactive);
     setLoadState("poster");
     setMotionVariables(host, motionRef.current);
+    setVisualOpacities(
+      posterRef.current,
+      canvas,
+      motionRef.current.jawOpacity,
+      false,
+    );
     if (!host || !canvas) return;
 
     const failToFallback = (): void => {
-      if (cancelled) return;
-      controllerRef.current?.dispose();
-      controllerRef.current = null;
+      if (cancelled || loadFailed) return;
+      loadFailed = true;
+      disposeController();
       fallbackModeRef.current = true;
       motionRef.current = FINAL_MOTION;
       controlsEnabledRef.current = true;
       setInteractive(true);
       setLoadState("fallback");
       setMotionVariables(host, FINAL_MOTION);
+      setVisualOpacities(posterRef.current, canvas, 1, false, true);
       overlayRef.current?.setProjectedAnchors(fallbackAnchors(profile));
     };
 
@@ -311,12 +353,20 @@ export const JawExperience = forwardRef<
               profile,
               modelUrl: `/media/jaw/jaw-${profile}.glb`,
               onFirstFrame: () => {
-                if (!cancelled) setLoadState("ready");
+                if (cancelled) return;
+                frameReadyRef.current = true;
+                setVisualOpacities(
+                  posterRef.current,
+                  canvas,
+                  motionRef.current.jawOpacity,
+                  true,
+                );
+                setLoadState("ready");
               },
               onFatalError: failToFallback,
               requestRender: renderAndProject,
             });
-            if (cancelled) {
+            if (cancelled || loadFailed) {
               controller.dispose();
               return;
             }
@@ -338,10 +388,7 @@ export const JawExperience = forwardRef<
     return () => {
       cancelled = true;
       observer.disconnect();
-      if (createdController) createdController.dispose();
-      if (controllerRef.current === createdController) {
-        controllerRef.current = null;
-      }
+      disposeController();
     };
   }, [prefersReducedMotion, profile, renderAndProject]);
 
@@ -380,7 +427,6 @@ export const JawExperience = forwardRef<
   const fallbackVisible = prefersReducedMotion || loadState === "fallback";
   const controlsInteractive = fallbackVisible || interactive;
   controlsEnabledRef.current = controlsInteractive;
-  const initialAnchors = fallbackAnchors(profile);
 
   return (
     <div
@@ -393,8 +439,10 @@ export const JawExperience = forwardRef<
         {/* The authored WebP is a continuity layer whose pixels must align with the canvas. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
+          ref={posterRef}
           className={styles.poster}
           data-faded={loadState === "ready" ? "true" : "false"}
+          style={{ opacity: fallbackVisible ? 1 : motionRef.current.jawOpacity }}
           src={
             fallbackVisible
               ? "/media/jaw/jaw-fallback.webp"
@@ -411,6 +459,12 @@ export const JawExperience = forwardRef<
           className={styles.canvas}
           data-testid="jaw-canvas"
           data-frame-ready={loadState === "ready" ? "true" : "false"}
+          style={{
+            opacity:
+              !fallbackVisible && loadState === "ready"
+                ? motionRef.current.jawOpacity
+                : 0,
+          }}
           aria-hidden="true"
           onPointerDown={handleCanvasPointer}
         />
