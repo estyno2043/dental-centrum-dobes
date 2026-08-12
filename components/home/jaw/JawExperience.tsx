@@ -516,11 +516,21 @@ export const JawExperience = forwardRef<
         }}
       >
         3D model: {" "}
-        <a href={SOURCE_URL} target="_blank" rel="noreferrer">
+        <a
+          href={SOURCE_URL}
+          target="_blank"
+          rel="noreferrer"
+          tabIndex={controlsInteractive ? 0 : -1}
+        >
           Free Teeth Base Mesh
         </a>{" "}
         — ferrumiron6, upravené, {" "}
-        <a href={LICENSE_URL} target="_blank" rel="noreferrer">
+        <a
+          href={LICENSE_URL}
+          target="_blank"
+          rel="noreferrer"
+          tabIndex={controlsInteractive ? 0 : -1}
+        >
           CC BY 4.0
         </a>
         .

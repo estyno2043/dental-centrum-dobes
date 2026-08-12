@@ -422,6 +422,101 @@ test("gates jaw pointer surfaces across loading, ready, interactive, fallback, a
   }
 });
 
+test("keeps hidden credit links out of tab order across interaction transitions and restores them for usable states", async () => {
+  const controller = createController();
+  let options: SceneOptions | undefined;
+  runtime.create.mockImplementation(
+    async (_canvas: HTMLCanvasElement, nextOptions: SceneOptions) => {
+      options = nextOptions;
+      return controller;
+    },
+  );
+  const ref = createRef<JawExperienceHandle>();
+  const { unmount } = render(
+    <>
+      <button type="button">Before jaw</button>
+      <JawExperience
+        ref={ref}
+        profile="mobile"
+        prefersReducedMotion={false}
+      />
+      <button type="button">After jaw</button>
+    </>,
+  );
+  const beforeJaw = screen.getByRole("button", { name: "Before jaw" });
+  const afterJaw = screen.getByRole("button", { name: "After jaw" });
+  const sourceLink = screen.getByRole("link", {
+    name: "Free Teeth Base Mesh",
+  });
+  const licenseLink = screen.getByRole("link", { name: "CC BY 4.0" });
+
+  expect(sourceLink).toHaveAttribute("tabindex", "-1");
+  expect(licenseLink).toHaveAttribute("tabindex", "-1");
+  beforeJaw.focus();
+  await userEvent.tab();
+  expect(afterJaw).toHaveFocus();
+
+  await intersectHost();
+  act(() => options?.onFirstFrame());
+  expect(sourceLink).toHaveAttribute("tabindex", "-1");
+  expect(licenseLink).toHaveAttribute("tabindex", "-1");
+  beforeJaw.focus();
+  await userEvent.tab();
+  expect(afterJaw).toHaveFocus();
+
+  act(() => ref.current?.setMotion(motion({ interactive: true })));
+  expect(sourceLink).toHaveAttribute("tabindex", "0");
+  expect(licenseLink).toHaveAttribute("tabindex", "0");
+  beforeJaw.focus();
+  for (const button of zoneButtons()) {
+    await userEvent.tab();
+    expect(button).toHaveFocus();
+  }
+  await userEvent.tab();
+  expect(sourceLink).toHaveFocus();
+  await userEvent.tab();
+  expect(licenseLink).toHaveFocus();
+
+  act(() => ref.current?.setMotion(motion({ interactive: false })));
+  expect(sourceLink).toHaveAttribute("tabindex", "-1");
+  expect(licenseLink).toHaveAttribute("tabindex", "-1");
+  beforeJaw.focus();
+  await userEvent.tab();
+  expect(afterJaw).toHaveFocus();
+
+  act(() => ref.current?.setMotion(motion({ interactive: true })));
+  act(() => options?.onFatalError(new Error("render failed")));
+  expect(sourceLink).toHaveAttribute("tabindex", "0");
+  expect(licenseLink).toHaveAttribute("tabindex", "0");
+  beforeJaw.focus();
+  for (let index = 0; index < zoneButtons().length; index += 1) {
+    await userEvent.tab();
+  }
+  await userEvent.tab();
+  expect(sourceLink).toHaveFocus();
+
+  unmount();
+  render(
+    <>
+      <button type="button">Before reduced jaw</button>
+      <JawExperience profile="mobile" prefersReducedMotion />
+      <button type="button">After reduced jaw</button>
+    </>,
+  );
+  const reducedSourceLink = screen.getByRole("link", {
+    name: "Free Teeth Base Mesh",
+  });
+  const reducedLicenseLink = screen.getByRole("link", { name: "CC BY 4.0" });
+  expect(reducedSourceLink).toHaveAttribute("tabindex", "0");
+  expect(reducedLicenseLink).toHaveAttribute("tabindex", "0");
+  screen.getByRole("button", { name: "Before reduced jaw" }).focus();
+  for (let index = 0; index < zoneButtons().length; index += 1) {
+    await userEvent.tab();
+  }
+  await userEvent.tab();
+  expect(reducedSourceLink).toHaveFocus();
+});
+
 test("WebGL failure switches to a usable fallback without removing the four controls", async () => {
   runtime.create.mockImplementation(
     (_canvas: HTMLCanvasElement, options: SceneOptions) => {
