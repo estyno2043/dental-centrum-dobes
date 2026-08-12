@@ -5,11 +5,11 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Tasks 1–4 approved; Task 5 in progress
+- Status: Tasks 1–5 approved; Task 6 in progress
 - Owner: Codex
 - Branch: `codex/runtime-jaw-3d`
-- Task: Implement accessible jaw detail navigation and Netlify appointment
-  flow with build-time form definition and reliable encoded submission states.
+- Task: Orchestrate accessible realtime jaw experience with lazy Three.js
+  startup, HTML zone controls, projected leaders, fallback, and reduced motion.
 
 > On 2026-08-11 the user approved model B, `Free Teeth Base Mesh` by
 > ferrumiron6, as the production source and approved proceeding without an
@@ -106,6 +106,17 @@ update it before taking or handing off work.
 > mappings, official price-list values only, conditional timing, and stable
 > nested lookups. 147/147 tests, lint, typecheck, production build, whitespace
 > scan, and credential scan passed.
+
+> Task 5 handoff on 2026-08-12: accessible detail navigation and Netlify
+> appointment flow are in commits `7ba7a3f` and `0fdedd9`. Independent review
+> passed spec compliance and approved code quality after replacing the live
+> `type="hidden"` honeypot with a visually hidden enabled text control and
+> aligning the mobile bottom-sheet breakpoint with the canonical `<768px`
+> runtime profile. The static build-time form definition and interactive
+> URL-encoded submission contain the same fields; keyboard focus restoration,
+> loading/success/error states, and the 62dvh mobile sheet are covered. 161/161
+> tests, lint, typecheck, production build, whitespace scan, and credential
+> scan passed.
 
 > Implementation approval on 2026-08-11 locks one reversible 1030vh desktop
 > timeline: grow 0–84, pan 84–380, frame-07 zoom 380–480, blur 442–480,
@@ -205,10 +216,10 @@ update it before taking or handing off work.
 
 ## File Reservations
 
-- Codex reserves `COLLAB.md` for Task 5 coordination.
-- Task 5 implementer reserves `components/home/jaw/JawDetailPanel.tsx`, its
-  test, `JawAppointmentForm.tsx`, its test, `NetlifyJawFormDefinition.tsx`,
-  and `jawExperience.module.css`.
+- Codex reserves `COLLAB.md` for Task 6 coordination.
+- Task 6 implementer reserves `components/home/jaw/JawZoneOverlay.tsx`,
+  `components/home/jaw/JawExperience.tsx`, its test, and
+  `components/home/jaw/jawExperience.module.css`.
 
 > **Read this before touching the build.** The framework changed. The project
 > no longer runs on `vinext` or Cloudflare Workers — it is now standard
