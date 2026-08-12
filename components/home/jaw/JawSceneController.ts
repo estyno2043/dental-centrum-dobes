@@ -140,6 +140,7 @@ export class JawSceneController {
   ): Promise<JawSceneController> {
     let root: THREE.Group | undefined;
     let renderer: RendererSurface | undefined;
+    let controller: JawSceneController | undefined;
     try {
       root = await factories.loadModel(options.modelUrl);
       const nodes = validateJawModel(root);
@@ -149,17 +150,22 @@ export class JawSceneController {
         antialias: options.profile === "desktop",
         powerPreference: "high-performance",
       });
-      return new JawSceneController(
+      controller = new JawSceneController(
         canvas,
         options,
         nodes,
         renderer,
         factories,
       );
+      controller.initialize();
+      return controller;
     } catch (cause) {
       const error = asError(cause);
-      renderer?.dispose();
-      if (root) disposeObjectResources(root);
+      if (controller) controller.dispose();
+      else {
+        renderer?.dispose();
+        if (root) disposeObjectResources(root);
+      }
       options.onFatalError(error);
       throw error;
     }
@@ -173,15 +179,16 @@ export class JawSceneController {
   private readonly geometries = new Set<THREE.BufferGeometry>();
   private readonly materials = new Set<THREE.Material>();
   private readonly textures = new Set<THREE.Texture>();
-  private readonly ivory: THREE.MeshPhysicalMaterial;
-  private readonly ivoryEmphasis: THREE.MeshPhysicalMaterial;
-  private readonly pink: THREE.MeshPhysicalMaterial;
-  private readonly pinkEmphasis: THREE.MeshPhysicalMaterial;
-  private readonly resizeObserver: ResizeObserverSurface;
+  private ivory!: THREE.MeshPhysicalMaterial;
+  private ivoryEmphasis!: THREE.MeshPhysicalMaterial;
+  private pink!: THREE.MeshPhysicalMaterial;
+  private pinkEmphasis!: THREE.MeshPhysicalMaterial;
+  private readonly framingEnvelope = new THREE.Vector3();
+  private resizeObserver: ResizeObserverSurface | null = null;
   private activeZone: JawZoneId | null = null;
   private panelOpen = false;
   private interactive = false;
-  private hidden: boolean;
+  private hidden = false;
   private contextLost = false;
   private disposed = false;
   private firstFrameSent = false;
@@ -211,13 +218,17 @@ export class JawSceneController {
     private readonly nodes: JawModelNodes,
     private readonly renderer: RendererSurface,
     private readonly factories: InternalFactories,
-  ) {
-    this.hidden = factories.document.visibilityState === "hidden";
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05;
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  ) {}
+
+  private initialize(): void {
+    this.captureModelResources();
+    this.hidden = this.factories.document.visibilityState === "hidden";
+    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    this.renderer.toneMappingExposure = 1.05;
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.framingEnvelope.copy(this.computeFramingEnvelope());
 
     this.ivory = this.createPhysicalMaterial({
       name: "jaw.ivory",
@@ -260,36 +271,39 @@ export class JawSceneController {
       clearcoatRoughness: 0.34,
     });
 
-    this.captureResourcesAndApplyMaterials();
-    this.configureCameraAndLights();
-    this.scene.add(nodes.root);
+    this.applyMaterials();
+    this.configureLights();
+    this.scene.add(this.nodes.root);
     this.addContactShadow();
     this.captureBasePositions();
     this.indexHitProxies();
     this.applyPose(computeJawPose({ jawOpen: 0, jawSeparation: 0 }, this.bounds));
 
-    factories.document.addEventListener(
+    this.factories.document.addEventListener(
       "visibilitychange",
       this.handleVisibilityChange,
     );
-    canvas.addEventListener("webglcontextlost", this.handleContextLost);
-    canvas.addEventListener("webglcontextrestored", this.handleContextRestored);
-    this.resizeObserver = factories.createResizeObserver((entries) => {
+    this.canvas.addEventListener("webglcontextlost", this.handleContextLost);
+    this.canvas.addEventListener(
+      "webglcontextrestored",
+      this.handleContextRestored,
+    );
+    this.resizeObserver = this.factories.createResizeObserver((entries) => {
       const entry = entries[0];
       if (!entry || this.disposed) return;
       this.resize(
         entry.contentRect.width,
         entry.contentRect.height,
-        factories.devicePixelRatio(),
+        this.factories.devicePixelRatio(),
       );
     });
-    this.resizeObserver.observe(canvas);
+    this.resizeObserver.observe(this.canvas);
 
-    const rect = canvas.getBoundingClientRect();
+    const rect = this.canvas.getBoundingClientRect();
     this.resize(
-      rect.width || canvas.clientWidth || 1,
-      rect.height || canvas.clientHeight || 1,
-      factories.devicePixelRatio(),
+      rect.width || this.canvas.clientWidth || 1,
+      rect.height || this.canvas.clientHeight || 1,
+      this.factories.devicePixelRatio(),
     );
   }
 
@@ -307,7 +321,7 @@ export class JawSceneController {
     return material;
   }
 
-  private captureResourcesAndApplyMaterials(): void {
+  private captureModelResources(): void {
     this.nodes.root.traverse((node) => {
       if (!(node instanceof THREE.Mesh)) return;
       this.geometries.add(node.geometry);
@@ -317,7 +331,12 @@ export class JawSceneController {
           if (value instanceof THREE.Texture) this.textures.add(value);
         }
       }
+    });
+  }
 
+  private applyMaterials(): void {
+    this.nodes.root.traverse((node) => {
+      if (!(node instanceof THREE.Mesh)) return;
       if (node.name.startsWith("tooth.")) {
         node.material = this.ivory;
         node.castShadow = true;
@@ -342,22 +361,80 @@ export class JawSceneController {
     });
   }
 
-  private configureCameraAndLights(): void {
-    const size = this.nodes.bounds.getSize(new THREE.Vector3());
-    const center = this.nodes.bounds.getCenter(new THREE.Vector3());
-    const halfFov = THREE.MathUtils.degToRad(this.camera.fov / 2);
-    const distance =
-      Math.max(size.y / 2 / Math.tan(halfFov), size.x / 2 / Math.tan(halfFov)) *
-      1.35;
-    this.camera.near = Math.max(0.01, distance / 100);
-    this.camera.far = Math.max(100, distance * 8);
-    this.camera.position.set(
-      center.x,
-      center.y + size.y * 0.03,
-      center.z + distance,
+  private computeFramingEnvelope(): THREE.Vector3 {
+    const interactiveBounds = this.nodes.bounds.clone();
+    for (const proxy of this.nodes.hitProxies.values()) {
+      interactiveBounds.expandByObject(proxy, true);
+    }
+    const base = interactiveBounds.getSize(new THREE.Vector3());
+    const finalPose = computeJawPose(
+      { jawOpen: 1, jawSeparation: 1 },
+      this.bounds,
     );
+    const arrivalPose = computeJawPose(
+      { jawOpen: 0, jawSeparation: 0 },
+      this.bounds,
+    );
+    const scale = Math.max(finalPose.rootScale, arrivalPose.rootScale);
+    const width = (base.x + 2 * finalPose.molarOffset) * scale;
+    const height = (base.y + 2 * Math.abs(finalPose.upperY)) * scale;
+    const depth = (base.z + 2 * finalPose.gumDepth) * scale;
+    const yaw = Math.max(
+      Math.abs(finalPose.rootYaw),
+      Math.abs(arrivalPose.rootYaw),
+    );
+    const pitch = Math.max(
+      Math.abs(finalPose.rootPitch),
+      Math.abs(arrivalPose.rootPitch),
+    );
+    const yawWidth = width * Math.cos(yaw) + depth * Math.sin(yaw);
+    const yawDepth = width * Math.sin(yaw) + depth * Math.cos(yaw);
+    const pitchHeight = height * Math.cos(pitch) + yawDepth * Math.sin(pitch);
+    const pitchDepth = height * Math.sin(pitch) + yawDepth * Math.cos(pitch);
+    return new THREE.Vector3(yawWidth, pitchHeight, pitchDepth).multiplyScalar(
+      1.12,
+    );
+  }
+
+  private currentRenderedCenter(): THREE.Vector3 {
+    this.nodes.root.updateWorldMatrix(true, true);
+    const bounds = new THREE.Box3();
+    for (const mesh of [
+      ...this.nodes.teeth.values(),
+      this.nodes.gums.upper,
+      this.nodes.gums.lower,
+    ]) {
+      bounds.expandByObject(mesh, true);
+    }
+    return bounds.getCenter(new THREE.Vector3());
+  }
+
+  private frameCamera(): void {
+    const verticalHalfFov = THREE.MathUtils.degToRad(this.camera.fov / 2);
+    const horizontalHalfFov = Math.atan(
+      Math.tan(verticalHalfFov) * Math.max(this.camera.aspect, 0.01),
+    );
+    const distance =
+      Math.max(
+        this.framingEnvelope.x / 2 / Math.tan(horizontalHalfFov),
+        this.framingEnvelope.y / 2 / Math.tan(verticalHalfFov),
+      ) +
+      this.framingEnvelope.z / 2;
+    const center = this.currentRenderedCenter();
+    this.camera.near = Math.max(
+      0.01,
+      (distance - this.framingEnvelope.z / 2) * 0.25,
+    );
+    this.camera.far = distance + this.framingEnvelope.z * 2;
+    this.camera.position.set(center.x, center.y, center.z + distance);
     this.camera.lookAt(center);
     this.camera.updateProjectionMatrix();
+  }
+
+  private configureLights(): void {
+    const size = this.nodes.bounds.getSize(new THREE.Vector3());
+    const center = this.nodes.bounds.getCenter(new THREE.Vector3());
+    const distance = Math.max(size.x, size.y, size.z) * 2;
 
     const key = new THREE.DirectionalLight(0xffd4b2, 3.1);
     key.name = "jaw.light.key";
@@ -454,7 +531,7 @@ export class JawSceneController {
       const kind = fdi % 10;
       const position = this.resetPosition(tooth);
       position.y += quadrant < 3 ? pose.upperY : pose.lowerY;
-      const side = quadrant === 1 || quadrant === 4 ? 1 : -1;
+      const side = quadrant === 1 || quadrant === 4 ? -1 : 1;
       if (kind === 4 || kind === 5) position.x += side * pose.premolarOffset;
       else if (kind >= 6) position.x += side * pose.molarOffset;
     }
@@ -469,10 +546,10 @@ export class JawSceneController {
     for (const collection of [this.nodes.anchors, this.nodes.hitProxies]) {
       for (const [id, node] of collection) {
         const position = this.resetPosition(node);
-        if (id === "premolar.right") position.x += pose.premolarOffset;
-        else if (id === "premolar.left") position.x -= pose.premolarOffset;
-        else if (id === "molar.right") position.x += pose.molarOffset;
-        else if (id === "molar.left") position.x -= pose.molarOffset;
+        if (id === "premolar.right") position.x -= pose.premolarOffset;
+        else if (id === "premolar.left") position.x += pose.premolarOffset;
+        else if (id === "molar.right") position.x -= pose.molarOffset;
+        else if (id === "molar.left") position.x += pose.molarOffset;
         else if (id === "gum.upper") {
           position.y += pose.upperY;
           position.z += pose.gumDepth;
@@ -504,6 +581,7 @@ export class JawSceneController {
         this.bounds,
       ),
     );
+    this.frameCamera();
     this.requestRender();
   }
 
@@ -596,7 +674,7 @@ export class JawSceneController {
     this.renderer.setPixelRatio(Math.min(cap, dpr));
     this.renderer.setSize(safeWidth, safeHeight, false);
     this.camera.aspect = safeWidth / safeHeight;
-    this.camera.updateProjectionMatrix();
+    this.frameCamera();
     this.requestRender();
   }
 
@@ -619,7 +697,7 @@ export class JawSceneController {
   dispose(): void {
     if (this.disposed) return;
     this.disposed = true;
-    this.resizeObserver.disconnect();
+    this.resizeObserver?.disconnect();
     this.factories.document.removeEventListener(
       "visibilitychange",
       this.handleVisibilityChange,

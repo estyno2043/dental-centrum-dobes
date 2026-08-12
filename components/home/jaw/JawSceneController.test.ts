@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import type { ClinicStoryMotionState } from "../clinicStoryMotion";
 import { JawSceneController, type JawSceneOptions } from "./JawSceneController";
+import type { JawModelNodes } from "./jawModelContract";
 
 const REQUIRED_FDI_TEETH = [
   18, 17, 16, 15, 14, 13, 12, 11,
@@ -50,8 +51,10 @@ class FakeRenderer {
 class FakeResizeObserver {
   disconnectCount = 0;
   observed: Element[] = [];
+  observeError: Error | null = null;
 
   observe(target: Element): void {
+    if (this.observeError) throw this.observeError;
     this.observed.push(target);
   }
 
@@ -87,6 +90,57 @@ const createInternal = (
     factories,
   );
 
+type ControllerInspection = Readonly<{
+  camera: THREE.PerspectiveCamera;
+  nodes: JawModelNodes;
+}>;
+
+function inspectController(controller: JawSceneController): ControllerInspection {
+  return controller as unknown as ControllerInspection;
+}
+
+function expectMolarTargetsInsideFrustum(
+  controller: JawSceneController,
+  width: number,
+  height: number,
+): void {
+  const inspection = inspectController(controller);
+  inspection.nodes.root.updateWorldMatrix(true, true);
+  inspection.camera.updateMatrixWorld();
+
+  const right = controller.projectAnchor("molar.right");
+  const left = controller.projectAnchor("molar.left");
+  expect(right.visible).toBe(true);
+  expect(left.visible).toBe(true);
+  expect(right.x).toBeGreaterThanOrEqual(0);
+  expect(right.x).toBeLessThanOrEqual(width);
+  expect(left.x).toBeGreaterThanOrEqual(0);
+  expect(left.x).toBeLessThanOrEqual(width);
+  expect(right.y).toBeGreaterThanOrEqual(0);
+  expect(right.y).toBeLessThanOrEqual(height);
+  expect(left.y).toBeGreaterThanOrEqual(0);
+  expect(left.y).toBeLessThanOrEqual(height);
+  expect((right.x + left.x) / 2).toBeCloseTo(width / 2, 5);
+
+  for (const id of ["molar.right", "molar.left"] as const) {
+    const proxy = inspection.nodes.hitProxies.get(id)!;
+    const bounds = new THREE.Box3().setFromObject(proxy, true);
+    for (const x of [bounds.min.x, bounds.max.x]) {
+      for (const y of [bounds.min.y, bounds.max.y]) {
+        for (const z of [bounds.min.z, bounds.max.z]) {
+          const projected = new THREE.Vector3(x, y, z).project(
+            inspection.camera,
+          );
+          expect(Math.abs(projected.x)).toBeLessThanOrEqual(1);
+          expect(Math.abs(projected.y)).toBeLessThanOrEqual(1);
+          expect(projected.z).toBeGreaterThanOrEqual(-1);
+          expect(projected.z).toBeLessThanOrEqual(1);
+        }
+      }
+    }
+  }
+}
+
 function createMesh(name: string, size = 1): THREE.Mesh {
   const mesh = new THREE.Mesh(
     new THREE.BoxGeometry(size, size, size),
@@ -100,9 +154,15 @@ function createJawRoot(): THREE.Group {
   const root = new THREE.Group();
   root.userData.license = "CC BY 4.0";
 
-  REQUIRED_FDI_TEETH.forEach((fdi, index) => {
+  REQUIRED_FDI_TEETH.forEach((fdi) => {
     const tooth = createMesh(`tooth.${fdi}`);
-    tooth.position.set((index % 8) - 3.5, fdi < 30 ? 1 : -1, 0);
+    const quadrant = Math.floor(fdi / 10);
+    const patientSide = quadrant === 1 || quadrant === 4 ? -1 : 1;
+    tooth.position.set(
+      patientSide * ((fdi % 10) - 0.5) * 0.5,
+      fdi < 30 ? 1 : -1,
+      0,
+    );
     root.add(tooth);
   });
 
@@ -117,13 +177,15 @@ function createJawRoot(): THREE.Group {
   root.add(lower);
 
   for (const id of JAW_HIT_IDS) {
+    const x = id.endsWith(".right") ? -3 : id.endsWith(".left") ? 3 : 0;
+    const y = id === "gum.upper" ? 4 : id === "gum.lower" ? -4 : 0;
     const anchor = new THREE.Object3D();
     anchor.name = `anchor.${id}`;
-    anchor.position.x = id === "front" ? 0 : 50;
+    anchor.position.set(x, y, 0);
     root.add(anchor);
 
     const proxy = createMesh(`hit.${id}`, 2);
-    proxy.position.x = id === "front" ? 0 : 50;
+    proxy.position.set(x, y, 0);
     root.add(proxy);
   }
 
@@ -181,6 +243,59 @@ function createFactories(root = createJawRoot(), dpr = 3) {
     devicePixelRatio: () => dpr,
   };
   return { factories, renderer, observer, parameters, loadedUrls };
+}
+
+function trackListenerBalance(
+  target: EventTarget,
+  type: string,
+): { active(): number; restore(): void } {
+  const originalAdd = target.addEventListener.bind(target);
+  const originalRemove = target.removeEventListener.bind(target);
+  const listeners = new Set<EventListenerOrEventListenerObject>();
+  target.addEventListener = ((
+    eventType: string,
+    listener: EventListenerOrEventListenerObject | null,
+    options?: AddEventListenerOptions | boolean,
+  ) => {
+    if (eventType === type && listener) listeners.add(listener);
+    originalAdd(eventType, listener, options);
+  }) as typeof target.addEventListener;
+  target.removeEventListener = ((
+    eventType: string,
+    listener: EventListenerOrEventListenerObject | null,
+    options?: EventListenerOptions | boolean,
+  ) => {
+    if (eventType === type && listener) listeners.delete(listener);
+    originalRemove(eventType, listener, options);
+  }) as typeof target.removeEventListener;
+  return {
+    active: () => listeners.size,
+    restore() {
+      target.addEventListener = originalAdd;
+      target.removeEventListener = originalRemove;
+    },
+  };
+}
+
+function trackJawResources(root: THREE.Group) {
+  const geometrySpies: Array<ReturnType<typeof vi.spyOn>> = [];
+  const materialSpies: Array<ReturnType<typeof vi.spyOn>> = [];
+  root.traverse((node) => {
+    if (!(node instanceof THREE.Mesh)) return;
+    geometrySpies.push(vi.spyOn(node.geometry, "dispose"));
+    const materials = Array.isArray(node.material)
+      ? node.material
+      : [node.material];
+    for (const material of materials) {
+      materialSpies.push(vi.spyOn(material, "dispose"));
+    }
+  });
+  return {
+    expectDisposedExactlyOnce() {
+      for (const spy of geometrySpies) expect(spy).toHaveBeenCalledTimes(1);
+      for (const spy of materialSpies) expect(spy).toHaveBeenCalledTimes(1);
+    },
+  };
 }
 
 function motion(
@@ -316,9 +431,13 @@ describe("JawSceneController", () => {
     const upper = root.getObjectByName("tooth.11") as THREE.Mesh;
     const premolarRight = root.getObjectByName("tooth.14") as THREE.Mesh;
     const molarLeft = root.getObjectByName("tooth.26") as THREE.Mesh;
+    const rightAnchor = root.getObjectByName("anchor.molar.right")!;
+    const leftProxy = root.getObjectByName("hit.molar.left")!;
     const upperStart = upper.position.clone();
     const premolarStart = premolarRight.position.clone();
     const molarStart = molarLeft.position.clone();
+    const rightAnchorStart = rightAnchor.position.clone();
+    const leftProxyStart = leftProxy.position.clone();
     const options = createOptions();
     const setup = createFactories(root);
     const controller = await createInternal(
@@ -335,8 +454,16 @@ describe("JawSceneController", () => {
     expect(root.scale.x).toBe(1);
     expect(root.rotation.x).toBeCloseTo(-Math.PI / 10);
     expect(upper.position.y).toBeGreaterThan(upperStart.y);
-    expect(premolarRight.position.x).toBeGreaterThan(premolarStart.x);
-    expect(molarLeft.position.x).toBeLessThan(molarStart.x);
+    expect(premolarRight.position.x).toBeLessThan(premolarStart.x);
+    expect(molarLeft.position.x).toBeGreaterThan(molarStart.x);
+    expect(Math.abs(premolarRight.position.x)).toBeGreaterThan(
+      Math.abs(premolarStart.x),
+    );
+    expect(Math.abs(molarLeft.position.x)).toBeGreaterThan(
+      Math.abs(molarStart.x),
+    );
+    expect(rightAnchor.position.x).toBeLessThan(rightAnchorStart.x);
+    expect(leftProxy.position.x).toBeGreaterThan(leftProxyStart.x);
     expect(options.requestRender).toHaveBeenCalledTimes(1);
 
     const canonicalTransforms = {
@@ -397,6 +524,42 @@ describe("JawSceneController", () => {
     controller.dispose();
   });
 
+  test.each([
+    { profile: "mobile" as const, width: 390, height: 844 },
+    { profile: "desktop" as const, width: 1440, height: 900 },
+  ])(
+    "keeps final molar anchors and proxies framed at $width x $height",
+    async ({ profile, width, height }) => {
+      const canvas = createCanvas();
+      canvas.getBoundingClientRect = () =>
+        ({
+          x: 0,
+          y: 0,
+          left: 0,
+          top: 0,
+          right: width,
+          bottom: height,
+          width,
+          height,
+          toJSON: () => ({}),
+        }) as DOMRect;
+      const setup = createFactories();
+      const controller = await createInternal(
+        canvas,
+        createOptions(profile),
+        setup.factories,
+      );
+
+      controller.resize(width, height, 3);
+      controller.setMotion(
+        motion({ jawOpen: 1, jawSeparation: 1, interactive: true }),
+      );
+
+      expectMolarTargetsInsideFrustum(controller, width, height);
+      controller.dispose();
+    },
+  );
+
   test("raycasts against hit proxies only after canonical motion becomes interactive", async () => {
     const setup = createFactories();
     const controller = await createInternal(
@@ -450,6 +613,104 @@ describe("JawSceneController", () => {
     expect(options.onFatalError).toHaveBeenCalledWith(failure);
     expect(setup.renderer.disposeCount).toBe(0);
   });
+
+  test.each(["validation", "renderer creation"] as const)(
+    "cleans the loaded model when %s fails before controller allocation",
+    async (failurePoint) => {
+      const root = createJawRoot();
+      const resources = trackJawResources(root);
+      const setup = createFactories(root);
+      const options = createOptions();
+      const failure = new Error(`${failurePoint} failed`);
+      let factories: InternalFactories = setup.factories;
+      if (failurePoint === "validation") {
+        delete root.userData.license;
+      } else {
+        factories = {
+          ...setup.factories,
+          createRenderer: () => {
+            throw failure;
+          },
+        };
+      }
+
+      const promise = createInternal(createCanvas(), options, factories);
+      if (failurePoint === "validation") {
+        await expect(promise).rejects.toThrow(
+          "Jaw model missing CC BY 4.0 attribution",
+        );
+      } else {
+        await expect(promise).rejects.toBe(failure);
+      }
+      expect(options.onFatalError).toHaveBeenCalledTimes(1);
+      expect(setup.renderer.disposeCount).toBe(0);
+      resources.expectDisposedExactlyOnce();
+    },
+  );
+
+  test.each([
+    "observer factory",
+    "observer observe",
+    "initial renderer sizing",
+    "initial render request",
+  ] as const)(
+    "cleans every acquired resource when %s throws during construction",
+    async (failurePoint) => {
+      const root = createJawRoot();
+      const resources = trackJawResources(root);
+      const setup = createFactories(root);
+      const canvas = createCanvas();
+      const options = createOptions();
+      const failure = new Error(`${failurePoint} failed`);
+      const visibility = trackListenerBalance(document, "visibilitychange");
+      const contextLost = trackListenerBalance(canvas, "webglcontextlost");
+      const contextRestored = trackListenerBalance(
+        canvas,
+        "webglcontextrestored",
+      );
+      const setSize = setup.renderer.setSize.bind(setup.renderer);
+      let factories: InternalFactories = setup.factories;
+      if (failurePoint === "observer factory") {
+        factories = {
+          ...setup.factories,
+          createResizeObserver: () => {
+            throw failure;
+          },
+        };
+      } else if (failurePoint === "observer observe") {
+        setup.observer.observeError = failure;
+      } else if (failurePoint === "initial renderer sizing") {
+        setup.renderer.setSize = () => {
+          throw failure;
+        };
+      } else {
+        options.requestRender = vi.fn(() => {
+          throw failure;
+        });
+      }
+
+      try {
+        await expect(
+          createInternal(canvas, options, factories),
+        ).rejects.toBe(failure);
+        expect(options.onFatalError).toHaveBeenCalledTimes(1);
+        expect(options.onFatalError).toHaveBeenCalledWith(failure);
+        expect(setup.renderer.disposeCount).toBe(1);
+        expect(setup.observer.disconnectCount).toBe(
+          failurePoint === "observer factory" ? 0 : 1,
+        );
+        expect(visibility.active()).toBe(0);
+        expect(contextLost.active()).toBe(0);
+        expect(contextRestored.active()).toBe(0);
+        resources.expectDisposedExactlyOnce();
+      } finally {
+        setup.renderer.setSize = setSize;
+        visibility.restore();
+        contextLost.restore();
+        contextRestored.restore();
+      }
+    },
+  );
 
   test("removes listeners and disposes every owned GPU resource exactly once", async () => {
     const root = createJawRoot();
