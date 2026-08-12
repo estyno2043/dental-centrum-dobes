@@ -5,11 +5,11 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Tasks 1–5 approved; Task 6 in progress
+- Status: Tasks 1–6 approved; Task 7 in progress
 - Owner: Codex
 - Branch: `codex/runtime-jaw-3d`
-- Task: Orchestrate accessible realtime jaw experience with lazy Three.js
-  startup, HTML zone controls, projected leaders, fallback, and reduced motion.
+- Task: Replace the legacy segmented jaw video with one sticky realtime 3D
+  `ClinicStory`, retaining gallery continuity and native scroll behavior.
 
 > On 2026-08-11 the user approved model B, `Free Teeth Base Mesh` by
 > ferrumiron6, as the production source and approved proceeding without an
@@ -118,6 +118,19 @@ update it before taking or handing off work.
 > tests, lint, typecheck, production build, whitespace scan, and credential
 > scan passed.
 
+> Task 6 handoff on 2026-08-12: realtime jaw orchestration is in commits
+> `de1c103`, `01f9c6c`, `e9c721d`, `17edce9`, and `b807120`. Five independent
+> review rounds ended with spec PASS and code-quality APPROVED. The experience
+> lazily starts the direct Three.js controller after intersection, retains a
+> motion-gated poster until the first valid frame, exposes four semantic HTML
+> controls and seven projected leaders, preserves live anchor coordinates,
+> restores visible focus on reverse scroll, and falls back to fully usable
+> static/reduced-motion controls. Pre-dwell canvas, controls, attribution, and
+> hidden links are pointer- and keyboard-transparent so the native gallery
+> swipe remains unobstructed. Controller cleanup is exactly once across fatal,
+> unmount, and profile changes. 188/188 tests, jaw validation, lint, typecheck,
+> production build, whitespace scan, and credential scan passed.
+
 > Implementation approval on 2026-08-11 locks one reversible 1030vh desktop
 > timeline: grow 0–84, pan 84–380, frame-07 zoom 380–480, blur 442–480,
 > jaw fade 447–480, eight-second scrub 480–930, dwell 930–1030. Mobile keeps
@@ -216,10 +229,10 @@ update it before taking or handing off work.
 
 ## File Reservations
 
-- Codex reserves `COLLAB.md` for Task 6 coordination.
-- Task 6 implementer reserves `components/home/jaw/JawZoneOverlay.tsx`,
-  `components/home/jaw/JawExperience.tsx`, its test, and
-  `components/home/jaw/jawExperience.module.css`.
+- Codex reserves `COLLAB.md` for Task 7 coordination.
+- Task 7 implementer reserves `components/home/ClinicStory.tsx`, its test,
+  `components/home/clinicStory.module.css`, `app/page.test.tsx`, and deletion
+  of legacy `jawSeekQueue`, `jawStoryMotion`, and `jawTracking` modules/tests.
 
 > **Read this before touching the build.** The framework changed. The project
 > no longer runs on `vinext` or Cloudflare Workers — it is now standard
