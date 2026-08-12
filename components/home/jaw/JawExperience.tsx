@@ -248,6 +248,28 @@ export const JawExperience = forwardRef<
   );
 
   useEffect(() => {
+    if (!prefersReducedMotion && loadState !== "fallback") return;
+    const host = hostRef.current;
+    if (!host) return;
+    const setFallbackAnchors = (width: number, height: number): void => {
+      overlayRef.current?.setProjectedAnchors(
+        fallbackAnchors(profile, width, height),
+      );
+    };
+    const rect = host.getBoundingClientRect();
+    if (rect.width > 0 && rect.height > 0) {
+      setFallbackAnchors(rect.width, rect.height);
+    }
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      setFallbackAnchors(entry.contentRect.width, entry.contentRect.height);
+    });
+    observer.observe(host);
+    return () => observer.disconnect();
+  }, [loadState, prefersReducedMotion, profile]);
+
+  useEffect(() => {
     let cancelled = false;
     let loadFailed = false;
     let createdController: JawSceneController | null = null;

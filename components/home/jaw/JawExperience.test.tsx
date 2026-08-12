@@ -205,6 +205,57 @@ test("reduced motion keeps the static final pose interactive without loading the
   ).toBeVisible();
 });
 
+test.each([
+  {
+    name: "reduced motion",
+    setup: () => {
+      render(<JawExperience profile="mobile" prefersReducedMotion />);
+    },
+  },
+  {
+    name: "fatal fallback",
+    setup: async () => {
+      runtime.create.mockRejectedValue(new Error("model unavailable"));
+      render(<JawExperience profile="mobile" prefersReducedMotion={false} />);
+      await intersectHost();
+    },
+  },
+  {
+    name: "context fallback",
+    setup: async () => {
+      const controller = createController();
+      let options: SceneOptions | undefined;
+      runtime.create.mockImplementation(
+        async (_canvas: HTMLCanvasElement, nextOptions: SceneOptions) => {
+          options = nextOptions;
+          return controller;
+        },
+      );
+      render(<JawExperience profile="mobile" prefersReducedMotion={false} />);
+      await intersectHost();
+      act(() => options?.onContextLost());
+      return controller;
+    },
+  },
+])("reprojects fallback anchors on host resize for $name without using the live controller", async ({ setup }) => {
+  const controller = (await setup()) as FakeController | undefined;
+  await screen.findByRole("img", { name: /statický model chrupu/i });
+  const fallbackObserver = FakeResizeObserver.instances.at(-1);
+  if (!fallbackObserver) throw new Error("Fallback host was not observed.");
+  const frontLeader = screen.getByTestId("jaw-leader-front");
+  if (controller) {
+    controller.resize.mockClear();
+    controller.render.mockClear();
+  }
+  act(() => fallbackObserver.emit(390, 844));
+  expect(frontLeader).toHaveAttribute("x2", "195");
+  expect(frontLeader).toHaveAttribute("y2", "303.84");
+  if (controller) {
+    expect(controller.resize).not.toHaveBeenCalled();
+    expect(controller.render).not.toHaveBeenCalled();
+  }
+});
+
 test("keeps the poster visible until the first valid decorative-canvas frame", async () => {
   const pendingController = deferred<FakeController>();
   const controller = createController();

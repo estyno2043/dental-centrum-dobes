@@ -141,6 +141,41 @@ function expectMolarTargetsInsideFrustum(
   }
 }
 
+function expectCompleteJawInsideSafeViewport(
+  controller: JawSceneController,
+  width: number,
+  height: number,
+  safe: Readonly<{ right: number; bottom: number }>,
+): void {
+  const inspection = inspectController(controller);
+  inspection.nodes.root.updateWorldMatrix(true, true);
+  inspection.camera.updateMatrixWorld();
+
+  inspection.nodes.root.traverse((node) => {
+    if (!(node instanceof THREE.Mesh)) return;
+    node.geometry.computeBoundingBox();
+    const bounds = node.geometry.boundingBox;
+    if (!bounds) throw new Error(`Missing geometry bounds for ${node.name}`);
+    for (const x of [bounds.min.x, bounds.max.x]) {
+      for (const y of [bounds.min.y, bounds.max.y]) {
+        for (const z of [bounds.min.z, bounds.max.z]) {
+          const projected = new THREE.Vector3(x, y, z)
+            .applyMatrix4(node.matrixWorld)
+            .project(inspection.camera);
+          const screenX = ((projected.x + 1) / 2) * width;
+          const screenY = ((1 - projected.y) / 2) * height;
+          expect(screenX).toBeGreaterThanOrEqual(0);
+          expect(screenX).toBeLessThanOrEqual(safe.right);
+          expect(screenY).toBeGreaterThanOrEqual(0);
+          expect(screenY).toBeLessThanOrEqual(safe.bottom);
+          expect(projected.z).toBeGreaterThanOrEqual(-1);
+          expect(projected.z).toBeLessThanOrEqual(1);
+        }
+      }
+    }
+  });
+}
+
 function createMesh(name: string, size = 1): THREE.Mesh {
   const mesh = new THREE.Mesh(
     new THREE.BoxGeometry(size, size, size),
@@ -560,9 +595,14 @@ describe("JawSceneController", () => {
     },
   );
 
-  test("reframes the final desktop jaw into the panel-safe composition and reverses exactly", async () => {
-    const width = 1440;
-    const height = 900;
+  test.each([
+    { profile: "desktop" as const, width: 1920, height: 1080 },
+    { profile: "desktop" as const, width: 1440, height: 900 },
+    { profile: "mobile" as const, width: 390, height: 844 },
+    { profile: "mobile" as const, width: 375, height: 812 },
+  ])(
+    "fits complete $profile jaw geometry and proxies into the panel-safe viewport at $width x $height",
+    async ({ profile, width, height }) => {
     const canvas = createCanvas();
     canvas.getBoundingClientRect = () =>
       ({
@@ -576,30 +616,41 @@ describe("JawSceneController", () => {
         height,
         toJSON: () => ({}),
       }) as DOMRect;
-    const options = createOptions("desktop");
+    const options = createOptions(profile);
     const setup = createFactories();
     const controller = await createInternal(canvas, options, setup.factories);
     controller.resize(width, height, 3);
     controller.setMotion(
       motion({ jawOpen: 1, jawSeparation: 1, interactive: true }),
     );
-    const closedFront = controller.projectAnchor("front");
+    const inspection = inspectController(controller);
+    const closedCamera = {
+      position: inspection.camera.position.clone(),
+      quaternion: inspection.camera.quaternion.clone(),
+      near: inspection.camera.near,
+      far: inspection.camera.far,
+    };
     options.requestRender.mockClear();
 
     controller.setPanelOpen(true);
-    const openAnchors = JAW_HIT_IDS.map((id) => controller.projectAnchor(id));
-    const safeRight = width - Math.min(470, width * 0.92);
-    expect(controller.projectAnchor("front").x).toBeLessThan(closedFront.x);
-    expect(Math.max(...openAnchors.map((anchor) => anchor.x))).toBeLessThanOrEqual(
-      safeRight,
-    );
+    const safe =
+      profile === "desktop"
+        ? { right: width - Math.min(470, width * 0.92), bottom: height }
+        : { right: width, bottom: height * 0.38 };
+    expectCompleteJawInsideSafeViewport(controller, width, height, safe);
     expect(options.requestRender).toHaveBeenCalledTimes(1);
 
     controller.setPanelOpen(false);
-    expect(controller.projectAnchor("front").x).toBeCloseTo(closedFront.x, 4);
+    expect(inspection.camera.position).toEqual(closedCamera.position);
+    expect(
+      inspection.camera.quaternion.angleTo(closedCamera.quaternion),
+    ).toBeCloseTo(0);
+    expect(inspection.camera.near).toBe(closedCamera.near);
+    expect(inspection.camera.far).toBe(closedCamera.far);
     expect(options.requestRender).toHaveBeenCalledTimes(2);
     controller.dispose();
-  });
+    },
+  );
 
   test("raycasts against hit proxies only after canonical motion becomes interactive", async () => {
     const setup = createFactories();

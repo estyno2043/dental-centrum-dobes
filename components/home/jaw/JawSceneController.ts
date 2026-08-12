@@ -413,31 +413,47 @@ export class JawSceneController {
   }
 
   private frameCamera(): void {
+    const rect = this.canvas.getBoundingClientRect();
+    const viewportWidth = Math.max(1, rect.width);
     const verticalHalfFov = THREE.MathUtils.degToRad(this.camera.fov / 2);
     const horizontalHalfFov = Math.atan(
       Math.tan(verticalHalfFov) * Math.max(this.camera.aspect, 0.01),
     );
+    const desktopPanelWidth = Math.min(470, viewportWidth * 0.92);
+    const desktopPanelFraction =
+      this.panelOpen && this.options.profile === "desktop"
+        ? desktopPanelWidth / viewportWidth
+        : 0;
+    const mobileSheetFraction =
+      this.panelOpen && this.options.profile === "mobile" ? 0.62 : 0;
+    const safeWidthFraction = 1 - desktopPanelFraction;
+    const safeHeightFraction = 1 - mobileSheetFraction;
     const distance =
       Math.max(
-        this.framingEnvelope.x / 2 / Math.tan(horizontalHalfFov),
-        this.framingEnvelope.y / 2 / Math.tan(verticalHalfFov),
+        this.framingEnvelope.x /
+          2 /
+          Math.tan(horizontalHalfFov) /
+          safeWidthFraction,
+        this.framingEnvelope.y /
+          2 /
+          Math.tan(verticalHalfFov) /
+          safeHeightFraction,
       ) +
       this.framingEnvelope.z / 2;
     const center = this.currentRenderedCenter();
-    const panelWidth = Math.min(470, this.canvas.getBoundingClientRect().width * 0.92);
-    const panelFraction =
-      this.panelOpen && this.options.profile === "desktop"
-        ? panelWidth / Math.max(1, this.canvas.getBoundingClientRect().width)
-        : 0;
     const focusX =
-      center.x + distance * Math.tan(horizontalHalfFov) * panelFraction;
+      center.x +
+      distance * Math.tan(horizontalHalfFov) * desktopPanelFraction;
+    const focusY =
+      center.y -
+      distance * Math.tan(verticalHalfFov) * mobileSheetFraction;
     this.camera.near = Math.max(
       0.01,
       (distance - this.framingEnvelope.z / 2) * 0.25,
     );
     this.camera.far = distance + this.framingEnvelope.z * 2;
-    this.camera.position.set(focusX, center.y, center.z + distance);
-    this.camera.lookAt(focusX, center.y, center.z);
+    this.camera.position.set(focusX, focusY, center.z + distance);
+    this.camera.lookAt(focusX, focusY, center.z);
     this.camera.updateProjectionMatrix();
   }
 
