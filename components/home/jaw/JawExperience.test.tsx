@@ -360,11 +360,13 @@ test("gates jaw pointer surfaces across loading, ready, interactive, fallback, a
     />,
   );
   const canvas = screen.getByTestId("jaw-canvas");
+  const credit = screen.getByTestId("jaw-model-credit");
   const stage = canvas.parentElement;
   const experience = stage?.parentElement;
   expect(experience).toHaveStyle({ pointerEvents: "none" });
   expect(stage).toHaveStyle({ pointerEvents: "none" });
   expect(canvas).toHaveStyle({ pointerEvents: "none" });
+  expect(credit).toHaveStyle({ opacity: "0", pointerEvents: "none" });
   for (const button of zoneButtons()) {
     expect(button).toHaveStyle({ pointerEvents: "none" });
   }
@@ -374,14 +376,23 @@ test("gates jaw pointer surfaces across loading, ready, interactive, fallback, a
   expect(experience).toHaveStyle({ pointerEvents: "none" });
   expect(stage).toHaveStyle({ pointerEvents: "none" });
   expect(canvas).toHaveStyle({ pointerEvents: "none" });
+  expect(credit).toHaveStyle({ opacity: "0", pointerEvents: "none" });
   for (const button of zoneButtons()) {
     expect(button).toHaveStyle({ pointerEvents: "none" });
   }
+
+  act(() =>
+    ref.current?.setMotion(
+      motion({ jawOpacity: 0.5, labelsOpacity: 0.4, interactive: false }),
+    ),
+  );
+  expect(credit).toHaveStyle({ opacity: "0.2", pointerEvents: "none" });
 
   act(() => ref.current?.setMotion(motion({ interactive: true })));
   expect(experience).toHaveStyle({ pointerEvents: "none" });
   expect(stage).toHaveStyle({ pointerEvents: "auto" });
   expect(canvas).toHaveStyle({ pointerEvents: "auto" });
+  expect(credit).toHaveStyle({ opacity: "1", pointerEvents: "auto" });
   for (const button of zoneButtons()) {
     expect(button).toHaveStyle({ pointerEvents: "auto" });
   }
@@ -390,6 +401,7 @@ test("gates jaw pointer surfaces across loading, ready, interactive, fallback, a
   expect(experience).toHaveStyle({ pointerEvents: "none" });
   expect(stage).toHaveStyle({ pointerEvents: "none" });
   expect(canvas).toHaveStyle({ pointerEvents: "none" });
+  expect(credit).toHaveStyle({ opacity: "1", pointerEvents: "auto" });
   for (const button of zoneButtons()) {
     expect(button).toHaveStyle({ pointerEvents: "auto" });
   }
@@ -401,6 +413,10 @@ test("gates jaw pointer surfaces across loading, ready, interactive, fallback, a
     pointerEvents: "none",
   });
   expect(reducedCanvas).toHaveStyle({ pointerEvents: "none" });
+  expect(screen.getByTestId("jaw-model-credit")).toHaveStyle({
+    opacity: "1",
+    pointerEvents: "auto",
+  });
   for (const button of zoneButtons()) {
     expect(button).toHaveStyle({ pointerEvents: "auto" });
   }

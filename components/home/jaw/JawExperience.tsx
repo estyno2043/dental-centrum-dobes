@@ -149,6 +149,12 @@ function setVisualOpacities(
   if (canvas) canvas.style.opacity = String(fallback ? 0 : frameReady ? opacity : 0);
 }
 
+function creditOpacity(state: ClinicStoryMotionState): number {
+  const jawOpacity = Math.min(1, Math.max(0, state.jawOpacity));
+  const labelsOpacity = Math.min(1, Math.max(0, state.labelsOpacity));
+  return jawOpacity * labelsOpacity;
+}
+
 export const JawExperience = forwardRef<
   JawExperienceHandle,
   JawExperienceProps
@@ -159,6 +165,7 @@ export const JawExperience = forwardRef<
   const hostRef = useRef<HTMLDivElement>(null);
   const posterRef = useRef<HTMLImageElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const creditRef = useRef<HTMLParagraphElement>(null);
   const overlayRef = useRef<JawZoneOverlayHandle>(null);
   const controllerRef = useRef<JawSceneController | null>(null);
   const motionRef = useRef<ClinicStoryMotionState>(RESTING_MOTION);
@@ -225,6 +232,9 @@ export const JawExperience = forwardRef<
           state.jawOpacity,
           frameReadyRef.current,
         );
+        if (creditRef.current) {
+          creditRef.current.style.opacity = String(creditOpacity(state));
+        }
         controllerRef.current?.setMotion(state);
 
         if (interactiveRef.current === state.interactive) return;
@@ -496,7 +506,15 @@ export const JawExperience = forwardRef<
         }
       />
 
-      <p className={styles.modelCredit} data-testid="jaw-model-credit">
+      <p
+        ref={creditRef}
+        className={styles.modelCredit}
+        data-testid="jaw-model-credit"
+        style={{
+          opacity: fallbackVisible ? 1 : creditOpacity(motionRef.current),
+          pointerEvents: controlsInteractive ? "auto" : "none",
+        }}
+      >
         3D model: {" "}
         <a href={SOURCE_URL} target="_blank" rel="noreferrer">
           Free Teeth Base Mesh
