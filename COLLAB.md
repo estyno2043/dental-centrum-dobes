@@ -5,11 +5,11 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Tasks 1–3 approved; Task 4 in progress
+- Status: Tasks 1–4 approved; Task 5 in progress
 - Owner: Codex
 - Branch: `codex/runtime-jaw-3d`
-- Task: Implement non-diagnostic Slovak patient guidance for four jaw zones,
-  mapping symptoms to possible solutions and only verified price-list values.
+- Task: Implement accessible jaw detail navigation and Netlify appointment
+  flow with build-time form definition and reliable encoded submission states.
 
 > On 2026-08-11 the user approved model B, `Free Teeth Base Mesh` by
 > ferrumiron6, as the production source and approved proceeding without an
@@ -96,6 +96,16 @@ update it before taking or handing off work.
 > resources. 136/136 tests, lint, typecheck, production build, jaw validation,
 > whitespace scan, and credential scan passed. Browser visual audit remains
 > deferred until React integration.
+
+> Task 4 handoff on 2026-08-12: immutable patient guidance is in commits
+> `032498d` and `b253cd3`. Independent review passed spec compliance and
+> approved code quality after consolidating `JawZoneId`, deep-freezing the
+> shared graph, binding €40 to `Komplexné vyšetrenie`, binding €130 to `Dlaha
+> pri bruxizme`, and omitting the replacement price property. Four zones each
+> contain four exact patient-language problems with non-diagnostic solution
+> mappings, official price-list values only, conditional timing, and stable
+> nested lookups. 147/147 tests, lint, typecheck, production build, whitespace
+> scan, and credential scan passed.
 
 > Implementation approval on 2026-08-11 locks one reversible 1030vh desktop
 > timeline: grow 0–84, pan 84–380, frame-07 zoom 380–480, blur 442–480,
@@ -195,9 +205,10 @@ update it before taking or handing off work.
 
 ## File Reservations
 
-- Codex reserves `COLLAB.md` for Task 4 coordination.
-- Task 4 implementer reserves `components/home/jaw/jawContent.ts` and
-  `components/home/jaw/jawContent.test.ts`.
+- Codex reserves `COLLAB.md` for Task 5 coordination.
+- Task 5 implementer reserves `components/home/jaw/JawDetailPanel.tsx`, its
+  test, `JawAppointmentForm.tsx`, its test, `NetlifyJawFormDefinition.tsx`,
+  and `jawExperience.module.css`.
 
 > **Read this before touching the build.** The framework changed. The project
 > no longer runs on `vinext` or Cloudflare Workers — it is now standard
