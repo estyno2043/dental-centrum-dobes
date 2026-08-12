@@ -91,7 +91,17 @@ export function JawAppointmentForm({
       <input type="hidden" name="zone" value={selection.zoneId} />
       <input type="hidden" name="problem" value={selection.problemId} />
       <input type="hidden" name="solution" value={selection.solutionId} />
-      <input type="hidden" name="bot-field" defaultValue="" />
+      <p className={styles.botField} aria-hidden="true">
+        <label htmlFor={`${fieldId}-bot-field`}>Toto pole nevypĺňajte</label>
+        <input
+          id={`${fieldId}-bot-field`}
+          name="bot-field"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          defaultValue=""
+        />
+      </p>
 
       <div className={styles.formField}>
         <label htmlFor={`${fieldId}-name`}>Meno</label>

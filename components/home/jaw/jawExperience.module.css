@@ -188,6 +188,16 @@
   border-top: 1px solid rgb(42 40 36 / 13%);
 }
 
+.botField {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .formField {
   display: grid;
   gap: 7px;
@@ -266,7 +276,7 @@
   font-weight: 800;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 767px) {
   .detailPanel {
     top: auto;
     right: 0;

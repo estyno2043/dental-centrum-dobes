@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { readFileSync } from "node:fs";
 import { afterEach, expect, test, vi } from "vitest";
 import {
   encodeNetlifyForm,
@@ -57,11 +58,31 @@ test("renders the Netlify form contract and patient fields without medical histo
   expect(screen.getByText(
     "Súhlasím, aby Dental Centrum Dobeš použilo moje kontaktné údaje a vybraný problém na odpoveď k termínu vyšetrenia.",
   )).toBeVisible();
-  expect(container.querySelector('input[name="bot-field"]')).toHaveAttribute(
-    "type",
-    "hidden",
+  const botField = container.querySelector<HTMLInputElement>(
+    'input[name="bot-field"]',
   );
+  expect(botField).toHaveAttribute("type", "text");
+  expect(botField).toHaveAttribute("tabindex", "-1");
+  expect(botField).toHaveAttribute("autocomplete", "off");
+  expect(botField).toHaveValue("");
+  expect(
+    botField?.closest('[aria-hidden="true"]')?.getAttribute("class"),
+  ).toMatch(/\S/);
   expect(container.querySelector("textarea")).not.toBeInTheDocument();
+});
+
+test("visually conceals the text honeypot without removing it from form data", () => {
+  const stylesheet = readFileSync(
+    "components/home/jaw/jawExperience.module.css",
+    "utf8",
+  );
+  const botFieldRule = stylesheet.match(/\.botField\s*\{([^}]*)\}/)?.[1];
+
+  expect(botFieldRule).toMatch(/position:\s*absolute/);
+  expect(botFieldRule).toMatch(/width:\s*1px/);
+  expect(botFieldRule).toMatch(/height:\s*1px/);
+  expect(botFieldRule).toMatch(/overflow:\s*hidden/);
+  expect(botFieldRule).toMatch(/clip-path:\s*inset\(50%\)/);
 });
 
 test("posts URL-encoded values and shows success only for an ok response", async () => {

@@ -1,5 +1,6 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { readFileSync } from "node:fs";
 import { useState } from "react";
 import { expect, test, vi } from "vitest";
 import type { JawProblemId, JawSolutionId } from "./jawContent";
@@ -204,4 +205,14 @@ test("traps keyboard focus inside the detail panel", async () => {
   for (let index = 0; index < 8; index += 1) await user.tab();
   expect(dialog).toContainElement(document.activeElement as HTMLElement);
   expect(outside).not.toHaveFocus();
+});
+
+test("uses the mobile bottom sheet through 767px and desktop panel from 768px", () => {
+  const stylesheet = readFileSync(
+    "components/home/jaw/jawExperience.module.css",
+    "utf8",
+  );
+
+  expect(stylesheet).toMatch(/@media\s*\(max-width:\s*767px\)/);
+  expect(stylesheet).not.toMatch(/@media\s*\(max-width:\s*(?:700|768)px\)/);
 });
