@@ -424,13 +424,20 @@ export class JawSceneController {
       ) +
       this.framingEnvelope.z / 2;
     const center = this.currentRenderedCenter();
+    const panelWidth = Math.min(470, this.canvas.getBoundingClientRect().width * 0.92);
+    const panelFraction =
+      this.panelOpen && this.options.profile === "desktop"
+        ? panelWidth / Math.max(1, this.canvas.getBoundingClientRect().width)
+        : 0;
+    const focusX =
+      center.x + distance * Math.tan(horizontalHalfFov) * panelFraction;
     this.camera.near = Math.max(
       0.01,
       (distance - this.framingEnvelope.z / 2) * 0.25,
     );
     this.camera.far = distance + this.framingEnvelope.z * 2;
-    this.camera.position.set(center.x, center.y, center.z + distance);
-    this.camera.lookAt(center);
+    this.camera.position.set(focusX, center.y, center.z + distance);
+    this.camera.lookAt(focusX, center.y, center.z);
     this.camera.updateProjectionMatrix();
   }
 
@@ -603,6 +610,7 @@ export class JawSceneController {
   setPanelOpen(open: boolean): void {
     if (this.disposed || this.panelOpen === open) return;
     this.panelOpen = open;
+    this.frameCamera();
     this.requestRender();
   }
 
@@ -673,7 +681,7 @@ export class JawSceneController {
     const dpr = Number.isFinite(devicePixelRatio)
       ? Math.max(1, devicePixelRatio)
       : 1;
-    const cap = this.options.profile === "mobile" ? 1.5 : 2;
+    const cap = this.options.profile === "mobile" ? 1.25 : 1.5;
     this.renderer.setPixelRatio(Math.min(cap, dpr));
     this.renderer.setSize(safeWidth, safeHeight, false);
     this.camera.aspect = safeWidth / safeHeight;

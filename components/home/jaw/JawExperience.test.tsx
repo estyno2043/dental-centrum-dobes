@@ -628,6 +628,130 @@ test("context loss retains the selected panel and restores one eligible fresh sc
   expect(runtime.create).toHaveBeenCalledTimes(2);
 });
 
+test("early context fallback stays visibly interactive while restoration keeps the latest live motion", async () => {
+  const originalController = createController();
+  const restoredController = createController();
+  let originalOptions: SceneOptions | undefined;
+  let restoredOptions: SceneOptions | undefined;
+  runtime.create
+    .mockImplementationOnce(
+      async (_canvas: HTMLCanvasElement, options: SceneOptions) => {
+        originalOptions = options;
+        return originalController;
+      },
+    )
+    .mockImplementationOnce(
+      async (_canvas: HTMLCanvasElement, options: SceneOptions) => {
+        restoredOptions = options;
+        return restoredController;
+      },
+    );
+  const ref = createRef<JawExperienceHandle>();
+  render(
+    <JawExperience
+      ref={ref}
+      profile="desktop"
+      prefersReducedMotion={false}
+    />,
+  );
+  act(() =>
+    ref.current?.setMotion(
+      motion({ jawOpacity: 0, labelsOpacity: 0, interactive: false }),
+    ),
+  );
+  await intersectHost();
+  const host = screen.getByTestId("jaw-canvas").closest<HTMLElement>(
+    "[data-load-state]",
+  )!;
+
+  act(() => originalOptions?.onContextLost());
+  expect(host).toHaveStyle({ "--jaw-opacity": "1", "--labels-opacity": "1" });
+  for (const button of zoneButtons()) {
+    expect(button).toHaveAttribute("aria-disabled", "false");
+  }
+
+  const latestMotion = motion({
+    jawOpacity: 0.4,
+    jawOpen: 0.5,
+    labelsOpacity: 0.3,
+    interactive: false,
+  });
+  act(() => ref.current?.setMotion(latestMotion));
+  expect(host).toHaveStyle({ "--jaw-opacity": "1", "--labels-opacity": "1" });
+
+  act(() => originalOptions?.onContextRestored());
+  await waitFor(() => expect(runtime.create).toHaveBeenCalledTimes(2));
+  expect(restoredController.setMotion).toHaveBeenLastCalledWith(latestMotion);
+  act(() => restoredOptions?.onFirstFrame());
+  expect(host).toHaveStyle({ "--jaw-opacity": "0.4", "--labels-opacity": "0.3" });
+});
+
+test("restores a focused zone highlight after recreating the scene", async () => {
+  const originalController = createController();
+  const restoredController = createController();
+  let originalOptions: SceneOptions | undefined;
+  runtime.create
+    .mockImplementationOnce(
+      async (_canvas: HTMLCanvasElement, options: SceneOptions) => {
+        originalOptions = options;
+        return originalController;
+      },
+    )
+    .mockResolvedValueOnce(restoredController);
+  const ref = createRef<JawExperienceHandle>();
+  render(
+    <JawExperience
+      ref={ref}
+      profile="desktop"
+      prefersReducedMotion={false}
+    />,
+  );
+  act(() => ref.current?.setMotion(motion({ interactive: true })));
+  await intersectHost();
+  screen.getByRole("button", { name: "Črenové zuby" }).focus();
+  expect(originalController.setActiveZone).toHaveBeenLastCalledWith("premolar");
+
+  act(() => originalOptions?.onContextLost());
+  act(() => originalOptions?.onContextRestored());
+  await waitFor(() => expect(runtime.create).toHaveBeenCalledTimes(2));
+  expect(restoredController.setActiveZone).toHaveBeenLastCalledWith("premolar");
+});
+
+test("announces panel level changes while motion updates remain silent", async () => {
+  const controller = createController();
+  runtime.create.mockResolvedValue(controller);
+  const ref = createRef<JawExperienceHandle>();
+  render(
+    <JawExperience
+      ref={ref}
+      profile="desktop"
+      prefersReducedMotion={false}
+    />,
+  );
+  act(() => ref.current?.setMotion(motion({ interactive: true })));
+  await intersectHost();
+  const liveRegion = screen.getByRole("status");
+  expect(liveRegion).toHaveTextContent("");
+
+  await userEvent.click(screen.getByRole("button", { name: "Predné zuby" }));
+  expect(liveRegion).toHaveTextContent("Otvorený detail: Predné zuby");
+  await userEvent.click(
+    screen.getByRole("button", { name: "Odlomil sa mi kúsok zuba" }),
+  );
+  expect(liveRegion).toHaveTextContent("Vybraný problém: Odlomil sa mi kúsok zuba");
+  await userEvent.click(screen.getByRole("button", { name: "Výplň" }));
+  expect(liveRegion).toHaveTextContent("Vybrané riešenie: Výplň");
+
+  act(() =>
+    ref.current?.setMotion(
+      motion({ jawOpacity: 0.2, labelsOpacity: 0, interactive: true }),
+    ),
+  );
+  expect(liveRegion).toHaveTextContent("Vybrané riešenie: Výplň");
+  await userEvent.keyboard("{Escape}");
+  expect(liveRegion).toHaveTextContent("Detail zatvorený.");
+});
+
 test("keeps fatal controller disposal exact-once across a profile change", async () => {
   const failedController = createController();
   const mobileController = createController();
@@ -810,7 +934,7 @@ test("cancels stale controller creation across profile changes and cleanup", asy
   ).toBe(true);
 });
 
-test("renders and reprojects only while intersecting and visible, including resize", async () => {
+test("leaves visibility and resize ownership to the controller without a duplicate observer", async () => {
   const controller = createController();
   let options: SceneOptions | undefined;
   runtime.create.mockImplementation(
@@ -821,38 +945,8 @@ test("renders and reprojects only while intersecting and visible, including resi
   );
   render(<JawExperience profile="desktop" prefersReducedMotion={false} />);
   await intersectHost();
-
-  controller.render.mockClear();
-  controller.projectAnchor.mockClear();
-  act(() => options?.requestRender());
-  expect(controller.render).toHaveBeenCalledTimes(1);
-  expect(controller.projectAnchor).toHaveBeenCalledTimes(7);
-
-  act(() => FakeIntersectionObserver.instances.at(-1)?.emit(false));
-  controller.render.mockClear();
-  act(() => options?.requestRender());
-  expect(controller.render).not.toHaveBeenCalled();
-
-  act(() => FakeIntersectionObserver.instances.at(-1)?.emit(true));
-  Object.defineProperty(document, "visibilityState", {
-    configurable: true,
-    value: "hidden",
-  });
-  fireEvent(document, new Event("visibilitychange"));
-  controller.render.mockClear();
-  act(() => options?.requestRender());
-  expect(controller.render).not.toHaveBeenCalled();
-
-  Object.defineProperty(document, "visibilityState", {
-    configurable: true,
-    value: "visible",
-  });
-  fireEvent(document, new Event("visibilitychange"));
-  const resizeObserver = FakeResizeObserver.instances.at(-1);
-  act(() => resizeObserver?.emit(640, 480));
-  expect(controller.resize).toHaveBeenLastCalledWith(640, 480, 1);
-  expect(controller.render).toHaveBeenCalled();
-  expect(controller.projectAnchor).toHaveBeenCalled();
+  expect(FakeResizeObserver.instances).toHaveLength(0);
+  expect(options).toBeDefined();
 });
 
 test("preserves live projected leaders across ready, interactive, and panel rerenders", async () => {

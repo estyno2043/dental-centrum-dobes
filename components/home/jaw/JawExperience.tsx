@@ -168,13 +168,14 @@ export const JawExperience = forwardRef<
   const controllerRef = useRef<JawSceneController | null>(null);
   const motionRef = useRef<ClinicStoryMotionState>(RESTING_MOTION);
   const fallbackModeRef = useRef(prefersReducedMotion);
+  const contextFallbackRef = useRef(false);
   const frameReadyRef = useRef(false);
   const interactiveRef = useRef(prefersReducedMotion);
   const controlsEnabledRef = useRef(prefersReducedMotion);
   const selectedZoneRef = useRef<JawZoneId | null>(null);
+  const highlightedZoneRef = useRef<JawZoneId | null>(null);
   const selectedTriggerRef = useRef<HTMLButtonElement | null>(null);
   const intersectingRef = useRef(false);
-  const visibleRef = useRef(true);
   const [loadState, setLoadState] = useState<LoadState>(
     prefersReducedMotion ? "fallback" : "poster",
   );
@@ -182,6 +183,7 @@ export const JawExperience = forwardRef<
   const [selectedZoneId, setSelectedZoneId] = useState<JawZoneId | null>(null);
   const [activeProblemId, setActiveProblemId] = useState<string | null>(null);
   const [activeSolutionId, setActiveSolutionId] = useState<string | null>(null);
+  const [panelAnnouncement, setPanelAnnouncement] = useState("");
   const initialAnchors = useMemo(() => fallbackAnchors(profile), [profile]);
 
   const focusSelectedTrigger = useCallback((): void => {
@@ -190,6 +192,7 @@ export const JawExperience = forwardRef<
 
   const closePanel = useCallback(
     (restoreFocus = true): void => {
+      if (selectedZoneRef.current) setPanelAnnouncement("Detail zatvorený.");
       selectedZoneRef.current = null;
       setSelectedZoneId(null);
       setActiveProblemId(null);
@@ -204,9 +207,7 @@ export const JawExperience = forwardRef<
   const renderAndProject = useCallback((): void => {
     const controller = controllerRef.current;
     if (
-      !controller ||
-      !intersectingRef.current ||
-      !visibleRef.current
+      !controller || !intersectingRef.current
     ) {
       return;
     }
@@ -223,6 +224,7 @@ export const JawExperience = forwardRef<
       setMotion(state): void {
         if (prefersReducedMotion || fallbackModeRef.current) return;
         motionRef.current = state;
+        if (contextFallbackRef.current) return;
         setMotionVariables(hostRef.current, state);
         setVisualOpacities(
           posterRef.current,
@@ -244,37 +246,6 @@ export const JawExperience = forwardRef<
     }),
     [closePanel, prefersReducedMotion],
   );
-
-  useEffect(() => {
-    visibleRef.current = document.visibilityState !== "hidden";
-    const onVisibilityChange = (): void => {
-      visibleRef.current = document.visibilityState !== "hidden";
-      if (visibleRef.current) renderAndProject();
-    };
-    document.addEventListener("visibilitychange", onVisibilityChange);
-    return () =>
-      document.removeEventListener("visibilitychange", onVisibilityChange);
-  }, [renderAndProject]);
-
-  useEffect(() => {
-    const host = hostRef.current;
-    if (!host) return;
-    const observer = new ResizeObserver((entries) => {
-      const entry = entries[0];
-      if (!entry) return;
-      const { width, height } = entry.contentRect;
-      if (controllerRef.current) {
-        controllerRef.current.resize(width, height, window.devicePixelRatio || 1);
-        renderAndProject();
-      } else {
-        overlayRef.current?.setProjectedAnchors(
-          fallbackAnchors(profile, width, height),
-        );
-      }
-    });
-    observer.observe(host);
-    return () => observer.disconnect();
-  }, [profile, renderAndProject]);
 
   useEffect(() => {
     let cancelled = false;
@@ -315,6 +286,7 @@ export const JawExperience = forwardRef<
     }
 
     fallbackModeRef.current = false;
+    contextFallbackRef.current = false;
     interactiveRef.current = motionRef.current.interactive;
     controlsEnabledRef.current = motionRef.current.interactive;
     setInteractive(motionRef.current.interactive);
@@ -347,12 +319,14 @@ export const JawExperience = forwardRef<
     const suspendForContextLoss = (): void => {
       if (cancelled || loadFailed || contextSuspended) return;
       contextSuspended = true;
+      contextFallbackRef.current = true;
       sceneGeneration += 1;
       loadStarted = false;
       frameReadyRef.current = false;
       controlsEnabledRef.current = true;
       setInteractive(true);
       setLoadState("fallback");
+      setMotionVariables(host, FINAL_MOTION);
       setVisualOpacities(posterRef.current, canvas, 1, false, true);
       overlayRef.current?.setProjectedAnchors(fallbackAnchors(profile));
     };
@@ -360,6 +334,7 @@ export const JawExperience = forwardRef<
     const restoreAfterContextLoss = (): void => {
       if (cancelled || loadFailed || !contextSuspended) return;
       contextSuspended = false;
+      contextFallbackRef.current = false;
       disposeController();
       frameReadyRef.current = false;
       loadStarted = false;
@@ -390,7 +365,7 @@ export const JawExperience = forwardRef<
         contextSuspended ||
         loadStarted ||
         !intersectingRef.current ||
-        !visibleRef.current
+        document.visibilityState === "hidden"
       ) {
         return;
       }
@@ -407,6 +382,7 @@ export const JawExperience = forwardRef<
             onFirstFrame: () => {
               if (cancelled || generation !== sceneGeneration) return;
               frameReadyRef.current = true;
+              setMotionVariables(host, motionRef.current);
               setVisualOpacities(
                 posterRef.current,
                 canvas,
@@ -433,7 +409,9 @@ export const JawExperience = forwardRef<
           controllerRef.current = controller;
           controller.setMotion(motionRef.current);
           controller.setPanelOpen(Boolean(selectedZoneRef.current));
-          controller.setActiveZone(selectedZoneRef.current);
+          controller.setActiveZone(
+            highlightedZoneRef.current ?? selectedZoneRef.current,
+          );
           renderAndProject();
         } catch {
           if (generation === sceneGeneration) failToFallback();
@@ -460,6 +438,7 @@ export const JawExperience = forwardRef<
       if (!controlsEnabledRef.current) return;
       selectedZoneRef.current = zoneId;
       selectedTriggerRef.current = trigger;
+      setPanelAnnouncement(`Otvorený detail: ${getJawZone(zoneId)?.label ?? ""}`);
       setSelectedZoneId(zoneId);
       setActiveProblemId(null);
       setActiveSolutionId(null);
@@ -468,6 +447,11 @@ export const JawExperience = forwardRef<
     },
     [],
   );
+
+  const handleZoneHighlight = useCallback((zoneId: JawZoneId | null): void => {
+    highlightedZoneRef.current = zoneId;
+    controllerRef.current?.setActiveZone(zoneId ?? selectedZoneRef.current);
+  }, []);
 
   const handleCanvasPointer = useCallback(
     (event: React.PointerEvent<HTMLCanvasElement>): void => {
@@ -552,11 +536,7 @@ export const JawExperience = forwardRef<
         profile={profile}
         interactive={controlsInteractive}
         onZoneSelect={selectZone}
-        onZoneHighlight={(zoneId) =>
-          controllerRef.current?.setActiveZone(
-            zoneId ?? selectedZoneRef.current,
-          )
-        }
+        onZoneHighlight={handleZoneHighlight}
       />
 
       <p
@@ -589,8 +569,13 @@ export const JawExperience = forwardRef<
         .
       </p>
 
-      <p className={styles.liveRegion} aria-live="polite">
-        {selectedZone ? `Otvorený detail: ${selectedZone.label}` : ""}
+      <p
+        className={styles.liveRegion}
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {panelAnnouncement}
       </p>
 
       {selectedZone ? (
@@ -602,11 +587,32 @@ export const JawExperience = forwardRef<
           onProblemSelect={(problemId) => {
             setActiveProblemId(problemId);
             setActiveSolutionId(null);
+            const problem = selectedZone?.problems.find(
+              (candidate) => candidate.id === problemId,
+            );
+            setPanelAnnouncement(`Vybraný problém: ${problem?.label ?? ""}`);
           }}
-          onSolutionSelect={setActiveSolutionId}
+          onSolutionSelect={(solutionId) => {
+            setActiveSolutionId(solutionId);
+            const problem = selectedZone?.problems.find(
+              (candidate) => candidate.id === activeProblemId,
+            );
+            const solution = problem?.solutions.find(
+              (candidate) => candidate.id === solutionId,
+            );
+            setPanelAnnouncement(`Vybrané riešenie: ${solution?.label ?? ""}`);
+          }}
           onBack={() => {
-            if (activeSolutionId) setActiveSolutionId(null);
-            else setActiveProblemId(null);
+            if (activeSolutionId) {
+              setActiveSolutionId(null);
+              const problem = selectedZone?.problems.find(
+                (candidate) => candidate.id === activeProblemId,
+              );
+              setPanelAnnouncement(`Vybraný problém: ${problem?.label ?? ""}`);
+            } else {
+              setActiveProblemId(null);
+              setPanelAnnouncement(`Otvorený detail: ${selectedZone.label}`);
+            }
           }}
           onClose={() => closePanel()}
         />

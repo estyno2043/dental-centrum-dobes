@@ -376,7 +376,7 @@ describe("JawSceneController", () => {
       enabled: true,
       type: THREE.PCFSoftShadowMap,
     });
-    expect(setup.renderer.pixelRatios.at(-1)).toBe(2);
+    expect(setup.renderer.pixelRatios.at(-1)).toBe(1.5);
     expect(setup.renderer.sizes.at(-1)).toEqual([320, 180, false]);
     expect(options.requestRender).toHaveBeenCalledTimes(1);
 
@@ -386,12 +386,12 @@ describe("JawSceneController", () => {
   test("disables antialiasing and caps device pixels more tightly on mobile", async () => {
     const canvas = createCanvas();
     const options = createOptions("mobile");
-    const setup = createFactories(createJawRoot(), 4);
+    const setup = createFactories(createJawRoot(), 3);
 
     const controller = await createInternal(canvas, options, setup.factories);
 
     expect(setup.parameters[0].antialias).toBe(false);
-    expect(setup.renderer.pixelRatios.at(-1)).toBe(1.5);
+    expect(setup.renderer.pixelRatios.at(-1)).toBe(1.25);
     controller.dispose();
   });
 
@@ -559,6 +559,47 @@ describe("JawSceneController", () => {
       controller.dispose();
     },
   );
+
+  test("reframes the final desktop jaw into the panel-safe composition and reverses exactly", async () => {
+    const width = 1440;
+    const height = 900;
+    const canvas = createCanvas();
+    canvas.getBoundingClientRect = () =>
+      ({
+        x: 0,
+        y: 0,
+        left: 0,
+        top: 0,
+        right: width,
+        bottom: height,
+        width,
+        height,
+        toJSON: () => ({}),
+      }) as DOMRect;
+    const options = createOptions("desktop");
+    const setup = createFactories();
+    const controller = await createInternal(canvas, options, setup.factories);
+    controller.resize(width, height, 3);
+    controller.setMotion(
+      motion({ jawOpen: 1, jawSeparation: 1, interactive: true }),
+    );
+    const closedFront = controller.projectAnchor("front");
+    options.requestRender.mockClear();
+
+    controller.setPanelOpen(true);
+    const openAnchors = JAW_HIT_IDS.map((id) => controller.projectAnchor(id));
+    const safeRight = width - Math.min(470, width * 0.92);
+    expect(controller.projectAnchor("front").x).toBeLessThan(closedFront.x);
+    expect(Math.max(...openAnchors.map((anchor) => anchor.x))).toBeLessThanOrEqual(
+      safeRight,
+    );
+    expect(options.requestRender).toHaveBeenCalledTimes(1);
+
+    controller.setPanelOpen(false);
+    expect(controller.projectAnchor("front").x).toBeCloseTo(closedFront.x, 4);
+    expect(options.requestRender).toHaveBeenCalledTimes(2);
+    controller.dispose();
+  });
 
   test("raycasts against hit proxies only after canonical motion becomes interactive", async () => {
     const setup = createFactories();
