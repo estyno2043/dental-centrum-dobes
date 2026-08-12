@@ -1,3 +1,205 @@
+.experience {
+  --jaw-opacity: 0;
+  --labels-opacity: 0;
+  --heading-opacity: 0;
+
+  position: absolute;
+  z-index: 30;
+  inset: 0;
+  min-width: 0;
+  overflow: hidden;
+  color: #f7f4ee;
+  isolation: isolate;
+}
+
+.visualStage,
+.poster,
+.canvas,
+.zoneOverlay,
+.leaders,
+.zoneControls {
+  position: absolute;
+  inset: 0;
+}
+
+.visualStage {
+  z-index: 0;
+}
+
+.poster,
+.canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.poster {
+  display: block;
+  object-fit: contain;
+  opacity: 1;
+  transition: opacity 360ms ease;
+}
+
+.poster[data-faded="true"] {
+  opacity: calc(1 - var(--jaw-opacity));
+}
+
+.canvas {
+  display: block;
+  opacity: 0;
+  transition: opacity 360ms ease;
+}
+
+.experience[data-load-state="ready"] .canvas {
+  opacity: var(--jaw-opacity);
+}
+
+.heading {
+  position: absolute;
+  z-index: 3;
+  top: clamp(70px, 11dvh, 118px);
+  left: 50%;
+  width: min(90vw, 680px);
+  margin: 0;
+  opacity: var(--heading-opacity);
+  font-family: var(--font-display), serif;
+  font-size: clamp(2rem, 4.4vw, 4.4rem);
+  font-weight: 500;
+  line-height: 1.02;
+  text-align: center;
+  text-shadow: 0 2px 28px rgb(0 0 0 / 62%);
+  transform: translateX(-50%);
+}
+
+.zoneOverlay {
+  z-index: 4;
+  opacity: var(--labels-opacity);
+  pointer-events: none;
+}
+
+.leaders {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.leader {
+  stroke: #cbb38e;
+  stroke-linecap: round;
+  stroke-width: 1.4;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 1px 4px rgb(0 0 0 / 58%));
+  transition: opacity 180ms ease;
+}
+
+.leader[data-visible="false"] {
+  opacity: 0;
+}
+
+.zoneControls {
+  list-style: none;
+}
+
+.zoneButton {
+  position: absolute;
+  display: inline-flex;
+  min-width: 132px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border: 1px solid rgb(203 179 142 / 70%);
+  border-radius: 999px;
+  background: rgb(25 27 29 / 78%);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 22%);
+  color: #fffaf1;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  pointer-events: auto;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.zoneButton[data-zone-id="front"] {
+  top: 24%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.zoneButton[data-zone-id="premolar"] {
+  top: 43%;
+  left: clamp(28px, 7vw, 112px);
+}
+
+.zoneButton[data-zone-id="molar"] {
+  top: 56%;
+  right: clamp(28px, 7vw, 112px);
+}
+
+.zoneButton[data-zone-id="gum"] {
+  bottom: 16%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.zoneButton:hover,
+.zoneButton:focus-visible {
+  border-color: #f0d5ac;
+  background: rgb(34 34 34 / 94%);
+  color: #fff;
+}
+
+.zoneButton:focus-visible {
+  outline: 2px solid #e1bd86;
+  outline-offset: 4px;
+}
+
+.zoneButton[aria-disabled="true"] {
+  cursor: default;
+  opacity: 0.58;
+}
+
+.modelCredit {
+  position: absolute;
+  z-index: 5;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(12px, env(safe-area-inset-bottom));
+  left: max(16px, env(safe-area-inset-left));
+  margin: 0;
+  color: rgb(255 255 255 / 76%);
+  font-size: 0.67rem;
+  line-height: 1.45;
+  text-align: center;
+  text-shadow: 0 1px 8px #000;
+}
+
+.modelCredit a {
+  color: inherit;
+  text-underline-offset: 2px;
+}
+
+.modelCredit a:focus-visible {
+  border-radius: 2px;
+  outline: 2px solid #e1bd86;
+  outline-offset: 3px;
+}
+
+.liveRegion {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .detailOverlay {
   position: fixed;
   z-index: 70;
@@ -277,6 +479,40 @@
 }
 
 @media (max-width: 767px) {
+  .heading {
+    top: max(70px, 10dvh);
+    font-size: clamp(2rem, 10vw, 3rem);
+  }
+
+  .zoneButton {
+    min-width: 112px;
+    padding-inline: 13px;
+    font-size: 0.75rem;
+  }
+
+  .zoneButton[data-zone-id="front"] {
+    top: 20%;
+  }
+
+  .zoneButton[data-zone-id="premolar"] {
+    top: 51%;
+    left: 12px;
+  }
+
+  .zoneButton[data-zone-id="molar"] {
+    top: 51%;
+    right: 12px;
+  }
+
+  .zoneButton[data-zone-id="gum"] {
+    bottom: 19%;
+  }
+
+  .modelCredit {
+    bottom: max(8px, env(safe-area-inset-bottom));
+    font-size: 0.59rem;
+  }
+
   .detailPanel {
     top: auto;
     right: 0;
@@ -307,6 +543,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .poster,
+  .canvas,
+  .leader,
+  .zoneButton {
+    transition: none;
+  }
+
   .detailOverlay,
   .detailPanel {
     animation: none;
