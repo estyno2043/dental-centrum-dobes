@@ -1,0 +1,328 @@
+.detailOverlay {
+  position: fixed;
+  z-index: 70;
+  inset: 0;
+  background: rgb(14 16 18 / 48%);
+  backdrop-filter: blur(5px);
+  animation: jaw-overlay-in 220ms ease-out;
+}
+
+.detailPanel {
+  position: fixed;
+  z-index: 71;
+  top: 0;
+  right: 0;
+  display: flex;
+  width: min(92vw, 470px);
+  height: 100dvh;
+  flex-direction: column;
+  overflow: hidden;
+  border-left: 1px solid rgb(174 155 126 / 32%);
+  background:
+    radial-gradient(circle at 100% 0%, rgb(174 155 126 / 17%), transparent 35%),
+    #f7f4ee;
+  box-shadow: -24px 0 72px rgb(0 0 0 / 26%);
+  color: #252527;
+  animation: jaw-panel-in 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.detailHeader {
+  display: flex;
+  min-height: 72px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid rgb(42 40 36 / 11%);
+}
+
+.detailEyebrow {
+  color: #786955;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.backButton,
+.closeButton,
+.choiceButton,
+.submitButton {
+  font: inherit;
+}
+
+.backButton,
+.closeButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: #343336;
+  cursor: pointer;
+}
+
+.backButton {
+  gap: 8px;
+  padding: 10px 4px;
+  font-weight: 650;
+}
+
+.backButton svg,
+.closeButton svg {
+  width: 20px;
+  height: 20px;
+}
+
+.closeButton {
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgb(42 40 36 / 16%);
+  border-radius: 50%;
+}
+
+.detailScroll {
+  min-height: 0;
+  flex: 1;
+  padding: 30px clamp(22px, 5vw, 42px) 38px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.detailTitle {
+  margin: 0 0 20px;
+  font-family: var(--font-display), serif;
+  font-size: clamp(1.85rem, 4vw, 2.7rem);
+  font-weight: 500;
+  line-height: 1.08;
+}
+
+.detailCopy {
+  margin: 0 0 24px;
+  color: #5e5a54;
+  line-height: 1.65;
+}
+
+.choiceList {
+  display: grid;
+  gap: 10px;
+}
+
+.choiceButton {
+  width: 100%;
+  padding: 17px 18px;
+  border: 1px solid rgb(42 40 36 / 15%);
+  border-radius: 12px;
+  background: rgb(255 255 255 / 65%);
+  color: #252527;
+  cursor: pointer;
+  font-weight: 650;
+  text-align: left;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    transform 180ms ease;
+}
+
+.choiceButton:hover {
+  border-color: #9a8265;
+  background: #fff;
+  transform: translateX(-2px);
+}
+
+.backButton:focus-visible,
+.closeButton:focus-visible,
+.choiceButton:focus-visible,
+.priceLink:focus-visible,
+.formField input:focus-visible,
+.consentField input:focus-visible,
+.submitButton:focus-visible {
+  outline: 2px solid #856e51;
+  outline-offset: 3px;
+}
+
+.solutionFacts {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 28px;
+}
+
+.solutionFacts div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgb(42 40 36 / 12%);
+}
+
+.solutionFacts dt {
+  color: #6f6a63;
+  font-size: 0.82rem;
+}
+
+.solutionFacts dd {
+  margin: 0;
+  font-weight: 700;
+  text-align: right;
+}
+
+.medicalNotice {
+  margin: 28px 0 8px;
+  color: #65615a;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.priceLink {
+  color: #6f5b42;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-underline-offset: 3px;
+}
+
+.appointmentForm {
+  display: grid;
+  gap: 15px;
+  margin-top: 30px;
+  padding-top: 26px;
+  border-top: 1px solid rgb(42 40 36 / 13%);
+}
+
+.formField {
+  display: grid;
+  gap: 7px;
+}
+
+.formField label {
+  color: #55514b;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.formField input {
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid rgb(42 40 36 / 22%);
+  border-radius: 9px;
+  background: rgb(255 255 255 / 76%);
+  color: #252527;
+  font: inherit;
+}
+
+.consentField {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 10px;
+  align-items: start;
+  color: #5c5852;
+  cursor: pointer;
+  font-size: 0.74rem;
+  line-height: 1.5;
+}
+
+.consentField input {
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  accent-color: #806b51;
+}
+
+.submitButton {
+  min-height: 48px;
+  border: 1px solid #252527;
+  border-radius: 9px;
+  background: #252527;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.submitButton:disabled {
+  cursor: wait;
+  opacity: 0.58;
+}
+
+.formSuccess,
+.formError {
+  margin: 0;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.formSuccess {
+  background: #e2eee5;
+  color: #294b32;
+}
+
+.formError {
+  background: #f4e4e0;
+  color: #732f27;
+}
+
+.formError a {
+  color: inherit;
+  font-weight: 800;
+}
+
+@media (max-width: 700px) {
+  .detailPanel {
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    max-height: 62dvh;
+    border-top: 1px solid rgb(174 155 126 / 38%);
+    border-left: 0;
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 -22px 60px rgb(0 0 0 / 28%);
+    animation-name: jaw-sheet-in;
+  }
+
+  .detailHeader {
+    min-height: 62px;
+    padding: 9px 16px;
+  }
+
+  .detailScroll {
+    padding: 22px 20px calc(26px + env(safe-area-inset-bottom));
+  }
+
+  .detailTitle {
+    font-size: 1.8rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .detailOverlay,
+  .detailPanel {
+    animation: none;
+  }
+
+  .choiceButton {
+    transition: none;
+  }
+}
+
+@keyframes jaw-overlay-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes jaw-panel-in {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+
+@keyframes jaw-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
