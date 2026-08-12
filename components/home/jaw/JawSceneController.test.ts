@@ -49,6 +49,7 @@ class FakeRenderer {
 }
 
 class FakeResizeObserver {
+  callback: ResizeObserverCallback | null = null;
   disconnectCount = 0;
   observed: Element[] = [];
   observeError: Error | null = null;
@@ -60,6 +61,17 @@ class FakeResizeObserver {
 
   disconnect(): void {
     this.disconnectCount += 1;
+  }
+
+  emit(width: number, height: number): void {
+    this.callback?.(
+      [
+        {
+          contentRect: { width, height },
+        } as ResizeObserverEntry,
+      ],
+      this as unknown as ResizeObserver,
+    );
   }
 }
 
@@ -273,7 +285,8 @@ function createFactories(root = createJawRoot(), dpr = 3) {
       parameters.push(nextParameters);
       return renderer;
     },
-    createResizeObserver() {
+    createResizeObserver(callback) {
+      observer.callback = callback;
       return observer;
     },
     document,
@@ -674,15 +687,21 @@ describe("JawSceneController", () => {
     const setup = createFactories();
     const controller = await createInternal(canvas, options, setup.factories);
     options.requestRender.mockClear();
+    setup.renderer.pixelRatios.length = 0;
+    setup.renderer.sizes.length = 0;
 
     const lost = new Event("webglcontextlost", { cancelable: true });
     canvas.dispatchEvent(lost);
+    setup.observer.emit(640, 360);
+    controller.resize(800, 450, 3);
     controller.setActiveZone("front");
     controller.render();
     expect(lost.defaultPrevented).toBe(true);
     expect(options.onContextLost).toHaveBeenCalledTimes(1);
     expect(options.requestRender).not.toHaveBeenCalled();
     expect(setup.renderer.renderCount).toBe(0);
+    expect(setup.renderer.pixelRatios).toEqual([]);
+    expect(setup.renderer.sizes).toEqual([]);
 
     canvas.dispatchEvent(new Event("webglcontextrestored"));
     expect(options.onContextRestored).toHaveBeenCalledTimes(1);

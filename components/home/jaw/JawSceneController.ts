@@ -691,7 +691,7 @@ export class JawSceneController {
   }
 
   resize(width: number, height: number, devicePixelRatio: number): void {
-    if (this.disposed) return;
+    if (this.disposed || this.contextLost) return;
     const safeWidth = Math.max(1, width);
     const safeHeight = Math.max(1, height);
     const dpr = Number.isFinite(devicePixelRatio)

@@ -6,6 +6,7 @@ import { expect, test, vi } from "vitest";
 import type { JawProblemId, JawSolutionId } from "./jawContent";
 import { getJawZone } from "./jawContent";
 import { JawDetailPanel } from "./JawDetailPanel";
+import styles from "./jawExperience.module.css";
 
 const frontZoneResult = getJawZone("front");
 
@@ -118,6 +119,40 @@ test("uses controlled callbacks to move from problems to solutions and back", as
   expect(
     screen.getByRole("button", { name: "Odlomil sa mi kúsok zuba" }),
   ).toBeVisible();
+});
+
+test("keeps compact panel navigation targets at least 44 by 44 CSS pixels", async () => {
+  const portalHost = createPortalHost();
+
+  render(
+    <JawDetailPanel
+      zone={frontZone}
+      portalContainer={portalHost}
+      activeProblemId="chipped"
+      activeSolutionId={null}
+      onProblemSelect={vi.fn()}
+      onSolutionSelect={vi.fn()}
+      onBack={vi.fn()}
+      onClose={vi.fn()}
+    />,
+  );
+
+  const back = await screen.findByRole("button", { name: "Späť" });
+  const priceList = screen.getByRole("link", { name: /oficiálny cenník/i });
+  expect(back).toHaveClass(styles.backButton);
+  expect(priceList).toHaveClass(styles.priceLink);
+
+  const stylesheet = readFileSync(
+    "components/home/jaw/jawExperience.module.css",
+    "utf8",
+  );
+  for (const selector of ["backButton", "priceLink"]) {
+    const declaration = stylesheet.match(
+      new RegExp(`\\.${selector}\\s*\\{([^}]*)\\}`),
+    )?.[1];
+    expect(declaration).toMatch(/min-width:\s*44px/);
+    expect(declaration).toMatch(/min-height:\s*44px/);
+  }
 });
 
 test("shows the non-diagnostic notice and official price-list destination", async () => {
