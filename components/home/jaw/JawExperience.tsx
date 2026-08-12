@@ -426,6 +426,7 @@ export const JawExperience = forwardRef<
   const selectedZone = selectedZoneId ? getJawZone(selectedZoneId) : undefined;
   const fallbackVisible = prefersReducedMotion || loadState === "fallback";
   const controlsInteractive = fallbackVisible || interactive;
+  const sceneInteractive = !fallbackVisible && interactive;
   controlsEnabledRef.current = controlsInteractive;
 
   return (
@@ -434,15 +435,25 @@ export const JawExperience = forwardRef<
       className={styles.experience}
       data-load-state={loadState}
       data-reduced-motion={prefersReducedMotion ? "true" : "false"}
+      style={{ pointerEvents: "none" }}
     >
-      <div className={styles.visualStage}>
+      <div
+        className={styles.visualStage}
+        style={{ pointerEvents: sceneInteractive ? "auto" : "none" }}
+      >
         {/* The authored WebP is a continuity layer whose pixels must align with the canvas. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           ref={posterRef}
           className={styles.poster}
           data-faded={loadState === "ready" ? "true" : "false"}
-          style={{ opacity: fallbackVisible ? 1 : motionRef.current.jawOpacity }}
+          style={{
+            opacity: fallbackVisible
+              ? 1
+              : loadState === "ready"
+                ? 0
+                : motionRef.current.jawOpacity,
+          }}
           src={
             fallbackVisible
               ? "/media/jaw/jaw-fallback.webp"

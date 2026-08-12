@@ -166,6 +166,7 @@ export const JawZoneOverlay = forwardRef<
             data-zone-id={zone.id}
             aria-disabled={!interactive}
             tabIndex={interactive ? 0 : -1}
+            style={{ pointerEvents: interactive ? "auto" : "none" }}
             onClick={(event) => {
               if (interactive) onZoneSelect(zone.id, event.currentTarget);
             }}

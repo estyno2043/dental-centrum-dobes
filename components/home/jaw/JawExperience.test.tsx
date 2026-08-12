@@ -292,6 +292,47 @@ test("gates both loading layers by jaw motion before and after the first frame",
   }
 });
 
+test.each([0.4, 1])(
+  "keeps the ready poster absent at jaw opacity %s through interaction and panel rerenders",
+  async (jawOpacity) => {
+    const controller = createController();
+    let options: SceneOptions | undefined;
+    runtime.create.mockImplementation(
+      async (_canvas: HTMLCanvasElement, nextOptions: SceneOptions) => {
+        options = nextOptions;
+        return controller;
+      },
+    );
+    const ref = createRef<JawExperienceHandle>();
+    render(
+      <JawExperience
+        ref={ref}
+        profile="desktop"
+        prefersReducedMotion={false}
+      />,
+    );
+    act(() => ref.current?.setMotion(motion({ jawOpacity })));
+    await intersectHost();
+
+    const poster = screen.getByRole("img", { name: /model chrupu sa načítava/i });
+    const canvas = screen.getByTestId("jaw-canvas");
+    act(() => options?.onFirstFrame());
+    expect(poster).toHaveStyle({ opacity: "0" });
+    expect(canvas).toHaveStyle({ opacity: String(jawOpacity) });
+
+    act(() =>
+      ref.current?.setMotion(motion({ jawOpacity, interactive: true })),
+    );
+    expect(poster).toHaveStyle({ opacity: "0" });
+    expect(canvas).toHaveStyle({ opacity: String(jawOpacity) });
+
+    await userEvent.click(screen.getByRole("button", { name: "Predné zuby" }));
+    expect(await screen.findByRole("dialog", { name: "Predné zuby" })).toBeVisible();
+    expect(poster).toHaveStyle({ opacity: "0" });
+    expect(canvas).toHaveStyle({ opacity: String(jawOpacity) });
+  },
+);
+
 test("server markup starts both animated jaw layers hidden", () => {
   const html = renderToString(
     <JawExperience profile="desktop" prefersReducedMotion={false} />,
@@ -299,6 +340,70 @@ test("server markup starts both animated jaw layers hidden", () => {
 
   expect(html).toMatch(/<img[^>]+style="opacity:0"/);
   expect(html).toMatch(/<canvas[^>]+style="opacity:0"/);
+});
+
+test("gates jaw pointer surfaces across loading, ready, interactive, fallback, and reduced motion", async () => {
+  const controller = createController();
+  let options: SceneOptions | undefined;
+  runtime.create.mockImplementation(
+    async (_canvas: HTMLCanvasElement, nextOptions: SceneOptions) => {
+      options = nextOptions;
+      return controller;
+    },
+  );
+  const ref = createRef<JawExperienceHandle>();
+  const { unmount } = render(
+    <JawExperience
+      ref={ref}
+      profile="mobile"
+      prefersReducedMotion={false}
+    />,
+  );
+  const canvas = screen.getByTestId("jaw-canvas");
+  const stage = canvas.parentElement;
+  const experience = stage?.parentElement;
+  expect(experience).toHaveStyle({ pointerEvents: "none" });
+  expect(stage).toHaveStyle({ pointerEvents: "none" });
+  expect(canvas).toHaveStyle({ pointerEvents: "none" });
+  for (const button of zoneButtons()) {
+    expect(button).toHaveStyle({ pointerEvents: "none" });
+  }
+
+  await intersectHost();
+  act(() => options?.onFirstFrame());
+  expect(experience).toHaveStyle({ pointerEvents: "none" });
+  expect(stage).toHaveStyle({ pointerEvents: "none" });
+  expect(canvas).toHaveStyle({ pointerEvents: "none" });
+  for (const button of zoneButtons()) {
+    expect(button).toHaveStyle({ pointerEvents: "none" });
+  }
+
+  act(() => ref.current?.setMotion(motion({ interactive: true })));
+  expect(experience).toHaveStyle({ pointerEvents: "none" });
+  expect(stage).toHaveStyle({ pointerEvents: "auto" });
+  expect(canvas).toHaveStyle({ pointerEvents: "auto" });
+  for (const button of zoneButtons()) {
+    expect(button).toHaveStyle({ pointerEvents: "auto" });
+  }
+
+  act(() => options?.onFatalError(new Error("render failed")));
+  expect(experience).toHaveStyle({ pointerEvents: "none" });
+  expect(stage).toHaveStyle({ pointerEvents: "none" });
+  expect(canvas).toHaveStyle({ pointerEvents: "none" });
+  for (const button of zoneButtons()) {
+    expect(button).toHaveStyle({ pointerEvents: "auto" });
+  }
+
+  unmount();
+  render(<JawExperience profile="mobile" prefersReducedMotion />);
+  const reducedCanvas = screen.getByTestId("jaw-canvas");
+  expect(reducedCanvas.parentElement).toHaveStyle({
+    pointerEvents: "none",
+  });
+  expect(reducedCanvas).toHaveStyle({ pointerEvents: "none" });
+  for (const button of zoneButtons()) {
+    expect(button).toHaveStyle({ pointerEvents: "auto" });
+  }
 });
 
 test("WebGL failure switches to a usable fallback without removing the four controls", async () => {
