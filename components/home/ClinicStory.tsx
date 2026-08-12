@@ -3,8 +3,12 @@
 import { useEffect, useRef, type CSSProperties, type JSX } from "react";
 import { useMediaQuery } from "../hero/useMediaQuery";
 import {
+  DESKTOP_STORY_SCROLL_VH,
+  MOBILE_STORY_SCROLL_VH,
   mapClinicStoryMotion,
+  stepCriticallyDamped,
   type ClinicStoryProfile,
+  type DampedMotionState,
 } from "./clinicStoryMotion";
 import {
   JawExperience,
@@ -32,7 +36,23 @@ export function ClinicStory(): JSX.Element {
     const finalFrame = finalFrameRef.current;
     if (prefersReducedMotion || !section || !track || !finalFrame) return;
 
+    const storyScrollVh =
+      profile === "desktop"
+        ? DESKTOP_STORY_SCROLL_VH
+        : MOBILE_STORY_SCROLL_VH;
+    const readProgress = (): number => {
+      const scrollVh =
+        Math.max(0, -section.getBoundingClientRect().top) /
+        Math.max(1, window.innerHeight / 100);
+      return Math.min(1, scrollVh / storyScrollVh);
+    };
+    let targetProgress = readProgress();
+    let dampedProgress: DampedMotionState = {
+      value: targetProgress,
+      velocity: 0,
+    };
     let frameRequest = 0;
+    let lastFrameTime: number | null = null;
     let mobileSnapStart: number | null = null;
 
     const writeHandoffGeometry = (zoom: number, blur: number): void => {
@@ -52,12 +72,32 @@ export function ClinicStory(): JSX.Element {
       section.style.setProperty("--handoff-blur", String(blur));
     };
 
-    const renderMotion = (): void => {
+    const renderMotion = (now: number): void => {
       frameRequest = 0;
-      const scrollVh =
-        Math.max(0, -section.getBoundingClientRect().top) /
-        Math.max(1, window.innerHeight / 100);
-      const motion = mapClinicStoryMotion(scrollVh, profile);
+      const deltaSeconds =
+        lastFrameTime === null
+          ? 1 / 60
+          : Math.max(0, (now - lastFrameTime) / 1000);
+      lastFrameTime = now;
+      dampedProgress = stepCriticallyDamped(
+        dampedProgress,
+        targetProgress,
+        deltaSeconds,
+        0.18,
+      );
+
+      const rawMotion = mapClinicStoryMotion(
+        targetProgress * storyScrollVh,
+        profile,
+      );
+      const mappedMotion = mapClinicStoryMotion(
+        dampedProgress.value * storyScrollVh,
+        profile,
+      );
+      const motion =
+        mappedMotion.interactive && !rawMotion.interactive
+          ? { ...mappedMotion, interactive: false }
+          : mappedMotion;
       const travel = Math.max(0, track.scrollWidth - window.innerWidth);
 
       section.style.setProperty("--grow", String(motion.grow));
@@ -82,18 +122,26 @@ export function ClinicStory(): JSX.Element {
 
       writeHandoffGeometry(motion.zoom, motion.blur);
       jawExperienceRef.current?.setMotion(motion);
-    };
 
-    const scheduleRender = (): void => {
-      if (!frameRequest) {
+      if (
+        Math.abs(dampedProgress.value - targetProgress) > 0.00005 ||
+        Math.abs(dampedProgress.velocity) > 0.001
+      ) {
         frameRequest = window.requestAnimationFrame(renderMotion);
       }
     };
 
-    const initialScrollVh =
-      Math.max(0, -section.getBoundingClientRect().top) /
-      Math.max(1, window.innerHeight / 100);
-    if (profile === "mobile" && initialScrollVh < 90) track.scrollLeft = 0;
+    const scheduleRender = (): void => {
+      targetProgress = readProgress();
+      if (!frameRequest) {
+        lastFrameTime = null;
+        frameRequest = window.requestAnimationFrame(renderMotion);
+      }
+    };
+
+    if (profile === "mobile" && targetProgress * storyScrollVh < 90) {
+      track.scrollLeft = 0;
+    }
 
     scheduleRender();
     window.addEventListener("scroll", scheduleRender, { passive: true });
@@ -176,7 +224,11 @@ export function ClinicStory(): JSX.Element {
           />
         </picture>
 
-        <div className={styles.jawHost} data-testid="jaw-experience-host">
+        <div
+          className={styles.jawHost}
+          data-testid="jaw-experience-host"
+          style={{ pointerEvents: "none" }}
+        >
           <JawExperience
             ref={jawExperienceRef}
             profile={profile}

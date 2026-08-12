@@ -14,10 +14,12 @@ class NoopResizeObserver {
 
 let animationFrameCallbacks = new Map<number, FrameRequestCallback>();
 let nextAnimationFrameId = 1;
+let animationFrameNow = 1000;
 
 beforeEach(() => {
   animationFrameCallbacks = new Map();
   nextAnimationFrameId = 1;
+  animationFrameNow = 1000;
   vi.stubGlobal(
     "IntersectionObserver",
     NoopIntersectionObserver as unknown as typeof IntersectionObserver,
@@ -60,10 +62,20 @@ function stubMatchMedia(reduced: boolean, wide = true) {
   );
 }
 
-function flushAnimationFrame(now = 16): void {
+function flushAnimationFrame(deltaMilliseconds = 16): void {
+  animationFrameNow += deltaMilliseconds;
   const callbacks = [...animationFrameCallbacks.values()];
   animationFrameCallbacks.clear();
-  for (const callback of callbacks) callback(now);
+  for (const callback of callbacks) callback(animationFrameNow);
+}
+
+function settleAnimationFrames(limit = 240): number {
+  let count = 0;
+  while (animationFrameCallbacks.size > 0 && count < limit) {
+    flushAnimationFrame();
+    count += 1;
+  }
+  return count;
 }
 
 function setSectionScrollVh(section: HTMLElement, scrollVh: number): void {
@@ -111,6 +123,24 @@ test("uses one sticky viewport for seven gallery frames and the realtime jaw", (
   expect(container.querySelector("video")).not.toBeInTheDocument();
 });
 
+test("keeps the full-screen jaw host transparent to native gallery hit testing", () => {
+  stubMatchMedia(false, false);
+  render(<ClinicStory />);
+
+  const jawHost = screen.getByTestId("jaw-experience-host");
+  const track = screen.getByRole("list");
+
+  expect(getComputedStyle(jawHost).pointerEvents).toBe("none");
+  expect(getComputedStyle(track).pointerEvents).not.toBe("none");
+  expect(screen.getByTestId("jaw-zone-overlay")).toHaveAttribute(
+    "data-profile",
+    "mobile",
+  );
+  for (const button of zoneButtons()) {
+    expect(button).toHaveStyle({ pointerEvents: "none" });
+  }
+});
+
 test("maps physical desktop scroll to sequential grow and pan phases in animation frames", () => {
   stubMatchMedia(false);
   render(<ClinicStory />);
@@ -126,7 +156,7 @@ test("maps physical desktop scroll to sequential grow and pan phases in animatio
 
   act(() => {
     window.dispatchEvent(new Event("scroll"));
-    flushAnimationFrame();
+    settleAnimationFrames();
   });
 
   expect(section.style.getPropertyValue("--grow")).toBe("1");
@@ -134,7 +164,7 @@ test("maps physical desktop scroll to sequential grow and pan phases in animatio
   expect(section.style.getPropertyValue("--travel")).toBe("2760px");
 });
 
-test("enables interaction at 840vh and closes it when reverse scroll crosses below", () => {
+test("damps a coarse forward jump across frames before enabling the final pose", () => {
   stubMatchMedia(false);
   render(<ClinicStory />);
 
@@ -143,17 +173,60 @@ test("enables interaction at 840vh and closes it when reverse scroll crosses bel
   });
   Object.defineProperty(window, "innerHeight", { configurable: true, value: 1000 });
   Object.defineProperty(window, "innerWidth", { configurable: true, value: 1440 });
-  setSectionScrollVh(section, 840);
+  setSectionScrollVh(section, 0);
+
+  act(() => flushAnimationFrame());
+
+  setSectionScrollVh(section, 1020);
 
   act(() => {
     window.dispatchEvent(new Event("scroll"));
     flushAnimationFrame();
   });
 
+  const firstGrow = Number(section.style.getPropertyValue("--grow"));
+  expect(firstGrow).toBeGreaterThan(0);
+  expect(firstGrow).toBeLessThan(1);
+  expect(animationFrameCallbacks.size).toBe(1);
+  for (const button of zoneButtons()) {
+    expect(button).toHaveAttribute("aria-disabled", "true");
+  }
+
+  act(() => flushAnimationFrame());
+  expect(Number(section.style.getPropertyValue("--grow"))).toBeGreaterThan(
+    firstGrow,
+  );
+
+  let settleCount = 0;
+  act(() => {
+    settleCount = settleAnimationFrames();
+  });
+
+  expect(settleCount).toBeGreaterThan(1);
+  expect(animationFrameCallbacks.size).toBe(0);
   for (const button of zoneButtons()) {
     expect(button).toHaveAttribute("aria-disabled", "false");
     expect(button).toHaveAttribute("tabindex", "0");
   }
+});
+
+test("closes interaction on the first frame after a coarse reverse boundary jump", () => {
+  stubMatchMedia(false);
+  render(<ClinicStory />);
+
+  const section = screen.getByRole("region", {
+    name: "Miesto, kde sa nikto neponáhľa.",
+  });
+  Object.defineProperty(window, "innerHeight", { configurable: true, value: 1000 });
+  Object.defineProperty(window, "innerWidth", { configurable: true, value: 1440 });
+  setSectionScrollVh(section, 0);
+  act(() => flushAnimationFrame());
+
+  setSectionScrollVh(section, 1020);
+  act(() => {
+    window.dispatchEvent(new Event("scroll"));
+    settleAnimationFrames();
+  });
 
   fireEvent.click(screen.getByRole("button", { name: "Predné zuby" }));
   expect(screen.getByRole("dialog", { name: "Predné zuby" })).toBeVisible();
@@ -161,10 +234,11 @@ test("enables interaction at 840vh and closes it when reverse scroll crosses bel
   setSectionScrollVh(section, 839);
   act(() => {
     window.dispatchEvent(new Event("scroll"));
-    flushAnimationFrame(32);
+    flushAnimationFrame();
   });
 
   expect(screen.queryByRole("dialog", { name: "Predné zuby" })).not.toBeInTheDocument();
+  expect(animationFrameCallbacks.size).toBe(1);
   for (const button of zoneButtons()) {
     expect(button).toHaveAttribute("aria-disabled", "true");
     expect(button).toHaveAttribute("tabindex", "-1");
