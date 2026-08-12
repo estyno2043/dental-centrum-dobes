@@ -1,4 +1,6 @@
-export type JawZoneId = "front" | "premolar" | "molar" | "gum";
+import type { JawZoneId } from "./jawModelContract";
+
+export type { JawZoneId } from "./jawModelContract";
 
 export type JawProblemId =
   | "chipped"
@@ -61,13 +63,19 @@ function solution(
   explanation: string,
   price?: JawPrice,
 ): JawSolution {
-  return Object.freeze({ id, label, explanation, price, duration: UNKNOWN_DURATION });
+  const content = { id, label, explanation, duration: UNKNOWN_DURATION };
+  if (!price) return Object.freeze(content);
+
+  return Object.freeze({
+    ...content,
+    price: Object.freeze({ ...price }),
+  });
 }
 
 const solutionCatalogById = Object.freeze({
   exam: solution(
     "exam",
-    "Vyšetrenie",
+    "Komplexné vyšetrenie",
     "Pri vyšetrení overíme stav zuba a jeho okolia a navrhneme ďalší postup.",
     { amount: 40 },
   ),
@@ -109,7 +117,7 @@ const solutionCatalogById = Object.freeze({
   ),
   splint: solution(
     "splint",
-    "Dlaha",
+    "Dlaha pri bruxizme",
     "Pri vyšetrení overíme zhryz a či je dlaha vhodnou súčasťou ďalšieho postupu.",
     { amount: 130 },
   ),

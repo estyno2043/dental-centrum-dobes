@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, expectTypeOf, test } from "vitest";
 import {
   getJawProblem,
   getJawSolution,
@@ -6,6 +6,8 @@ import {
   jawSolutionCatalog,
   jawZones,
 } from "./jawContent";
+import type { JawZoneId as ContentJawZoneId } from "./jawContent";
+import type { JawZoneId as ModelJawZoneId } from "./jawModelContract";
 
 const expectedProblems = {
   front: [
@@ -115,6 +117,10 @@ const expectedProblems = {
 } as const;
 
 describe("jaw patient content", () => {
+  test("uses the jaw model contract as the zone ID contract", () => {
+    expectTypeOf<ContentJawZoneId>().toEqualTypeOf<ModelJawZoneId>();
+  });
+
   test("keeps the locked four-zone order and four problems per zone", () => {
     expect(jawZones.map((zone) => [zone.id, zone.label])).toEqual([
       ["front", "Predné zuby"],
@@ -183,6 +189,48 @@ describe("jaw patient content", () => {
     expect(
       allPrices.every((price) => [40, 90, 95, 130, 155, 320, 430].includes(price)),
     ).toBe(true);
+
+    const replacement = jawSolutionCatalog.find(
+      (solution) => solution.id === "replacement",
+    );
+    expect(replacement).toBeDefined();
+    expect(Object.hasOwn(replacement!, "price")).toBe(false);
+  });
+
+  test("keeps every approved solution label attached to its stable ID", () => {
+    expect(
+      Object.fromEntries(
+        jawSolutionCatalog.map((solution) => [solution.id, solution.label]),
+      ),
+    ).toEqual({
+      exam: "Komplexné vyšetrenie",
+      filling: "Výplň",
+      hygiene: "Dentálna hygiena",
+      endo: "Ošetrenie koreňových kanálikov",
+      crown: "Korunka",
+      allCeramic: "Celokeramická korunka",
+      extraction: "Vybratie zuba",
+      splint: "Dlaha pri bruxizme",
+      replacement: "Možnosti náhrady zuba",
+    });
+  });
+
+  test("deep-freezes all shared patient content", () => {
+    expect(Object.isFrozen(jawSolutionCatalog)).toBe(true);
+    for (const solution of jawSolutionCatalog) {
+      expect(Object.isFrozen(solution)).toBe(true);
+      if (solution.price) expect(Object.isFrozen(solution.price)).toBe(true);
+    }
+
+    expect(Object.isFrozen(jawZones)).toBe(true);
+    for (const zone of jawZones) {
+      expect(Object.isFrozen(zone)).toBe(true);
+      expect(Object.isFrozen(zone.problems)).toBe(true);
+      for (const problem of zone.problems) {
+        expect(Object.isFrozen(problem)).toBe(true);
+        expect(Object.isFrozen(problem.solutions)).toBe(true);
+      }
+    }
   });
 
   test("keeps guidance non-diagnostic and avoids invented durations", () => {
@@ -227,7 +275,6 @@ describe("jaw patient content", () => {
 
     expect(replacement).toMatchObject({
       label: "Možnosti náhrady zuba",
-      price: undefined,
       duration: "Dĺžku určí lekár po vyšetrení.",
     });
     expect(replacement?.explanation).toMatch(/cena a dĺžka závisia/i);
