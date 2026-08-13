@@ -5,7 +5,7 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Tasks 1–8 approved; Task 9 localhost approval in progress
+- Status: Tasks 1–9 complete; awaiting user localhost approval
 - Owner: Codex
 - Branch: `codex/runtime-jaw-3d`
 - Task: Run required desktop/mobile localhost visual, interaction,
@@ -160,6 +160,25 @@ update it before taking or handing off work.
 > at 390×844 and 1440×900 found 44px targets, zero horizontal overflow, and no
 > console errors.
 
+> Task 9 handoff on 2026-08-13: required localhost gate exposed one permanent
+> WebGL/model-failure defect. The static fallback became interactive, but its
+> parent kept the 1120dvh desktop / 850dvh mobile sticky choreography. Commit
+> `4817add` adds an explicit permanent-fallback boundary: permanent model,
+> controller, or fatal failure collapses the story to short normal flow;
+> transient WebGL context loss keeps the sticky geometry for recovery. Race,
+> profile-change, unmount, and callback deduplication cases are covered.
+> Independent review ended with spec PASS and quality APPROVED. Verification
+> passed 172/172 tests, jaw validation, lint, typecheck, Next production build,
+> diff, credential, and obsolete-runtime scans. Browser checks at 1920×1080,
+> 1440×900, 390×844, and 375×812 found zero horizontal overflow, correct
+> non-sticky permanent fallback, native mobile gallery overflow with mandatory
+> snapping, working mobile menu, usable panel/form flow, and 44px zone targets.
+> Automated Chrome exposed no WebGL, so it verified the complete permanent
+> fallback path; final realtime 3D appearance and smoothness remain the user's
+> localhost approval gate. Assets remain far below budget: desktop GLB 136,788
+> bytes / 17,113 triangles; mobile GLB 116,532 bytes / 10,110 triangles.
+> Localhost remains `http://localhost:3000/`.
+
 > Implementation approval on 2026-08-11 locks one reversible 1030vh desktop
 > timeline: grow 0–84, pan 84–380, frame-07 zoom 380–480, blur 442–480,
 > jaw fade 447–480, eight-second scrub 480–930, dwell 930–1030. Mobile keeps
@@ -258,8 +277,8 @@ update it before taking or handing off work.
 
 ## File Reservations
 
-- Codex reserves `COLLAB.md` for Task 9 coordination and browser evidence.
-- No production source files are reserved during the visual approval gate.
+- No production files are reserved while user reviews Task 9 on localhost.
+- Codex reserves only `COLLAB.md` for approval outcome and publication handoff.
 
 > **Read this before touching the build.** The framework changed. The project
 > no longer runs on `vinext` or Cloudflare Workers — it is now standard
