@@ -6,6 +6,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { readFileSync } from "node:fs";
 import { createRef } from "react";
 import { renderToString } from "react-dom/server";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
@@ -20,6 +21,7 @@ import {
   zoneIdForHit,
   type JawZoneOverlayProps,
 } from "./JawZoneOverlay";
+import styles from "./jawExperience.module.css";
 
 const runtime = vi.hoisted(() => ({
   moduleEvaluations: 0,
@@ -1039,10 +1041,12 @@ test("preserves live projected leaders across ready, interactive, and panel rere
   expect(frontLeader).toHaveAttribute("y2", "260");
 });
 
-test("shows linked model and CC BY credit in the interactive layer", () => {
+test("keeps model-credit links inline while giving each a 44px touch target", () => {
   render(<JawExperience profile="desktop" prefersReducedMotion />);
 
-  expect(screen.getByTestId("jaw-model-credit")).toHaveTextContent(
+  const credit = screen.getByTestId("jaw-model-credit");
+  expect(credit).toHaveClass(styles.modelCredit);
+  expect(credit).toHaveTextContent(
     /Free Teeth Base Mesh\s+— ferrumiron6, upravené,\s+CC BY 4.0/,
   );
   expect(screen.getByRole("link", { name: "Free Teeth Base Mesh" })).toHaveAttribute(
@@ -1053,4 +1057,13 @@ test("shows linked model and CC BY credit in the interactive layer", () => {
     "href",
     "https://creativecommons.org/licenses/by/4.0/",
   );
+
+  const stylesheet = readFileSync(
+    "components/home/jaw/jawExperience.module.css",
+    "utf8",
+  );
+  const declaration = stylesheet.match(/\.modelCredit a\s*\{([^}]*)\}/)?.[1];
+  expect(declaration).toMatch(/display:\s*inline-flex/);
+  expect(declaration).toMatch(/min-width:\s*44px/);
+  expect(declaration).toMatch(/min-height:\s*44px/);
 });

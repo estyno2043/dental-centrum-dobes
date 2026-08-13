@@ -7,6 +7,7 @@ import {
   JawAppointmentForm,
 } from "./JawAppointmentForm";
 import { NetlifyJawFormDefinition } from "./NetlifyJawFormDefinition";
+import styles from "./jawExperience.module.css";
 
 const selection = {
   zoneId: "front",
@@ -122,7 +123,7 @@ test("posts URL-encoded values and shows success only for an ok response", async
 test.each([
   ["non-ok response", vi.fn().mockResolvedValue({ ok: false })],
   ["network failure", vi.fn().mockRejectedValue(new Error("offline"))],
-])("retains controlled fields after %s and offers the clinic phone", async (_label, fetchMock) => {
+])("retains controlled fields after %s and offers a 44px clinic phone touch target", async (_label, fetchMock) => {
   const user = userEvent.setup();
   vi.stubGlobal("fetch", fetchMock);
   render(<JawAppointmentForm selection={selection} />);
@@ -133,8 +134,11 @@ test.each([
   await user.click(screen.getByRole("checkbox"));
   await user.click(screen.getByRole("button", { name: "Požiadať o termín" }));
 
-  expect(await screen.findByRole("alert")).toHaveTextContent(/skúste znova/i);
-  expect(screen.getByRole("link", { name: /0918 800 002/ })).toHaveAttribute(
+  const error = await screen.findByRole("alert");
+  const clinicPhone = screen.getByRole("link", { name: /0918 800 002/ });
+  expect(error).toHaveTextContent(/skúste znova/i);
+  expect(error).toHaveClass(styles.formError);
+  expect(clinicPhone).toHaveAttribute(
     "href",
     "tel:+421918800002",
   );
@@ -142,6 +146,15 @@ test.each([
   expect(screen.getByRole("textbox", { name: "Telefón" })).toHaveValue("0900 111 222");
   expect(screen.getByRole("textbox", { name: "E-mail" })).toHaveValue("adam@example.sk");
   expect(screen.getByRole("checkbox")).toBeChecked();
+
+  const stylesheet = readFileSync(
+    "components/home/jaw/jawExperience.module.css",
+    "utf8",
+  );
+  const declaration = stylesheet.match(/\.formError a\s*\{([^}]*)\}/)?.[1];
+  expect(declaration).toMatch(/display:\s*inline-flex/);
+  expect(declaration).toMatch(/min-width:\s*44px/);
+  expect(declaration).toMatch(/min-height:\s*44px/);
 });
 
 test("disables duplicate submission while the first request is pending", async () => {

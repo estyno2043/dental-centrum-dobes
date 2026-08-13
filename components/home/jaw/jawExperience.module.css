@@ -192,8 +192,14 @@
 }
 
 .modelCredit a {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
   color: inherit;
   text-underline-offset: 2px;
+  vertical-align: middle;
 }
 
 .modelCredit a:focus-visible {
@@ -495,8 +501,14 @@
 }
 
 .formError a {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
   color: inherit;
   font-weight: 800;
+  vertical-align: middle;
 }
 
 @media (max-width: 767px) {
