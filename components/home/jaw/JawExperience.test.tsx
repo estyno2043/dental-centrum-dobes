@@ -187,7 +187,14 @@ afterEach(() => {
 
 test("reduced motion keeps the static final pose interactive without loading the runtime", async () => {
   const evaluationCount = runtime.moduleEvaluations;
-  render(<JawExperience profile="desktop" prefersReducedMotion />);
+  const onPermanentFallbackChange = vi.fn();
+  render(
+    <JawExperience
+      profile="desktop"
+      prefersReducedMotion
+      onPermanentFallbackChange={onPermanentFallbackChange}
+    />,
+  );
 
   expect(screen.getByRole("img", { name: /statický model chrupu/i })).toHaveAttribute(
     "src",
@@ -200,11 +207,117 @@ test("reduced motion keeps the static final pose interactive without loading the
   expect(FakeIntersectionObserver.instances).toHaveLength(0);
   expect(runtime.moduleEvaluations).toBe(evaluationCount);
   expect(runtime.create).not.toHaveBeenCalled();
+  expect(onPermanentFallbackChange).toHaveBeenCalledWith(false);
+  expect(onPermanentFallbackChange).not.toHaveBeenCalledWith(true);
 
   await userEvent.click(screen.getByRole("button", { name: "Predné zuby" }));
   expect(
     await screen.findByRole("dialog", { name: "Predné zuby" }),
   ).toBeVisible();
+});
+
+test("reports false then true only when controller creation permanently fails", async () => {
+  const onPermanentFallbackChange = vi.fn();
+  runtime.create.mockRejectedValue(new Error("model unavailable"));
+  render(
+    <JawExperience
+      profile="desktop"
+      prefersReducedMotion={false}
+      onPermanentFallbackChange={onPermanentFallbackChange}
+    />,
+  );
+
+  expect(onPermanentFallbackChange).toHaveBeenCalledTimes(1);
+  expect(onPermanentFallbackChange).toHaveBeenLastCalledWith(false);
+  await intersectHost();
+  await screen.findByRole("img", { name: /statický model chrupu/i });
+
+  expect(onPermanentFallbackChange.mock.calls).toEqual([[false], [true]]);
+});
+
+test("does not report transient context suspension as a permanent fallback", async () => {
+  const controller = createController();
+  const onPermanentFallbackChange = vi.fn();
+  let options: SceneOptions | undefined;
+  runtime.create.mockImplementation(
+    async (_canvas: HTMLCanvasElement, nextOptions: SceneOptions) => {
+      options = nextOptions;
+      return controller;
+    },
+  );
+  render(
+    <JawExperience
+      profile="desktop"
+      prefersReducedMotion={false}
+      onPermanentFallbackChange={onPermanentFallbackChange}
+    />,
+  );
+
+  await intersectHost();
+  act(() => options?.onFirstFrame());
+  act(() => options?.onContextLost());
+
+  expect(onPermanentFallbackChange.mock.calls).toEqual([[false]]);
+});
+
+test("clears a permanent fallback for a profile retry without publishing a stale post-unmount failure", async () => {
+  const mobilePending = deferred<FakeController>();
+  const onPermanentFallbackChange = vi.fn();
+  runtime.create
+    .mockRejectedValueOnce(new Error("desktop model unavailable"))
+    .mockImplementationOnce(() => mobilePending.promise);
+  const { rerender, unmount } = render(
+    <JawExperience
+      profile="desktop"
+      prefersReducedMotion={false}
+      onPermanentFallbackChange={onPermanentFallbackChange}
+    />,
+  );
+  await intersectHost();
+  await screen.findByRole("img", { name: /statický model chrupu/i });
+  expect(onPermanentFallbackChange.mock.calls).toEqual([[false], [true]]);
+
+  rerender(
+    <JawExperience
+      profile="mobile"
+      prefersReducedMotion={false}
+      onPermanentFallbackChange={onPermanentFallbackChange}
+    />,
+  );
+  expect(onPermanentFallbackChange).toHaveBeenLastCalledWith(false);
+  await intersectHost();
+  unmount();
+  await act(async () => mobilePending.reject(new Error("stale mobile failure")));
+
+  expect(onPermanentFallbackChange.mock.calls).toEqual([
+    [false],
+    [true],
+    [false],
+  ]);
+});
+
+test("keeps a successful ready scene reported as non-permanent", async () => {
+  const controller = createController();
+  const onPermanentFallbackChange = vi.fn();
+  let options: SceneOptions | undefined;
+  runtime.create.mockImplementation(
+    async (_canvas: HTMLCanvasElement, nextOptions: SceneOptions) => {
+      options = nextOptions;
+      return controller;
+    },
+  );
+  render(
+    <JawExperience
+      profile="desktop"
+      prefersReducedMotion={false}
+      onPermanentFallbackChange={onPermanentFallbackChange}
+    />,
+  );
+
+  await intersectHost();
+  act(() => options?.onFirstFrame());
+
+  expect(onPermanentFallbackChange.mock.calls).toEqual([[false]]);
 });
 
 test.each([

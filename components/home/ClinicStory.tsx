@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useRef, type CSSProperties, type JSX } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type JSX,
+} from "react";
 import { useMediaQuery } from "../hero/useMediaQuery";
 import {
   DESKTOP_STORY_SCROLL_VH,
@@ -29,6 +36,11 @@ export function ClinicStory(): JSX.Element {
   const prefersReducedMotion = useMediaQuery(reducedMotionQuery, true);
   const isWideViewport = useMediaQuery(wideViewportQuery, false);
   const profile: ClinicStoryProfile = isWideViewport ? "desktop" : "mobile";
+  const [permanentJawFallback, setPermanentJawFallback] = useState(false);
+  const handlePermanentJawFallbackChange = useCallback(
+    (permanent: boolean): void => setPermanentJawFallback(permanent),
+    [],
+  );
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -156,7 +168,7 @@ export function ClinicStory(): JSX.Element {
 
   return (
     <section
-      className={`${styles.section} ${prefersReducedMotion ? styles.reduced : ""}`}
+      className={`${styles.section} ${prefersReducedMotion ? styles.reduced : ""} ${permanentJawFallback ? styles.permanentFallback : ""}`}
       ref={sectionRef}
       aria-labelledby="clinic-story-heading"
       style={{ pointerEvents: "auto" }}
@@ -233,6 +245,7 @@ export function ClinicStory(): JSX.Element {
             ref={jawExperienceRef}
             profile={profile}
             prefersReducedMotion={prefersReducedMotion}
+            onPermanentFallbackChange={handlePermanentJawFallbackChange}
           />
         </div>
       </div>

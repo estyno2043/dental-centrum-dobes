@@ -26,6 +26,7 @@ import styles from "./jawExperience.module.css";
 export type JawExperienceProps = {
   profile: "desktop" | "mobile";
   prefersReducedMotion: boolean;
+  onPermanentFallbackChange?: (permanent: boolean) => void;
 };
 
 export type JawExperienceHandle = {
@@ -157,7 +158,7 @@ export const JawExperience = forwardRef<
   JawExperienceHandle,
   JawExperienceProps
 >(function JawExperience(
-  { profile, prefersReducedMotion },
+  { profile, prefersReducedMotion, onPermanentFallbackChange },
   ref,
 ): JSX.Element {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -176,6 +177,8 @@ export const JawExperience = forwardRef<
   const highlightedZoneRef = useRef<JawZoneId | null>(null);
   const selectedTriggerRef = useRef<HTMLButtonElement | null>(null);
   const intersectingRef = useRef(false);
+  const permanentFallbackCallbackRef = useRef(onPermanentFallbackChange);
+  permanentFallbackCallbackRef.current = onPermanentFallbackChange;
   const [loadState, setLoadState] = useState<LoadState>(
     prefersReducedMotion ? "fallback" : "poster",
   );
@@ -293,6 +296,7 @@ export const JawExperience = forwardRef<
     disposeController();
     frameReadyRef.current = false;
     intersectingRef.current = false;
+    permanentFallbackCallbackRef.current?.(false);
 
     if (prefersReducedMotion) {
       fallbackModeRef.current = true;
@@ -334,6 +338,7 @@ export const JawExperience = forwardRef<
       setMotionVariables(host, FINAL_MOTION);
       setVisualOpacities(posterRef.current, canvas, 1, false, true);
       overlayRef.current?.setProjectedAnchors(fallbackAnchors(profile));
+      permanentFallbackCallbackRef.current?.(true);
     };
 
     let startController = (): void => {};

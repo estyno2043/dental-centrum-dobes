@@ -215,39 +215,46 @@
 
 }
 
-.reduced {
+.reduced,
+.permanentFallback {
   height: auto;
 }
 
-.reduced .pin {
+.reduced .pin,
+.permanentFallback .pin {
   position: relative;
   height: auto;
   overflow: visible;
 }
 
-.reduced .galleryLayer {
+.reduced .galleryLayer,
+.permanentFallback .galleryLayer {
   position: relative;
   min-height: 100dvh;
   opacity: 1;
 }
 
-.reduced .track {
+.reduced .track,
+.permanentFallback .track {
   width: 100%;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   transform: none;
 }
 
-.reduced .frame {
+.reduced .frame,
+.permanentFallback .frame {
   height: 100%;
   scroll-snap-align: center;
 }
 
-.reduced .handoffPicture {
+.reduced .handoffPicture,
+.permanentFallback .handoffPicture {
   display: none;
 }
 
-.reduced .jawHost {
+.reduced .jawHost,
+.permanentFallback .jawHost {
   position: relative;
   height: min(72dvh, 720px);
 }

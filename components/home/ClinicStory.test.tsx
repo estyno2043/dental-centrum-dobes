@@ -1,10 +1,57 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { ClinicStory } from "./ClinicStory";
+import styles from "./clinicStory.module.css";
 
-class NoopIntersectionObserver {
+const jawRuntime = vi.hoisted(() => ({
+  create: vi.fn(),
+}));
+
+vi.mock("./jaw/JawSceneController", () => ({
+  JawSceneController: {
+    create: jawRuntime.create,
+  },
+}));
+
+type SceneOptions = {
+  onFirstFrame(): void;
+  onContextLost(): void;
+};
+
+function createController() {
+  return {
+    setMotion: vi.fn(),
+    setActiveZone: vi.fn(),
+    setPanelOpen: vi.fn(),
+    projectAnchor: vi.fn(() => ({ x: 400, y: 260, visible: true })),
+    hitTest: vi.fn(() => null),
+    render: vi.fn(),
+    dispose: vi.fn(),
+  };
+}
+
+class FakeIntersectionObserver {
+  static instances: FakeIntersectionObserver[] = [];
+
   readonly observe = vi.fn();
   readonly disconnect = vi.fn();
+
+  constructor(readonly callback: IntersectionObserverCallback) {
+    FakeIntersectionObserver.instances.push(this);
+  }
+
+  emit(isIntersecting: boolean): void {
+    this.callback(
+      [
+        {
+          isIntersecting,
+          intersectionRatio: isIntersecting ? 1 : 0,
+          target: this.observe.mock.calls[0]?.[0] ?? document.body,
+        } as IntersectionObserverEntry,
+      ],
+      this as unknown as IntersectionObserver,
+    );
+  }
 }
 
 class NoopResizeObserver {
@@ -17,12 +64,14 @@ let nextAnimationFrameId = 1;
 let animationFrameNow = 1000;
 
 beforeEach(() => {
+  FakeIntersectionObserver.instances = [];
+  jawRuntime.create.mockReset();
   animationFrameCallbacks = new Map();
   nextAnimationFrameId = 1;
   animationFrameNow = 1000;
   vi.stubGlobal(
     "IntersectionObserver",
-    NoopIntersectionObserver as unknown as typeof IntersectionObserver,
+    FakeIntersectionObserver as unknown as typeof IntersectionObserver,
   );
   vi.stubGlobal(
     "ResizeObserver",
@@ -100,6 +149,12 @@ function zoneButtons(): HTMLButtonElement[] {
   });
 }
 
+async function intersectJawHost(): Promise<void> {
+  const observer = FakeIntersectionObserver.instances.at(-1);
+  if (!observer) throw new Error("Jaw host was not observed.");
+  await act(async () => observer.emit(true));
+}
+
 test("uses one sticky viewport for seven gallery frames and the realtime jaw", () => {
   stubMatchMedia(false);
   const { container } = render(<ClinicStory />);
@@ -115,12 +170,81 @@ test("uses one sticky viewport for seven gallery frames and the realtime jaw", (
     "/media/strip-07-detail.jpg",
   );
   expect(screen.getByTestId("jaw-experience-host")).toBeInTheDocument();
+  expect(
+    screen.getByRole("region", { name: "Miesto, kde sa nikto neponáhľa." }),
+  ).not.toHaveClass(styles.permanentFallback);
   expect(zoneButtons()).toHaveLength(4);
   for (const button of zoneButtons()) {
     expect(button).toHaveAttribute("aria-disabled", "true");
     expect(button).toHaveAttribute("tabindex", "-1");
   }
   expect(container.querySelector("video")).not.toBeInTheDocument();
+});
+
+test("collapses a permanent WebGL creation failure into a usable non-sticky fallback flow", async () => {
+  stubMatchMedia(false);
+  jawRuntime.create.mockRejectedValue(new Error("WebGL unavailable"));
+  render(<ClinicStory />);
+
+  await intersectJawHost();
+  await screen.findByRole("img", { name: /statický model chrupu/i });
+
+  const section = screen.getByRole("region", {
+    name: "Miesto, kde sa nikto neponáhľa.",
+  });
+  await waitFor(() => expect(section).toHaveClass(styles.permanentFallback));
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: "Ďasná" }));
+  });
+  expect(await screen.findByRole("dialog", { name: "Ďasná" })).toBeVisible();
+});
+
+test("keeps successful WebGL readiness in the long sticky choreography", async () => {
+  stubMatchMedia(false);
+  const controller = createController();
+  let options: SceneOptions | undefined;
+  jawRuntime.create.mockImplementation(
+    async (_canvas: HTMLCanvasElement, nextOptions: SceneOptions) => {
+      options = nextOptions;
+      return controller;
+    },
+  );
+  render(<ClinicStory />);
+
+  await intersectJawHost();
+  act(() => options?.onFirstFrame());
+
+  const section = screen.getByRole("region", {
+    name: "Miesto, kde sa nikto neponáhľa.",
+  });
+  expect(screen.getByTestId("jaw-canvas")).toHaveAttribute(
+    "data-frame-ready",
+    "true",
+  );
+  expect(section).not.toHaveClass(styles.permanentFallback);
+});
+
+test("keeps transient WebGL context loss in the long sticky choreography", async () => {
+  stubMatchMedia(false);
+  const controller = createController();
+  let options: SceneOptions | undefined;
+  jawRuntime.create.mockImplementation(
+    async (_canvas: HTMLCanvasElement, nextOptions: SceneOptions) => {
+      options = nextOptions;
+      return controller;
+    },
+  );
+  render(<ClinicStory />);
+
+  await intersectJawHost();
+  act(() => options?.onContextLost());
+  await screen.findByRole("img", { name: /statický model chrupu/i });
+
+  const section = screen.getByRole("region", {
+    name: "Miesto, kde sa nikto neponáhľa.",
+  });
+  expect(section).not.toHaveClass(styles.permanentFallback);
 });
 
 test("keeps the full-screen jaw host transparent to native gallery hit testing", () => {
@@ -254,6 +378,11 @@ test("keeps the static realtime-jaw fallback and native gallery swipe under redu
     screen.getByRole("img", { name: /statický model chrupu/i }),
   ).toHaveAttribute("src", "/media/jaw/jaw-fallback.webp");
   expect(screen.getByRole("list")).toHaveAttribute("data-native-swipe", "true");
+  const section = screen.getByRole("region", {
+    name: "Miesto, kde sa nikto neponáhľa.",
+  });
+  expect(section).toHaveClass(styles.reduced);
+  expect(section).not.toHaveClass(styles.permanentFallback);
   for (const button of zoneButtons()) {
     expect(button).toHaveAttribute("aria-disabled", "false");
   }
