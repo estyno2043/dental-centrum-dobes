@@ -5,11 +5,11 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Tasks 1–7 approved; Task 8 in progress
+- Status: Tasks 1–8 approved; Task 9 localhost approval in progress
 - Owner: Codex
 - Branch: `codex/runtime-jaw-3d`
-- Task: Harden realtime jaw lifecycle, fallback, accessibility, performance,
-  and motion-contract cleanup before localhost visual approval.
+- Task: Run required desktop/mobile localhost visual, interaction,
+  accessibility, performance, and fallback approval gate.
 
 > On 2026-08-11 the user approved model B, `Free Teeth Base Mesh` by
 > ferrumiron6, as the production source and approved proceeding without an
@@ -144,6 +144,22 @@ update it before taking or handing off work.
 > jaw validation, lint, typecheck, production build, SSR form inspection,
 > whitespace scan, obsolete-runtime scan, and credential scan passed.
 
+> Task 8 handoff on 2026-08-13: production lifecycle and fallback hardening is
+> in commits `1a297bb`, `8beb43e`, `77987ec`, `0537d50`, `4e73ab3`, and
+> `35ded05`. Six independent review rounds ended with spec PASS and quality
+> APPROVED. WebGL context loss now exposes a visible usable final fallback,
+> preserves panel/selection/highlight state, and recreates exactly once when
+> eligible. DPR caps are desktop 1.5 and mobile 1.25. Panel framing fits the
+> complete model/proxy envelope around the desktop side panel and mobile 62dvh
+> sheet at all required sizes. Reduced/fatal/context fallbacks resize their
+> anchors without duplicating live controller resize ownership. All jaw links,
+> buttons, and controls meet 44×44px targets. Fixed dwell deduplicates identical
+> motion and renders on demand only. Dead `globalTime`/`finalOpacity` fields are
+> removed. 165/165 tests, jaw validation, lint, typecheck, production build,
+> whitespace, credential, and bridge scans passed. Preliminary localhost checks
+> at 390×844 and 1440×900 found 44px targets, zero horizontal overflow, and no
+> console errors.
+
 > Implementation approval on 2026-08-11 locks one reversible 1030vh desktop
 > timeline: grow 0–84, pan 84–380, frame-07 zoom 380–480, blur 442–480,
 > jaw fade 447–480, eight-second scrub 480–930, dwell 930–1030. Mobile keeps
@@ -242,13 +258,8 @@ update it before taking or handing off work.
 
 ## File Reservations
 
-- Codex reserves `COLLAB.md` for Task 8 coordination.
-- Task 8 implementer reserves `components/home/jaw/JawSceneController.ts`,
-  `JawExperience.tsx` and its test, `JawZoneOverlay.tsx`,
-  `JawDetailPanel.tsx`, `jawExperience.module.css`,
-  `components/home/ClinicStory.test.tsx`, plus
-  `components/home/clinicStoryMotion.ts` and its test for removal of the now
-  dead `globalTime`/`finalOpacity` video-compatibility bridge.
+- Codex reserves `COLLAB.md` for Task 9 coordination and browser evidence.
+- No production source files are reserved during the visual approval gate.
 
 > **Read this before touching the build.** The framework changed. The project
 > no longer runs on `vinext` or Cloudflare Workers — it is now standard
