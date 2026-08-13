@@ -49,6 +49,12 @@ type InternalFactories = Readonly<{
   devicePixelRatio(): number;
 }>;
 
+type ControllerMotionState = Readonly<{
+  jawOpen: number;
+  jawSeparation: number;
+  interactive: boolean;
+}>;
+
 function createDefaultFactories(): InternalFactories {
   return {
     async loadModel(url) {
@@ -87,6 +93,18 @@ const toothNamesByZone = {
 
 function asError(error: unknown): Error {
   return error instanceof Error ? error : new Error(String(error));
+}
+
+function normalizeControllerMotion(
+  state: ClinicStoryMotionState,
+): ControllerMotionState {
+  const clampUnit = (value: number): number =>
+    Number.isFinite(value) ? Math.min(1, Math.max(0, value)) : 0;
+  return {
+    jawOpen: clampUnit(state.jawOpen),
+    jawSeparation: clampUnit(state.jawSeparation),
+    interactive: state.interactive,
+  };
 }
 
 function materialsOf(mesh: THREE.Mesh): THREE.Material[] {
@@ -195,6 +213,7 @@ export class JawSceneController {
   private disposed = false;
   private firstFrameSent = false;
   private fatalSent = false;
+  private motionState: ControllerMotionState | null = null;
 
   private readonly handleVisibilityChange = (): void => {
     if (this.disposed) return;
@@ -600,10 +619,19 @@ export class JawSceneController {
 
   setMotion(state: ClinicStoryMotionState): void {
     if (this.disposed) return;
-    this.interactive = state.interactive;
+    const nextMotion = normalizeControllerMotion(state);
+    if (
+      this.motionState?.jawOpen === nextMotion.jawOpen &&
+      this.motionState.jawSeparation === nextMotion.jawSeparation &&
+      this.motionState.interactive === nextMotion.interactive
+    ) {
+      return;
+    }
+    this.motionState = nextMotion;
+    this.interactive = nextMotion.interactive;
     this.applyPose(
       computeJawPose(
-        { jawOpen: state.jawOpen, jawSeparation: state.jawSeparation },
+        nextMotion,
         this.bounds,
       ),
     );

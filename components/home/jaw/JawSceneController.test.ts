@@ -532,6 +532,52 @@ describe("JawSceneController", () => {
     controller.dispose();
   });
 
+  test("schedules a render only when controller-relevant motion changes", async () => {
+    const options = createOptions();
+    const setup = createFactories();
+    const controller = await createInternal(
+      createCanvas(),
+      options,
+      setup.factories,
+    );
+    const finalDwell = motion({
+      jawOpen: 1,
+      jawSeparation: 1,
+      interactive: true,
+    });
+    options.requestRender.mockClear();
+
+    controller.setMotion(finalDwell);
+    expect(options.requestRender).toHaveBeenCalledTimes(1);
+
+    options.requestRender.mockClear();
+    controller.setMotion(finalDwell);
+    controller.setMotion({ ...finalDwell });
+    controller.setMotion({
+      ...finalDwell,
+      grow: 0,
+      jawOpacity: 0,
+      labelsOpacity: 0,
+    });
+    controller.setMotion({ ...finalDwell, jawOpen: 1.2, jawSeparation: 1.1 });
+    expect(options.requestRender).not.toHaveBeenCalled();
+
+    controller.setMotion({ ...finalDwell, jawOpen: 0.9 });
+    expect(options.requestRender).toHaveBeenCalledTimes(1);
+
+    controller.setMotion({ ...finalDwell, jawOpen: 0.9, jawSeparation: 0.9 });
+    expect(options.requestRender).toHaveBeenCalledTimes(2);
+
+    controller.setMotion({
+      ...finalDwell,
+      jawOpen: 0.9,
+      jawSeparation: 0.9,
+      interactive: false,
+    });
+    expect(options.requestRender).toHaveBeenCalledTimes(3);
+    controller.dispose();
+  });
+
   test("emphasizes only meshes in the active zone", async () => {
     const root = createJawRoot();
     const setup = createFactories(root);
