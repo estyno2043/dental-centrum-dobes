@@ -21,7 +21,16 @@ import styles from "./patients.module.css";
  */
 export function PatientsSection(): JSX.Element {
   return (
-    <section className={styles.section} aria-labelledby="patients-heading">
+    /*
+     * Tells the header to take a background while it sits over this section.
+     * It is the only light section on the page, and white type on greige is
+     * unreadable without one.
+     */
+    <section
+      className={styles.section}
+      aria-labelledby="patients-heading"
+      data-header-light="true"
+    >
       <div className={styles.inner}>
         <header className={styles.intro}>
           <p className={styles.eyebrow}>

@@ -1,3 +1,17 @@
+/*
+ * Hidden by default and revealed only over a section that asks for it with
+ * `data-header-light`.
+ *
+ * `visibility`, not just `opacity`: an invisible header that still answers the
+ * keyboard would put the whole navigation in the tab order over every section
+ * where it cannot be seen. `visibility: hidden` takes it out of the
+ * accessibility tree too, so it is absent rather than merely unpainted, and it
+ * still transitions because the property is animatable in step with opacity.
+ *
+ * The consequence is deliberate and worth remembering: the logo lives here, so
+ * the hero carries no logo and no menu of any kind until the reader reaches
+ * the last section.
+ */
 .navigation {
   position: fixed;
   top: 0;
@@ -8,25 +22,37 @@
   align-items: flex-start;
   justify-content: space-between;
   padding: 26px 44px;
+  opacity: 0;
+  visibility: hidden;
   transition:
     background 0.4s var(--ease),
-    backdrop-filter 0.4s var(--ease);
+    backdrop-filter 0.4s var(--ease),
+    opacity 0.35s var(--ease),
+    visibility 0.35s var(--ease);
 }
 
-/*
- * The brand's own taupe once the header leaves the video, rather than a
- * neutral dark bar.
- *
- * `--taupe-deep` and not `--taupe`: white type on the lighter taupe measures
- * about 2.6:1, well under the 4.5:1 needed to be readable. The deeper tone
- * lands at 4.5:1 exactly, so the logo and links stay legible without a second
- * dark-on-light logo asset — the only one that exists is white.
- */
+/* Scrolling only tightens the bar; it does not colour it. */
 .navigation.scrolled {
   padding-top: 16px;
   padding-bottom: 14px;
+}
+
+/*
+ * The brand's taupe, and only while the header sits over a section that asks
+ * for it with `data-header-light`. Over the hero, the statement and the clinic
+ * story the bar stays transparent — those are dark enough for white type on
+ * their own, and a permanent band would just cover them.
+ *
+ * `--taupe-deep` rather than `--taupe`: white type on the lighter taupe
+ * measures about 2.6:1, well under the 4.5:1 needed to read, while the deeper
+ * tone lands at 4.5:1 exactly. That matters because the only logo asset is
+ * white — a pale beige bar would need a dark logo, which does not exist yet.
+ */
+.navigation.onLight {
   background: rgb(138 115 88 / 92%);
   backdrop-filter: blur(14px);
+  opacity: 1;
+  visibility: visible;
 }
 
 .logo {
