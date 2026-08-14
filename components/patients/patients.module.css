@@ -148,53 +148,73 @@
     #e6e0d4;
 }
 
+/*
+ * A hairline, centred on the split rather than starting at it.
+ * `translateX(-50%)` does the centring exactly; an earlier version relied on
+ * `place-items: center` inside the 2px line box, which does not centre an item
+ * wider than its track — it let the handle overflow to one side, leaving it
+ * 25px right of the line it was supposed to sit on.
+ */
 .divider {
   position: absolute;
   z-index: 2;
   top: 0;
   bottom: 0;
   left: var(--pos);
-  display: grid;
-  width: 2px;
-  place-items: center;
-  background: var(--porcelain);
-  box-shadow: 0 0 0 1px rgb(38 38 42 / 12%);
+  width: 1px;
+  background: rgb(250 249 246 / 88%);
+  box-shadow: 0 0 6px rgb(0 0 0 / 22%);
   pointer-events: none;
+  transform: translateX(-50%);
 }
 
 /*
- * Flex, not grid: the two arrows are `::before` and `::after`, and a grid
- * would stack them in the same cell instead of setting them side by side.
+ * Small, pale and translucent — it sits on top of the photograph the reader is
+ * trying to judge, so it stays out of the way. The blur behind it keeps it
+ * legible over both halves without needing a solid fill.
  */
 .knob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
   display: flex;
-  width: clamp(38px, 4vw, 52px);
-  height: clamp(38px, 4vw, 52px);
+  width: 34px;
+  height: 34px;
   align-items: center;
   justify-content: center;
+  border: 1px solid rgb(255 255 255 / 60%);
   border-radius: 50%;
-  background: var(--charcoal);
-  box-shadow: 0 6px 22px rgb(0 0 0 / 26%);
+
+  /*
+   * Opaque enough to stay a light disc over both halves. At 34% it took its
+   * tone from whatever was behind it, so pale chevrons disappeared against
+   * teeth and dark ones against the lips — a control the reader cannot find is
+   * not subtle, it is broken.
+   */
+  background: rgb(250 249 246 / 74%);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 18%);
+  backdrop-filter: blur(6px);
+  transform: translate(-50%, -50%);
 }
 
-/* Two arrows, drawn rather than shipped as an icon. */
+/* Two thin chevrons, drawn from borders rather than shipped as an icon. */
 .knob::before,
 .knob::after {
-  width: 0;
-  height: 0;
-  border-top: 5px solid transparent;
-  border-bottom: 5px solid transparent;
+  width: 5px;
+  height: 5px;
+  border-top: 1.5px solid rgb(38 38 42 / 78%);
+  border-left: 1.5px solid rgb(38 38 42 / 78%);
   content: "";
 }
 
 .knob::before {
-  border-right: 7px solid var(--porcelain);
-  margin-right: 5px;
+  margin-right: 3px;
+  transform: rotate(-45deg);
 }
 
 .knob::after {
-  border-left: 7px solid var(--porcelain);
-  margin-left: 5px;
+  margin-left: 3px;
+  transform: rotate(135deg);
 }
 
 /*
