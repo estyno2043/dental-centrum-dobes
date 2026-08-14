@@ -36,10 +36,10 @@ export const photoFrames: readonly PhotoFrame[] = [
     src: "/media/strip-01-recepcia.jpg",
   },
   {
-    id: "chodba",
-    label: "Chodba ku ordináciám",
+    id: "snimky",
+    label: "Vyhodnotenie panoramatickej snímky",
     ratio: 3 / 2,
-    src: "/media/strip-02-chodba.jpg",
+    src: "/media/strip-02-snimky.jpg",
   },
   {
     id: "mikroskop-praca",
