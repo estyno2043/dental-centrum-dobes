@@ -113,6 +113,23 @@ and holds the exact final replacement frame during the runtime dwell. Thus the
 raw stream's eight extra rows, its generative endpoint differences, and its
 late residual motion never enter the static runtime endpoints.
 
+## Canonical Task 2 extractor
+
+Task 2 uses `scripts/extract-jaw-sequence.swift` through macOS AVFoundation as
+the sole canonical source-frame extractor. This is a deliberate deviation from
+the implementation plan's `FFMPEG_BIN` convention: the approved build machine
+has no working ffmpeg, and review proved that ffmpeg time sampling selects
+different intermediate source frames from AVFoundation. Allowing either tool
+to win based on machine state would make the generated frame and manifest
+hashes non-reproducible.
+
+`scripts/build-jaw-sequence.sh` therefore ignores PATH ffmpeg and explicitly
+rejects a non-empty `FFMPEG_BIN` before creating staging or mutating outputs.
+The generated WebPs and typed manifest are committed and validated assets, so
+Netlify does not run this macOS-only source build. Publishing uses a staged,
+same-filesystem rename transaction; an interrupted or failed install restores
+the prior desktop/mobile directory and manifest before exiting.
+
 ## Visual review
 
 Decoded checkpoints at 0%, 10%, 20%, 30%, 40%, 50%, 60%, 70%, 76%, 80%,

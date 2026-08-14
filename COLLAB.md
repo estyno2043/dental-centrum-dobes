@@ -20,6 +20,7 @@ update it before taking or handing off work.
   localhost handoff.
 
 - Task 2 exact active files: `scripts/build-jaw-sequence.sh`,
+  `scripts/build-jaw-sequence.test.sh`,
   `scripts/validate-jaw-sequence.mjs`,
   `scripts/extract-jaw-sequence.swift`,
   `components/home/jaw/jawSequenceManifest.generated.ts`,
@@ -41,6 +42,15 @@ update it before taking or handing off work.
 > Fix verification: 79 tests, lint, TypeScript, production build, Swift
 > typecheck, raw/derived metadata and hashes, five checkpoint crop-equivalence
 > comparisons, `git diff --check`, and credential scan passed.
+
+> Task 2 extractor ruling (review fix round 1, 2026-08-14):
+> `scripts/extract-jaw-sequence.swift` through macOS AVFoundation is the sole
+> canonical source-frame extractor. The approved environment has no working
+> ffmpeg, and ffmpeg sampling was proven to select different intermediate
+> frames. `FFMPEG_BIN` is therefore rejected before output mutation instead of
+> silently changing the artifact set. This deliberate deviation is safe for
+> Netlify because the validated WebPs and manifest are committed; production
+> never runs the macOS-only source build.
 
 > **Read this before touching the build.** The framework changed. The project
 > no longer runs on `vinext` or Cloudflare Workers — it is now standard
