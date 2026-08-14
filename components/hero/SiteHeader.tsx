@@ -24,6 +24,7 @@ const HEADER_BAND = 104;
 export function SiteHeader(): JSX.Element {
   const [isScrolled, setIsScrolled] = useState(false);
   const [onLight, setOnLight] = useState(false);
+  const [onHero, setOnHero] = useState(true);
 
   /*
    * One listener drives both states.
@@ -51,6 +52,14 @@ export function SiteHeader(): JSX.Element {
           return rect.top < HEADER_BAND && rect.bottom > 0;
         }),
       );
+
+      /*
+       * Measured against scroll position rather than the hero's own rect: the
+       * hero sits in a sticky layer, so its box stays pinned at the top of the
+       * screen right through the statement and the clinic story, and asking
+       * where it is would keep this true for most of the page.
+       */
+      setOnHero(window.scrollY < window.innerHeight * 0.8);
     };
 
     update();
@@ -70,6 +79,7 @@ export function SiteHeader(): JSX.Element {
         styles.navigation,
         isScrolled ? styles.scrolled : "",
         onLight ? styles.onLight : "",
+        onHero ? styles.onHero : "",
       ]
         .filter(Boolean)
         .join(" ")}

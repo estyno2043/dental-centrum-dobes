@@ -55,6 +55,20 @@
   visibility: visible;
 }
 
+/*
+ * Over the hero the header returns, but only as the logo and the tour button —
+ * no background and no link row. The cinematic sections that follow keep it
+ * hidden; it comes back in full over the patients section.
+ */
+.navigation.onHero {
+  opacity: 1;
+  visibility: visible;
+}
+
+.navigation.onHero:not(.onLight) .navigationLinks {
+  display: none;
+}
+
 .logo {
   display: flex;
   flex-direction: column;
