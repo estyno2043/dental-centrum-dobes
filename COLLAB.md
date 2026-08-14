@@ -5,7 +5,7 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Task 4 in progress — pure jaw-sequence motion mapping
+- Status: Task 5 in progress — bounded direction-aware jaw frame loader
 - Owner: Codex
 - Branch: `codex/higgsfield-jaw-sequence`
 - Base: current `origin/main`
@@ -19,9 +19,9 @@ update it before taking or handing off work.
   `scripts/crop-jaw-master.swift`, and the listed legacy jaw files until
   localhost handoff.
 
-- Task 4 exact active files: `components/home/clinicStoryMotion.ts` and
-  `components/home/clinicStoryMotion.test.ts`. `ClinicStory.tsx` remains on
-  its temporary legacy call shape until Task 9; gallery, drift, header,
+- Task 5 exact active files: `components/home/jaw/jawSequenceLoader.ts` and
+  `components/home/jaw/jawSequenceLoader.test.ts`. `ClinicStory.tsx` remains
+  on its temporary legacy call shape until Task 9; gallery, drift, header,
   patients, media pipeline, and other app files remain protected and out of
   scope.
 
