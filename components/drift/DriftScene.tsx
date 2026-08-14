@@ -58,6 +58,7 @@ export function DriftScene(): JSX.Element {
       className={styles.section}
       ref={sectionRef}
       aria-labelledby="drift-heading"
+      data-header-light="true"
     >
       <div className={styles.pin}>
         <div className={styles.field} aria-hidden="true">

@@ -9,6 +9,13 @@
 .section {
   --p: 0;
 
+  /* The section above ends on this tone; the scene warms away from it. */
+  --from-tone: #edeae4;
+  --to-tone: #e2d7c3;
+
+  /* Colour handoff, done with in the first fifth of the scroll. */
+  --blend: clamp(0, calc(var(--p) / 0.2), 1);
+
   position: relative;
 
   /*
@@ -17,7 +24,17 @@
    * travel, which is slow enough to read and quick enough not to stall.
    */
   height: 420svh;
-  background: var(--ink);
+
+  /*
+   * Mixed rather than cross-faded between two layers: the previous section
+   * ends on `--from-tone`, so beginning there and warming into `--to-tone`
+   * makes the join a shift in temperature instead of an edge.
+   */
+  background: color-mix(
+    in oklab,
+    var(--to-tone) calc(var(--blend) * 100%),
+    var(--from-tone)
+  );
 }
 
 /*
@@ -38,6 +55,16 @@
 }
 
 /* ---------------------------------------------------------------- cards --- */
+
+/*
+ * The whole scene sinks slowly as the reader scrolls — content and copy alike
+ * travel down while the frame stays pinned, so the section reads as drifting
+ * past rather than frozen in place.
+ */
+.field,
+.copy {
+  transform: translateY(calc((var(--p) * 12 - 6) * 1vh));
+}
 
 .field {
   position: absolute;
@@ -72,21 +99,25 @@
   width: 100%;
   height: auto;
   border-radius: 3px;
-  box-shadow: 0 24px 60px rgb(0 0 0 / 45%);
+  box-shadow: 0 20px 46px rgb(38 38 42 / 22%);
 }
 
 /* ----------------------------------------------------------------- copy --- */
 
 /*
- * Above the cards, and untouched by the scroll: the sentence is the one thing
- * in this section that has to stay readable the whole way through.
- */
-/*
- * A stated measure rather than `ch`. `ch` resolves against this element's own
- * 16px, not the headline's ~51px, so 22ch came out 197px wide and broke the
- * sentence a word to a line.
+ * Above the cards, and arriving with the scroll rather than sitting there the
+ * whole way: in over the first seventh, out over the last, rising into place
+ * as it appears.
+ *
+ * The width is a stated measure, not `ch`. `ch` resolves against this
+ * element's own 16px rather than the headline's ~51px, so even 22ch came out
+ * 197px wide and broke the sentence a word to a line.
  */
 .copy {
+  --copy-in: clamp(0, calc(var(--p) / 0.14), 1);
+  --copy-out: clamp(0, calc((1 - var(--p)) / 0.14), 1);
+  --copy-fade: min(var(--copy-in), var(--copy-out));
+
   position: relative;
   z-index: 1;
   width: min(100%, 760px);
@@ -99,10 +130,11 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 18px;
-  color: var(--taupe);
+  color: var(--taupe-deep);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.26em;
+  opacity: var(--copy-fade);
   text-transform: uppercase;
 }
 
@@ -110,17 +142,18 @@
   display: block;
   width: clamp(22px, 4vw, 48px);
   height: 1px;
-  background: var(--taupe);
+  background: var(--taupe-deep);
 }
 
 .headline {
-  color: var(--porcelain);
+  color: var(--charcoal);
   font-size: clamp(1.7rem, 4.2vw, 3.2rem);
   font-weight: 600;
   letter-spacing: -0.026em;
   line-height: 1.14;
-  text-shadow: 0 2px 40px rgb(0 0 0 / 55%);
+  opacity: var(--copy-fade);
   text-wrap: balance;
+  transform: translateY(calc((1 - var(--copy-in)) * 22px));
 }
 
 /* ----------------------------------------------------------------- a11y --- */
@@ -150,11 +183,21 @@
     padding: 0 clamp(20px, 5vw, 88px);
   }
 
+  .card,
+  .field,
+  .copy,
+  .headline {
+    opacity: 1;
+    transform: none;
+  }
+
   .card {
     position: static;
     width: auto;
+  }
+
+  .eyebrow {
     opacity: 1;
-    transform: none;
   }
 }
 
