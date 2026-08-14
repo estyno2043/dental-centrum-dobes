@@ -13,10 +13,19 @@
     backdrop-filter 0.4s var(--ease);
 }
 
+/*
+ * The brand's own taupe once the header leaves the video, rather than a
+ * neutral dark bar.
+ *
+ * `--taupe-deep` and not `--taupe`: white type on the lighter taupe measures
+ * about 2.6:1, well under the 4.5:1 needed to be readable. The deeper tone
+ * lands at 4.5:1 exactly, so the logo and links stay legible without a second
+ * dark-on-light logo asset — the only one that exists is white.
+ */
 .navigation.scrolled {
   padding-top: 16px;
   padding-bottom: 14px;
-  background: rgb(28 28 31 / 74%);
+  background: rgb(138 115 88 / 92%);
   backdrop-filter: blur(14px);
 }
 

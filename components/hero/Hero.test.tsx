@@ -1,6 +1,7 @@
 import { act, render, screen } from "@testing-library/react";
 import { afterEach, expect, test, vi } from "vitest";
 import { Hero } from "./Hero";
+import { SiteHeader } from "./SiteHeader";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -72,7 +73,6 @@ function videoSources(container: HTMLElement): (string | null)[] {
 test("renders the approved hero copy and patient contact details", () => {
   const { container } = render(<Hero />);
 
-  expect(screen.getByRole("navigation")).toBeInTheDocument();
   expect(screen.getByRole("banner")).toBeInTheDocument();
   expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
     "Sme dôvod, prečo sa už zubárom nemusíte vyhýbať.",
@@ -92,7 +92,7 @@ test("renders the approved hero copy and patient contact details", () => {
 });
 
 test("includes the signature mobile menu without removing desktop navigation", () => {
-  render(<Hero />);
+  render(<SiteHeader />);
 
   expect(
     screen.getByRole("button", { name: "Otvoriť menu" }),
