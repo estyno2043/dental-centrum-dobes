@@ -7,7 +7,8 @@ update it before taking or handing off work.
 
 - Status: Written Higgsfield jaw-sequence specification and task-level
   implementation plan complete; latest `origin/main` at `bf59253` inspected
-  and pending merge into the owned planning branch before handoff
+  and merged into the owned planning branch as `e3bac87`; awaiting
+  execution-mode selection
 - Owner: Codex
 - Branch: `codex/jaw-scroll-sequence-design`
 - Task: Replace the rejected runtime jaw direction with a Higgsfield-generated,
@@ -23,7 +24,8 @@ update it before taking or handing off work.
 > centres and quiets the patients before/after control, `eb82e20` restores the
 > logo/tour control over the hero, and `bf59253` rebuilds the tour control as a
 > branded pill. Their exact diffs touch only hero navigation/tests/styles and
-> patients styles; the implementation plan protects all of them. Plan:
+> patients styles. They are merged as `e3bac87`; the implementation plan
+> protects all of them. Plan:
 > `docs/superpowers/plans/2026-08-14-jaw-scroll-sequence-implementation.md`.
 > It locks a Higgsfield visual-approval gate, deterministic 72-frame desktop
 > and 60-frame mobile WebP builds, bounded Canvas decoding, accessible zones,
@@ -32,7 +34,10 @@ update it before taking or handing off work.
 > One initial full-suite run had a Vitest fork startup timeout after 75 tests;
 > the affected focused test passed 4/4 and an immediate unchanged full rerun
 > passed 79/79, identifying a transient worker-start issue rather than a code
-> regression. No application, media, dependency, or production file changed.
+> regression. After the final `bf59253` merge, a fresh full run passed 79/79;
+> lint, standalone TypeScript, Next.js production build, `git diff --check`,
+> and planning-diff credential scan passed. No jaw application, media,
+> dependency, or production file changed.
 
 > Superseding decision on 2026-08-14: the user rejected runtime Blender,
 > Three.js, WebGL, GLB assets, orbit controls, and crossing leader lines. The
