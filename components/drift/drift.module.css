@@ -1,0 +1,180 @@
+/*
+ * Photographs drifting through a pinned frame.
+ *
+ * `--p` is progress through the section's pinned stretch, written once per
+ * scroll by `DriftScene.tsx`. Everything below derives from it, so no amount of
+ * cards adds work per frame.
+ */
+
+.section {
+  --p: 0;
+
+  position: relative;
+
+  /*
+   * The surplus over one viewport is the scroll the whole sequence consumes.
+   * Eight cards across 420svh gives each one roughly a third of a screen of
+   * travel, which is slow enough to read and quick enough not to stall.
+   */
+  height: 420svh;
+  background: var(--ink);
+}
+
+/*
+ * The frame's padding lives here, not on the copy. With `box-sizing:
+ * border-box` a `max-width` on the copy has to cover its own padding too, and
+ * 20ch against 72px of inset each side left 35px for the sentence — one word
+ * per line.
+ */
+.pin {
+  position: sticky;
+  top: 0;
+  display: grid;
+  height: 100vh;
+  height: 100dvh;
+  padding: 0 clamp(20px, 5vw, 88px);
+  place-items: center;
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------- cards --- */
+
+.field {
+  position: absolute;
+  inset: 0;
+}
+
+/*
+ * `--local` is this card's own 0→1 across its slice of the section, and
+ * `--fade` a triangle over it: in over the first third, out over the last.
+ * Both are clamped, so a card is simply absent outside its own stretch.
+ */
+.card {
+  --local: clamp(0, calc((var(--p) - var(--in)) / var(--span)), 1);
+  --fade: clamp(0, calc(min(var(--local) * 3, (1 - var(--local)) * 3)), 1);
+
+  position: absolute;
+  top: var(--at-y);
+  left: var(--at-x);
+  width: var(--w);
+  margin: 0;
+  opacity: var(--fade);
+  transform: translate(-50%, -50%)
+    translate(
+      calc((var(--from-x) + (var(--to-x) - var(--from-x)) * var(--local)) * 1%),
+      calc((var(--from-y) + (var(--to-y) - var(--from-y)) * var(--local)) * 1%)
+    );
+  will-change: transform, opacity;
+}
+
+.card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 3px;
+  box-shadow: 0 24px 60px rgb(0 0 0 / 45%);
+}
+
+/* ----------------------------------------------------------------- copy --- */
+
+/*
+ * Above the cards, and untouched by the scroll: the sentence is the one thing
+ * in this section that has to stay readable the whole way through.
+ */
+/*
+ * A stated measure rather than `ch`. `ch` resolves against this element's own
+ * 16px, not the headline's ~51px, so 22ch came out 197px wide and broke the
+ * sentence a word to a line.
+ */
+.copy {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 760px);
+  text-align: center;
+}
+
+.eyebrow {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  color: var(--taupe);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.eyebrowRule {
+  display: block;
+  width: clamp(22px, 4vw, 48px);
+  height: 1px;
+  background: var(--taupe);
+}
+
+.headline {
+  color: var(--porcelain);
+  font-size: clamp(1.7rem, 4.2vw, 3.2rem);
+  font-weight: 600;
+  letter-spacing: -0.026em;
+  line-height: 1.14;
+  text-shadow: 0 2px 40px rgb(0 0 0 / 55%);
+  text-wrap: balance;
+}
+
+/* ----------------------------------------------------------------- a11y --- */
+
+/*
+ * With motion reduced there is no pinning and no drift: the section becomes
+ * the sentence followed by the photographs in a plain grid, which is the same
+ * content without the choreography.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .section {
+    height: auto;
+    padding: clamp(64px, 10vw, 120px) 0;
+  }
+
+  .pin {
+    position: static;
+    height: auto;
+    gap: clamp(32px, 5vw, 56px);
+  }
+
+  .field {
+    position: static;
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    padding: 0 clamp(20px, 5vw, 88px);
+  }
+
+  .card {
+    position: static;
+    width: auto;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------------------------------------------------------------- phone --- */
+
+/*
+ * Cards sized as a percentage of the frame come out postage-stamp small on a
+ * phone, and eight of them crossing a 375px screen is a scramble rather than a
+ * current. Fewer, larger, and only down the middle.
+ */
+@media (max-width: 767px) {
+  .section {
+    height: 320svh;
+  }
+
+  .card {
+    width: 62%;
+  }
+
+  .card:nth-child(even) {
+    display: none;
+  }
+}

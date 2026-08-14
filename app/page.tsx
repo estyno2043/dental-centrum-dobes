@@ -1,6 +1,7 @@
 import { ExperienceBand } from "@/components/home/ExperienceBand";
 import { Hero } from "@/components/hero/Hero";
 import { ClinicStory } from "@/components/home/ClinicStory";
+import { DriftScene } from "@/components/drift/DriftScene";
 import { PatientsSection } from "@/components/patients/PatientsSection";
 import { SiteHeader } from "@/components/hero/SiteHeader";
 import styles from "@/components/home/home.module.css";
@@ -25,6 +26,7 @@ export default function HomePage() {
         </div>
       </div>
       <PatientsSection />
+      <DriftScene />
     </>
   );
 }
