@@ -64,18 +64,22 @@
 /*
  * Collapsing desktop navigation.
  *
- * The links rest at no width beside the "Prehliadka kliniky" button and unfold
- * on hover. Because the whole right-hand group is right-aligned, growing it
- * extends leftwards and the button never moves.
+ * The links rest collapsed beside the "Prehliadka kliniky" button and unfold
+ * to the left on hover.
  *
- * `grid-template-columns: 0fr → 1fr` is the one honest way to animate a box to
- * its own natural width — `max-width` has to guess a number, and `width: auto`
- * does not interpolate at all. It relayouts each frame, which for five short
- * links is cheap, and it buys a genuine collapse that `clip-path` cannot.
+ * They are taken out of flow rather than animated from zero width. Animating
+ * to a box's natural width needs that width to be computable, and here it is
+ * not: `.navigationLinks` clips its overflow, which makes its intrinsic width
+ * resolve to zero, and every ancestor up to the bar is sized by its content,
+ * so there is no definite width anywhere for the browser to work back from.
+ * `grid-template-columns: 0fr → 1fr`, `max-width` and an explicit `width` all
+ * measured 0px open as well as closed. Out of flow, the links simply have
+ * their natural size, take no space when closed, and animate on transform and
+ * opacity alone — which composites, unlike any of the width approaches.
  */
 .navMenu {
+  position: relative;
   display: flex;
-  gap: 30px;
   align-items: center;
 }
 
@@ -105,22 +109,30 @@
   width: 12px;
 }
 
-.navDrawer {
-  display: grid;
-  grid-template-columns: 0fr;
-  transition: grid-template-columns 0.62s var(--ease);
-}
-
-.navMenu:hover .navDrawer,
-.navMenu:focus-within .navDrawer {
-  grid-template-columns: 1fr;
-}
-
+/*
+ * Sits to the left of the trigger, out of flow, so the closed bar is just the
+ * trigger and the button. `right: 100%` anchors it to the trigger's left edge,
+ * and the margin reproduces the gap the row would have had.
+ *
+ * Not clickable while closed: the links are invisible but still occupy the
+ * space they will appear in, and without this they would swallow clicks on the
+ * hero behind them.
+ */
 .navigationLinks {
+  position: absolute;
+  top: 50%;
+  right: 100%;
   display: flex;
-  overflow: hidden;
+  margin-right: 30px;
   gap: 30px;
   align-items: center;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.navMenu:hover .navigationLinks,
+.navMenu:focus-within .navigationLinks {
+  pointer-events: auto;
 }
 
 .navigationLinks a {
@@ -912,8 +924,8 @@
    * The menu is simply open. A reveal that has to be triggered is worse than
    * no reveal for someone who cannot comfortably use the trigger.
    */
-  .navDrawer {
-    grid-template-columns: 1fr;
+  .navigationLinks {
+    pointer-events: auto;
   }
 
   .navigationLinks a {

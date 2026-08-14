@@ -87,14 +87,12 @@ export function Hero(): JSX.Element {
               <span className={styles.navTriggerRule} aria-hidden="true" />
               Menu
             </span>
-            <div className={styles.navDrawer}>
-              <div className={styles.navigationLinks}>
-                {navigationItems.map((item) => (
-                  <a href={item.href} key={item.label}>
-                    {item.label}
-                  </a>
-                ))}
-              </div>
+            <div className={styles.navigationLinks}>
+              {navigationItems.map((item) => (
+                <a href={item.href} key={item.label}>
+                  {item.label}
+                </a>
+              ))}
             </div>
           </div>
           <a className={styles.navigationButton} href="#">
