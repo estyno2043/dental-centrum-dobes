@@ -5,13 +5,29 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Complete; user approved the higher-quality jaw story for publication
-  to `main`
+- Status: Higgsfield jaw-sequence specification written and self-reviewed;
+  awaiting user review before implementation planning
 - Owner: Codex
-- Branch: `codex/jaw-scroll-demo`
-- Task: Replace separate `PhotoStrip` and `JawStory` pins with one `ClinicStory`
-  sticky viewport, precise decoded-frame callout tracking, GOP-1 media, and the
-  approved centered/radiused statement reveal.
+- Branch: `codex/jaw-scroll-sequence-design`
+- Task: Replace the rejected runtime jaw direction with a Higgsfield-generated,
+  scroll-driven image sequence built from the approved closed/open Canva
+  frames. Preserve the complete gallery choreography, then reveal accessible
+  HTML/SVG zones and six demo problem routes. The written spec must be reviewed
+  before an implementation plan is created.
+
+> Superseding decision on 2026-08-14: the user rejected runtime Blender,
+> Three.js, WebGL, GLB assets, orbit controls, and crossing leader lines. The
+> jaw will be generated as one controlled closed-to-open Higgsfield motion from
+> `Untitled design (5).png` to `Untitled design (4).png`, converted into an
+> optimized scroll sequence, and overlaid only after motion stops. Clickable
+> regions use branded translucent HTML/SVG surfaces; desktop hover/focus and
+> mobile tap expose patient-language problems. The final handoff frame in the
+> current eight-frame gallery remains the transition source regardless of its
+> historic “photo 7” nickname. Entry examination price is locked at EUR 100.
+
+> Historical jaw-video notes below remain as regression context only. Their
+> media and “no image sequence” decisions are superseded by the 2026-08-14
+> decision above.
 
 > Implementation approval on 2026-08-11 locks one reversible 1030vh desktop
 > timeline: grow 0–84, pan 84–380, frame-07 zoom 380–480, blur 442–480,
@@ -111,8 +127,8 @@ update it before taking or handing off work.
 
 ## File Reservations
 
-No active file reservations. Jaw-scroll work is approved and handed off for
-publication to `main`.
+No active file reservations. The design-spec pass is complete; application,
+media, dependency, and production files remain untouched.
 
 > **Read this before touching the build.** The framework changed. The project
 > no longer runs on `vinext` or Cloudflare Workers — it is now standard
@@ -550,6 +566,17 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   the mismatched one. Seven of the eleven staff members still have no stated
   role, which blocks the team section. `claude/nav-hover-menu` remains unmerged
   and unfinished. Next task: await user instruction.
+
+- 2026-08-14 — Codex wrote the user-approved replacement jaw design on
+  `codex/jaw-scroll-sequence-design`, based on current `origin/main` at
+  `daae2e5`. The new specification supersedes runtime Three.js/Blender and the
+  segmented MP4 scrub with a Higgsfield-derived WebP frame sequence, preserves
+  the full eight-frame gallery before the handoff, uses clutter-free HTML/SVG
+  zones, defines six demo problem routes, and locks the entry examination at
+  EUR 100. Baseline verification passed 79 tests. No application, media,
+  dependency, `main`, or `develop` change was made. No files are reserved.
+  Next task: user reviews the written specification; only then create the
+  implementation plan.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
