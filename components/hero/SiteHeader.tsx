@@ -23,16 +23,19 @@ const HEADER_BAND = 104;
 
 export function SiteHeader(): JSX.Element {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [onLight, setOnLight] = useState(false);
+  const [mode, setMode] = useState<"none" | "light" | "minimal">("none");
   const [onHero, setOnHero] = useState(true);
 
   /*
-   * One listener drives both states.
+   * One listener drives the whole header.
    *
-   * The header takes a background only where it would otherwise be white type
-   * on a light section. Sections ask for that themselves through
-   * `data-header-light`, so the header never has to know which section is
-   * which and the next light one needs no change here.
+   * Sections declare how they want it through `data-header-mode`, so the
+   * header never has to know which section is which:
+   *
+   *   light    a taupe bar with the full link row, for pale sections where
+   *            white type would otherwise be unreadable
+   *   minimal  no bar and no links — the logo and the tour button alone, the
+   *            way the hero carries them
    *
    * Deliberately not an IntersectionObserver, which would express this more
    * directly: measuring the rect in the scroll handler is a few lines more,
@@ -40,18 +43,17 @@ export function SiteHeader(): JSX.Element {
    * leave white type on greige with nothing to show for it.
    */
   useEffect(() => {
-    const lightSections = Array.from(
-      document.querySelectorAll("[data-header-light]"),
-    );
+    const zones = Array.from(document.querySelectorAll("[data-header-mode]"));
 
     const update = () => {
       setIsScrolled(window.scrollY > 40);
-      setOnLight(
-        lightSections.some((section) => {
-          const rect = section.getBoundingClientRect();
-          return rect.top < HEADER_BAND && rect.bottom > 0;
-        }),
-      );
+
+      const covering = zones.find((zone) => {
+        const rect = zone.getBoundingClientRect();
+        return rect.top < HEADER_BAND && rect.bottom > 0;
+      });
+      const declared = covering?.getAttribute("data-header-mode");
+      setMode(declared === "light" || declared === "minimal" ? declared : "none");
 
       /*
        * Measured against scroll position rather than the hero's own rect: the
@@ -78,7 +80,8 @@ export function SiteHeader(): JSX.Element {
       className={[
         styles.navigation,
         isScrolled ? styles.scrolled : "",
-        onLight ? styles.onLight : "",
+        mode === "light" ? styles.onLight : "",
+        mode === "minimal" ? styles.onMinimal : "",
         onHero ? styles.onHero : "",
       ]
         .filter(Boolean)

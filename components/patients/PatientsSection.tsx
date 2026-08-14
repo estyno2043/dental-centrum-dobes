@@ -29,7 +29,7 @@ export function PatientsSection(): JSX.Element {
     <section
       className={styles.section}
       aria-labelledby="patients-heading"
-      data-header-light="true"
+      data-header-mode="light"
     >
       <div className={styles.inner}>
         <header className={styles.intro}>

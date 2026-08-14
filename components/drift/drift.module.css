@@ -1,0 +1,223 @@
+/*
+ * Photographs drifting through a pinned frame.
+ *
+ * `--p` is progress through the section's pinned stretch, written once per
+ * scroll by `DriftScene.tsx`. Everything below derives from it, so no amount of
+ * cards adds work per frame.
+ */
+
+.section {
+  --p: 0;
+
+  /* The section above ends on this tone; the scene warms away from it. */
+  --from-tone: #edeae4;
+  --to-tone: #e2d7c3;
+
+  /* Colour handoff, done with in the first fifth of the scroll. */
+  --blend: clamp(0, calc(var(--p) / 0.2), 1);
+
+  position: relative;
+
+  /*
+   * The surplus over one viewport is the scroll the whole sequence consumes.
+   * Eight cards across 420svh gives each one roughly a third of a screen of
+   * travel, which is slow enough to read and quick enough not to stall.
+   */
+  height: 420svh;
+
+  /*
+   * Mixed rather than cross-faded between two layers: the previous section
+   * ends on `--from-tone`, so beginning there and warming into `--to-tone`
+   * makes the join a shift in temperature instead of an edge.
+   */
+  background: color-mix(
+    in oklab,
+    var(--to-tone) calc(var(--blend) * 100%),
+    var(--from-tone)
+  );
+}
+
+/*
+ * The frame's padding lives here, not on the copy. With `box-sizing:
+ * border-box` a `max-width` on the copy has to cover its own padding too, and
+ * 20ch against 72px of inset each side left 35px for the sentence — one word
+ * per line.
+ */
+.pin {
+  position: sticky;
+  top: 0;
+  display: grid;
+  height: 100vh;
+  height: 100dvh;
+  padding: 0 clamp(20px, 5vw, 88px);
+  place-items: center;
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------- cards --- */
+
+/*
+ * The whole scene sinks slowly as the reader scrolls — content and copy alike
+ * travel down while the frame stays pinned, so the section reads as drifting
+ * past rather than frozen in place.
+ */
+.field,
+.copy {
+  transform: translateY(calc((var(--p) * 12 - 6) * 1vh));
+}
+
+.field {
+  position: absolute;
+  inset: 0;
+}
+
+/*
+ * `--local` is this card's own 0→1 across its slice of the section, and
+ * `--fade` a triangle over it: in over the first third, out over the last.
+ * Both are clamped, so a card is simply absent outside its own stretch.
+ */
+.card {
+  --local: clamp(0, calc((var(--p) - var(--in)) / var(--span)), 1);
+  --fade: clamp(0, calc(min(var(--local) * 3, (1 - var(--local)) * 3)), 1);
+
+  position: absolute;
+  top: var(--at-y);
+  left: var(--at-x);
+  width: var(--w);
+  margin: 0;
+  opacity: var(--fade);
+  transform: translate(-50%, -50%)
+    translate(
+      calc((var(--from-x) + (var(--to-x) - var(--from-x)) * var(--local)) * 1%),
+      calc((var(--from-y) + (var(--to-y) - var(--from-y)) * var(--local)) * 1%)
+    );
+  will-change: transform, opacity;
+}
+
+.card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 3px;
+  box-shadow: 0 20px 46px rgb(38 38 42 / 22%);
+}
+
+/* ----------------------------------------------------------------- copy --- */
+
+/*
+ * Above the cards, and arriving with the scroll rather than sitting there the
+ * whole way: in over the first seventh, out over the last, rising into place
+ * as it appears.
+ *
+ * The width is a stated measure, not `ch`. `ch` resolves against this
+ * element's own 16px rather than the headline's ~51px, so even 22ch came out
+ * 197px wide and broke the sentence a word to a line.
+ */
+.copy {
+  --copy-in: clamp(0, calc(var(--p) / 0.14), 1);
+  --copy-out: clamp(0, calc((1 - var(--p)) / 0.14), 1);
+  --copy-fade: min(var(--copy-in), var(--copy-out));
+
+  position: relative;
+  z-index: 1;
+  width: min(100%, 760px);
+  text-align: center;
+}
+
+.eyebrow {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  color: var(--taupe-deep);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  opacity: var(--copy-fade);
+  text-transform: uppercase;
+}
+
+.eyebrowRule {
+  display: block;
+  width: clamp(22px, 4vw, 48px);
+  height: 1px;
+  background: var(--taupe-deep);
+}
+
+.headline {
+  color: var(--charcoal);
+  font-size: clamp(1.7rem, 4.2vw, 3.2rem);
+  font-weight: 600;
+  letter-spacing: -0.026em;
+  line-height: 1.14;
+  opacity: var(--copy-fade);
+  text-wrap: balance;
+  transform: translateY(calc((1 - var(--copy-in)) * 22px));
+}
+
+/* ----------------------------------------------------------------- a11y --- */
+
+/*
+ * With motion reduced there is no pinning and no drift: the section becomes
+ * the sentence followed by the photographs in a plain grid, which is the same
+ * content without the choreography.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .section {
+    height: auto;
+    padding: clamp(64px, 10vw, 120px) 0;
+  }
+
+  .pin {
+    position: static;
+    height: auto;
+    gap: clamp(32px, 5vw, 56px);
+  }
+
+  .field {
+    position: static;
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    padding: 0 clamp(20px, 5vw, 88px);
+  }
+
+  .card,
+  .field,
+  .copy,
+  .headline {
+    opacity: 1;
+    transform: none;
+  }
+
+  .card {
+    position: static;
+    width: auto;
+  }
+
+  .eyebrow {
+    opacity: 1;
+  }
+}
+
+/* ---------------------------------------------------------------- phone --- */
+
+/*
+ * Cards sized as a percentage of the frame come out postage-stamp small on a
+ * phone, and eight of them crossing a 375px screen is a scramble rather than a
+ * current. Fewer, larger, and only down the middle.
+ */
+@media (max-width: 767px) {
+  .section {
+    height: 320svh;
+  }
+
+  .card {
+    width: 62%;
+  }
+
+  .card:nth-child(even) {
+    display: none;
+  }
+}
