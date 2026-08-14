@@ -139,7 +139,7 @@ export function MobileMenu(): JSX.Element {
                   <div className={styles.mobileMenuFooter}>
                     <Dialog.Close asChild>
                       <a className={styles.mobileMenuTour} href="#">
-                        Prehliadka kliniky
+                        Interaktívna prehliadka klinikou
                         <span aria-hidden="true">↗</span>
                       </a>
                     </Dialog.Close>

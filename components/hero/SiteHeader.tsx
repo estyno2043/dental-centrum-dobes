@@ -105,7 +105,8 @@ export function SiteHeader(): JSX.Element {
           ))}
         </div>
         <a className={styles.navigationButton} href="#">
-          Prehliadka kliniky
+          <span className={styles.tourRing} aria-hidden="true" />
+          Interaktívna prehliadka klinikou
         </a>
         <MobileMenu />
       </div>

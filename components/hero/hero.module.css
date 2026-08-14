@@ -129,24 +129,102 @@
   color: #fff;
 }
 
+/*
+ * The tour button.
+ *
+ * A pill with a dot orbiting a hairline ring — the clinic tour is a live thing
+ * to walk through, and a moving mark says that without borrowing an icon set.
+ * Hovering fills it with the brand taupe from the left and flips the type to
+ * ink, so the button resolves into a solid swatch of the palette rather than
+ * just changing its border.
+ *
+ * `isolation: isolate` keeps the sweeping fill behind the label without
+ * needing a positive z-index that would climb over the rest of the header.
+ */
 .navigationButton {
-  padding: 12px 22px;
-  border: 1px solid rgb(255 255 255 / 45%);
-  border-radius: 10px;
+  position: relative;
+  display: inline-flex;
+  gap: 11px;
+  align-items: center;
+  padding: 11px 22px;
+  overflow: hidden;
+  border: 1px solid rgb(174 155 126 / 85%);
+  border-radius: 999px;
+
+  /*
+   * A faint dark tint under the pill. The header floats over a video whose
+   * frames run from a bright winter sky to a dark interior, and a hairline
+   * border alone disappears against the light ones.
+   */
+  background: rgb(20 20 23 / 22%);
+  backdrop-filter: blur(3px);
   color: #fff;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.16em;
+  isolation: isolate;
+  letter-spacing: 0.13em;
   text-decoration: none;
   text-transform: uppercase;
+  white-space: nowrap;
   transition:
-    border-color 0.2s var(--ease),
-    background 0.2s var(--ease);
+    color 0.35s var(--ease),
+    border-color 0.35s var(--ease);
+}
+
+.navigationButton::before {
+  position: absolute;
+  z-index: -1;
+  background: var(--taupe);
+  content: "";
+  inset: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s var(--ease);
 }
 
 .navigationButton:hover {
-  border-color: #fff;
-  background: rgb(255 255 255 / 8%);
+  border-color: var(--taupe);
+  color: var(--ink);
+}
+
+.navigationButton:hover::before {
+  transform: scaleX(1);
+}
+
+.tourRing {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  flex: none;
+  border: 1px solid currentcolor;
+  border-radius: 50%;
+  opacity: 0.75;
+}
+
+/* The travelling dot. Its origin is the ring's centre: radius plus border. */
+.tourRing::after {
+  position: absolute;
+  top: -2px;
+  left: 50%;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  margin-left: -1.5px;
+  animation: tourOrbit 4.5s linear infinite;
+  background: var(--taupe);
+  content: "";
+  transform-origin: 50% 9px;
+}
+
+.navigationButton:hover .tourRing::after {
+  animation-duration: 1.5s;
+  background: var(--ink);
+}
+
+@keyframes tourOrbit {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .mobileMenuTrigger {
@@ -884,6 +962,8 @@
   .navigation,
   .navigationLinks a,
   .navigationButton,
+  .navigationButton::before,
+  .tourRing::after,
   .packageButton,
   .packageButton::before,
   .packageButton::after,
