@@ -1,0 +1,87 @@
+/**
+ * Content for the "Naši pacienti" section.
+ *
+ * ⚠️ No real patient photography is wired up, and none should be until the
+ * clinic supplies **written consent** for each case. Before/after images of
+ * identifiable patients are health data; publishing them without documented
+ * consent is not a design decision to make on anyone's behalf. Until then
+ * every case renders a labelled placeholder, and `before`/`after` are the only
+ * fields that need filling in.
+ *
+ * `treatments` are the tags shown on a case. Keep them to what was actually
+ * done — they double as the filter labels if filtering is added later.
+ */
+
+export type PatientCase = {
+  readonly id: string;
+  readonly treatments: readonly string[];
+  /** What the patient came in with, in their own terms rather than clinical ones. */
+  readonly problem: string;
+  /** Plain facts that make the result legible: visits, span, what was made. */
+  readonly facts: readonly { readonly label: string; readonly value: string }[];
+  readonly before?: string;
+  readonly after?: string;
+};
+
+export const patientsIntro = {
+  eyebrow: "Naši pacienti",
+  headline: "Výsledok si posúďte sami.",
+  lead:
+    "Každý z týchto úsmevov má za sebou plán, niekoľko návštev a rozhodnutia, " +
+    "ktoré sme robili spolu s pacientom. Posuňte deliacu čiaru a pozrite sa, " +
+    "odkiaľ sme začínali.",
+} as const;
+
+/** The case shown large at the top of the section. */
+export const featuredCase: PatientCase = {
+  id: "celkova-rekonstrukcia",
+  treatments: ["Protetika", "Implantáty"],
+  problem: "Opotrebovaný chrup a nedoliečené zuby po rokoch odkladania.",
+  facts: [
+    { label: "Návštev", value: "6" },
+    { label: "Trvanie", value: "4 mesiace" },
+    { label: "Riešenie", value: "Korunky a mostík" },
+  ],
+};
+
+export const patientCases: readonly PatientCase[] = [
+  {
+    id: "fazety-predne",
+    treatments: ["Fazety"],
+    problem: "Tmavé a nerovné predné zuby.",
+    facts: [
+      { label: "Návštev", value: "3" },
+      { label: "Trvanie", value: "6 týždňov" },
+    ],
+  },
+  {
+    id: "endodoncia",
+    treatments: ["Endodoncia"],
+    problem: "Zub odsúdený na vytrhnutie na inej klinike.",
+    facts: [
+      { label: "Návštev", value: "2" },
+      { label: "Zub", value: "Zachránený" },
+    ],
+  },
+  {
+    id: "implantat",
+    treatments: ["Implantát", "Korunka"],
+    problem: "Chýbajúci zub po úraze.",
+    facts: [
+      { label: "Návštev", value: "4" },
+      { label: "Trvanie", value: "5 mesiacov" },
+    ],
+  },
+  {
+    id: "hygiena",
+    treatments: ["Dentálna hygiena"],
+    problem: "Zafarbenia a zubný kameň po rokoch bez hygieny.",
+    facts: [
+      { label: "Návštev", value: "1" },
+      { label: "Trvanie", value: "60 minút" },
+    ],
+  },
+] as const;
+
+export const patientsConsent =
+  "Fotografie zverejňujeme iba s písomným súhlasom pacienta.";

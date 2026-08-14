@@ -1,0 +1,361 @@
+/*
+ * "Naši pacienti" — light section against the dark page above it.
+ *
+ * Greige ground, charcoal type, taupe accents, so the contrast comes from the
+ * brand's own palette rather than a second colour system.
+ */
+
+.section {
+  padding: clamp(72px, 11vw, 148px) 0;
+  background: #edeae4;
+  color: var(--charcoal);
+}
+
+.inner {
+  max-width: 1240px;
+  padding: 0 clamp(20px, 5vw, 88px);
+  margin: 0 auto;
+}
+
+/* ---------------------------------------------------------------- intro --- */
+
+.intro {
+  max-width: 62ch;
+  margin-bottom: clamp(36px, 6vw, 72px);
+}
+
+.eyebrow {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 18px;
+  color: var(--taupe-deep);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.eyebrowRule {
+  display: block;
+  width: clamp(28px, 5vw, 64px);
+  height: 1px;
+  background: var(--taupe-deep);
+}
+
+.headline {
+  margin-bottom: 18px;
+  font-size: clamp(1.8rem, 4.4vw, 3.2rem);
+  font-weight: 600;
+  letter-spacing: -0.028em;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.lead {
+  color: rgb(38 38 42 / 72%);
+  font-size: clamp(0.98rem, 1.3vw, 1.12rem);
+  line-height: 1.6;
+}
+
+/* ------------------------------------------------------------- compare --- */
+
+/*
+ * The two layers are stacked and the "before" one is clipped from the right.
+ * Clipping rather than resizing keeps the photograph underneath from
+ * reflowing, so dragging stays on the compositor.
+ */
+.compare {
+  --pos: 50%;
+
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  border-radius: 4px;
+  background: #dcd6cb;
+  isolation: isolate;
+  touch-action: pan-y;
+}
+
+.compareCard {
+  aspect-ratio: 4 / 3;
+}
+
+.layerAfter,
+.layerBefore {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  inset: 0;
+}
+
+.layerBefore {
+  clip-path: inset(0 calc(100% - var(--pos)) 0 0);
+}
+
+.layerAfter img,
+.layerBefore img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/*
+ * Stand-in until consent-cleared photography exists. Deliberately legible as a
+ * placeholder — a comparison slider with two identical grey boxes would read
+ * as broken rather than pending.
+ */
+/*
+ * Each label sits against its own edge rather than centred: a centred one
+ * disappears the moment the divider passes it, which is most of the time.
+ */
+.placeholder {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  padding: 0 clamp(16px, 2.5vw, 32px);
+  color: rgb(38 38 42 / 52%);
+  font-size: clamp(0.85rem, 1.4vw, 1.15rem);
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.placeholder[data-side="pred"] {
+  justify-items: start;
+}
+
+.placeholder[data-side="po"] {
+  justify-items: end;
+}
+
+.placeholder[data-side="pred"] {
+  background:
+    repeating-linear-gradient(
+      132deg,
+      rgb(38 38 42 / 5%) 0 2px,
+      transparent 2px 11px
+    ),
+    #cdc5b6;
+}
+
+.placeholder[data-side="po"] {
+  background:
+    repeating-linear-gradient(
+      132deg,
+      rgb(255 255 255 / 42%) 0 2px,
+      transparent 2px 11px
+    ),
+    #e6e0d4;
+}
+
+.divider {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  left: var(--pos);
+  display: grid;
+  width: 2px;
+  place-items: center;
+  background: var(--porcelain);
+  box-shadow: 0 0 0 1px rgb(38 38 42 / 12%);
+  pointer-events: none;
+}
+
+/*
+ * Flex, not grid: the two arrows are `::before` and `::after`, and a grid
+ * would stack them in the same cell instead of setting them side by side.
+ */
+.knob {
+  display: flex;
+  width: clamp(38px, 4vw, 52px);
+  height: clamp(38px, 4vw, 52px);
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--charcoal);
+  box-shadow: 0 6px 22px rgb(0 0 0 / 26%);
+}
+
+/* Two arrows, drawn rather than shipped as an icon. */
+.knob::before,
+.knob::after {
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  content: "";
+}
+
+.knob::before {
+  border-right: 7px solid var(--porcelain);
+  margin-right: 5px;
+}
+
+.knob::after {
+  border-left: 7px solid var(--porcelain);
+  margin-left: 5px;
+}
+
+/*
+ * The control itself: invisible, covering the whole frame, so a drag anywhere
+ * moves the divider. Kept in the DOM rather than faked with pointer handlers,
+ * which is what gives keyboard and screen-reader support for free.
+ */
+.range {
+  position: absolute;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  appearance: none;
+  margin: 0;
+  background: transparent;
+  cursor: ew-resize;
+  inset: 0;
+  opacity: 0;
+}
+
+.range::-webkit-slider-thumb {
+  width: 44px;
+  height: 100%;
+  appearance: none;
+  cursor: ew-resize;
+}
+
+.range::-moz-range-thumb {
+  width: 44px;
+  height: 100%;
+  border: 0;
+  cursor: ew-resize;
+}
+
+/*
+ * The focus ring goes on the frame, not the input. Raising the input's own
+ * opacity would light up the browser's default slider on top of the artwork —
+ * the ring has to be drawn around the thing the reader is actually adjusting.
+ */
+.compare:focus-within {
+  outline: 3px solid var(--taupe-deep);
+  outline-offset: 3px;
+}
+
+/* ------------------------------------------------------------ featured --- */
+
+.featured {
+  display: grid;
+  margin: 0 0 clamp(48px, 7vw, 96px);
+  gap: clamp(20px, 3vw, 40px);
+}
+
+@media (min-width: 900px) {
+  .featured {
+    grid-template-columns: 1.55fr 1fr;
+    align-items: center;
+  }
+}
+
+.featuredMeta {
+  display: grid;
+  align-content: center;
+  gap: 20px;
+}
+
+.problem {
+  font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.35;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+}
+
+.tags li {
+  padding: 6px 12px;
+  border: 1px solid rgb(138 115 88 / 42%);
+  border-radius: 999px;
+  color: var(--taupe-deep);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/*
+ * The numbers are the point. A before/after on its own is a claim; the number
+ * of visits beside it is what makes it checkable.
+ */
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(18px, 3vw, 34px);
+  padding-top: 18px;
+  border-top: 1px solid rgb(38 38 42 / 14%);
+}
+
+.facts dt {
+  margin-bottom: 4px;
+  color: rgb(38 38 42 / 52%);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.facts dd {
+  font-size: clamp(1rem, 1.4vw, 1.2rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* ---------------------------------------------------------------- grid --- */
+
+.grid {
+  display: grid;
+  gap: clamp(24px, 3vw, 40px);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  list-style: none;
+}
+
+.card {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+}
+
+.card .problem {
+  font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+}
+
+.card .facts {
+  padding-top: 14px;
+  gap: 22px;
+}
+
+/* ------------------------------------------------------------- consent --- */
+
+.consent {
+  padding-top: 22px;
+  border-top: 1px solid rgb(38 38 42 / 12%);
+  margin-top: clamp(40px, 6vw, 72px);
+  color: rgb(38 38 42 / 58%);
+  font-size: 13px;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  margin: -1px;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
