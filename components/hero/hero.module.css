@@ -65,8 +65,73 @@
   visibility: visible;
 }
 
-.navigation.onHero:not(.onLight) .navigationLinks {
-  display: none;
+/*
+ * The same stripped-back header over the drifting-photograph scene, so the
+ * taupe bar and its links leave as the reader crosses out of the patients
+ * section. Hidden with `visibility` rather than `display` — display cannot be
+ * transitioned, and the whole point here is that the row leaves rather than
+ * blinks out.
+ */
+.navigation.onMinimal {
+  opacity: 1;
+  visibility: visible;
+}
+
+.navigationLinks {
+  visibility: hidden;
+  opacity: 0;
+  transform: translateX(16px);
+  transition:
+    opacity 0.4s var(--ease),
+    transform 0.5s var(--ease),
+    visibility 0.4s var(--ease);
+}
+
+.navigation.onLight .navigationLinks {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+}
+
+/*
+ * That scene is pale, so the white logo and the outlined button would both
+ * disappear. Only a white logo asset exists, and `brightness(0)` turns its
+ * opaque pixels black while leaving the transparency alone — a dark mark
+ * without a second file.
+ */
+.navigation.onMinimal .logo img {
+  filter: brightness(0);
+  opacity: 0.86;
+}
+
+.navigation.onMinimal .tagline {
+  color: var(--taupe-deep);
+}
+
+.navigation.onMinimal .tagline::before {
+  background: var(--taupe-deep);
+}
+
+.navigation.onMinimal .navigationButton {
+  border-color: rgb(138 115 88 / 70%);
+  background: rgb(250 249 246 / 42%);
+  color: var(--charcoal);
+}
+
+.navigation.onMinimal .navigationButton:hover {
+  color: var(--porcelain);
+}
+
+.navigation.onMinimal .navigationButton::before {
+  background: var(--taupe-deep);
+}
+
+.navigation.onMinimal .tourRing::after {
+  background: var(--taupe-deep);
+}
+
+.navigation.onMinimal .navigationButton:hover .tourRing::after {
+  background: var(--porcelain);
 }
 
 .logo {
