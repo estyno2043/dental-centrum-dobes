@@ -99,7 +99,7 @@ test("includes the signature mobile menu without removing desktop navigation", (
   ).toBeInTheDocument();
   expect(screen.getByRole("link", { name: "Služby" })).toBeInTheDocument();
   expect(
-    screen.getByRole("link", { name: "Prehliadka kliniky" }),
+    screen.getByRole("link", { name: /Interaktívna prehliadka klinikou/ }),
   ).toBeInTheDocument();
 });
 

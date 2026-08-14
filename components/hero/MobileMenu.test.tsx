@@ -30,7 +30,7 @@ test("opens the complete mobile navigation", async () => {
   ).toBeInTheDocument();
   expect(screen.getByRole("link", { name: "Kontakt" })).toBeInTheDocument();
   expect(
-    screen.getByRole("link", { name: "Prehliadka kliniky" }),
+    screen.getByRole("link", { name: /Interaktívna prehliadka klinikou/ }),
   ).toBeInTheDocument();
   expect(screen.getByRole("link", { name: /0918 800 002/ })).toHaveAttribute(
     "href",
