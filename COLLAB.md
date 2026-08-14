@@ -5,7 +5,7 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Higgsfield master generation and approval gate
+- Status: Task 1 complete — FLUX.3 jaw master approved; Task 2 sequence build next
 - Owner: Codex
 - Branch: `codex/higgsfield-jaw-sequence`
 - Base: current `origin/main`
@@ -17,6 +17,14 @@ update it before taking or handing off work.
   `components/home/clinicStory*`, `components/home/jaw/**`,
   `app/problemy/**`, `app/layout.tsx`, `app/page.test.tsx`, `package.json`, and
   the listed legacy jaw files until localhost handoff.
+
+> Task 1 approval gate passed on 2026-08-14. The user explicitly approved the
+> FLUX.3 replacement (`bd346c78-8c4f-4ace-ad25-59d2eb1bbd6c`) after the
+> 15-checkpoint review. The approved 5.042-second H.264 master, exact endpoint
+> PNGs, hashes, settings, prompt, and 45-credit cost are recorded in
+> `assets/jaw-sequence/source/GENERATION.md`. The rejected Seedance candidate
+> is retained only in the git-ignored SDD workspace and is not part of the
+> approved source tree. Reservations remain active for Task 2.
 
 > **Read this before touching the build.** The framework changed. The project
 > no longer runs on `vinext` or Cloudflare Workers — it is now standard
