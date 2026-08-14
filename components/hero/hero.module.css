@@ -13,18 +13,24 @@
     backdrop-filter 0.4s var(--ease);
 }
 
-/*
- * The brand's own taupe once the header leaves the video, rather than a
- * neutral dark bar.
- *
- * `--taupe-deep` and not `--taupe`: white type on the lighter taupe measures
- * about 2.6:1, well under the 4.5:1 needed to be readable. The deeper tone
- * lands at 4.5:1 exactly, so the logo and links stay legible without a second
- * dark-on-light logo asset — the only one that exists is white.
- */
+/* Scrolling only tightens the bar; it does not colour it. */
 .navigation.scrolled {
   padding-top: 16px;
   padding-bottom: 14px;
+}
+
+/*
+ * The brand's taupe, and only while the header sits over a section that asks
+ * for it with `data-header-light`. Over the hero, the statement and the clinic
+ * story the bar stays transparent — those are dark enough for white type on
+ * their own, and a permanent band would just cover them.
+ *
+ * `--taupe-deep` rather than `--taupe`: white type on the lighter taupe
+ * measures about 2.6:1, well under the 4.5:1 needed to read, while the deeper
+ * tone lands at 4.5:1 exactly. That matters because the only logo asset is
+ * white — a pale beige bar would need a dark logo, which does not exist yet.
+ */
+.navigation.onLight {
   background: rgb(138 115 88 / 92%);
   backdrop-filter: blur(14px);
 }

@@ -18,22 +18,61 @@ import styles from "./hero.module.css";
  * painted straight over it. Rendering it as a sibling of the slide stack puts
  * it back in the root stacking context, where a fixed header belongs.
  */
+/** Roughly the header's own height — the band it actually covers. */
+const HEADER_BAND = 104;
+
 export function SiteHeader(): JSX.Element {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [onLight, setOnLight] = useState(false);
 
+  /*
+   * One listener drives both states.
+   *
+   * The header takes a background only where it would otherwise be white type
+   * on a light section. Sections ask for that themselves through
+   * `data-header-light`, so the header never has to know which section is
+   * which and the next light one needs no change here.
+   *
+   * Deliberately not an IntersectionObserver, which would express this more
+   * directly: measuring the rect in the scroll handler is a few lines more,
+   * but it can be verified, and an observer that silently never fires would
+   * leave white type on greige with nothing to show for it.
+   */
   useEffect(() => {
-    const updateNavigation = () => setIsScrolled(window.scrollY > 40);
+    const lightSections = Array.from(
+      document.querySelectorAll("[data-header-light]"),
+    );
 
-    updateNavigation();
-    window.addEventListener("scroll", updateNavigation, { passive: true });
+    const update = () => {
+      setIsScrolled(window.scrollY > 40);
+      setOnLight(
+        lightSections.some((section) => {
+          const rect = section.getBoundingClientRect();
+          return rect.top < HEADER_BAND && rect.bottom > 0;
+        }),
+      );
+    };
 
-    return () => window.removeEventListener("scroll", updateNavigation);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
   }, []);
 
   return (
     <nav
       aria-label="Hlavná navigácia"
-      className={`${styles.navigation} ${isScrolled ? styles.scrolled : ""}`}
+      className={[
+        styles.navigation,
+        isScrolled ? styles.scrolled : "",
+        onLight ? styles.onLight : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
     >
       <a className={styles.logo} href="#">
         <img
