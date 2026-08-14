@@ -5,7 +5,7 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Task 1 review fix round 1/5 complete — exact 1920×1080 master ready
+- Status: Task 2 in progress — deterministic desktop/mobile WebP sequence build
 - Owner: Codex
 - Branch: `codex/higgsfield-jaw-sequence`
 - Base: current `origin/main`
@@ -18,6 +18,15 @@ update it before taking or handing off work.
   `app/problemy/**`, `app/layout.tsx`, `app/page.test.tsx`, `package.json`, and
   `scripts/crop-jaw-master.swift`, and the listed legacy jaw files until
   localhost handoff.
+
+- Task 2 exact active files: `scripts/build-jaw-sequence.sh`,
+  `scripts/validate-jaw-sequence.mjs`,
+  `scripts/extract-jaw-sequence.swift`,
+  `components/home/jaw/jawSequenceManifest.generated.ts`,
+  `public/media/jaw-sequence/desktop/*.webp`,
+  `public/media/jaw-sequence/mobile/*.webp`, `package.json`, and
+  `package-lock.json`. Gallery, drift, header, patients, and other app files
+  remain protected and out of scope.
 
 > Task 1 approval gate passed on 2026-08-14. The user rejected the original
 > locked-prompt Seedance candidate for tooth deformation, explicitly directed
