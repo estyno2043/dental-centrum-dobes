@@ -32,6 +32,14 @@ export const patientsIntro = {
     "odkiaľ sme začínali.",
 } as const;
 
+/**
+ * ⚠️ The three wired photo pairs are **test material**. Which pair sits on
+ * which case is arbitrary — the treatments, visit counts and durations below
+ * were written before any photography arrived and do not describe these
+ * patients. Every one of them has to be replaced with the real case and its
+ * documented consent before this section is published.
+ */
+
 /** The case shown large at the top of the section. */
 export const featuredCase: PatientCase = {
   id: "celkova-rekonstrukcia",
@@ -42,6 +50,8 @@ export const featuredCase: PatientCase = {
     { label: "Trvanie", value: "4 mesiace" },
     { label: "Riešenie", value: "Korunky a mostík" },
   ],
+  before: "/media/pacient-03-pred.jpg",
+  after: "/media/pacient-03-po.jpg",
 };
 
 export const patientCases: readonly PatientCase[] = [
@@ -53,7 +63,15 @@ export const patientCases: readonly PatientCase[] = [
       { label: "Návštev", value: "3" },
       { label: "Trvanie", value: "6 týždňov" },
     ],
+    before: "/media/pacient-02-pred.jpg",
+    after: "/media/pacient-02-po.jpg",
   },
+  /*
+   * The two halves of this pair are not framed alike — "pred" is a natural
+   * smile and "po" was shot with a cheek retractor — so the divider slides
+   * between two different kinds of photograph rather than between two states
+   * of the same one. Kept only as test material; a real pair has to match.
+   */
   {
     id: "endodoncia",
     treatments: ["Endodoncia"],
@@ -62,6 +80,8 @@ export const patientCases: readonly PatientCase[] = [
       { label: "Návštev", value: "2" },
       { label: "Zub", value: "Zachránený" },
     ],
+    before: "/media/pacient-01-pred.jpg",
+    after: "/media/pacient-01-po.jpg",
   },
   {
     id: "implantat",

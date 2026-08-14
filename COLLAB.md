@@ -335,6 +335,32 @@ the other agent unless that agent has handed them off.
   The surplus over one viewport is the scroll the pan consumes. 480svh gives
   1.43:1 on desktop; 320svh gave 2.5:1 and felt slippery.
 
+## Staff roster
+
+Supplied by the user on 2026-08-14, verbatim. Nothing here is invented — when a
+team section is built, use these exactly, and do not fill in a role that is not
+listed. Portrait originals are in `~/Downloads/dobes-media-raw/portrety/<slug>/`,
+one folder per person, 1–6 frames each.
+
+| Slug | Name | Role as given |
+| --- | --- | --- |
+| `dobes` | MUDr. Ján Dobeš | — |
+| `dobesova` | MUDr. Mária Dobešová | — |
+| `kunova` | MDDr. Alexandra Kunová | — |
+| `novotnakova` | MUDr. Daniela Novotňáková, PhD., MPH, MBA, LL.M. | — |
+| `petschuchova` | Tamara Petschuchová, Dipl. DH. | — |
+| `vankova` | Bc. Janka Vaňková | — |
+| `volny` | Ing. Babula Voľný | — |
+| `lattova` | Zuzana Lattová | zdravotná sestra |
+| `makaiova` | Lucia Makaiová | zdravotná sestra |
+| `ozvaldova` | Mgr. Jana Ožvaldová | zdravotná sestra |
+| `izova` | Svetlana Ižová | zdravotná sestra |
+
+Seven of the eleven came without a stated role. Ask rather than infer one from
+the title — `Dipl. DH.` suggests a dental hygienist and `MUDr.`/`MDDr.` a
+dentist, but which of them lead, and what each specialises in, is not something
+to guess on a clinic's behalf.
+
 ## Open Questions
 
 Both questions below are for the user; they gate the next content task.

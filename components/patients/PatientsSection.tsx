@@ -57,7 +57,7 @@ export function PatientsSection(): JSX.Element {
         <ul className={styles.grid}>
           {patientCases.map((patientCase) => (
             <li className={styles.card} key={patientCase.id}>
-              <BeforeAfter patientCase={patientCase} size="card" />
+              <BeforeAfter patientCase={patientCase} />
               <p className={styles.problem}>{patientCase.problem}</p>
               <ul className={styles.tags}>
                 {patientCase.treatments.map((treatment) => (

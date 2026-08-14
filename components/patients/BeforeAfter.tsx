@@ -19,10 +19,8 @@ import styles from "./patients.module.css";
  */
 export function BeforeAfter({
   patientCase,
-  size = "featured",
 }: {
   patientCase: PatientCase;
-  size?: "featured" | "card";
 }): JSX.Element {
   const [position, setPosition] = useState(50);
   const labelId = useId();
@@ -31,7 +29,7 @@ export function BeforeAfter({
 
   return (
     <div
-      className={`${styles.compare} ${size === "card" ? styles.compareCard : ""}`}
+      className={styles.compare}
       style={{ "--pos": `${position}%` } as CSSProperties}
     >
       <div className={styles.layerAfter}>

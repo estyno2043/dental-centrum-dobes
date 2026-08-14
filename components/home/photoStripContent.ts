@@ -42,10 +42,10 @@ export const photoFrames: readonly PhotoFrame[] = [
     src: "/media/strip-02-chodba.jpg",
   },
   {
-    id: "cakaren",
-    label: "Čakáreň",
-    ratio: 2 / 3,
-    src: "/media/strip-03-cakaren.jpg",
+    id: "mikroskop-praca",
+    label: "Ošetrenie pod mikroskopom",
+    ratio: 3 / 2,
+    src: "/media/strip-03-mikroskop-praca.jpg",
   },
   {
     id: "mikroskop",
