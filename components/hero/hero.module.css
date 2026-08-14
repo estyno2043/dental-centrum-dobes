@@ -1,3 +1,17 @@
+/*
+ * Hidden by default and revealed only over a section that asks for it with
+ * `data-header-light`.
+ *
+ * `visibility`, not just `opacity`: an invisible header that still answers the
+ * keyboard would put the whole navigation in the tab order over every section
+ * where it cannot be seen. `visibility: hidden` takes it out of the
+ * accessibility tree too, so it is absent rather than merely unpainted, and it
+ * still transitions because the property is animatable in step with opacity.
+ *
+ * The consequence is deliberate and worth remembering: the logo lives here, so
+ * the hero carries no logo and no menu of any kind until the reader reaches
+ * the last section.
+ */
 .navigation {
   position: fixed;
   top: 0;
@@ -8,9 +22,13 @@
   align-items: flex-start;
   justify-content: space-between;
   padding: 26px 44px;
+  opacity: 0;
+  visibility: hidden;
   transition:
     background 0.4s var(--ease),
-    backdrop-filter 0.4s var(--ease);
+    backdrop-filter 0.4s var(--ease),
+    opacity 0.35s var(--ease),
+    visibility 0.35s var(--ease);
 }
 
 /* Scrolling only tightens the bar; it does not colour it. */
@@ -33,6 +51,8 @@
 .navigation.onLight {
   background: rgb(138 115 88 / 92%);
   backdrop-filter: blur(14px);
+  opacity: 1;
+  visibility: visible;
 }
 
 .logo {
