@@ -45,8 +45,10 @@ export const driftCards: readonly DriftCard[] = [
     width: 26,
   },
   {
+    // Was the panoramic scan until that photograph moved into the gallery —
+    // the same shot in both places reads as an oversight.
     src: "/media/drift-03.jpg",
-    alt: "Panoramatické snímkovanie",
+    alt: "Čakáreň",
     in: 0.08,
     span: 0.32,
     from: [26, 26],

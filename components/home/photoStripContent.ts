@@ -42,6 +42,12 @@ export const photoFrames: readonly PhotoFrame[] = [
     src: "/media/strip-02-snimky.jpg",
   },
   {
+    id: "panorama",
+    label: "Panoramatické snímkovanie",
+    ratio: 2 / 3,
+    src: "/media/strip-panorama.jpg",
+  },
+  {
     id: "mikroskop-praca",
     label: "Ošetrenie pod mikroskopom",
     ratio: 3 / 2,
