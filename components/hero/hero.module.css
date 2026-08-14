@@ -24,11 +24,16 @@
   padding: 26px 44px;
   opacity: 0;
   visibility: hidden;
+  /*
+   * The bar is held back a moment and takes longer than the link row, so the
+   * links are already on their way out before the ground under them starts to
+   * go. Both leaving at once reads as a switch rather than a departure.
+   */
   transition:
-    background 0.4s var(--ease),
-    backdrop-filter 0.4s var(--ease),
-    opacity 0.35s var(--ease),
-    visibility 0.35s var(--ease);
+    background 0.62s var(--ease) 0.1s,
+    backdrop-filter 0.62s var(--ease) 0.1s,
+    opacity 0.45s var(--ease),
+    visibility 0.45s var(--ease);
 }
 
 /* Scrolling only tightens the bar; it does not colour it. */
@@ -147,6 +152,11 @@
   width: auto;
   height: 46px;
   align-self: flex-start;
+
+  /* The mark is recoloured between sections; it should fade, not snap. */
+  transition:
+    filter 0.55s var(--ease),
+    opacity 0.55s var(--ease);
 }
 
 .tagline {
@@ -158,6 +168,7 @@
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
+  transition: color 0.55s var(--ease);
 }
 
 .tagline::before {
@@ -166,6 +177,7 @@
   flex: none;
   background: var(--taupe);
   content: "";
+  transition: background 0.55s var(--ease);
 }
 
 .navigationRight {
@@ -232,8 +244,9 @@
   text-transform: uppercase;
   white-space: nowrap;
   transition:
-    color 0.35s var(--ease),
-    border-color 0.35s var(--ease);
+    color 0.55s var(--ease),
+    border-color 0.55s var(--ease),
+    background 0.55s var(--ease);
 }
 
 .navigationButton::before {

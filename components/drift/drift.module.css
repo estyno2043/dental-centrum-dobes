@@ -13,8 +13,14 @@
   --from-tone: #edeae4;
   --to-tone: #e2d7c3;
 
-  /* Colour handoff, done with in the first fifth of the scroll. */
-  --blend: clamp(0, calc(var(--p) / 0.2), 1);
+  --enter: 0;
+
+  /*
+   * The handoff rides `--enter`, so it spends the section's whole approach —
+   * a full screen of scrolling — easing from one ground to the other, and is
+   * settled by the time the section pins.
+   */
+  --blend: var(--enter);
 
   position: relative;
 

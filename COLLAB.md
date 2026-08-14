@@ -551,6 +551,22 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   role, which blocks the team section. `claude/nav-hover-menu` remains unmerged
   and unfinished. Next task: await user instruction.
 
+- 2026-08-14 — Claude smoothed the join between "Naši pacienti" and the
+  drifting-photograph scene at the user's request. The ground now crosses on a
+  second progress value written by `DriftScene.tsx` (`--enter`, 0 while the
+  section's top edge is a screen away, 1 when it reaches the top), so the
+  colour handoff spends the whole approach easing instead of changing after the
+  section pins. In the header the link row leaves first and the taupe bar
+  follows after a 0.1s hold, and the logo, tagline and tour button now carry
+  their own colour transitions so the minimal-mode flip eases rather than
+  snapping. Verified by measurement at the boundary: `--enter` ramps 0→1 across
+  one viewport, the mixed background moves continuously between the two tones,
+  and the header's classes and computed colours flip once at the section edge.
+  79 tests, lint, TypeScript and the production build all pass. Published to
+  `main`; `develop` fast-forwarded. No files reserved. The patient section's
+  outstanding blockers are unchanged: written consent, real case text, and a
+  matching before/after pair.
+
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
 credentials, tokens, or local configuration values in repository files,
