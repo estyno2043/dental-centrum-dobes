@@ -11,7 +11,9 @@
     "start": "next start",
     "test": "vitest run",
     "lint": "eslint . --ignore-pattern .next",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "jaw:build": "bash scripts/build-jaw-sequence.sh",
+    "jaw:validate": "node scripts/validate-jaw-sequence.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "1.1.23",
@@ -39,6 +41,7 @@
     "eslint-plugin-react-hooks": "7.1.1",
     "globals": "16.4.0",
     "jsdom": "^30.0.1",
+    "sharp": "0.35.3",
     "tailwindcss": "4.2.1",
     "typescript": "5.9.3",
     "typescript-eslint": "8.59.3",
