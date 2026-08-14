@@ -39,6 +39,19 @@ describe("emitJawAnalytics", () => {
     });
   });
 
+  it("rejects an unexpected problem on a zone-only event", () => {
+    const push = vi.fn();
+    const malformedZoneClick = {
+      consent: true,
+      event: "jaw_zone_click",
+      zone: "front",
+      problem: "chipped",
+    } as Parameters<typeof emitJawAnalytics>[0];
+
+    expect(emitJawAnalytics(malformedZoneClick, push)).toBe(false);
+    expect(push).not.toHaveBeenCalled();
+  });
+
   it("uses the optional browser adapter and stays no-op safe when absent", () => {
     expect(
       emitJawAnalytics({
@@ -61,6 +74,27 @@ describe("emitJawAnalytics", () => {
       event: "jaw_cta_click",
       jaw_zone: "unsure",
     });
+  });
+
+  it("does not throw when browser dataLayer push is malformed", () => {
+    window.dataLayer = {
+      push: null as unknown as (payload: Record<string, string>) => void,
+    };
+
+    expect(() =>
+      emitJawAnalytics({
+        consent: true,
+        event: "jaw_zone_click",
+        zone: "front",
+      }),
+    ).not.toThrow();
+    expect(
+      emitJawAnalytics({
+        consent: true,
+        event: "jaw_zone_click",
+        zone: "front",
+      }),
+    ).toBe(false);
   });
 
   it("does not let a broken analytics adapter block user flow", () => {

@@ -47,36 +47,61 @@ const ZONES: ReadonlySet<string> = new Set(JAW_ZONES.map((zone) => zone.id));
 function isControlledInput(input: JawAnalyticsInput): boolean {
   if (!EVENTS.has(input.event) || !ZONES.has(input.zone)) return false;
 
-  if (input.event === "jaw_problem_click") {
-    return Boolean(getJawProblem(input.zone, input.problem));
-  }
+  const candidate = input as JawAnalyticsInput & { problem?: unknown };
 
-  if (input.event === "jaw_cta_click" && input.problem !== undefined) {
-    return Boolean(getJawProblem(input.zone, input.problem));
+  switch (input.event) {
+    case "jaw_zone_click":
+      return !("problem" in candidate);
+    case "jaw_problem_click":
+      return (
+        typeof candidate.problem === "string" &&
+        Boolean(getJawProblem(input.zone, candidate.problem))
+      );
+    case "jaw_cta_click":
+      return (
+        candidate.problem === undefined ||
+        (typeof candidate.problem === "string" &&
+          Boolean(getJawProblem(input.zone, candidate.problem)))
+      );
   }
+}
 
-  return true;
+function resolveAnalyticsPush(push: AnalyticsPush | undefined): AnalyticsPush | undefined {
+  if (typeof push === "function") return push;
+  if (typeof window === "undefined") return undefined;
+
+  try {
+    const browserPush = window.dataLayer?.push;
+    return typeof browserPush === "function"
+      ? browserPush.bind(window.dataLayer)
+      : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 export function emitJawAnalytics(
   input: JawAnalyticsInput,
-  push: AnalyticsPush | undefined =
-    typeof window === "undefined"
-      ? undefined
-      : window.dataLayer?.push.bind(window.dataLayer),
+  push?: AnalyticsPush,
 ): boolean {
-  if (!input.consent || !push || !isControlledInput(input)) return false;
+  if (!input.consent || !isControlledInput(input)) return false;
+
+  const analyticsPush = resolveAnalyticsPush(push);
+  if (!analyticsPush) return false;
 
   const payload: Record<string, string> = {
     event: input.event,
     jaw_zone: input.zone,
   };
-  if ("problem" in input && input.problem !== undefined) {
+  if (
+    (input.event === "jaw_problem_click" || input.event === "jaw_cta_click") &&
+    input.problem !== undefined
+  ) {
     payload.jaw_problem = input.problem;
   }
 
   try {
-    push(payload);
+    analyticsPush(payload);
     return true;
   } catch {
     return false;
