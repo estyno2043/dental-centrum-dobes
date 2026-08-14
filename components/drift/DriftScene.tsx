@@ -32,14 +32,27 @@ export function DriftScene(): JSX.Element {
     ).matches;
     if (reduced) return; // stylesheet leaves every card at rest and visible
 
-    const update = () => {
-      const pinned = section.offsetHeight - window.innerHeight;
-      const scrolled = -section.getBoundingClientRect().top;
-      const progress = pinned > 0 ? scrolled / pinned : 0;
+    const clamp = (value: number) => Math.min(1, Math.max(0, value));
 
+    const update = () => {
+      const rect = section.getBoundingClientRect();
+
+      const pinned = section.offsetHeight - window.innerHeight;
       section.style.setProperty(
         "--p",
-        String(Math.min(1, Math.max(0, progress))),
+        String(pinned > 0 ? clamp(-rect.top / pinned) : 0),
+      );
+
+      /*
+       * A second, earlier progress: 0 while the section's top edge is still at
+       * the bottom of the screen, 1 by the time it reaches the top. The colour
+       * handoff rides this rather than `--p`, which only starts once the
+       * section is already pinned — the ground would then hold the previous
+       * section's tone for a full screen of scrolling and change all at once.
+       */
+      section.style.setProperty(
+        "--enter",
+        String(clamp(1 - rect.top / window.innerHeight)),
       );
     };
 
