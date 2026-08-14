@@ -5,15 +5,34 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Higgsfield jaw-sequence specification written and self-reviewed;
-  awaiting user review before implementation planning
+- Status: Written Higgsfield jaw-sequence specification and task-level
+  implementation plan complete; latest `origin/main` at `bf59253` inspected
+  and pending merge into the owned planning branch before handoff
 - Owner: Codex
 - Branch: `codex/jaw-scroll-sequence-design`
 - Task: Replace the rejected runtime jaw direction with a Higgsfield-generated,
   scroll-driven image sequence built from the approved closed/open Canva
-  frames. Preserve the complete gallery choreography, then reveal accessible
-  HTML/SVG zones and six demo problem routes. The written spec must be reviewed
-  before an implementation plan is created.
+  frames. Preserve the complete gallery choreography and incoming patients
+  section, reveal accessible HTML/SVG zones, add six demo problem routes, and
+  delete the superseded MP4/runtime jaw files only after the replacement is
+  green.
+
+> Planning handoff on 2026-08-14: fetched and inspected incoming `origin/main`
+> commits `a881a54` and `fe9d6ee`, then merged them into the owned design
+> branch as `b1451dd`. A final fetch found three later commits: `f5a2fb5`
+> centres and quiets the patients before/after control, `eb82e20` restores the
+> logo/tour control over the hero, and `bf59253` rebuilds the tour control as a
+> branded pill. Their exact diffs touch only hero navigation/tests/styles and
+> patients styles; the implementation plan protects all of them. Plan:
+> `docs/superpowers/plans/2026-08-14-jaw-scroll-sequence-implementation.md`.
+> It locks a Higgsfield visual-approval gate, deterministic 72-frame desktop
+> and 60-frame mobile WebP builds, bounded Canvas decoding, accessible zones,
+> six demo routes, the 100 EUR Netlify form, legacy deletion, browser checks,
+> and localhost approval before main. Baseline after merge: 79/79 tests pass.
+> One initial full-suite run had a Vitest fork startup timeout after 75 tests;
+> the affected focused test passed 4/4 and an immediate unchanged full rerun
+> passed 79/79, identifying a transient worker-start issue rather than a code
+> regression. No application, media, dependency, or production file changed.
 
 > Superseding decision on 2026-08-14: the user rejected runtime Blender,
 > Three.js, WebGL, GLB assets, orbit controls, and crossing leader lines. The
@@ -127,8 +146,10 @@ update it before taking or handing off work.
 
 ## File Reservations
 
-No active file reservations. The design-spec pass is complete; application,
-media, dependency, and production files remain untouched.
+- Planning reservations are released after this plan commit. Application,
+  media, dependency, and production files remain untouched. Execution must
+  claim the exact file map from the plan on a fresh
+  `codex/higgsfield-jaw-sequence` branch before editing.
 
 > **Read this before touching the build.** The framework changed. The project
 > no longer runs on `vinext` or Cloudflare Workers — it is now standard
