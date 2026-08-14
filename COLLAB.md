@@ -335,6 +335,37 @@ the other agent unless that agent has handed them off.
   The surplus over one viewport is the scroll the pan consumes. 480svh gives
   1.43:1 on desktop; 320svh gave 2.5:1 and felt slippery.
 
+- Clinic gallery photography and the patients section — published to `main` on
+  2026-08-14. Tests: 79 passed. Lint, TypeScript, production build,
+  `git diff --check` and a credential scan passed; every asset served 200 from
+  the dev server and both halves of each before/after pair decoded.
+
+  Seven of the thirty-seven supplied clinic photographs fill the gallery,
+  ordered as an arrival: brand wall, corridor, microscope treatment, the
+  microscope itself, an operatory, the diagnostic room, the team. The
+  instrument detail stays last because `ClinicStory` hands that frame off into
+  the jaw sequence. Every frame's ratio matches its own photograph, so nothing
+  is cropped, and because the shoot alternates portrait and landscape the strip
+  gets its uneven rhythm without contrivance.
+
+  New "Naši pacienti" section: light greige against the dark page above it,
+  with a before/after divider built on a native `<input type="range">` — one
+  decision that covers mouse, touch, keyboard and screen readers at once. Each
+  case shows visits and duration beside the pictures, because a before/after on
+  its own is a claim and the numbers are what make it checkable.
+
+  **Three things are deliberately unfinished and must not be treated as
+  approved content.** The wired before/after pairs are test material: which
+  pair sits on which case is arbitrary and the visit counts describe nobody.
+  Pair 01's halves are framed differently — a natural smile against a
+  retractor shot — so the divider slides between two kinds of photograph. And
+  the clinic's **written consent for patient imagery is still outstanding**;
+  none of this may be published until it exists.
+
+  Not merged: `claude/nav-hover-menu` carries a half-finished collapsing
+  navigation whose links stay at `opacity: 0`. It is parked on its own branch
+  and stays out of `main` until it works.
+
 ## Staff roster
 
 Supplied by the user on 2026-08-14, verbatim. Nothing here is invented — when a
@@ -511,6 +542,14 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   overflow checks, forward/reverse segment jumps, and clean console. No active
   reservations. Publication target: `main`; `develop` then fast-forwards to
   match it.
+
+- 2026-08-14 — Claude published the clinic gallery photography and the new
+  "Naši pacienti" section to `main`; `develop` fast-forwarded to match. No
+  files are reserved. Outstanding before this section can go live: written
+  patient consent, real case text, and a matching before/after pair to replace
+  the mismatched one. Seven of the eleven staff members still have no stated
+  role, which blocks the team section. `claude/nav-hover-menu` remains unmerged
+  and unfinished. Next task: await user instruction.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
