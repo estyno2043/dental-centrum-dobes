@@ -5,114 +5,18 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Complete; user approved the higher-quality jaw story for publication
-  to `main`
+- Status: Higgsfield master generation and approval gate
 - Owner: Codex
-- Branch: `codex/jaw-scroll-demo`
-- Task: Replace separate `PhotoStrip` and `JawStory` pins with one `ClinicStory`
-  sticky viewport, precise decoded-frame callout tracking, GOP-1 media, and the
-  approved centered/radiused statement reveal.
-
-> Implementation approval on 2026-08-11 locks one reversible 1030vh desktop
-> timeline: grow 0–84, pan 84–380, frame-07 zoom 380–480, blur 442–480,
-> jaw fade 447–480, eight-second scrub 480–930, dwell 930–1030. Mobile keeps
-> native gallery swipe, then 40vh auto-snap, 100vh handoff, scrub, and dwell.
-> One sticky viewport must remain at `top: 0`; no section cut, blank frame,
-> wheel interception, image sequence, or WebCodecs runtime is allowed.
->
-> Local verification on 2026-08-11: 74 tests passed; lint, TypeScript,
-> production build, `git diff --check`, and repository credential-pattern scan
-> passed. All eight clips are H.264 High/yuv420p, 30fps, silent, fast-start,
-> and all-intra: desktop 11,003,664 bytes total; mobile 4,407,945 bytes total.
-> Browser checks passed at 1920×1080, 1440×900, 375×812, and 390×844 with
-> sticky `top: 0`, zero horizontal page overflow, mobile swipe/auto-snap,
-> responsive frame-07 crop, and working mobile menu. Coarse forward and reverse
-> jumps reached the correct segment and decoded time. A runtime regression
-> revealed that frame callbacks registered after `seeked` could miss a paused
-> compositor frame; queue now registers before changing `currentTime`, ignores
-> stale frames, and swaps only on the target decoded frame. Localhost remains
-> `http://localhost:3000/`. Nothing is committed, pushed, or merged.
-
-> Quality revision on 2026-08-11: user found jaw detail too soft. Root cause is
-> conservative all-intra CRF 30 desktop / 28 mobile while generated assets use
-> only 4.27 MiB of the 12 MiB desktop budget and 2.42 MiB of the 5 MiB mobile
-> budget. Final encode uses CRF 21 desktop / 22 mobile, retaining GOP 1, 30fps,
-> fast-start, original dimensions, segmentation, and existing tracking. First
-> desktop segment SSIM improved from 0.991979 / 20.96 dB to 0.995827 / 23.80 dB.
-> All 74 tests, lint, TypeScript, production build, `git diff --check`, media
-> decode/all-intra checks, credential scan, localhost HTTP range response, and
-> 1440×900 browser check passed. Browser loaded the new asset, sticky remained
-> at `top: 0`, horizontal overflow stayed zero, and console errors stayed zero.
-
-> The user approved transition direction B on 2026-08-10: the sharp final
-> clinic photograph grows to full screen; blur begins during the late zoom;
-> the jaw appears subtly over the blurred clinic background. No square reveal,
-> hard cut, one-file MP4 scrub, or image-sequence runtime is allowed.
->
-> The user delegated annotation selection. Locked content: (1) natural bite —
-> crowns and bridges as one functional whole; (2) preserve the natural tooth —
-> microscope-assisted endodontics; (3) healthy foundation — GBT care for
-> teeth, gums, restorations, and implants. Implant placement does not receive
-> an arrow because no implant or bone is visible in the render.
->
-> Input handling is locked: actual section scroll position is the source of
-> truth for trackpad, wheel, keyboard, scrollbar, and touch. A requestAnimationFrame
-> smoothing layer drives the media timeline. Native scrolling remains unblocked.
-> The active and adjacent short clips are buffered in a two-video deck; segment
-> swaps wait for a decoded compositor frame.
->
-> Demo verification on 2026-08-10: 48 tests passed; lint, TypeScript,
-> production build, `git diff --check`, changed-text credential scan, and all
-> nine generated-media checks passed. Eight H.264 High/yuv420p clips are
-> independently seekable at 30 fps with no audio: desktop 1920×1080 and phone
-> 720×1280, four approximately two-second segments each, plus a 1920×1080
-> poster. Browser checks passed at 1440×900 and 375×812. Gallery handoff grows
-> the sharp final photograph to full screen, adds late blur, then reveals the
-> jaw without a hard cut. All four segments swap forward and backward under
-> coarse-wheel jumps; native document scroll remains active. Three branded
-> SVG leaders track the rendered bite, tooth, and gum targets. Phone loads the
-> portrait assets, keeps manual snapping gallery swipe and mobile menu, and
-> has zero horizontal page overflow. Console had no runtime errors; only
-> expected development Fast Refresh warnings appeared while source files were
-> being edited. Localhost remains `http://localhost:3000/`. Nothing from this
-> demo has been pushed or merged; user review is the gate.
-
-> The user approved the combined motion direction on 2026-08-09: square
-> center reveal for hero → statement, then gradient veil for statement → photo
-> strip. The statement photograph must appear before its copy; the hero must
-> never reappear under the second transition. Work started from current
-> `origin/main` at `e0a50cd`; stable rollback commit `ffb6ecc` will be applied
-> without rewriting shared history.
->
-> The user rejected the new nested slide stack because its overflow wrapper
-> disables the photo strip's sticky positioning. Phase 1 restores the proven
-> homepage composition without rewriting history. That stable composition is
-> the baseline for this approved transition work.
->
-> Phase 1 verification: 14 tests passed; lint, TypeScript, `next build`,
-> `git diff --check`, tracked credential-pattern scan, homepage HTTP, and the
-> retained photograph's HTTP/content-type check passed. The dev server at
-> `http://localhost:3000/` ran from the Phase 1 worktree. Automated Browser
-> inspection remained blocked by Browser URL policy, so user visual review is
-> the merge gate.
->
-> Phase 2 verification: 26 tests passed; lint, TypeScript, production build,
-> `git diff --check`, tracked credential-pattern scan, homepage HTTP, and all
-> three affected JPEG asset checks passed. Browser measurements passed at
-> 1440×900 and 375×812 with no console errors or warnings and no horizontal
-> page overflow. Desktop square reveal measured `50% → 25% → 0%`; copy stayed
-> hidden until the photograph opened; statement veil reached opacity `1` over
-> the statement photograph while the hero remained absent. Gallery pin held at
-> `top: 0`; frames ended 71px above the viewport bottom; grow ended before pan.
-> Mobile menu, Escape focus return, and native gallery swipe all passed.
-> Localhost runs from this branch at `http://localhost:3000/`. The user
-> approved the result on 2026-08-09 and explicitly requested publication to
-> `main` before work begins on the jaw-animation section.
+- Branch: `codex/higgsfield-jaw-sequence`
+- Base: current `origin/main`
+- Task: replace current segmented jaw runtime while preserving gallery and patients section
 
 ## File Reservations
 
-No active file reservations. Jaw-scroll work is approved and handed off for
-publication to `main`.
+- Codex reserves the jaw source/media pipeline, `components/home/ClinicStory*`,
+  `components/home/clinicStory*`, `components/home/jaw/**`,
+  `app/problemy/**`, `app/layout.tsx`, `app/page.test.tsx`, `package.json`, and
+  the listed legacy jaw files until localhost handoff.
 
 > **Read this before touching the build.** The framework changed. The project
 > no longer runs on `vinext` or Cloudflare Workers — it is now standard
