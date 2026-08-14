@@ -5,7 +5,7 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Task 1 complete — FLUX.3 jaw master approved; Task 2 sequence build next
+- Status: Task 1 review fix round 1/5 complete — exact 1920×1080 master ready
 - Owner: Codex
 - Branch: `codex/higgsfield-jaw-sequence`
 - Base: current `origin/main`
@@ -16,15 +16,22 @@ update it before taking or handing off work.
 - Codex reserves the jaw source/media pipeline, `components/home/ClinicStory*`,
   `components/home/clinicStory*`, `components/home/jaw/**`,
   `app/problemy/**`, `app/layout.tsx`, `app/page.test.tsx`, `package.json`, and
-  the listed legacy jaw files until localhost handoff.
+  `scripts/crop-jaw-master.swift`, and the listed legacy jaw files until
+  localhost handoff.
 
-> Task 1 approval gate passed on 2026-08-14. The user explicitly approved the
-> FLUX.3 replacement (`bd346c78-8c4f-4ace-ad25-59d2eb1bbd6c`) after the
-> 15-checkpoint review. The approved 5.042-second H.264 master, exact endpoint
-> PNGs, hashes, settings, prompt, and 45-credit cost are recorded in
-> `assets/jaw-sequence/source/GENERATION.md`. The rejected Seedance candidate
-> is retained only in the git-ignored SDD workspace and is not part of the
-> approved source tree. Reservations remain active for Task 2.
+> Task 1 approval gate passed on 2026-08-14. The user rejected the original
+> locked-prompt Seedance candidate for tooth deformation, explicitly directed
+> the stronger rigid-tooth prompt, and approved the resulting FLUX.3 job
+> (`bd346c78-8c4f-4ace-ad25-59d2eb1bbd6c`). `GENERATION.md` records this
+> user-approved prompt exception and the complete rejection chain. The raw
+> 1920×1088 download is retained as git-ignored SDD evidence; the tracked
+> master is a reproducible centered crop to exact 1920×1080, with raw/derived
+> hashes and command recorded. Rejected evidence is excluded from Git.
+> Reservations remain active for Task 2, which replaces and freezes the exact
+> PNG endpoints in the 1280×720 and 720×1280 sequences.
+> Fix verification: 79 tests, lint, TypeScript, production build, Swift
+> typecheck, raw/derived metadata and hashes, five checkpoint crop-equivalence
+> comparisons, `git diff --check`, and credential scan passed.
 
 > **Read this before touching the build.** The framework changed. The project
 > no longer runs on `vinext` or Cloudflare Workers — it is now standard
