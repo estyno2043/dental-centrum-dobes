@@ -1,6 +1,7 @@
 import { act, render, screen } from "@testing-library/react";
 import { afterEach, expect, test, vi } from "vitest";
 import { ClinicStory, jawSegments } from "./ClinicStory";
+import { photoFrames } from "./photoStripContent";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -30,7 +31,14 @@ test("uses one region and one sticky viewport for gallery, handoff and jaw", () 
     screen.getByRole("region", { name: "Miesto, kde sa nikto neponáhľa." }),
   ).toBeInTheDocument();
   expect(screen.getAllByTestId("clinic-story-pin")).toHaveLength(1);
-  expect(container.querySelectorAll('[data-gallery-frame="true"]')).toHaveLength(7);
+  /*
+   * Counted from the content rather than hard-coded: the point of this
+   * assertion is that every frame reaches the DOM, not that there happen to be
+   * seven of them. Adding a photograph should not fail a structural test.
+   */
+  expect(container.querySelectorAll('[data-gallery-frame="true"]')).toHaveLength(
+    photoFrames.length,
+  );
   expect(screen.getByTestId("clinic-story-final-frame")).toBeInTheDocument();
   expect(screen.getByTestId("clinic-story-handoff")).toHaveAttribute(
     "src",
