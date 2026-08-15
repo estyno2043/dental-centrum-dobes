@@ -78,6 +78,15 @@
   transform: translateX(-50%);
 }
 
+.zoneArtboard {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(100%, calc(100dvh * 16 / 9));
+  aspect-ratio: 16 / 9;
+  transform: translate(-50%, -50%);
+}
+
 .zoneArtwork {
   position: absolute;
   width: 100%;
@@ -169,6 +178,10 @@
 .directEntry:focus-visible {
   background: rgba(192, 160, 111, 0.24);
   box-shadow: 0 0 18px rgba(220, 191, 137, 0.4);
+}
+
+.directEntryDisabled {
+  pointer-events: none;
 }
 
 .zoneCard {

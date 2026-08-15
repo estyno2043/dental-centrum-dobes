@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
 } from "react";
 
@@ -48,8 +49,10 @@ type OverlayState = Readonly<{
 export type JawZoneOverlayProps = Readonly<{
   analyticsConsent: boolean;
   interactive: boolean;
-  exactEndDrawn?: boolean;
+  exactEndDrawn: boolean;
+  reducedMotion: boolean;
   revealStartedAt?: number;
+  visible: boolean;
 }>;
 
 const MASTER_WIDTH = 1920;
@@ -155,8 +158,10 @@ function classNames(...values: Array<string | false | undefined>): string {
 export function JawZoneOverlay({
   analyticsConsent,
   interactive,
-  exactEndDrawn = true,
+  exactEndDrawn,
+  reducedMotion,
   revealStartedAt,
+  visible,
 }: JawZoneOverlayProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -173,9 +178,9 @@ export function JawZoneOverlay({
     pinned: false,
     mode: getMode(),
   }));
-  const gateReady = interactive && exactEndDrawn;
+  const gateReady = visible && interactive && exactEndDrawn;
 
-  const revealComplete = revealStartedAt === undefined
+  const revealComplete = reducedMotion || revealStartedAt === undefined
     || (revealSignal.startedAt === revealStartedAt && revealSignal.complete);
   const enabled = gateReady && revealComplete;
   const visibleState = gateReady ? state : { ...state, openZone: null, pinned: false };
@@ -220,7 +225,7 @@ export function JawZoneOverlay({
   }, [clearScheduledClose, gateReady]);
 
   useEffect(() => {
-    if (!gateReady || revealStartedAt === undefined) return;
+    if (!gateReady || reducedMotion || revealStartedAt === undefined) return;
 
     const remaining = Math.max(0, ACTIVATION_DELAY_MS - (Date.now() - revealStartedAt));
     const timeout = window.setTimeout(
@@ -228,7 +233,20 @@ export function JawZoneOverlay({
       remaining,
     );
     return () => window.clearTimeout(timeout);
-  }, [gateReady, revealStartedAt]);
+  }, [gateReady, reducedMotion, revealStartedAt]);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 767px)");
+    const onChange = (event: MediaQueryListEvent) => {
+      const nextMode: OverlayState["mode"] = event.matches ? "mobile" : "desktop";
+      const focusedInside = rootRef.current?.contains(document.activeElement) ?? false;
+      activeSurfaceRef.current = null;
+      setState((current) => ({ ...current, mode: nextMode, openZone: null, pinned: false }));
+      if (focusedInside) headingRef.current?.focus();
+    };
+    media.addEventListener("change", onChange);
+    return () => media.removeEventListener("change", onChange);
+  }, []);
 
   useEffect(() => () => clearScheduledClose(), [clearScheduledClose]);
 
@@ -260,11 +278,26 @@ export function JawZoneOverlay({
     emitJawAnalytics({ consent: analyticsConsent, event: "jaw_zone_click", zone: surface.zone });
   }, [analyticsConsent, enabled, open]);
 
+  const onDirectClick = useCallback((zone: JawZone, event: ReactMouseEvent<HTMLAnchorElement>) => {
+    if (!enabled) {
+      event.preventDefault();
+      return;
+    }
+    emitJawAnalytics({ consent: analyticsConsent, event: "jaw_zone_click", zone: zone.id });
+  }, [analyticsConsent, enabled]);
+
   const directLinks = useMemo(() => DIRECT_ZONES.map((zone) => (
-    <a className={styles.directEntry} href={zone.route} key={zone.id}>
+    <a
+      aria-disabled={!enabled}
+      className={classNames(styles.directEntry, !enabled && styles.directEntryDisabled)}
+      href={zone.route}
+      key={zone.id}
+      onClick={(event) => onDirectClick(zone, event)}
+      tabIndex={enabled ? 0 : -1}
+    >
       {zone.label}
     </a>
-  )), []);
+  )), [enabled, onDirectClick]);
 
   const card = activeZone ? (
     <section
@@ -314,53 +347,55 @@ export function JawZoneOverlay({
         Kde vás to trápi?
       </h2>
       <p className={styles.zonePrompt}>Vyberte oblasť, ktorá vás trápi.</p>
-      <svg aria-hidden="true" className={styles.zoneArtwork} viewBox={`0 0 ${MASTER_WIDTH} ${MASTER_HEIGHT}`}>
+      <div className={styles.zoneArtboard} data-testid="jaw-artboard">
+        <svg aria-hidden="true" className={styles.zoneArtwork} viewBox={`0 0 ${MASTER_WIDTH} ${MASTER_HEIGHT}`}>
+          {SURFACES.map((surface) => (
+            <polygon
+              className={classNames(
+                styles.zoneSurface,
+                visibleState.openZone === surface.zone && styles.zoneSurfaceSelected,
+              )}
+              data-zone={surface.zone}
+              data-testid="jaw-hit-surface"
+              key={surface.id}
+              points={pointsToString(surface.points)}
+              style={{ "--zone-index": surface.revealIndex } as CSSProperties}
+            />
+          ))}
+        </svg>
         {SURFACES.map((surface) => (
-          <polygon
-            className={classNames(
-              styles.zoneSurface,
-              visibleState.openZone === surface.zone && styles.zoneSurfaceSelected,
-            )}
+          <button
+            aria-disabled={!enabled}
+            aria-pressed={visibleState.openZone === surface.zone}
+            className={classNames(styles.zoneControl, !enabled && styles.zoneControlDisabled)}
+            data-testid={`jaw-hit-${surface.id}`}
             data-zone={surface.zone}
-            data-testid="jaw-hit-surface"
+            disabled={!enabled}
             key={surface.id}
-            points={pointsToString(surface.points)}
-            style={{ "--zone-index": surface.revealIndex } as CSSProperties}
-          />
+            onBlur={() => {
+              if (!state.pinned) setState((current) => ({ ...current, openZone: null }));
+            }}
+            onClick={() => onZoneClick(surface)}
+            onFocus={() => {
+              if (skipRestoredFocusRef.current) {
+                skipRestoredFocusRef.current = false;
+                return;
+              }
+              open(surface, false);
+            }}
+            onPointerEnter={() => open(surface, false)}
+            onPointerLeave={scheduleUnpinnedClose}
+            ref={(element) => {
+              triggerRefs.current[surface.id] = element ?? undefined;
+            }}
+            style={{ ...boxFor(surface.points), "--zone-index": surface.revealIndex } as CSSProperties}
+            tabIndex={enabled ? 0 : -1}
+            type="button"
+          >
+            <span>{ZONES[surface.zone].label}</span>
+          </button>
         ))}
-      </svg>
-      {SURFACES.map((surface) => (
-        <button
-          aria-disabled={!enabled}
-          aria-pressed={visibleState.openZone === surface.zone}
-          className={classNames(styles.zoneControl, !enabled && styles.zoneControlDisabled)}
-          data-testid={`jaw-hit-${surface.id}`}
-          data-zone={surface.zone}
-          disabled={!enabled}
-          key={surface.id}
-          onBlur={() => {
-            if (!state.pinned) setState((current) => ({ ...current, openZone: null }));
-          }}
-          onClick={() => onZoneClick(surface)}
-          onFocus={() => {
-            if (skipRestoredFocusRef.current) {
-              skipRestoredFocusRef.current = false;
-              return;
-            }
-            open(surface, false);
-          }}
-          onPointerEnter={() => open(surface, false)}
-          onPointerLeave={scheduleUnpinnedClose}
-          ref={(element) => {
-            triggerRefs.current[surface.id] = element ?? undefined;
-          }}
-          style={{ ...boxFor(surface.points), "--zone-index": surface.revealIndex } as CSSProperties}
-          tabIndex={enabled ? 0 : -1}
-          type="button"
-        >
-          <span>{ZONES[surface.zone].label}</span>
-        </button>
-      ))}
+      </div>
       <div className={styles.directEntries}>{directLinks}</div>
       {card}
       <p aria-live="polite" className={styles.zoneStatus}>
