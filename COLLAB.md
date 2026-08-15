@@ -5,11 +5,11 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Task 7 in progress — accessible jaw zone interaction
+- Status: Task 8 in progress — static jaw problem routes and appointment flow
 - Owner: Codex
 - Branch: `codex/higgsfield-jaw-sequence`
-- Base: current `origin/main`
-- Task: replace current segmented jaw runtime while preserving gallery and patients section
+- Base: `8a0b802`
+- Task: build six static demo routes and a Netlify-compatible appointment form
 
 ## File Reservations
 
@@ -19,12 +19,13 @@ update it before taking or handing off work.
   `scripts/crop-jaw-master.swift`, and the listed legacy jaw files until
   localhost handoff.
 
-- Task 7 exact active files: `components/home/jaw/JawZoneOverlay.tsx`,
-  `components/home/jaw/JawZoneOverlay.test.tsx`, and
-  `components/home/jaw/jawExperience.module.css`. `ClinicStory.tsx` remains
-  on its temporary legacy call shape until Task 9; completed loader, Canvas
-  sequence, gallery, drift, header, patients, media pipeline, and other app
-  files remain protected and out of scope.
+- Task 8 exact active files: `components/home/jaw/JawAppointmentForm.tsx`,
+  `components/home/jaw/JawAppointmentForm.test.tsx`,
+  `app/problemy/[zona]/page.tsx`, `app/problemy/[zona]/page.test.tsx`,
+  `app/problemy/problemy.module.css`, and `app/layout.tsx`. `ClinicStory.tsx`
+  remains on its temporary legacy call shape until Task 9; completed loader,
+  Canvas sequence, gallery, drift, header, patients, media pipeline, and other
+  app files remain protected and out of scope.
 
 > Task 1 approval gate passed on 2026-08-14. The user rejected the original
 > locked-prompt Seedance candidate for tooth deformation, explicitly directed
