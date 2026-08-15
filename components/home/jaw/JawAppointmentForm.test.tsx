@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { StrictMode } from "react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -8,8 +9,9 @@ import { JawAppointmentForm } from "./JawAppointmentForm";
 const zone = JAW_ZONES.find((candidate) => candidate.id === "molar")!;
 const problem = zone.problems.find((candidate) => candidate.id === "pulsing")!;
 
-function renderForm() {
-  return render(<JawAppointmentForm zone={zone} problem={problem} />);
+function renderForm({ strict = false }: { strict?: boolean } = {}) {
+  const form = <JawAppointmentForm zone={zone} problem={problem} />;
+  return render(strict ? <StrictMode>{form}</StrictMode> : form);
 }
 
 async function fillRequiredFields(user: ReturnType<typeof userEvent.setup>) {
@@ -78,10 +80,10 @@ describe("JawAppointmentForm", () => {
     resolveRequest?.({ ok: true } as Response);
   });
 
-  it("preserves contact input and provides retry plus known clinic phone on failed response", async () => {
+  it("shows retry state and unlocks after a non-OK response in Strict Mode", async () => {
     const user = userEvent.setup();
     vi.mocked(fetch).mockResolvedValue({ ok: false } as Response);
-    renderForm();
+    renderForm({ strict: true });
     await fillRequiredFields(user);
     await user.click(screen.getByRole("button", { name: "Objednať vstupné vyšetrenie" }));
 
@@ -93,6 +95,7 @@ describe("JawAppointmentForm", () => {
       "href",
       "tel:+421918800002",
     );
+    expect(screen.getByRole("button", { name: "Objednať vstupné vyšetrenie" })).toBeEnabled();
   });
 
   it("provides the same retry path after a network error", async () => {
@@ -105,19 +108,20 @@ describe("JawAppointmentForm", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Skúste to znova");
   });
 
-  it("does not show success until an OK response resolves", async () => {
+  it("shows success and unlocks only after an OK response resolves in Strict Mode", async () => {
     const user = userEvent.setup();
     let resolveRequest: ((response: Response) => void) | undefined;
     vi.mocked(fetch).mockImplementation(
       () => new Promise<Response>((resolve) => { resolveRequest = resolve; }),
     );
-    renderForm();
+    renderForm({ strict: true });
     await fillRequiredFields(user);
     await user.click(screen.getByRole("button", { name: "Objednať vstupné vyšetrenie" }));
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
 
     resolveRequest?.({ ok: true } as Response);
     expect(await screen.findByRole("status")).toHaveTextContent("Ďakujeme");
+    expect(screen.getByRole("button", { name: "Objednať vstupné vyšetrenie" })).toBeEnabled();
   });
 
   it("does not post when bot field is filled", async () => {

@@ -35,6 +35,7 @@ export function JawAppointmentForm({ zone, problem }: JawAppointmentFormProps) {
   const errorRef = useRef<HTMLParagraphElement>(null);
 
   useEffect(() => {
+    mountedRef.current = true;
     return () => {
       mountedRef.current = false;
       controllerRef.current?.abort();
