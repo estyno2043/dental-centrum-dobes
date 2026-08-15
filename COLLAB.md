@@ -5,7 +5,7 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Task 8 in progress — static jaw problem routes and appointment flow
+- Status: Task 8 complete — static jaw problem routes and appointment flow
 - Owner: Codex
 - Branch: `codex/higgsfield-jaw-sequence`
 - Base: `8a0b802`
@@ -19,7 +19,7 @@ update it before taking or handing off work.
   `scripts/crop-jaw-master.swift`, and the listed legacy jaw files until
   localhost handoff.
 
-- Task 8 exact active files: `components/home/jaw/JawAppointmentForm.tsx`,
+- Task 8 released its exact files: `components/home/jaw/JawAppointmentForm.tsx`,
   `components/home/jaw/JawAppointmentForm.test.tsx`,
   `app/problemy/[zona]/page.tsx`, `app/problemy/[zona]/page.test.tsx`,
   `app/problemy/problemy.module.css`, and `app/layout.tsx`. `ClinicStory.tsx`
@@ -502,6 +502,15 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   `main`; `develop` fast-forwarded. No files reserved. The patient section's
   outstanding blockers are unchanged: written consent, real case text, and a
   matching before/after pair.
+
+- 2026-08-15 — Codex completed Task 8 on
+  `codex/higgsfield-jaw-sequence`: six validated demo jaw-problem destinations,
+  controlled Netlify booking form, static form detection, clipped honeypot,
+  abort-safe request handling, no-PII controlled-ID CTA analytics, and mobile
+  44px controls. Full verification: 183 tests, lint, TypeScript, production
+  build, whitespace diff, credential scan, and desktop/375×812 localhost
+  review passed with clean console. Task 8 exact files released; Task 9 may now
+  use routes from the existing jaw overlay.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
