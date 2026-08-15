@@ -5,7 +5,7 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Jaw map refinement complete on localhost — awaiting user approval; do not merge or push yet
+- Status: Jaw map refinement approved on localhost — publication to `main` authorized
 - Owner: Codex
 - Branch: `codex/higgsfield-jaw-sequence`
 - Base: `1da74bc`
@@ -16,9 +16,8 @@ update it before taking or handing off work.
 
 ## File Reservations
 
-- No active write reservations. The completed jaw-map refinement is frozen on
-  `codex/higgsfield-jaw-sequence` while the user reviews localhost. Do not
-  merge or push it before explicit approval.
+- No active write reservations. The user approved the completed jaw-map
+  refinement on localhost and explicitly requested publication to `main`.
 
 - Task 8 released its exact files. `ClinicStory.tsx` remains on its temporary
   legacy call shape until Task 9; completed loader, Canvas sequence, gallery,
@@ -561,7 +560,7 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   controls, clean geometry, working interaction, no horizontal overflow, and
   no console errors. Verification passed: 128 tests, lint, TypeScript, jaw
   media validation, production build, and whitespace check. No files remain
-  reserved; explicit localhost approval is still required before merge/push.
+  reserved. The user approved localhost and authorized merge/push to `main`.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
