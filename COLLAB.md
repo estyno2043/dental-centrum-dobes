@@ -5,7 +5,7 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Task 9 mobile layout follow-up in progress — localhost review pending; do not merge or push yet
+- Status: Task 9 mobile layout follow-up complete — localhost review pending; do not merge or push yet
 - Owner: Codex
 - Branch: `codex/higgsfield-jaw-sequence`
 - Base: `9e9cb08`
@@ -34,10 +34,10 @@ update it before taking or handing off work.
   The integration locates its handoff only with
   `photoFrames.find((frame) => frame.id === "detail")`.
 
-- Task 9 follow-up reserves only `components/home/clinicStory.module.css` and
-  `components/home/ClinicStory.test.tsx` for the 390×844 jaw-title collision.
-  No jaw player, overlay component, gallery data, header, routes, patients, or
-  drift file may change.
+- Task 9 mobile layout follow-up released `components/home/clinicStory.module.css`
+  and `components/home/ClinicStory.test.tsx`. It fixes the 390×844 jaw-title
+  collision without touching the jaw player/overlay, gallery data, header,
+  routes, patients, or drift.
 
 > Task 1 approval gate passed on 2026-08-14. The user rejected the original
 > locked-prompt Seedance candidate for tooth deformation, explicitly directed
@@ -537,6 +537,17 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   credential scan, and desktop/390×844 localhost smoke with clean console.
   Task 9 exact files are released; user localhost approval is required before
   merge or push.
+
+- 2026-08-15 — Codex fixed the Task 9 mobile 390×844 visual regression on
+  `codex/higgsfield-jaw-sequence`: the jaw title now has a full-width title
+  lane and the prompt begins below it, so neither overlaps the centered 16:9
+  artboard or direct entries. The fix changes only `ClinicStory` CSS and its
+  regression test. Browser measurement at scrollY ~8750 confirms title,
+  prompt, artboard, and direct-entry lanes are disjoint with no page overflow;
+  the mobile menu still opens and the console is clean. Full verification: 159
+  tests, lint, TypeScript, jaw validator, production build, whitespace diff,
+  and credential scan passed. Localhost approval remains required before merge
+  or push.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,

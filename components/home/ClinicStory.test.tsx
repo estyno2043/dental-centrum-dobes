@@ -1,7 +1,10 @@
 import { act, render, screen } from "@testing-library/react";
+import { readFileSync } from "node:fs";
 import { afterEach, expect, test, vi } from "vitest";
 import { ClinicStory } from "./ClinicStory";
 import { photoFrames } from "./photoStripContent";
+
+const cssText = readFileSync("components/home/clinicStory.module.css", "utf8");
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -106,5 +109,14 @@ test("keeps gallery and story geometry when sequence reports a permanent failure
   expect(section).toHaveAttribute("data-desktop-vh", "1030");
   expect(screen.getAllByTestId("clinic-frame").map((node) => node.dataset.frameId)).toEqual(
     photoFrames.map((frame) => frame.id),
+  );
+});
+
+test("reserves a separate mobile title and prompt lane above the jaw artboard", () => {
+  expect(cssText).toMatch(
+    /@media \(max-width: 767px\)[\s\S]*?\.jawLayer h2[\s\S]*?width:\s*calc\(100% - 2rem\)[\s\S]*?line-height:\s*1\.05/,
+  );
+  expect(cssText).toMatch(
+    /@media \(max-width: 767px\)[\s\S]*?\.jawLayer h2 \+ p[\s\S]*?top:\s*clamp\(7\.35rem, 16vh, 8\.75rem\)/,
   );
 });

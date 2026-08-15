@@ -281,6 +281,23 @@
       linear-gradient(180deg, rgb(28 28 31 / 12%), transparent 28% 57%, rgb(28 28 31 / 62%)),
       linear-gradient(90deg, rgb(28 28 31 / 9%), transparent 70%);
   }
+
+  /*
+   * The sequence overlay is deliberately 16:9 even on a portrait viewport.
+   * Give its heading a constrained full-width lane, rather than letting the
+   * absolute shrink-to-fit box force three short lines into the prompt below.
+   */
+  .jawLayer h2 {
+    top: 1.25rem;
+    width: calc(100% - 2rem);
+    max-width: 25rem;
+    font-size: clamp(1.75rem, 8.6vw, 2.4rem);
+    line-height: 1.05;
+  }
+
+  .jawLayer h2 + p {
+    top: clamp(7.35rem, 16vh, 8.75rem);
+  }
 }
 
 .reduced {
