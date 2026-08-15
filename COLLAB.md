@@ -5,13 +5,22 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Task 9 mobile layout follow-up complete — localhost review pending; do not merge or push yet
+- Status: Jaw map refinement design written — awaiting user review; do not implement, merge, or push yet
 - Owner: Codex
 - Branch: `codex/higgsfield-jaw-sequence`
-- Base: `9e9cb08`
-- Task: preserve complete semantic gallery, integrate sticky handoff/sequence/zones, then delete replaced video runtime
+- Base: `1da74bc`
+- Task: delay jaw handoff until fullscreen `detail` gallery frame, compress the
+  jaw reveal, replace debug-like zone rectangles and premature CTA with a
+  progressive anatomical pain-map reveal, and add a gradient exit to patient
+  results.
 
 ## File Reservations
+
+- Codex reserves `COLLAB.md` and
+  `docs/superpowers/specs/2026-08-15-jaw-map-refinement-design.md` while the
+  user reviews the refinement design. No production component, CSS, media, or
+  test file is reserved or may be edited for this task until that review
+  explicitly approves implementation.
 
 - Codex reserves the jaw source/media pipeline, `components/home/ClinicStory*`,
   `components/home/clinicStory*`, `components/home/jaw/**`,
