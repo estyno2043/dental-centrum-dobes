@@ -41,7 +41,7 @@ inside that story, not video time.
 | `37–46%` | Semantic `detail` frame expansion | Only `photoFrames.find((frame) => frame.id === "detail")` grows to fill the viewport. |
 | `46–50%` | Detail dwell | The full-viewport photograph holds long enough to register before any blur or jaw pixel appears. |
 | `50–53%` | Handoff | The `detail` photograph becomes the blurred scene background through a gold-tinted soft dissolve. No text, control, or zone is visible. |
-| `53–67%` | Jaw opening | WebP frames play from closed to open roughly 35–45% faster than current mapping. Caption: `Hľadáme miesto, ktoré vás trápi.` It fades in after the handoff and fades out before the sequence ends. |
+| `53–67%` | Jaw opening | WebP frames play from closed to open roughly 35–45% faster than current mapping. Caption: `Zóny bolesti` with one restrained champagne loading ring below it. Both fade in after the handoff and fade out before the sequence ends. |
 | `67–71%` | Pain-map tease | Final jaw frame holds. Four soft anatomical glows pulse in sequence: front teeth, premolars, molars, gums. No clickable label or helper entry is yet visible. |
 | `71–75%` | Map reveal | Caption disappears. `Kde vás to trápi?` fades in. Four zone anchors, leader lines, and compact zone labels pop in with staggered 140–180 ms scale/fade motion. |
 | `75–90%` | Interactive dwell | Pain map stays stable. Users hover, focus, tap, choose a problem, and navigate to existing demo booking routes. |
@@ -79,9 +79,12 @@ the jaw or cover the header, gallery, or next section.
 There is no headline, CTA, direct-entry button, zone outline, or problem card
 during the opening frames. The only motion-stage copy is:
 
-> Hľadáme miesto, ktoré vás trápi.
+> Zóny bolesti
 
-It is intentionally transitional: it disappears before zones become visible.
+One restrained champagne loading ring appears beneath it. The ring is a
+continuous progress/scan cue, not a spinner with a waiting-state claim. Both
+elements are intentionally transitional: they disappear before zones become
+visible.
 
 ## Anatomical pain map
 
