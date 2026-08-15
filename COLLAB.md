@@ -5,7 +5,7 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Jaw map refinement design written — awaiting user review; do not implement, merge, or push yet
+- Status: Jaw map refinement plan written — awaiting execution choice; do not implement, merge, or push yet
 - Owner: Codex
 - Branch: `codex/higgsfield-jaw-sequence`
 - Base: `1da74bc`
@@ -16,11 +16,11 @@ update it before taking or handing off work.
 
 ## File Reservations
 
-- Codex reserves `COLLAB.md` and
-  `docs/superpowers/specs/2026-08-15-jaw-map-refinement-design.md` while the
-  user reviews the refinement design. No production component, CSS, media, or
-  test file is reserved or may be edited for this task until that review
-  explicitly approves implementation.
+- Codex reserves `COLLAB.md`,
+  `docs/superpowers/specs/2026-08-15-jaw-map-refinement-design.md`, and
+  `docs/superpowers/plans/2026-08-15-jaw-map-refinement-implementation.md`
+  while the user selects an execution mode. Production component, CSS, media,
+  and test files remain untouched until implementation starts.
 
 - Codex reserves the jaw source/media pipeline, `components/home/ClinicStory*`,
   `components/home/clinicStory*`, `components/home/jaw/**`,
