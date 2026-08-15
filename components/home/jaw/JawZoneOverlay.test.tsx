@@ -234,6 +234,8 @@ describe("JawZoneOverlay pain map", () => {
     expect(screen.getByTestId("jaw-artboard")).toHaveClass(styles.zoneArtboard);
     expect(cssText).toMatch(/\.zoneArtboard[\s\S]*aspect-ratio:\s*16\s*\/\s*9/);
     expect(cssText).toMatch(/@keyframes\s+zone-pop/);
+    expect(cssText).toMatch(/@keyframes\s+zone-mask-pop[\s\S]*opacity:\s*0\.18/);
+    expect(cssText).toMatch(/\.zoneOverlay\[data-presentation="reveal"\] \.zoneMask[\s\S]*animation:\s*zone-mask-pop/);
     expect(cssText).toMatch(/@keyframes\s+zone-tease/);
     expect(cssText).toMatch(/@keyframes\s+zone-heading-pop[\s\S]*translate\(-50%,\s*0\)/);
     expect(cssText).toMatch(/@keyframes\s+assistance-pop[\s\S]*translateX\(-50%\)/);
