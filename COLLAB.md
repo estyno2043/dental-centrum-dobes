@@ -5,7 +5,7 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Jaw map refinement plan written — awaiting execution choice; do not implement, merge, or push yet
+- Status: Jaw map refinement implementation in progress — inline TDD execution; do not merge or push yet
 - Owner: Codex
 - Branch: `codex/higgsfield-jaw-sequence`
 - Base: `1da74bc`
@@ -17,10 +17,18 @@ update it before taking or handing off work.
 ## File Reservations
 
 - Codex reserves `COLLAB.md`,
-  `docs/superpowers/specs/2026-08-15-jaw-map-refinement-design.md`, and
-  `docs/superpowers/plans/2026-08-15-jaw-map-refinement-implementation.md`
-  while the user selects an execution mode. Production component, CSS, media,
-  and test files remain untouched until implementation starts.
+  `docs/superpowers/specs/2026-08-15-jaw-map-refinement-design.md`,
+  `docs/superpowers/plans/2026-08-15-jaw-map-refinement-implementation.md`,
+  `components/home/clinicStoryMotion.ts`,
+  `components/home/clinicStoryMotion.test.ts`,
+  `components/home/ClinicStory.tsx`,
+  `components/home/ClinicStory.test.tsx`,
+  `components/home/clinicStory.module.css`,
+  `components/home/jaw/JawZoneOverlay.tsx`,
+  `components/home/jaw/JawZoneOverlay.test.tsx`, and
+  `components/home/jaw/jawExperience.module.css` for the approved inline
+  gallery-first pain-map refinement. Media, routes, typed content, analytics,
+  booking form, header, patients section, and gallery data stay out of scope.
 
 - Codex reserves the jaw source/media pipeline, `components/home/ClinicStory*`,
   `components/home/clinicStory*`, `components/home/jaw/**`,
