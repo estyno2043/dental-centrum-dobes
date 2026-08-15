@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
 } from "react";
@@ -31,12 +32,19 @@ type JawSurfaceId =
 
 type InteractiveZoneId = Extract<JawZoneId, "front" | "premolar" | "molar" | "gum">;
 
-type Point = readonly [number, number];
-
 type Surface = Readonly<{
   id: JawSurfaceId;
   zone: InteractiveZoneId;
-  points: readonly Point[];
+  path: string;
+  revealIndex: number;
+}>;
+
+type ZoneMarker = Readonly<{
+  zone: InteractiveZoneId;
+  anchor: readonly [number, number];
+  leader: string;
+  label: readonly [number, number];
+  width: number;
   revealIndex: number;
 }>;
 
@@ -46,62 +54,95 @@ type OverlayState = Readonly<{
   mode: "desktop" | "mobile";
 }>;
 
+export type JawMapPresentation = "hidden" | "tease" | "reveal" | "interactive";
+
 export type JawZoneOverlayProps = Readonly<{
   analyticsConsent: boolean;
-  interactive: boolean;
   exactEndDrawn: boolean;
+  presentation: JawMapPresentation;
   reducedMotion: boolean;
-  revealStartedAt?: number;
   visible: boolean;
 }>;
 
 const MASTER_WIDTH = 1920;
 const MASTER_HEIGHT = 1080;
-const REVEAL_DELAY_MS = 540;
-const REVEAL_TRANSITION_MS = 180;
-const ACTIVATION_DELAY_MS = REVEAL_DELAY_MS + REVEAL_TRANSITION_MS;
 
 const SURFACES: readonly Surface[] = [
   {
     id: "front",
     zone: "front",
-    points: [[790 / MASTER_WIDTH, 350 / MASTER_HEIGHT], [1130 / MASTER_WIDTH, 350 / MASTER_HEIGHT], [1150 / MASTER_WIDTH, 710 / MASTER_HEIGHT], [770 / MASTER_WIDTH, 710 / MASTER_HEIGHT]],
+    path: "M 770 410 C 825 365 1095 365 1150 410 C 1160 490 1160 635 1140 700 C 1045 735 875 735 780 700 C 760 625 760 490 770 410 Z",
     revealIndex: 0,
   },
   {
     id: "premolar-left",
     zone: "premolar",
-    points: [[690 / MASTER_WIDTH, 365 / MASTER_HEIGHT], [805 / MASTER_WIDTH, 350 / MASTER_HEIGHT], [780 / MASTER_WIDTH, 720 / MASTER_HEIGHT], [660 / MASTER_WIDTH, 740 / MASTER_HEIGHT]],
+    path: "M 655 405 C 690 380 765 375 810 395 C 805 500 800 625 780 720 C 735 745 675 745 640 710 C 635 610 640 495 655 405 Z",
     revealIndex: 1,
   },
   {
     id: "premolar-right",
     zone: "premolar",
-    points: [[1115 / MASTER_WIDTH, 350 / MASTER_HEIGHT], [1230 / MASTER_WIDTH, 365 / MASTER_HEIGHT], [1260 / MASTER_WIDTH, 740 / MASTER_HEIGHT], [1140 / MASTER_WIDTH, 720 / MASTER_HEIGHT]],
+    path: "M 1110 395 C 1155 375 1230 380 1265 405 C 1280 495 1285 610 1280 710 C 1245 745 1185 745 1140 720 C 1120 625 1115 500 1110 395 Z",
     revealIndex: 1,
   },
   {
     id: "molar-left",
     zone: "molar",
-    points: [[620 / MASTER_WIDTH, 385 / MASTER_HEIGHT], [700 / MASTER_WIDTH, 365 / MASTER_HEIGHT], [660 / MASTER_WIDTH, 740 / MASTER_HEIGHT], [605 / MASTER_WIDTH, 715 / MASTER_HEIGHT]],
+    path: "M 545 435 C 575 400 645 390 680 410 C 675 500 670 610 650 700 C 620 730 565 720 535 680 C 525 600 530 505 545 435 Z",
     revealIndex: 2,
   },
   {
     id: "molar-right",
     zone: "molar",
-    points: [[1220 / MASTER_WIDTH, 365 / MASTER_HEIGHT], [1300 / MASTER_WIDTH, 385 / MASTER_HEIGHT], [1315 / MASTER_WIDTH, 715 / MASTER_HEIGHT], [1260 / MASTER_WIDTH, 740 / MASTER_HEIGHT]],
+    path: "M 1240 410 C 1275 390 1345 400 1375 435 C 1390 505 1395 600 1385 680 C 1355 720 1300 730 1270 700 C 1250 610 1245 500 1240 410 Z",
     revealIndex: 2,
   },
   {
     id: "gum-upper",
     zone: "gum",
-    points: [[620 / MASTER_WIDTH, 300 / MASTER_HEIGHT], [1300 / MASTER_WIDTH, 300 / MASTER_HEIGHT], [1270 / MASTER_WIDTH, 405 / MASTER_HEIGHT], [650 / MASTER_WIDTH, 405 / MASTER_HEIGHT]],
+    path: "M 560 305 C 690 250 1230 250 1360 305 C 1345 350 1315 385 1270 410 C 1120 365 800 365 650 410 C 605 385 575 350 560 305 Z",
     revealIndex: 3,
   },
   {
     id: "gum-lower",
     zone: "gum",
-    points: [[620 / MASTER_WIDTH, 675 / MASTER_HEIGHT], [1300 / MASTER_WIDTH, 675 / MASTER_HEIGHT], [1260 / MASTER_WIDTH, 800 / MASTER_HEIGHT], [660 / MASTER_WIDTH, 800 / MASTER_HEIGHT]],
+    path: "M 600 690 C 745 735 1175 735 1320 690 C 1310 755 1275 805 1225 835 C 1060 875 860 875 695 835 C 645 805 610 755 600 690 Z",
+    revealIndex: 3,
+  },
+] as const;
+
+const MARKERS: readonly ZoneMarker[] = [
+  {
+    zone: "front",
+    anchor: [960, 470],
+    leader: "M 960 292 C 960 340 960 405 960 470",
+    label: [960, 255],
+    width: 210,
+    revealIndex: 0,
+  },
+  {
+    zone: "premolar",
+    anchor: [720, 535],
+    leader: "M 480 525 C 565 525 635 530 720 535",
+    label: [385, 525],
+    width: 230,
+    revealIndex: 1,
+  },
+  {
+    zone: "molar",
+    anchor: [1300, 555],
+    leader: "M 1535 555 C 1455 555 1380 555 1300 555",
+    label: [1625, 555],
+    width: 190,
+    revealIndex: 2,
+  },
+  {
+    zone: "gum",
+    anchor: [960, 745],
+    leader: "M 960 880 C 960 835 960 790 960 745",
+    label: [960, 920],
+    width: 170,
     revealIndex: 3,
   },
 ] as const;
@@ -124,28 +165,6 @@ function getMode(): OverlayState["mode"] {
     : "desktop";
 }
 
-function pointsToString(points: readonly Point[]): string {
-  return points
-    .map(([x, y]) => `${Math.round(x * MASTER_WIDTH)},${Math.round(y * MASTER_HEIGHT)}`)
-    .join(" ");
-}
-
-function boxFor(points: readonly Point[]): CSSProperties {
-  const xs = points.map(([x]) => x);
-  const ys = points.map(([, y]) => y);
-  const left = Math.min(...xs);
-  const top = Math.min(...ys);
-  const width = Math.max(...xs) - left;
-  const height = Math.max(...ys) - top;
-
-  return {
-    left: `${left * 100}%`,
-    top: `${top * 100}%`,
-    width: `${width * 100}%`,
-    height: `${height * 100}%`,
-  };
-}
-
 function zoneHref(zone: JawZone, problemId: string): string {
   const problem = zone.problems.find((candidate) => candidate.id === problemId);
   return problem ? `${zone.route}?problem=${encodeURIComponent(problem.id)}` : zone.route;
@@ -155,43 +174,36 @@ function classNames(...values: Array<string | false | undefined>): string {
   return values.filter(Boolean).join(" ");
 }
 
+function directLabel(zone: JawZone): string {
+  return zone.id === "missing" ? "Chýba mi zub" : zone.label;
+}
+
 export function JawZoneOverlay({
   analyticsConsent,
-  interactive,
   exactEndDrawn,
+  presentation,
   reducedMotion,
-  revealStartedAt,
   visible,
 }: JawZoneOverlayProps) {
   const rootRef = useRef<HTMLDivElement>(null);
-  const headingRef = useRef<HTMLHeadingElement>(null);
-  const triggerRefs = useRef<Partial<Record<JawSurfaceId, HTMLButtonElement>>>({});
+  const triggerRefs = useRef<Partial<Record<JawSurfaceId, SVGPathElement>>>({});
   const activeSurfaceRef = useRef<JawSurfaceId | null>(null);
   const skipRestoredFocusRef = useRef(false);
-  const closeTimeoutRef = useRef<number | undefined>(undefined);
-  const [revealSignal, setRevealSignal] = useState(() => ({
-    startedAt: revealStartedAt,
-    complete: revealStartedAt === undefined,
-  }));
   const [state, setState] = useState<OverlayState>(() => ({
     openZone: null,
     pinned: false,
     mode: getMode(),
   }));
-  const gateReady = visible && interactive && exactEndDrawn;
 
-  const revealComplete = reducedMotion || revealStartedAt === undefined
-    || (revealSignal.startedAt === revealStartedAt && revealSignal.complete);
-  const enabled = gateReady && revealComplete;
-  const visibleState = gateReady ? state : { ...state, openZone: null, pinned: false };
+  const effectivePresentation: JawMapPresentation = reducedMotion
+    ? "interactive"
+    : presentation;
+  const endpointReady = reducedMotion || exactEndDrawn;
+  const artworkVisible = visible && endpointReady && effectivePresentation !== "hidden";
+  const mapVisible = artworkVisible && effectivePresentation !== "tease";
+  const enabled = mapVisible && effectivePresentation === "interactive";
+  const visibleState = enabled ? state : { ...state, openZone: null, pinned: false };
   const activeZone = visibleState.openZone ? ZONES[visibleState.openZone] : undefined;
-
-  const clearScheduledClose = useCallback(() => {
-    if (closeTimeoutRef.current !== undefined) {
-      window.clearTimeout(closeTimeoutRef.current);
-      closeTimeoutRef.current = undefined;
-    }
-  }, []);
 
   const focusTrigger = useCallback((surfaceId: JawSurfaceId | null) => {
     triggerRefs.current[surfaceId ?? "front"]?.focus();
@@ -199,7 +211,6 @@ export function JawZoneOverlay({
 
   const close = useCallback(
     (restoreFocus: boolean) => {
-      clearScheduledClose();
       const surfaceId = activeSurfaceRef.current;
       activeSurfaceRef.current = null;
       setState((current) => ({ ...current, openZone: null, pinned: false }));
@@ -208,32 +219,19 @@ export function JawZoneOverlay({
         focusTrigger(surfaceId);
       }
     },
-    [clearScheduledClose, focusTrigger],
+    [focusTrigger],
   );
 
   useEffect(() => {
-    if (!gateReady) {
-      const focusedInside = rootRef.current?.contains(document.activeElement) ?? false;
-      clearScheduledClose();
-      activeSurfaceRef.current = null;
-      if (focusedInside) headingRef.current?.focus();
-      const timeout = window.setTimeout(() => {
-        setState((current) => ({ ...current, openZone: null, pinned: false }));
-      }, 0);
-      return () => window.clearTimeout(timeout);
-    }
-  }, [clearScheduledClose, gateReady]);
-
-  useEffect(() => {
-    if (!gateReady || reducedMotion || revealStartedAt === undefined) return;
-
-    const remaining = Math.max(0, ACTIVATION_DELAY_MS - (Date.now() - revealStartedAt));
-    const timeout = window.setTimeout(
-      () => setRevealSignal({ startedAt: revealStartedAt, complete: true }),
-      remaining,
-    );
-    return () => window.clearTimeout(timeout);
-  }, [gateReady, reducedMotion, revealStartedAt]);
+    if (enabled) return;
+    const focusedInside = rootRef.current?.contains(document.activeElement) ?? false;
+    activeSurfaceRef.current = null;
+    if (focusedInside) rootRef.current?.focus();
+    const timer = window.setTimeout(() => {
+      setState((current) => ({ ...current, openZone: null, pinned: false }));
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [enabled]);
 
   useEffect(() => {
     const media = window.matchMedia("(max-width: 767px)");
@@ -242,13 +240,11 @@ export function JawZoneOverlay({
       const focusedInside = rootRef.current?.contains(document.activeElement) ?? false;
       activeSurfaceRef.current = null;
       setState((current) => ({ ...current, mode: nextMode, openZone: null, pinned: false }));
-      if (focusedInside) headingRef.current?.focus();
+      if (focusedInside) rootRef.current?.focus();
     };
     media.addEventListener("change", onChange);
     return () => media.removeEventListener("change", onChange);
   }, []);
-
-  useEffect(() => () => clearScheduledClose(), [clearScheduledClose]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -260,23 +256,34 @@ export function JawZoneOverlay({
 
   const open = useCallback((surface: Surface, pin: boolean) => {
     if (!enabled) return;
-    clearScheduledClose();
     activeSurfaceRef.current = surface.id;
-    setState((current) => ({ ...current, openZone: surface.zone, pinned: pin || current.pinned }));
-  }, [clearScheduledClose, enabled]);
+    setState((current) => ({
+      ...current,
+      openZone: surface.zone,
+      pinned: pin || current.pinned,
+    }));
+  }, [enabled]);
 
-  const scheduleUnpinnedClose = useCallback((event: ReactPointerEvent<HTMLElement>) => {
+  const closeUnpinned = useCallback((event: ReactPointerEvent<SVGPathElement | HTMLElement>) => {
     const related = event.relatedTarget;
     if (related instanceof Node && rootRef.current?.contains(related)) return;
-    clearScheduledClose();
     setState((current) => current.pinned ? current : { ...current, openZone: null });
-  }, [clearScheduledClose]);
+  }, []);
 
-  const onZoneClick = useCallback((surface: Surface) => {
+  const activateZone = useCallback((surface: Surface) => {
     if (!enabled) return;
     open(surface, true);
     emitJawAnalytics({ consent: analyticsConsent, event: "jaw_zone_click", zone: surface.zone });
   }, [analyticsConsent, enabled, open]);
+
+  const onSurfaceKeyDown = useCallback((
+    event: ReactKeyboardEvent<SVGPathElement>,
+    surface: Surface,
+  ) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    activateZone(surface);
+  }, [activateZone]);
 
   const onDirectClick = useCallback((zone: JawZone, event: ReactMouseEvent<HTMLAnchorElement>) => {
     if (!enabled) {
@@ -288,23 +295,21 @@ export function JawZoneOverlay({
 
   const directLinks = useMemo(() => DIRECT_ZONES.map((zone) => (
     <a
-      aria-disabled={!enabled}
-      className={classNames(styles.directEntry, !enabled && styles.directEntryDisabled)}
+      className={styles.directEntry}
       href={zone.route}
       key={zone.id}
       onClick={(event) => onDirectClick(zone, event)}
-      tabIndex={enabled ? 0 : -1}
     >
-      {zone.label}
+      {directLabel(zone)}
     </a>
-  )), [enabled, onDirectClick]);
+  )), [onDirectClick]);
 
-  const card = activeZone ? (
+  const card = enabled && activeZone ? (
     <section
       aria-label={activeZone.label}
       className={classNames(styles.zoneCard, visibleState.mode === "mobile" && styles.zonePanel)}
-      onPointerEnter={clearScheduledClose}
-      onPointerLeave={scheduleUnpinnedClose}
+      onPointerEnter={() => undefined}
+      onPointerLeave={closeUnpinned}
       role={visibleState.mode === "mobile" ? "dialog" : "region"}
     >
       <div className={styles.cardTop}>
@@ -341,62 +346,125 @@ export function JawZoneOverlay({
   return (
     <div
       className={classNames(styles.zoneOverlay, !enabled && styles.zoneOverlayDisabled)}
+      data-presentation={artworkVisible ? effectivePresentation : "hidden"}
+      data-testid="jaw-zone-overlay"
       ref={rootRef}
+      tabIndex={-1}
     >
-      <h2 className={styles.zoneHeading} ref={headingRef} tabIndex={-1}>
-        Kde vás to trápi?
-      </h2>
-      <p className={styles.zonePrompt}>Vyberte oblasť, ktorá vás trápi.</p>
-      <div className={styles.zoneArtboard} data-testid="jaw-artboard">
-        <svg aria-hidden="true" className={styles.zoneArtwork} viewBox={`0 0 ${MASTER_WIDTH} ${MASTER_HEIGHT}`}>
-          {SURFACES.map((surface) => (
-            <polygon
-              className={classNames(
-                styles.zoneSurface,
-                visibleState.openZone === surface.zone && styles.zoneSurfaceSelected,
-              )}
-              data-zone={surface.zone}
-              data-testid="jaw-hit-surface"
-              key={surface.id}
-              points={pointsToString(surface.points)}
-              style={{ "--zone-index": surface.revealIndex } as CSSProperties}
-            />
-          ))}
-        </svg>
-        {SURFACES.map((surface) => (
-          <button
-            aria-disabled={!enabled}
-            aria-pressed={visibleState.openZone === surface.zone}
-            className={classNames(styles.zoneControl, !enabled && styles.zoneControlDisabled)}
-            data-testid={`jaw-hit-${surface.id}`}
-            data-zone={surface.zone}
-            disabled={!enabled}
-            key={surface.id}
-            onBlur={() => {
-              if (!state.pinned) setState((current) => ({ ...current, openZone: null }));
-            }}
-            onClick={() => onZoneClick(surface)}
-            onFocus={() => {
-              if (skipRestoredFocusRef.current) {
-                skipRestoredFocusRef.current = false;
-                return;
-              }
-              open(surface, false);
-            }}
-            onPointerEnter={() => open(surface, false)}
-            onPointerLeave={scheduleUnpinnedClose}
-            ref={(element) => {
-              triggerRefs.current[surface.id] = element ?? undefined;
-            }}
-            style={{ ...boxFor(surface.points), "--zone-index": surface.revealIndex } as CSSProperties}
-            tabIndex={enabled ? 0 : -1}
-            type="button"
+      {mapVisible ? (
+        <>
+          <h2 className={styles.zoneHeading}>Kde vás to trápi?</h2>
+          <p className={styles.zonePrompt}>Kliknite na miesto a vyberte, čo cítite.</p>
+        </>
+      ) : null}
+      {artworkVisible ? (
+        <div className={styles.zoneArtboard} data-testid="jaw-artboard">
+          <svg
+            className={styles.zoneArtwork}
+            viewBox={`0 0 ${MASTER_WIDTH} ${MASTER_HEIGHT}`}
           >
-            <span>{ZONES[surface.zone].label}</span>
-          </button>
-        ))}
-      </div>
-      <div className={styles.directEntries}>{directLinks}</div>
+            <defs>
+              <linearGradient id="jaw-zone-fill" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0" stopColor="#efd8a3" />
+                <stop offset="1" stopColor="#d68f89" />
+              </linearGradient>
+              <marker
+                id="jaw-arrowhead"
+                markerHeight="8"
+                markerWidth="8"
+                orient="auto"
+                refX="7"
+                refY="4"
+                viewBox="0 0 8 8"
+              >
+                <path d="M 0 0 L 8 4 L 0 8 Z" />
+              </marker>
+            </defs>
+            {SURFACES.map((surface) => (
+              <path
+                className={classNames(
+                  styles.zoneMask,
+                  visibleState.openZone === surface.zone && styles.zoneMaskSelected,
+                )}
+                d={surface.path}
+                data-testid={`jaw-mask-${surface.id}`}
+                data-zone={surface.zone}
+                key={`mask-${surface.id}`}
+                style={{ "--zone-index": surface.revealIndex } as CSSProperties}
+              />
+            ))}
+            {mapVisible ? MARKERS.map((marker) => (
+              <g
+                className={styles.zoneMarker}
+                data-active={visibleState.openZone === marker.zone}
+                key={marker.zone}
+                style={{ "--zone-index": marker.revealIndex } as CSSProperties}
+              >
+                <path
+                  className={styles.zoneLeader}
+                  d={marker.leader}
+                  data-testid={`jaw-leader-${marker.zone}`}
+                  markerEnd="url(#jaw-arrowhead)"
+                />
+                <circle
+                  className={styles.zoneAnchor}
+                  cx={marker.anchor[0]}
+                  cy={marker.anchor[1]}
+                  data-testid={`jaw-anchor-${marker.zone}`}
+                  r="8"
+                />
+                <g
+                  className={styles.zoneLabel}
+                  data-testid={`jaw-zone-label-${marker.zone}`}
+                  transform={`translate(${marker.label[0]} ${marker.label[1]})`}
+                >
+                  <rect height="54" rx="27" width={marker.width} x={-marker.width / 2} y="-27" />
+                  <text dominantBaseline="middle" textAnchor="middle" y="1">
+                    {ZONES[marker.zone].label}
+                  </text>
+                </g>
+              </g>
+            )) : null}
+            {SURFACES.map((surface) => (
+              <path
+                aria-hidden={!enabled}
+                aria-label={enabled ? ZONES[surface.zone].label : undefined}
+                aria-pressed={enabled ? visibleState.openZone === surface.zone : undefined}
+                className={styles.zoneHit}
+                d={surface.path}
+                data-testid={`jaw-hit-${surface.id}`}
+                data-zone={surface.zone}
+                key={`hit-${surface.id}`}
+                onBlur={() => {
+                  if (!state.pinned) setState((current) => ({ ...current, openZone: null }));
+                }}
+                onClick={() => activateZone(surface)}
+                onFocus={() => {
+                  if (skipRestoredFocusRef.current) {
+                    skipRestoredFocusRef.current = false;
+                    return;
+                  }
+                  open(surface, false);
+                }}
+                onKeyDown={(event) => onSurfaceKeyDown(event, surface)}
+                onPointerEnter={() => open(surface, false)}
+                onPointerLeave={closeUnpinned}
+                ref={(element) => {
+                  triggerRefs.current[surface.id] = element ?? undefined;
+                }}
+                role={enabled ? "button" : undefined}
+                tabIndex={enabled ? 0 : -1}
+              />
+            ))}
+          </svg>
+        </div>
+      ) : null}
+      {enabled ? (
+        <div className={styles.assistanceBar} data-testid="jaw-assistance">
+          <span>Nenašli ste miesto?</span>
+          {directLinks}
+        </div>
+      ) : null}
       {card}
       <p aria-live="polite" className={styles.zoneStatus}>
         {visibleState.pinned && activeZone ? `${activeZone.label}: vyberte problém.` : ""}

@@ -40,12 +40,12 @@ function changeViewport(mobile: boolean): void {
   });
 }
 
-function renderOverlay(overrides: Partial<React.ComponentProps<typeof JawZoneOverlay>> = {}) {
+function renderOverlay(overrides: Partial<JawZoneOverlayProps> = {}) {
   return render(
     <JawZoneOverlay
       analyticsConsent={false}
       exactEndDrawn
-      interactive
+      presentation="interactive"
       reducedMotion={false}
       visible
       {...overrides}
@@ -53,31 +53,85 @@ function renderOverlay(overrides: Partial<React.ComponentProps<typeof JawZoneOve
   );
 }
 
-describe("JawZoneOverlay", () => {
+describe("JawZoneOverlay pain map", () => {
   beforeEach(() => setViewport(false));
   afterEach(() => {
-    vi.useRealTimers();
     viewportListeners.clear();
     Object.defineProperty(window, "matchMedia", {
       configurable: true,
       value: originalMatchMedia,
     });
+    delete (window as Window & { dataLayer?: unknown }).dataLayer;
   });
 
-  it("maps seven visual surfaces onto four jaw zones with separate direct entries", () => {
+  it("teases anatomy without exposing heading controls or direct routes", () => {
+    const { container } = renderOverlay({ presentation: "tease" });
+
+    expect(screen.queryByRole("heading", { name: "Kde vás to trápi?" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+    expect(screen.getAllByTestId(/jaw-mask-/)).toHaveLength(7);
+    expect(container.querySelector('[data-presentation="tease"]')).toBeInTheDocument();
+  });
+
+  it("renders seven anatomical masks and four clear arrow labels without debug boxes", () => {
     const { container } = renderOverlay();
 
-    expect(screen.getAllByTestId("jaw-hit-surface")).toHaveLength(7);
-    expect(
-      screen.getAllByRole("button", { name: /Predné zuby|Črenové zuby|Stoličky|Ďasná/ }),
-    ).toHaveLength(7);
-    expect(screen.getByTestId("jaw-hit-premolar-left")).toHaveAttribute("data-zone", "premolar");
-    expect(screen.getByTestId("jaw-hit-premolar-right")).toHaveAttribute("data-zone", "premolar");
-    expect(screen.getByTestId("jaw-hit-molar-left")).toHaveAttribute("data-zone", "molar");
-    expect(screen.getByTestId("jaw-hit-molar-right")).toHaveAttribute("data-zone", "molar");
-    expect(screen.getByTestId("jaw-hit-gum-upper")).toHaveAttribute("data-zone", "gum");
-    expect(screen.getByTestId("jaw-hit-gum-lower")).toHaveAttribute("data-zone", "gum");
-    expect(screen.getByRole("link", { name: "Chýbajúci zub" })).toHaveAttribute(
+    expect(screen.getAllByTestId(/jaw-mask-/)).toHaveLength(7);
+    expect(screen.getAllByTestId(/jaw-hit-/)).toHaveLength(7);
+    expect(screen.getAllByTestId(/jaw-anchor-/)).toHaveLength(4);
+    const leaders = screen.getAllByTestId(/jaw-leader-/);
+    expect(leaders).toHaveLength(4);
+    expect(leaders.every((leader) => leader.getAttribute("marker-end") === "url(#jaw-arrowhead)"))
+      .toBe(true);
+    expect(screen.getAllByTestId(/jaw-zone-label-/)).toHaveLength(4);
+    expect(container.querySelectorAll("polygon")).toHaveLength(0);
+    expect(container.querySelector('[data-testid="jaw-debug-rect"]')).not.toBeInTheDocument();
+    expect(screen.getAllByTestId(/jaw-mask-/).every((mask) => mask.getAttribute("d")?.includes("C")))
+      .toBe(true);
+  });
+
+  it("opens patient-language problems from hover focus and tap", async () => {
+    const user = userEvent.setup();
+    renderOverlay();
+    const molar = screen.getByTestId("jaw-hit-molar-left");
+
+    fireEvent.pointerEnter(molar);
+    expect(screen.getByRole("region", { name: "Stoličky" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Bolí ma pri hryzení" })).toBeVisible();
+    fireEvent.pointerLeave(molar);
+    expect(screen.queryByRole("region", { name: "Stoličky" })).not.toBeInTheDocument();
+
+    fireEvent.focus(molar);
+    expect(screen.getByRole("region", { name: "Stoličky" })).toBeVisible();
+    await user.click(molar);
+    fireEvent.pointerLeave(molar);
+    expect(screen.getByRole("region", { name: "Stoličky" })).toBeVisible();
+  });
+
+  it("uses existing problem routes and consent-gated analytics", async () => {
+    const dataLayer = { push: vi.fn() };
+    Object.assign(window, { dataLayer });
+    const user = userEvent.setup();
+    renderOverlay({ analyticsConsent: true });
+
+    await user.click(screen.getByTestId("jaw-hit-molar-right"));
+    expect(dataLayer.push).toHaveBeenCalledWith({
+      event: "jaw_zone_click",
+      jaw_zone: "molar",
+    });
+    expect(screen.getByRole("link", { name: "Pulzujúca bolesť" })).toHaveAttribute(
+      "href",
+      "/problemy/stolicky?problem=pulsing",
+    );
+  });
+
+  it("moves direct entries into subtle bottom-centre assistance bar", () => {
+    renderOverlay();
+
+    const assistance = screen.getByTestId("jaw-assistance");
+    expect(assistance).toHaveTextContent("Nenašli ste miesto?");
+    expect(screen.getByRole("link", { name: "Chýba mi zub" })).toHaveAttribute(
       "href",
       "/problemy/chybajuci-zub",
     );
@@ -85,125 +139,41 @@ describe("JawZoneOverlay", () => {
       "href",
       "/problemy/neviem",
     );
-    const artboard = screen.getByTestId("jaw-artboard");
-    expect(artboard.querySelector("svg")).toBeTruthy();
-    expect(artboard.querySelectorAll("button")).toHaveLength(7);
-    expect(container.querySelector("svg")?.parentElement).toBe(artboard);
+    expect(assistance).toHaveClass(styles.assistanceBar);
   });
 
-  it("keeps SVG and hit controls in one centered 16:9 artboard on portrait screens", () => {
-    setViewport(true);
-    renderOverlay();
+  it("keeps reveal labels inert until final interaction gate", () => {
+    const { container } = renderOverlay({ presentation: "reveal" });
 
-    const artboard = screen.getByTestId("jaw-artboard");
-    expect(artboard).toHaveClass(styles.zoneArtboard);
-    expect(artboard.querySelector("svg")?.parentElement).toBe(artboard);
-    expect(
-      screen.getAllByRole("button", { name: /Predné zuby|Črenové zuby|Stoličky|Ďasná/ })
-        .every((control) => control.parentElement === artboard),
-    ).toBe(true);
-    expect(cssText).toMatch(/\.zoneArtboard[\s\S]*aspect-ratio:\s*16\s*\/\s*9/);
+    expect(screen.getByRole("heading", { name: "Kde vás to trápi?" })).toBeVisible();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+    expect(container.querySelector('[data-presentation="reveal"]')).toBeInTheDocument();
   });
 
-  it("keeps motion-time controls unavailable", () => {
-    renderOverlay({ interactive: false });
+  it("requires visibility and exact final frame at public boundary", () => {
+    const { rerender } = renderOverlay({ exactEndDrawn: false });
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
 
-    for (const control of screen.getAllByRole("button")) {
-      expect(control).toHaveAttribute("aria-disabled", "true");
-      expect(control).toHaveAttribute("tabindex", "-1");
-      expect(control).toHaveClass(styles.zoneControlDisabled);
-    }
-    for (const entry of [
-      screen.getByRole("link", { name: "Chýbajúci zub" }),
-      screen.getByRole("link", { name: "Neviem / bolí to celé" }),
-    ]) {
-      expect(entry).toHaveAttribute("aria-disabled", "true");
-      expect(entry).toHaveAttribute("tabindex", "-1");
-      expect(fireEvent.click(entry)).toBe(false);
-    }
+    rerender(
+      <JawZoneOverlay
+        analyticsConsent={false}
+        exactEndDrawn
+        presentation="interactive"
+        reducedMotion={false}
+        visible={false}
+      />,
+    );
+    expect(screen.queryByRole("heading", { name: "Kde vás to trápi?" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
   });
 
-  it("requires exact end, visibility, and reduced-motion props at its public boundary", () => {
-    const props = {
-      analyticsConsent: false,
-      exactEndDrawn: true,
-      interactive: true,
-      reducedMotion: false,
-      visible: true,
-    } satisfies JawZoneOverlayProps;
-
-    expect(props.exactEndDrawn).toBe(true);
-
-    // @ts-expect-error parent must provide final-frame proof; fail-open is forbidden.
-    const missingExactEnd: JawZoneOverlayProps = {
-      analyticsConsent: false,
-      interactive: true,
-      reducedMotion: false,
-      visible: true,
-    };
-    expect(missingExactEnd).toBeDefined();
-  });
-
-  it("opens desktop card on hover and focus then pins it on click", async () => {
+  it("closes pinned card on Escape and restores exact SVG trigger focus", async () => {
     const user = userEvent.setup();
     renderOverlay();
-    const front = screen.getByRole("button", { name: "Predné zuby" });
-
-    fireEvent.pointerEnter(front);
-    expect(screen.getByRole("region", { name: "Predné zuby" })).toBeVisible();
-    fireEvent.pointerLeave(front);
-    expect(screen.queryByRole("region", { name: "Predné zuby" })).not.toBeInTheDocument();
-
-    await user.tab();
-    expect(screen.getByRole("region", { name: "Predné zuby" })).toBeVisible();
+    const front = screen.getByTestId("jaw-hit-front");
     await user.click(front);
-    fireEvent.pointerLeave(front);
-    expect(screen.getByRole("region", { name: "Predné zuby" })).toBeVisible();
-  });
-
-  it("keeps hover card open while pointer enters card", () => {
-    renderOverlay();
-    const front = screen.getByRole("button", { name: "Predné zuby" });
-    fireEvent.pointerEnter(front);
-    const card = screen.getByRole("region", { name: "Predné zuby" });
-
-    fireEvent.pointerEnter(card);
-    fireEvent.pointerLeave(front, { relatedTarget: card });
-
-    expect(screen.getByRole("region", { name: "Predné zuby" })).toBeVisible();
-  });
-
-  it("uses validated problem route without navigation interception", async () => {
-    const user = userEvent.setup();
-    renderOverlay({ analyticsConsent: true });
-    await user.click(screen.getByTestId("jaw-hit-molar-left"));
-    const problem = screen.getByRole("link", { name: "Pulzujúca bolesť" });
-
-    expect(problem).toHaveAttribute("href", "/problemy/stolicky?problem=pulsing");
-  });
-
-  it("records direct-zone activation without blocking navigation when consent exists", () => {
-    const dataLayer = { push: vi.fn() };
-    Object.assign(window, { dataLayer });
-    renderOverlay({ analyticsConsent: true });
-    const direct = screen.getByRole("link", { name: "Chýbajúci zub" });
-    direct.addEventListener("click", (event) => event.preventDefault());
-
-    fireEvent.click(direct);
-
-    expect(dataLayer.push).toHaveBeenCalledWith({
-      event: "jaw_zone_click",
-      jaw_zone: "missing",
-    });
-    delete (window as Window & { dataLayer?: unknown }).dataLayer;
-  });
-
-  it("closes a pinned card on Escape and restores focus to trigger", async () => {
-    const user = userEvent.setup();
-    renderOverlay();
-    const front = screen.getByRole("button", { name: "Predné zuby" });
-    await user.click(front);
-    expect(screen.getByRole("region", { name: "Predné zuby" })).toBeVisible();
 
     await user.keyboard("{Escape}");
 
@@ -211,134 +181,64 @@ describe("JawZoneOverlay", () => {
     expect(front).toHaveFocus();
   });
 
-  it("closes immediately and returns focus to safe heading when interaction reverses", async () => {
+  it("closes immediately and focuses safe root when presentation reverses", async () => {
     const user = userEvent.setup();
     const { rerender } = renderOverlay();
-    const front = screen.getByRole("button", { name: "Predné zuby" });
-    await user.click(front);
-    front.focus();
+    await user.click(screen.getByTestId("jaw-hit-front"));
 
     rerender(
       <JawZoneOverlay
         analyticsConsent={false}
         exactEndDrawn
-        interactive={false}
+        presentation="tease"
         reducedMotion={false}
         visible
       />,
     );
 
     expect(screen.queryByRole("region", { name: "Predné zuby" })).not.toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Kde vás to trápi?" })).toHaveFocus();
+    expect(screen.getByTestId("jaw-zone-overlay")).toHaveFocus();
   });
 
-  it("waits for exact endpoint and reveal interval before enabling controls", () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date("2026-08-15T12:00:00.000Z"));
-    const startedAt = Date.now();
-    const { rerender } = renderOverlay({ exactEndDrawn: true, revealStartedAt: startedAt });
-    expect(screen.getByRole("button", { name: "Predné zuby" })).toHaveAttribute(
-      "aria-disabled",
-      "true",
-    );
-
-    act(() => vi.advanceTimersByTime(719));
-    expect(screen.getByRole("button", { name: "Predné zuby" })).toHaveAttribute(
-      "aria-disabled",
-      "true",
-    );
-    act(() => vi.advanceTimersByTime(1));
-    expect(screen.getByRole("button", { name: "Predné zuby" })).toHaveAttribute(
-      "aria-disabled",
-      "false",
-    );
-
-    rerender(
-      <JawZoneOverlay
-        analyticsConsent={false}
-        exactEndDrawn={false}
-        interactive
-        reducedMotion={false}
-        revealStartedAt={startedAt}
-        visible
-      />,
-    );
-    expect(screen.getByRole("button", { name: "Predné zuby" })).toHaveAttribute(
-      "aria-disabled",
-      "true",
-    );
-  });
-
-  it("opens compact mobile panel and returns focus after explicit close", async () => {
-    setViewport(true);
+  it("opens compact mobile problem sheet and reconciles viewport changes", async () => {
     const user = userEvent.setup();
     renderOverlay();
     const gum = screen.getByTestId("jaw-hit-gum-upper");
     await user.click(gum);
+    expect(screen.getByRole("region", { name: "Ďasná" })).toBeVisible();
 
+    changeViewport(true);
+    expect(screen.queryByRole("region", { name: "Ďasná" })).not.toBeInTheDocument();
+    await user.click(gum);
     expect(screen.getByRole("dialog", { name: "Ďasná" })).toBeVisible();
     await user.click(screen.getByRole("button", { name: "Zavrieť" }));
-
-    expect(screen.queryByRole("dialog", { name: "Ďasná" })).not.toBeInTheDocument();
     expect(gum).toHaveFocus();
   });
 
-  it("enables reduced motion immediately without waiting for stagger", () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date("2026-08-15T12:00:00.000Z"));
-    renderOverlay({ reducedMotion: true, revealStartedAt: Date.now() });
+  it("shows final interactive map immediately for reduced motion", () => {
+    renderOverlay({
+      exactEndDrawn: false,
+      presentation: "hidden",
+      reducedMotion: true,
+    });
 
-    expect(screen.getByRole("button", { name: "Predné zuby" })).toHaveAttribute(
-      "aria-disabled",
-      "false",
-    );
+    expect(screen.getByRole("heading", { name: "Kde vás to trápi?" })).toBeVisible();
+    expect(screen.getAllByRole("button", {
+      name: /Predné zuby|Črenové zuby|Stoličky|Ďasná/,
+    })).toHaveLength(7);
+    expect(screen.getByRole("link", { name: "Chýba mi zub" })).toBeVisible();
   });
 
-  it("closes and disables all entries when parent hides overlay", async () => {
-    const user = userEvent.setup();
-    const { rerender } = renderOverlay();
-    const front = screen.getByRole("button", { name: "Predné zuby" });
-    await user.click(front);
-    front.focus();
-
-    rerender(
-      <JawZoneOverlay
-        analyticsConsent={false}
-        exactEndDrawn
-        interactive
-        reducedMotion={false}
-        visible={false}
-      />,
-    );
-
-    expect(screen.queryByRole("region", { name: "Predné zuby" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Predné zuby" })).toHaveAttribute(
-      "aria-disabled",
-      "true",
-    );
-    expect(screen.getByRole("link", { name: "Chýbajúci zub" })).toHaveAttribute(
-      "tabindex",
-      "-1",
-    );
-    expect(screen.getByRole("heading", { name: "Kde vás to trápi?" })).toHaveFocus();
-  });
-
-  it("reconciles desktop and mobile mode changes without leaving card state open", async () => {
-    const user = userEvent.setup();
+  it("keeps one centered 16:9 artboard and pop-motion contracts", () => {
     renderOverlay();
-    const front = screen.getByRole("button", { name: "Predné zuby" });
-    await user.click(front);
-    expect(screen.getByRole("region", { name: "Predné zuby" })).toBeVisible();
-
-    changeViewport(true);
-
-    expect(screen.queryByRole("region", { name: "Predné zuby" })).not.toBeInTheDocument();
-    await user.click(front);
-    expect(screen.getByRole("dialog", { name: "Predné zuby" })).toBeVisible();
-  });
-
-  it("contains no arrow or leader CSS", () => {
-    expect(styles).not.toHaveProperty("leader");
-    expect(cssText).not.toMatch(/\.leader|\bline\b|arrow/i);
+    expect(screen.getByTestId("jaw-artboard")).toHaveClass(styles.zoneArtboard);
+    expect(cssText).toMatch(/\.zoneArtboard[\s\S]*aspect-ratio:\s*16\s*\/\s*9/);
+    expect(cssText).toMatch(/@keyframes\s+zone-pop/);
+    expect(cssText).toMatch(/@keyframes\s+zone-tease/);
+    expect(cssText).toMatch(/@keyframes\s+zone-heading-pop[\s\S]*translate\(-50%,\s*0\)/);
+    expect(cssText).toMatch(/@keyframes\s+assistance-pop[\s\S]*translateX\(-50%\)/);
+    expect(cssText).toMatch(/\.zoneHeading[\s\S]*animation:\s*zone-heading-pop/);
+    expect(cssText).toMatch(/\.assistanceBar[\s\S]*animation:\s*assistance-pop/);
+    expect(cssText).toMatch(/\.assistanceBar[\s\S]*left:\s*50%/);
   });
 });
