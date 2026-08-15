@@ -5,11 +5,11 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Task 8 complete — static jaw problem routes and appointment flow
+- Status: Task 9 in progress — integrate approved WebP jaw sequence and remove legacy MP4 runtime
 - Owner: Codex
 - Branch: `codex/higgsfield-jaw-sequence`
-- Base: `8a0b802`
-- Task: build six static demo routes and a Netlify-compatible appointment form
+- Base: `9e9cb08`
+- Task: preserve complete semantic gallery, integrate sticky handoff/sequence/zones, then delete replaced video runtime
 
 ## File Reservations
 
@@ -23,6 +23,16 @@ update it before taking or handing off work.
   legacy call shape until Task 9; completed loader, Canvas sequence, gallery,
   drift, header, patients, media pipeline, and other app files remain protected
   and out of scope.
+
+- Task 9 reserves `components/home/ClinicStory.tsx`, `ClinicStory.test.tsx`,
+  `clinicStory.module.css`, `clinicStoryMotion.ts`, `clinicStoryMotion.test.ts`,
+  `app/page.test.tsx`, and exact legacy deletes: `jawSeekQueue.ts`,
+  `jawSeekQueue.test.ts`, `jawStoryMotion.ts`, `jawStoryMotion.test.ts`,
+  `jawTracking.ts`, `jawTracking.test.ts`, `scripts/encode-jaw-story.sh`, and
+  every file under `public/media/jaw-story/`. Task 9 may consume but must not
+  edit current gallery content, jaw sequence player/overlay, routes, header,
+  patients, or drift files. It must identify the handoff only as
+  `photoFrames.find((frame) => frame.id === "detail")`.
 
 > Task 1 approval gate passed on 2026-08-14. The user rejected the original
 > locked-prompt Seedance candidate for tooth deformation, explicitly directed
