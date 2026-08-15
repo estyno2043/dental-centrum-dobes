@@ -27,7 +27,7 @@ type SequenceMode = "fallback" | "loading" | "ready" | "reduced";
 type Runtime = Readonly<{
   loader: JawSequenceLoader;
   requestDraw: () => void;
-  syncVisible: () => void;
+  sync: () => void;
 }>;
 
 const dprCap: Readonly<Record<JawSequenceProfile, number>> = {
@@ -57,15 +57,37 @@ function drawContained(
   context.drawImage(frame.source, left, top, width, height);
 }
 
-export function JawFrameSequence({
+type AnimatedJawFrameSequenceProps = Omit<JawFrameSequenceProps, "reducedMotion">;
+
+function isAbortError(error: unknown): boolean {
+  return error instanceof Error && error.name === "AbortError";
+}
+
+function StaticJawFrame({ profile, mode }: Readonly<{ profile: JawSequenceProfile; mode: SequenceMode }>) {
+  const manifest = jawSequenceManifests[profile];
+  const source = mode === "fallback" || mode === "reduced"
+    ? manifest.frames[manifest.endFrame - 1].url
+    : manifest.frames[manifest.startFrame - 1].url;
+
+  return (
+    <img
+      className={styles.staticFrame}
+      src={source}
+      alt=""
+      aria-hidden="true"
+      hidden={mode === "ready"}
+    />
+  );
+}
+
+function AnimatedJawFrameSequence({
   profile,
   targetFrame,
   direction,
-  reducedMotion,
   visible,
   onExactFrameDrawn,
   onPermanentFailure,
-}: JawFrameSequenceProps) {
+}: AnimatedJawFrameSequenceProps) {
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const runtimeRef = useRef<Runtime | undefined>(undefined);
@@ -74,8 +96,9 @@ export function JawFrameSequence({
   const visibleRef = useRef(visible);
   const exactCallbackRef = useRef(onExactFrameDrawn);
   const failureCallbackRef = useRef(onPermanentFailure);
-  const [readyProfile, setReadyProfile] = useState<JawSequenceProfile | undefined>(undefined);
-  const [failedProfile, setFailedProfile] = useState<JawSequenceProfile | undefined>(undefined);
+  const lastExactFrameRef = useRef<number | undefined>(undefined);
+  const [ready, setReady] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     targetRef.current = targetFrame;
@@ -86,24 +109,19 @@ export function JawFrameSequence({
   }, [direction, onExactFrameDrawn, onPermanentFailure, targetFrame, visible]);
 
   useEffect(() => {
-    if (reducedMotion) return;
-
     const manifest = jawSequenceManifests[profile];
     const stage = stageRef.current;
     const canvas = canvasRef.current;
     if (!stage || !canvas) return;
 
-    const loader = createJawSequenceLoader({
-      manifest,
-      cacheLimit: profile === "desktop" ? 12 : 8,
-      decode: createBrowserJawFrameDecoder(manifest),
-    });
     let disposed = false;
     let pageVisible = document.visibilityState !== "hidden";
     let hasSuccessfulDraw = false;
     let failures = 0;
     let failedPermanently = false;
     let rafId: number | undefined;
+    const indexByUrl = new Map<string, number>(manifest.frames.map((frame) => [frame.url, frame.index]));
+    const loaderRef = { current: undefined as JawSequenceLoader | undefined };
 
     const isActive = () => visibleRef.current && pageVisible && !failedPermanently;
     const updateCanvasSize = (width: number, height: number) => {
@@ -115,16 +133,33 @@ export function JawFrameSequence({
       canvas.width = backingWidth;
       canvas.height = backingHeight;
       hasSuccessfulDraw = false;
-      setReadyProfile((current) => (current === profile ? undefined : current));
+      setReady(false);
     };
 
     const markPermanentFailure = () => {
       if (failedPermanently) return;
       failedPermanently = true;
-      loader.setVisible(false);
-      setFailedProfile(profile);
+      loaderRef.current?.setVisible(false);
+      setFailed(true);
       failureCallbackRef.current();
     };
+
+    const reportRelevantFailure = (index: number, signal?: AbortSignal, error?: unknown) => {
+      const target = clampFrame(targetRef.current, manifest.frameCount);
+      if (disposed || !isActive() || signal?.aborted || isAbortError(error) || Math.abs(index - target) > 1) {
+        return;
+      }
+      failures += 1;
+      if (failures >= 3) markPermanentFailure();
+    };
+
+    const browserDecode = createBrowserJawFrameDecoder(manifest);
+    const decode = (url: string, signal: AbortSignal) =>
+      browserDecode(url, signal).catch((error: unknown) => {
+        const index = indexByUrl.get(url);
+        if (index !== undefined) reportRelevantFailure(index, signal, error);
+        throw error;
+      });
 
     const draw = () => {
       rafId = undefined;
@@ -136,29 +171,26 @@ export function JawFrameSequence({
       const context = canvas.getContext("2d");
       const isCurrentWindow = Math.abs(frame.index - target) <= 1;
       if (!context) {
-        if (isCurrentWindow) {
-          failures += 1;
-          if (failures >= 3) markPermanentFailure();
-        }
+        if (isCurrentWindow) reportRelevantFailure(frame.index);
         return;
       }
 
       try {
         drawContained(context, frame, canvas, manifest.width, manifest.height);
       } catch {
-        if (isCurrentWindow) {
-          failures += 1;
-          if (failures >= 3) markPermanentFailure();
-        }
+        if (isCurrentWindow) reportRelevantFailure(frame.index);
         return;
       }
 
       failures = 0;
       if (!hasSuccessfulDraw) {
         hasSuccessfulDraw = true;
-        setReadyProfile(profile);
+        setReady(true);
       }
-      if (exact && frame.index === target) exactCallbackRef.current(target);
+      if (exact && frame.index === target && lastExactFrameRef.current !== target) {
+        lastExactFrameRef.current = target;
+        exactCallbackRef.current(target);
+      }
     };
 
     const requestDraw = () => {
@@ -172,10 +204,11 @@ export function JawFrameSequence({
       if (!ranSynchronously) rafId = requestedId;
     };
 
-    const syncVisible = () => {
-      loader.setVisible(isActive());
-      if (isActive()) {
-        loader.setTarget(clampFrame(targetRef.current, manifest.frameCount), directionRef.current);
+    const sync = () => {
+      const active = isActive();
+      loaderRef.current?.setVisible(active);
+      loaderRef.current?.setTarget(clampFrame(targetRef.current, manifest.frameCount), directionRef.current);
+      if (active) {
         requestDraw();
       }
     };
@@ -190,14 +223,21 @@ export function JawFrameSequence({
     const initialRect = stage.getBoundingClientRect();
     updateCanvasSize(initialRect.width, initialRect.height);
 
+    const loader = createJawSequenceLoader({
+      manifest,
+      cacheLimit: profile === "desktop" ? 12 : 8,
+      decode,
+    });
+    loaderRef.current = loader;
     const unsubscribe = loader.subscribe(requestDraw);
     const onVisibilityChange = () => {
       pageVisible = document.visibilityState !== "hidden";
-      syncVisible();
+      sync();
     };
     document.addEventListener("visibilitychange", onVisibilityChange);
-    runtimeRef.current = { loader, requestDraw, syncVisible };
-    syncVisible();
+    lastExactFrameRef.current = undefined;
+    runtimeRef.current = { loader, requestDraw, sync };
+    sync();
 
     return () => {
       if (disposed) return;
@@ -207,52 +247,42 @@ export function JawFrameSequence({
       document.removeEventListener("visibilitychange", onVisibilityChange);
       unsubscribe();
       resizeObserver.disconnect();
-      loader.dispose();
+      loaderRef.current?.dispose();
     };
-  }, [profile, reducedMotion]);
+  }, [profile]);
 
   useEffect(() => {
-    if (reducedMotion) return;
     const runtime = runtimeRef.current;
     if (!runtime) return;
-    const manifest = jawSequenceManifests[profile];
-    runtime.loader.setTarget(clampFrame(targetFrame, manifest.frameCount), direction);
-    runtime.syncVisible();
-    runtime.requestDraw();
-  }, [direction, profile, reducedMotion, targetFrame, visible]);
+    runtime.sync();
+  }, [direction, profile, targetFrame, visible]);
 
-  const manifest = jawSequenceManifests[profile];
-  const renderedMode: SequenceMode = reducedMotion
-    ? "reduced"
-    : failedProfile === profile
-      ? "fallback"
-      : readyProfile === profile
-        ? "ready"
-        : "loading";
-  const staticSource = renderedMode === "fallback" || renderedMode === "reduced"
-    ? manifest.frames[manifest.endFrame - 1].url
-    : manifest.frames[manifest.startFrame - 1].url;
+  const mode: SequenceMode = failed ? "fallback" : ready ? "ready" : "loading";
 
   return (
     <div
       ref={stageRef}
       className={styles.sequenceStage}
-      data-jaw-sequence-state={renderedMode}
+      data-jaw-sequence-state={mode}
     >
-      <img
-        className={styles.staticFrame}
-        src={staticSource}
-        alt=""
+      <StaticJawFrame profile={profile} mode={mode} />
+      <canvas
+        ref={canvasRef}
+        className={styles.sequenceCanvas}
         aria-hidden="true"
-        hidden={renderedMode === "ready"}
       />
-      {!reducedMotion ? (
-        <canvas
-          ref={canvasRef}
-          className={styles.sequenceCanvas}
-          aria-hidden="true"
-        />
-      ) : null}
     </div>
   );
+}
+
+export function JawFrameSequence({ reducedMotion, ...props }: JawFrameSequenceProps) {
+  if (reducedMotion) {
+    return (
+      <div className={styles.sequenceStage} data-jaw-sequence-state="reduced">
+        <StaticJawFrame profile={props.profile} mode="reduced" />
+      </div>
+    );
+  }
+
+  return <AnimatedJawFrameSequence key={props.profile} {...props} />;
 }

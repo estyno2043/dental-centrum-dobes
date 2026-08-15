@@ -6,18 +6,23 @@ import type { DecodedJawFrame, JawSequenceLoader } from "./jawSequenceLoader";
 type LoaderHarness = {
   exact: DecodedJawFrame | undefined;
   nearest: DecodedJawFrame | undefined;
+  decode: (url: string, signal: AbortSignal) => Promise<DecodedJawFrame>;
   listener: (() => void) | undefined;
   disposed: number;
   visible: boolean[];
   targets: Array<readonly [number, -1 | 0 | 1]>;
 };
 
-const loaderState = vi.hoisted(() => ({ harnesses: [] as LoaderHarness[] }));
+const loaderState = vi.hoisted(() => ({
+  browserDecode: vi.fn(),
+  harnesses: [] as LoaderHarness[],
+}));
 
 vi.mock("./jawSequenceLoader", () => ({
-  createBrowserJawFrameDecoder: vi.fn(() => vi.fn()),
-  createJawSequenceLoader: vi.fn(() => {
+  createBrowserJawFrameDecoder: vi.fn(() => loaderState.browserDecode),
+  createJawSequenceLoader: vi.fn((options: { decode: LoaderHarness["decode"] }) => {
     const harness: LoaderHarness = {
+      decode: options.decode,
       exact: undefined,
       nearest: undefined,
       listener: undefined,
@@ -102,6 +107,7 @@ function resize(width: number, height: number, index = 0): void {
 }
 
 beforeEach(() => {
+  loaderState.browserDecode.mockReset();
   loaderState.harnesses.length = 0;
   resizeObservers.length = 0;
   animationFrames = [];
@@ -193,6 +199,20 @@ describe("JawFrameSequence", () => {
     expect(onExactFrameDrawn).toHaveBeenCalledWith(5);
   });
 
+  it("notifies an exact frame once across repeated loader and resize redraws", () => {
+    const onExactFrameDrawn = vi.fn();
+    renderSequence({ onExactFrameDrawn });
+    loaderState.harnesses[0].exact = frame(5);
+
+    emitLoader();
+    emitLoader();
+    resize(300, 200);
+    emitLoader();
+
+    expect(onExactFrameDrawn).toHaveBeenCalledTimes(1);
+    expect(onExactFrameDrawn).toHaveBeenCalledWith(5);
+  });
+
   it("caps canvas backing resolution by profile DPR while keeping CSS size", () => {
     const { container } = renderSequence({ profile: "desktop" });
     const canvas = container.querySelector("canvas")!;
@@ -264,6 +284,25 @@ describe("JawFrameSequence", () => {
     expect(container.firstElementChild).toHaveAttribute("data-jaw-sequence-state", "fallback");
   });
 
+  it("activates open static fallback once after three current-window decode rejections", async () => {
+    const onPermanentFailure = vi.fn();
+    renderSequence({ onPermanentFailure });
+    loaderState.browserDecode.mockRejectedValue(new Error("network decode failure"));
+    const decode = loaderState.harnesses[0].decode;
+
+    await act(async () => {
+      await Promise.all(
+        [5, 4, 6].map((index) =>
+          decode(`/media/jaw-sequence/desktop/frame-${String(index).padStart(3, "0")}.webp`, new AbortController().signal)
+            .catch(() => undefined),
+        ),
+      );
+    });
+
+    expect(onPermanentFailure).toHaveBeenCalledTimes(1);
+    expect(screen.getByAltText("")).toHaveAttribute("src", "/media/jaw-sequence/desktop/frame-072.webp");
+  });
+
   it("skips loader and canvas for reduced motion while rendering open static endpoint", () => {
     const { container } = renderSequence({ reducedMotion: true });
 
@@ -271,6 +310,40 @@ describe("JawFrameSequence", () => {
     expect(container.querySelector("canvas")).toBeNull();
     expect(screen.getByAltText("")).toHaveAttribute("src", "/media/jaw-sequence/desktop/frame-072.webp");
     expect(container.firstElementChild).toHaveAttribute("data-jaw-sequence-state", "reduced");
+  });
+
+  it("restores closed poster when reduced motion turns off until new canvas draw succeeds", () => {
+    const { container, rerender } = renderSequence();
+    loaderState.harnesses[0].exact = frame(5);
+    emitLoader();
+    expect(screen.getByAltText("")).not.toBeVisible();
+
+    rerender(
+      <JawFrameSequence
+        direction={0}
+        onExactFrameDrawn={vi.fn()}
+        onPermanentFailure={vi.fn()}
+        profile="desktop"
+        reducedMotion
+        targetFrame={5}
+        visible
+      />,
+    );
+    rerender(
+      <JawFrameSequence
+        direction={0}
+        onExactFrameDrawn={vi.fn()}
+        onPermanentFailure={vi.fn()}
+        profile="desktop"
+        reducedMotion={false}
+        targetFrame={5}
+        visible
+      />,
+    );
+
+    expect(screen.getByAltText("")).toHaveAttribute("src", "/media/jaw-sequence/desktop/frame-001.webp");
+    expect(screen.getByAltText("")).toBeVisible();
+    expect(container.firstElementChild).toHaveAttribute("data-jaw-sequence-state", "loading");
   });
 
   it("cleans observer, animation frame, loader and subscription exactly once on unmount", () => {
