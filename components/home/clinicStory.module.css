@@ -2,8 +2,13 @@
   --grow: 0;
   --pan: 0;
   --snap: 0;
-  --zoom: 0;
-  --photo-blur: 0;
+  --detail: 0;
+  --handoff: 0;
+  --sequence-progress: 0;
+  --cue-opacity: 0;
+  --tease: 0;
+  --map-reveal: 0;
+  --exit: 0;
   --jaw-opacity: 0;
   --travel: 0px;
   --handoff-left: 0px;
@@ -11,14 +16,10 @@
   --handoff-width: 0px;
   --handoff-height: 0px;
   --handoff-blur: 0;
-  --bite-opacity: 0;
-  --tooth-opacity: 0;
-  --gum-opacity: 0;
-  --final-opacity: 0;
 
   position: relative;
-  height: 1130vh;
-  height: 1130dvh;
+  height: 1030vh;
+  height: 1030dvh;
   background: var(--ink);
 }
 
@@ -27,7 +28,12 @@
   top: 0;
   height: 100vh;
   height: 100dvh;
-  overflow: hidden;
+  /*
+   * The gallery track intentionally exceeds the viewport. `clip` contains
+   * that paint without creating the scrolling ancestor that `hidden` would,
+   * so the sticky story remains pinned while the document itself cannot pan.
+   */
+  overflow: clip;
   background: var(--ink);
   isolation: isolate;
 }
@@ -37,16 +43,19 @@
   z-index: 0;
   display: grid;
   height: 100%;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto minmax(0, 1fr);
   padding: clamp(64px, 8dvh, 96px) 0 clamp(42px, 5dvh, 64px);
   gap: clamp(24px, 3dvh, 42px);
   inset: 0;
-  opacity: calc(1 - var(--zoom));
+  opacity: calc(1 - var(--detail));
+  transition: opacity 120ms linear;
 }
 
 .intro {
+  min-width: 0;
   padding: 0 clamp(24px, 5vw, 96px);
-  opacity: calc(1 - var(--zoom));
 }
 
 .eyebrow {
@@ -112,41 +121,25 @@
 }
 
 .placeholder {
-  display: flex;
+  display: grid;
   width: 100%;
   height: 100%;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgb(174 155 126 / 26%);
-  background:
-    repeating-linear-gradient(128deg, rgb(255 255 255 / 3%) 0 1px, transparent 1px 9px),
-    linear-gradient(160deg, rgb(174 155 126 / 12%), rgb(28 28 31 / 92%));
-  gap: 10px;
-}
-
-.placeholderIndex {
-  color: var(--taupe);
-  font-size: clamp(1.4rem, 2.4vw, 2.2rem);
-  font-variant-numeric: tabular-nums;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+  place-items: center;
+  background: linear-gradient(160deg, rgb(174 155 126 / 12%), rgb(28 28 31 / 92%));
 }
 
 .placeholderLabel {
-  padding: 0 12px;
   color: rgb(255 255 255 / 52%);
   font-size: 11px;
   letter-spacing: 0.18em;
-  text-align: center;
   text-transform: uppercase;
 }
 
 .handoffPicture {
   position: absolute;
   z-index: 2;
-  inset: 0;
   pointer-events: none;
+  inset: 0;
 }
 
 .handoffPhoto {
@@ -156,10 +149,10 @@
   display: block;
   width: var(--handoff-width);
   height: var(--handoff-height);
-  border-radius: calc(4px * (1 - var(--zoom)));
+  border-radius: calc(4px * (1 - var(--detail)));
   filter: blur(calc(var(--handoff-blur) * 12px));
   object-fit: cover;
-  opacity: min(1, calc(var(--zoom) * 12));
+  opacity: min(1, calc(var(--detail) * 12));
   transform: scale(calc(1 + var(--handoff-blur) * 0.025));
   transform-origin: center;
   will-change: top, left, width, height, filter, transform;
@@ -169,172 +162,130 @@
   position: absolute;
   z-index: 3;
   opacity: var(--jaw-opacity);
-  inset: 0;
   pointer-events: none;
-  will-change: opacity;
-}
-
-.poster,
-.mediaDeck,
-.videoLayer,
-.scrim {
-  position: absolute;
-  width: 100%;
-  height: 100%;
+  transition: opacity 120ms linear;
   inset: 0;
 }
 
-.poster,
-.videoLayer {
-  display: block;
-  object-fit: cover;
+.jawLayer[data-visible="true"] {
+  pointer-events: auto;
 }
 
-.mediaDeck {
-  z-index: 1;
-}
-
-.videoLayer {
-  border: 0;
-  opacity: 0;
-  transition: opacity 70ms linear;
-  will-change: opacity;
-}
-
-.scrim {
-  z-index: 2;
-  background:
-    linear-gradient(90deg, rgb(28 28 31 / 43%) 0%, transparent 42% 70%, rgb(28 28 31 / 18%) 100%),
-    linear-gradient(180deg, rgb(28 28 31 / 16%), transparent 31% 68%, rgb(28 28 31 / 34%));
-}
-
-.annotations,
-.callout,
-.leader {
+.jawViewport {
   position: absolute;
-  z-index: 4;
-  width: 100%;
-  height: 100%;
-  inset: 0;
-  pointer-events: none;
-}
-
-.callout {
-  opacity: var(--callout-opacity);
-  transform: translate3d(0, calc((1 - var(--callout-opacity)) * 18px), 0);
-  transition: opacity 70ms linear;
-  will-change: opacity, transform;
-}
-
-.bite {
-  --callout-opacity: var(--bite-opacity);
-}
-
-.tooth {
-  --callout-opacity: var(--tooth-opacity);
-}
-
-.gum {
-  --callout-opacity: var(--gum-opacity);
-}
-
-.leader {
-  overflow: visible;
-}
-
-.leader path {
-  fill: none;
-  stroke: rgb(214 194 160 / 94%);
-  stroke-dasharray: 1;
-  stroke-dashoffset: calc(1 - var(--callout-opacity));
-  stroke-linecap: square;
-  stroke-linejoin: bevel;
-  stroke-width: 1.5;
-  vector-effect: non-scaling-stroke;
-  filter: drop-shadow(0 1px 2px rgb(28 28 31 / 58%));
-}
-
-.leader circle {
-  fill: var(--taupe);
-  stroke: rgb(255 255 255 / 68%);
-  stroke-width: 1;
-  vector-effect: non-scaling-stroke;
-}
-
-.calloutCard {
-  position: absolute;
-  width: min(30rem, 31vw);
-  padding: clamp(18px, 2vw, 28px) clamp(20px, 2.4vw, 34px);
-  border: 1px solid rgb(174 155 126 / 48%);
-  background:
-    linear-gradient(125deg, rgb(28 28 31 / 90%), rgb(28 28 31 / 64%)),
-    rgb(28 28 31 / 78%);
-  backdrop-filter: blur(14px);
-  box-shadow: 0 24px 70px rgb(0 0 0 / 22%);
-  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
-  transform: translate3d(-50%, -50%, 0);
-  will-change: left, top;
-}
-
-.calloutEyebrow {
-  margin-bottom: 10px;
-  color: var(--taupe);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-}
-
-.calloutCard h3 {
-  margin-bottom: 8px;
-  color: var(--porcelain);
-  font-size: clamp(1.25rem, 2.2vw, 2rem);
-  font-weight: 600;
-  letter-spacing: -0.025em;
-  line-height: 1.08;
-}
-
-.calloutCard > p:last-child {
-  max-width: 37ch;
-  color: rgb(255 255 255 / 72%);
-  font-size: clamp(0.82rem, 1vw, 1rem);
-  line-height: 1.55;
-}
-
-.finalCopy {
-  position: absolute;
-  z-index: 5;
+  overflow: hidden;
   top: 50%;
   left: 50%;
-  width: min(900px, 84vw);
-  color: var(--porcelain);
-  opacity: var(--final-opacity);
-  text-align: center;
-  transform: translate3d(-50%, calc(-50% + (1 - var(--final-opacity)) * 24px), 0);
+  width: min(calc(100% - clamp(2rem, 7vw, 7rem)), 1440px, calc(82dvh * 16 / 9));
+  border: 1px solid rgb(230 204 157 / 34%);
+  border-radius: clamp(18px, 2.2vw, 32px);
+  aspect-ratio: 16 / 9;
+  background: #817866;
+  box-shadow: 0 2rem 6rem rgb(10 8 7 / 36%);
+  transform: translate(-50%, -50%) scale(calc(0.94 + var(--handoff) * 0.06));
+  transform-origin: center;
+}
+
+.jawMedia {
+  position: absolute;
+  inset: 0.1px;
+}
+
+.scrim {
+  position: absolute;
+  z-index: 1;
   pointer-events: none;
+  background:
+    linear-gradient(90deg, rgb(28 28 31 / 38%), transparent 40% 68%, rgb(28 28 31 / 18%)),
+    linear-gradient(180deg, rgb(28 28 31 / 14%), transparent 31% 68%, rgb(28 28 31 / 30%));
+  inset: 0;
 }
 
-.finalCopy p {
-  margin-bottom: 18px;
-  color: var(--taupe);
-  font-size: 0.72rem;
+.jawCue {
+  position: absolute;
+  z-index: 8;
+  top: 50%;
+  left: 50%;
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  padding: 0.65rem 1rem;
+  border: 1px solid rgb(235 207 153 / 44%);
+  border-radius: 999px;
+  background: rgb(35 29 26 / 76%);
+  box-shadow: 0 1rem 3rem rgb(22 17 14 / 28%);
+  backdrop-filter: blur(16px);
+  color: var(--porcelain);
+  font-size: clamp(0.82rem, 1.2vw, 1rem);
   font-weight: 700;
-  letter-spacing: 0.28em;
+  gap: 0.7rem;
+  letter-spacing: 0.08em;
+  opacity: var(--cue-opacity);
   text-transform: uppercase;
+  transform: translate(-50%, -50%);
 }
 
-.finalCopy h2 {
-  font-size: clamp(2.2rem, 5.4vw, 5.2rem);
-  font-weight: 600;
-  letter-spacing: -0.045em;
-  line-height: 0.98;
-  text-wrap: balance;
+.loadingRing {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgb(239 208 150 / 28%);
+  border-top-color: #efcf96;
+  border-radius: 50%;
+  animation: jaw-loading-spin 760ms linear infinite;
+}
+
+.exitGradient {
+  position: absolute;
+  z-index: 12;
+  background: linear-gradient(
+    180deg,
+    rgb(237 234 228 / 0%) 0%,
+    rgb(237 234 228 / 18%) 34%,
+    #edeae4 100%
+  );
+  opacity: var(--exit);
+  pointer-events: none;
+  inset: 0;
+}
+
+@keyframes jaw-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.noScriptFallback {
+  display: grid;
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 2rem;
+  color: var(--porcelain);
+  background: var(--ink);
+  gap: 1rem;
+}
+
+.noScriptFallback img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.noScriptFallback ul {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  list-style: none;
+  gap: 0.75rem;
+}
+
+.noScriptFallback a {
+  color: var(--porcelain);
 }
 
 @media (max-width: 767px) {
   .section {
-    height: 880vh;
-    height: 880dvh;
+    height: 780vh;
+    height: 780dvh;
   }
 
   .galleryLayer {
@@ -374,35 +325,38 @@
     scroll-snap-align: center;
   }
 
-  .handoffPhoto {
-    object-position: center;
-  }
-
   .scrim {
     background:
       linear-gradient(180deg, rgb(28 28 31 / 12%), transparent 28% 57%, rgb(28 28 31 / 62%)),
       linear-gradient(90deg, rgb(28 28 31 / 9%), transparent 70%);
   }
 
-  .calloutCard {
-    width: calc(100vw - 32px);
-    padding: 18px 20px 20px;
+  .jawViewport {
+    width: min(calc(100% - 1rem), calc(92dvh * 9 / 16));
+    border-radius: clamp(16px, 5vw, 26px);
+    aspect-ratio: 9 / 16;
   }
 
-  .calloutCard h3 {
-    font-size: clamp(1.25rem, 6vw, 1.7rem);
+  .jawCue {
+    top: 50%;
+    white-space: nowrap;
   }
 
-  .calloutCard > p:last-child {
-    font-size: 0.84rem;
+  /*
+   * The sequence overlay is deliberately 16:9 even on a portrait viewport.
+   * Give its heading a constrained full-width lane, rather than letting the
+   * absolute shrink-to-fit box force three short lines into the prompt below.
+   */
+  .jawLayer h2 {
+    top: 1.25rem;
+    width: calc(100% - 2rem);
+    max-width: 25rem;
+    font-size: clamp(1.75rem, 8.6vw, 2.4rem);
+    line-height: 1.05;
   }
 
-  .finalCopy {
-    width: calc(100vw - 36px);
-  }
-
-  .finalCopy h2 {
-    font-size: clamp(2.2rem, 11vw, 3.7rem);
+  .jawLayer h2 + p {
+    top: clamp(7.35rem, 16vh, 8.75rem);
   }
 }
 
@@ -413,7 +367,6 @@
 .reduced .pin {
   position: relative;
   height: auto;
-  overflow: visible;
 }
 
 .reduced .galleryLayer {
@@ -440,54 +393,24 @@
 
 .reduced .jawLayer {
   position: relative;
-  height: min(72dvh, 720px);
+  height: min(82dvh, 820px);
   opacity: 1;
 }
 
-.reduced .annotations {
-  position: relative;
-  display: grid;
-  width: auto;
-  height: auto;
-  padding: 24px 20px;
-  background: var(--ink);
-  gap: 12px;
-}
-
-.reduced .callout {
-  position: relative;
-  width: auto;
-  height: auto;
-  opacity: 1;
-  transform: none;
-}
-
-.reduced .leader {
-  display: none;
-}
-
-.reduced .calloutCard {
-  position: relative;
-  top: auto !important;
-  left: auto !important;
-  width: min(100%, 760px);
-  transform: none;
-}
-
-.reduced .finalCopy {
-  position: relative;
-  top: auto;
-  left: auto;
-  width: auto;
-  padding: 56px 20px 80px;
-  background: var(--ink);
-  opacity: 1;
-  transform: none;
+.reduced .jawViewport {
+  width: min(calc(100% - 2rem), 1200px, calc(72dvh * 16 / 9));
+  transform: translate(-50%, -50%);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .videoLayer,
-  .callout {
+  .galleryLayer,
+  .handoffPhoto,
+  .jawLayer,
+  .jawViewport {
     transition: none;
+  }
+
+  .loadingRing {
+    animation: none;
   }
 }

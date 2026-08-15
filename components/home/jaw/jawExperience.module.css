@@ -1,0 +1,497 @@
+.sequenceStage {
+  position: absolute;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  inset: 0;
+}
+
+.staticFrame,
+.sequenceCanvas {
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+}
+
+.staticFrame {
+  object-fit: contain;
+  object-position: center;
+  opacity: 1;
+  transition: opacity 180ms ease-out;
+}
+
+.sequenceCanvas {
+  object-fit: contain;
+}
+
+.sequenceStage[data-jaw-sequence-state="ready"] .staticFrame {
+  visibility: hidden;
+}
+
+.sequenceStage[data-jaw-sequence-state="fallback"] .staticFrame,
+.sequenceStage[data-jaw-sequence-state="reduced"] .staticFrame {
+  visibility: visible;
+}
+
+.zoneOverlay {
+  position: absolute;
+  z-index: 2;
+  outline: none;
+  pointer-events: none;
+  inset: 0;
+  color: #fffaf4;
+}
+
+.zoneOverlayDisabled {
+  pointer-events: none;
+}
+
+.zoneHeading {
+  position: absolute;
+  z-index: 5;
+  top: clamp(0.75rem, 3dvh, 2rem);
+  left: 50%;
+  width: min(92%, 44rem);
+  margin: 0;
+  color: #fffaf4;
+  font-size: clamp(1.85rem, 4.2vw, 4rem);
+  letter-spacing: -0.05em;
+  line-height: 0.98;
+  text-align: center;
+  text-shadow: 0 0.5rem 2rem rgba(35, 25, 20, 0.3);
+  transform: translateX(-50%);
+  animation: zone-heading-pop 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.zonePrompt {
+  position: absolute;
+  z-index: 5;
+  top: clamp(3.5rem, 11dvh, 6.8rem);
+  left: 50%;
+  width: min(92%, 34rem);
+  margin: 0;
+  color: rgba(255, 250, 244, 0.78);
+  font-size: clamp(0.82rem, 1.1vw, 1rem);
+  text-align: center;
+  transform: translateX(-50%);
+  animation: zone-heading-pop 360ms 80ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.zoneArtboard {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(100%, calc(100dvh * 16 / 9));
+  aspect-ratio: 16 / 9;
+  transform: translate(-50%, -50%);
+}
+
+.zoneArtwork {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+  overflow: visible;
+}
+
+.zoneMask {
+  fill: url("#jaw-zone-fill");
+  stroke: rgba(247, 218, 160, 0.4);
+  stroke-width: 2;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.96);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: fill 160ms ease-out, filter 160ms ease-out, opacity 160ms ease-out;
+}
+
+.zoneOverlay[data-presentation="tease"] .zoneMask {
+  animation: zone-tease 2.3s calc(var(--zone-index) * 320ms) ease-in-out infinite;
+}
+
+.zoneOverlay[data-presentation="reveal"] .zoneMask,
+.zoneOverlay[data-presentation="interactive"] .zoneMask {
+  opacity: 0.18;
+  transform: scale(1);
+  animation: zone-mask-pop 420ms calc(var(--zone-index) * 160ms) cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.zoneMaskSelected {
+  opacity: 0.42 !important;
+  filter: drop-shadow(0 0 20px rgba(238, 195, 133, 0.62));
+}
+
+.zoneMarker {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.92);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.zoneOverlay[data-presentation="reveal"] .zoneMarker,
+.zoneOverlay[data-presentation="interactive"] .zoneMarker {
+  animation: zone-pop 380ms calc(var(--zone-index) * 165ms) cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.zoneLeader {
+  fill: none;
+  stroke: rgba(239, 208, 150, 0.9);
+  stroke-linecap: round;
+  stroke-width: 3;
+}
+
+.zoneAnchor {
+  fill: #f0cf91;
+  stroke: rgba(47, 37, 31, 0.75);
+  stroke-width: 4;
+}
+
+.zoneLabel rect {
+  fill: rgba(36, 30, 27, 0.82);
+  stroke: rgba(239, 208, 150, 0.75);
+  stroke-width: 2;
+}
+
+.zoneLabel text {
+  fill: #fffaf4;
+  font-family: inherit;
+  font-size: 25px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.zoneMarker[data-active="true"] .zoneLeader {
+  stroke: #ffe2a9;
+  stroke-width: 4;
+}
+
+.zoneMarker[data-active="true"] .zoneAnchor {
+  fill: #fff2ca;
+  filter: drop-shadow(0 0 12px rgba(248, 218, 160, 0.9));
+}
+
+.zoneMarker[data-active="true"] .zoneLabel rect {
+  fill: rgba(55, 43, 35, 0.94);
+  stroke: #ffe2a9;
+}
+
+.zoneArtwork :global(#jaw-arrowhead) path {
+  fill: #f0cf91;
+}
+
+.zoneHit {
+  fill: rgba(255, 255, 255, 0.001);
+  stroke: transparent;
+  stroke-width: 24;
+  pointer-events: none;
+  outline: none;
+}
+
+.zoneOverlay[data-presentation="interactive"] .zoneHit {
+  cursor: pointer;
+  pointer-events: painted;
+}
+
+.zoneHit:focus-visible {
+  stroke: rgba(255, 226, 169, 0.92);
+  stroke-width: 6;
+  filter: drop-shadow(0 0 16px rgba(248, 218, 160, 0.72));
+}
+
+.assistanceBar {
+  position: absolute;
+  z-index: 8;
+  bottom: clamp(0.85rem, 2.8dvh, 2rem);
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  max-width: calc(100% - 2rem);
+  min-height: 44px;
+  padding: 0.35rem 0.5rem 0.35rem 0.9rem;
+  border: 1px solid rgba(226, 194, 137, 0.42);
+  border-radius: 999px;
+  background: rgba(31, 27, 25, 0.66);
+  box-shadow: 0 0.75rem 2.5rem rgba(22, 17, 14, 0.22);
+  backdrop-filter: blur(16px);
+  color: rgba(255, 250, 244, 0.68);
+  font-size: 0.78rem;
+  white-space: nowrap;
+  pointer-events: auto;
+  transform: translateX(-50%);
+  animation: assistance-pop 360ms 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.directEntry {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.5rem 0.72rem;
+  border-radius: 999px;
+  color: #fffaf4;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 160ms ease-out, color 160ms ease-out;
+}
+
+.directEntry:hover,
+.directEntry:focus-visible {
+  background: rgba(226, 194, 137, 0.16);
+  color: #ffe2a9;
+}
+
+.zoneCard {
+  position: absolute;
+  z-index: 10;
+  top: 52%;
+  left: clamp(1rem, 4vw, 4rem);
+  width: min(21rem, 32vw);
+  padding: 1.3rem;
+  border: 1px solid rgba(226, 194, 137, 0.58);
+  border-radius: 1.25rem;
+  background: rgba(28, 24, 22, 0.9);
+  box-shadow: 0 1.4rem 4rem rgba(0, 0, 0, 0.34);
+  backdrop-filter: blur(20px);
+  pointer-events: auto;
+  transform: translateY(-50%);
+  animation: card-pop 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.cardTop {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.cardTop h3 {
+  margin: 1.2rem 0 0;
+  color: #fffaf4;
+  font-size: clamp(1.35rem, 2vw, 1.9rem);
+}
+
+.cardKicker {
+  position: absolute;
+  top: 0.8rem;
+  left: 1.3rem;
+  margin: 0;
+  color: #dfbd80;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.problemList {
+  display: grid;
+  gap: 0.2rem;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.problemList a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid rgba(226, 194, 137, 0.22);
+  color: #f7f0e6;
+  text-decoration: none;
+}
+
+.problemList a:hover,
+.problemList a:focus-visible {
+  color: #ffe2a9;
+}
+
+.closeButton {
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid rgba(226, 194, 137, 0.62);
+  border-radius: 999px;
+  background: transparent;
+  color: #fffaf4;
+  cursor: pointer;
+}
+
+.zoneStatus {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@keyframes zone-tease {
+  0%,
+  100% {
+    opacity: 0.05;
+    transform: scale(0.97);
+  }
+
+  42% {
+    opacity: 0.3;
+    filter: drop-shadow(0 0 24px rgba(232, 178, 137, 0.58));
+    transform: scale(1.015);
+  }
+}
+
+@keyframes zone-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.88) translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes zone-mask-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.88) translateY(10px);
+  }
+
+  to {
+    opacity: 0.18;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes zone-heading-pop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px) scale(0.94);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@keyframes assistance-pop {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px) scale(0.94);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@keyframes assistance-mobile-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.94);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes card-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-46%) scale(0.94);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+}
+
+@media (max-width: 767px) {
+  .zoneHeading {
+    top: 0.75rem;
+    font-size: clamp(1.65rem, 8vw, 2.35rem);
+  }
+
+  .zonePrompt {
+    top: 3.4rem;
+    width: calc(100% - 2rem);
+  }
+
+  .zoneLabel text {
+    font-size: 29px;
+  }
+
+  .assistanceBar {
+    right: 0.65rem;
+    bottom: 0.65rem;
+    left: 0.65rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.2rem;
+    max-width: none;
+    padding: 0.35rem;
+    border-radius: 1rem;
+    white-space: normal;
+    transform: none;
+    animation-name: assistance-mobile-pop;
+  }
+
+  .assistanceBar > span {
+    grid-column: 1 / -1;
+    text-align: center;
+  }
+
+  .directEntry {
+    text-align: center;
+  }
+
+  .zonePanel {
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: auto;
+    max-height: min(58dvh, 30rem);
+    overflow-y: auto;
+    border-radius: 1.25rem 1.25rem 0 0;
+    transform: none;
+    animation-name: mobile-card-pop;
+  }
+}
+
+@keyframes mobile-card-pop {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .staticFrame,
+  .zoneHeading,
+  .zonePrompt,
+  .zoneMask,
+  .zoneMarker,
+  .assistanceBar,
+  .zoneCard {
+    transition: none;
+    animation: none;
+  }
+}

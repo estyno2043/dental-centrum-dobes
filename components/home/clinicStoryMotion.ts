@@ -1,17 +1,67 @@
 export const DESKTOP_STORY_SCROLL_VH = 1030;
 export const MOBILE_STORY_SCROLL_VH = 780;
 
+export const DESKTOP_PHASES = Object.freeze({
+  galleryEnd: 370,
+  detailEnd: 460,
+  detailDwellEnd: 500,
+  handoffEnd: 530,
+  openingEnd: 670,
+  teaseEnd: 710,
+  mapEnd: 750,
+  interactiveEnd: 900,
+  storyEnd: DESKTOP_STORY_SCROLL_VH,
+});
+
+export const MOBILE_PHASES = Object.freeze({
+  galleryEnd: 90,
+  snapEnd: 130,
+  detailDwellEnd: 170,
+  handoffEnd: 200,
+  openingEnd: 400,
+  teaseEnd: 455,
+  mapEnd: 510,
+  interactiveEnd: 680,
+  storyEnd: 780,
+});
+
 export type ClinicStoryProfile = "desktop" | "mobile";
 
+export type ClinicStoryPhase =
+  | "gallery"
+  | "detail"
+  | "handoff"
+  | "opening"
+  | "tease"
+  | "map"
+  | "interactive"
+  | "exit";
+
 export type ClinicStoryMotionState = Readonly<{
+  phase: ClinicStoryPhase;
   grow: number;
   pan: number;
-  snap: number;
-  zoom: number;
-  blur: number;
-  jawOpacity: number;
-  globalTime: number;
-  finalOpacity: number;
+  detail: number;
+  handoff: number;
+  sequenceProgress: number;
+  cueOpacity: number;
+  teaseProgress: number;
+  mapReveal: number;
+  exit: number;
+  targetFrame: number;
+  zonesVisible: boolean;
+  interactive: boolean;
+}>;
+
+/** @deprecated Use ClinicStoryMotionState. */
+export type JawSequenceMotionState = ClinicStoryMotionState;
+
+export type ClinicStoryMotionInput = Readonly<{
+  progressVh: number;
+  profile: ClinicStoryProfile;
+  frameCount: number;
+  exactEndDrawn: boolean;
+  revealComplete: boolean;
 }>;
 
 export type DampedMotionState = Readonly<{
@@ -22,49 +72,107 @@ export type DampedMotionState = Readonly<{
 const clamp = (value: number, minimum: number, maximum: number): number =>
   Math.min(maximum, Math.max(minimum, value));
 
-const phase = (value: number, start: number, end: number): number =>
-  clamp((value - start) / (end - start), 0, 1);
+const clamp01 = (value: number): number => clamp(value, 0, 1);
+
+const range = (value: number, start: number, end: number): number =>
+  clamp01((value - start) / (end - start));
 
 const round = (value: number, precision = 4): number =>
   Number(value.toFixed(precision));
 
-function mapDesktop(scrollVh: number): ClinicStoryMotionState {
-  const value = clamp(scrollVh, 0, DESKTOP_STORY_SCROLL_VH);
-  const globalTime = round(phase(value, 480, 930) * 8);
-
-  return {
-    grow: round(phase(value, 0, 84)),
-    pan: round(phase(value, 84, 380)),
-    snap: 1,
-    zoom: round(phase(value, 380, 480)),
-    blur: round(phase(value, 442, 480)),
-    jawOpacity: round(phase(value, 447, 480)),
-    globalTime,
-    finalOpacity: round(phase(globalTime, 6.7, 7.4)),
-  };
+/**
+ * Pure invalid-input contract: NaN and -Infinity map to story start;
+ * +Infinity maps to story end. Finite values clamp to the profile range.
+ */
+function normalizeProgress(progressVh: number, storyEnd: number): number {
+  if (Number.isNaN(progressVh) || progressVh === Number.NEGATIVE_INFINITY) {
+    return 0;
+  }
+  if (progressVh === Number.POSITIVE_INFINITY) return storyEnd;
+  return clamp(progressVh, 0, storyEnd);
 }
 
-function mapMobile(scrollVh: number): ClinicStoryMotionState {
-  const value = clamp(scrollVh, 0, MOBILE_STORY_SCROLL_VH);
-  const globalTime = round(phase(value, 230, 680) * 8);
+/**
+ * Frame counts are positive integers. Invalid/non-positive values normalize to
+ * one; positive fractions truncate. This guarantees a finite one-based frame.
+ */
+function normalizeFrameCount(frameCount: number): number {
+  if (!Number.isFinite(frameCount) || frameCount < 1) return 1;
+  return Math.max(1, Math.floor(frameCount));
+}
+
+function phaseFor(
+  progressVh: number,
+  profile: ClinicStoryProfile,
+): ClinicStoryPhase {
+  const phases = profile === "mobile" ? MOBILE_PHASES : DESKTOP_PHASES;
+  if (progressVh < phases.galleryEnd) return "gallery";
+  if (progressVh < phases.detailDwellEnd) return "detail";
+  if (progressVh < phases.handoffEnd) return "handoff";
+  if (progressVh < phases.openingEnd) return "opening";
+  if (progressVh < phases.teaseEnd) return "tease";
+  if (progressVh < phases.mapEnd) return "map";
+  if (progressVh < phases.interactiveEnd) return "interactive";
+  return "exit";
+}
+
+function mapSequenceMotion(input: ClinicStoryMotionInput): ClinicStoryMotionState {
+  const isMobile = input.profile === "mobile";
+  const storyEnd = isMobile ? MOBILE_PHASES.storyEnd : DESKTOP_STORY_SCROLL_VH;
+  const progressVh = normalizeProgress(input.progressVh, storyEnd);
+  const frameCount = normalizeFrameCount(input.frameCount);
+
+  const galleryEnd = isMobile ? MOBILE_PHASES.galleryEnd : DESKTOP_PHASES.galleryEnd;
+  const detailEnd = isMobile ? MOBILE_PHASES.snapEnd : DESKTOP_PHASES.detailEnd;
+  const detailDwellEnd = isMobile
+    ? MOBILE_PHASES.detailDwellEnd
+    : DESKTOP_PHASES.detailDwellEnd;
+  const handoffEnd = isMobile ? MOBILE_PHASES.handoffEnd : DESKTOP_PHASES.handoffEnd;
+  const openingEnd = isMobile ? MOBILE_PHASES.openingEnd : DESKTOP_PHASES.openingEnd;
+  const teaseEnd = isMobile ? MOBILE_PHASES.teaseEnd : DESKTOP_PHASES.teaseEnd;
+  const mapEnd = isMobile ? MOBILE_PHASES.mapEnd : DESKTOP_PHASES.mapEnd;
+  const interactiveEnd = isMobile
+    ? MOBILE_PHASES.interactiveEnd
+    : DESKTOP_PHASES.interactiveEnd;
+
+  const grow = isMobile ? 1 : range(progressVh, 0, 84);
+  const pan = isMobile ? 0 : range(progressVh, 84, DESKTOP_PHASES.galleryEnd);
+  const detail = range(progressVh, galleryEnd, detailEnd);
+  const handoff = range(progressVh, detailDwellEnd, handoffEnd);
+  const sequenceProgress = range(progressVh, handoffEnd, openingEnd);
+  const cueOpacity =
+    range(progressVh, handoffEnd + 5, handoffEnd + 22) *
+    (1 - range(progressVh, openingEnd - 20, openingEnd));
+  const teaseProgress = range(progressVh, openingEnd, teaseEnd);
+  const mapReveal = range(progressVh, teaseEnd, mapEnd);
+  const exit = range(progressVh, interactiveEnd, storyEnd);
+  const zonesVisible = progressVh >= teaseEnd;
 
   return {
-    grow: 1,
-    pan: 0,
-    snap: round(phase(value, 90, 130)),
-    zoom: round(phase(value, 130, 230)),
-    blur: round(phase(value, 192, 230)),
-    jawOpacity: round(phase(value, 197, 230)),
-    globalTime,
-    finalOpacity: round(phase(globalTime, 6.7, 7.4)),
+    phase: phaseFor(progressVh, input.profile),
+    grow,
+    pan,
+    detail,
+    handoff,
+    sequenceProgress,
+    cueOpacity,
+    teaseProgress,
+    mapReveal,
+    exit,
+    targetFrame: 1 + Math.round(sequenceProgress * (frameCount - 1)),
+    zonesVisible,
+    interactive:
+      progressVh >= mapEnd &&
+      progressVh < interactiveEnd &&
+      input.exactEndDrawn &&
+      input.revealComplete,
   };
 }
 
 export function mapClinicStoryMotion(
-  scrollVh: number,
-  profile: ClinicStoryProfile,
+  input: ClinicStoryMotionInput,
 ): ClinicStoryMotionState {
-  return profile === "mobile" ? mapMobile(scrollVh) : mapDesktop(scrollVh);
+  return mapSequenceMotion(input);
 }
 
 /** Critically damped progress filter; document scroll remains source of truth. */
