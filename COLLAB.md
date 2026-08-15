@@ -5,7 +5,7 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Task 9 complete — localhost review pending; do not merge or push yet
+- Status: Task 9 mobile layout follow-up in progress — localhost review pending; do not merge or push yet
 - Owner: Codex
 - Branch: `codex/higgsfield-jaw-sequence`
 - Base: `9e9cb08`
@@ -33,6 +33,11 @@ update it before taking or handing off work.
   player/overlay, routes, header, patients, and drift files remain protected.
   The integration locates its handoff only with
   `photoFrames.find((frame) => frame.id === "detail")`.
+
+- Task 9 follow-up reserves only `components/home/clinicStory.module.css` and
+  `components/home/ClinicStory.test.tsx` for the 390×844 jaw-title collision.
+  No jaw player, overlay component, gallery data, header, routes, patients, or
+  drift file may change.
 
 > Task 1 approval gate passed on 2026-08-14. The user rejected the original
 > locked-prompt Seedance candidate for tooth deformation, explicitly directed
