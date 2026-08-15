@@ -5,7 +5,7 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Task 6 in progress — nonblank jaw Canvas sequence and static fallbacks
+- Status: Task 7 in progress — accessible jaw zone interaction
 - Owner: Codex
 - Branch: `codex/higgsfield-jaw-sequence`
 - Base: current `origin/main`
@@ -19,12 +19,12 @@ update it before taking or handing off work.
   `scripts/crop-jaw-master.swift`, and the listed legacy jaw files until
   localhost handoff.
 
-- Task 6 exact active files: `components/home/jaw/JawFrameSequence.tsx`,
-  `components/home/jaw/JawFrameSequence.test.tsx`, and
+- Task 7 exact active files: `components/home/jaw/JawZoneOverlay.tsx`,
+  `components/home/jaw/JawZoneOverlay.test.tsx`, and
   `components/home/jaw/jawExperience.module.css`. `ClinicStory.tsx` remains
-  on its temporary legacy call shape until Task 9; the completed loader,
-  gallery, drift, header, patients, media pipeline, and other app files remain
-  protected and out of scope.
+  on its temporary legacy call shape until Task 9; completed loader, Canvas
+  sequence, gallery, drift, header, patients, media pipeline, and other app
+  files remain protected and out of scope.
 
 > Task 1 approval gate passed on 2026-08-14. The user rejected the original
 > locked-prompt Seedance candidate for tooth deformation, explicitly directed
