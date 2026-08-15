@@ -18,8 +18,8 @@ import {
   mapClinicStoryMotion,
   stepCriticallyDamped,
   type ClinicStoryProfile,
+  type ClinicStoryMotionState,
   type DampedMotionState,
-  type JawSequenceMotionState,
 } from "./clinicStoryMotion";
 import { JawFrameSequence } from "./jaw/JawFrameSequence";
 import { JAW_DISCLAIMER, JAW_ZONES } from "./jaw/jawContent";
@@ -27,7 +27,7 @@ import {
   jawSequenceManifests,
   type JawSequenceProfile,
 } from "./jaw/jawSequenceManifest.generated";
-import { JawZoneOverlay } from "./jaw/JawZoneOverlay";
+import { JawZoneOverlay, type JawMapPresentation } from "./jaw/JawZoneOverlay";
 import { photoFrames, photoStripIntro } from "./photoStripContent";
 import styles from "./clinicStory.module.css";
 
@@ -43,7 +43,7 @@ const detailFrame = (() => {
 })();
 
 type RenderMotion = Readonly<{
-  state: JawSequenceMotionState;
+  state: ClinicStoryMotionState;
   snap: number;
 }>;
 
@@ -87,30 +87,25 @@ function storyScrollVh(section: HTMLElement): number {
   );
 }
 
-function jawArrivalOpacity(progressVh: number, profile: ClinicStoryProfile): number {
-  const [start, end] = profile === "desktop" ? [447, 480] : [197, 230];
-  return clamp01((progressVh - start) / (end - start));
-}
-
 function writeHandoffGeometry(
   section: HTMLElement,
   finalFrame: HTMLElement,
-  zoom: number,
-  blur: number,
+  detail: number,
+  handoff: number,
 ): void {
   const rect = finalFrame.getBoundingClientRect();
-  const inverse = 1 - zoom;
+  const inverse = 1 - detail;
   section.style.setProperty("--handoff-left", `${rect.left * inverse}px`);
   section.style.setProperty("--handoff-top", `${rect.top * inverse}px`);
   section.style.setProperty(
     "--handoff-width",
-    `${rect.width + (window.innerWidth - rect.width) * zoom}px`,
+    `${rect.width + (window.innerWidth - rect.width) * detail}px`,
   );
   section.style.setProperty(
     "--handoff-height",
-    `${rect.height + (window.innerHeight - rect.height) * zoom}px`,
+    `${rect.height + (window.innerHeight - rect.height) * detail}px`,
   );
-  section.style.setProperty("--handoff-blur", String(blur));
+  section.style.setProperty("--handoff-blur", String(handoff));
 }
 
 export function ClinicStory(): JSX.Element {
@@ -123,7 +118,6 @@ export function ClinicStory(): JSX.Element {
   const [sequenceFailed, setSequenceFailed] = useState(false);
   const [exactEndDrawn, setExactEndDrawn] = useState(false);
   const [revealComplete, setRevealComplete] = useState(false);
-  const [revealStartedAt, setRevealStartedAt] = useState<number | undefined>();
   const [targetFrame, setTargetFrame] = useState(1);
   const [direction, setDirection] = useState<-1 | 0 | 1>(0);
   const [progressVh, setProgressVh] = useState(0);
@@ -159,20 +153,14 @@ export function ClinicStory(): JSX.Element {
     if (prefersReducedMotion || sequenceFailed || !renderMotion.state.zonesVisible || !exactEndDrawn) {
       const reset = window.setTimeout(() => {
         setRevealComplete(prefersReducedMotion || sequenceFailed);
-        setRevealStartedAt(undefined);
       }, 0);
       return () => window.clearTimeout(reset);
     }
 
     let completion: number | undefined;
     const begin = window.setTimeout(() => {
-      const startedAt = Date.now();
       setRevealComplete(false);
-      setRevealStartedAt(startedAt);
-      completion = window.setTimeout(
-        () => setRevealComplete(true),
-        REVEAL_TOTAL_MS,
-      );
+      completion = window.setTimeout(() => setRevealComplete(true), REVEAL_TOTAL_MS);
     }, 0);
     return () => {
       window.clearTimeout(begin);
@@ -216,11 +204,16 @@ export function ClinicStory(): JSX.Element {
       section.style.setProperty("--grow", String(raw.state.grow));
       section.style.setProperty("--pan", String(raw.state.pan));
       section.style.setProperty("--snap", String(raw.snap));
-      section.style.setProperty("--zoom", String(raw.state.zoom));
-      section.style.setProperty("--photo-blur", String(raw.state.blur));
+      section.style.setProperty("--detail", String(raw.state.detail));
+      section.style.setProperty("--handoff", String(raw.state.handoff));
+      section.style.setProperty("--sequence-progress", String(raw.state.sequenceProgress));
+      section.style.setProperty("--cue-opacity", String(raw.state.cueOpacity));
+      section.style.setProperty("--tease", String(raw.state.teaseProgress));
+      section.style.setProperty("--map-reveal", String(raw.state.mapReveal));
+      section.style.setProperty("--exit", String(raw.state.exit));
       section.style.setProperty(
         "--jaw-opacity",
-        String(jawArrivalOpacity(currentProgress, profile)),
+        String(raw.state.handoff * (1 - raw.state.exit)),
       );
       section.style.setProperty(
         "--travel",
@@ -237,7 +230,7 @@ export function ClinicStory(): JSX.Element {
         }
       }
 
-      writeHandoffGeometry(section, finalFrame, raw.state.zoom, raw.state.blur);
+      writeHandoffGeometry(section, finalFrame, raw.state.detail, raw.state.handoff);
 
       if (!raw.state.zonesVisible && rawZoneVisibleRef.current) {
         setExactEndDrawn(false);
@@ -289,14 +282,25 @@ export function ClinicStory(): JSX.Element {
   }, [prefersReducedMotion, profile]);
 
   const jawVisible =
-    renderMotion.state.zoom > 0 ||
+    renderMotion.state.handoff > 0 ||
     renderMotion.state.sequenceProgress > 0 ||
     sequenceFailed ||
     prefersReducedMotion;
   const failureZoneReady = sequenceFailed && renderMotion.state.zonesVisible;
-  const zoneVisible = renderMotion.state.zonesVisible || failureZoneReady || prefersReducedMotion;
+  const zoneVisible =
+    renderMotion.state.teaseProgress > 0 ||
+    renderMotion.state.zonesVisible ||
+    failureZoneReady ||
+    prefersReducedMotion;
   const zoneInteractive =
     renderMotion.state.interactive || failureZoneReady || prefersReducedMotion;
+  const mapPresentation: JawMapPresentation = prefersReducedMotion || zoneInteractive
+    ? "interactive"
+    : renderMotion.state.phase === "tease"
+      ? "tease"
+      : renderMotion.state.mapReveal > 0 || renderMotion.state.zonesVisible
+        ? "reveal"
+        : "hidden";
 
   return (
     <section
@@ -361,38 +365,39 @@ export function ClinicStory(): JSX.Element {
           />
         </picture>
 
-        <div className={styles.jawLayer} data-visible={jawVisible}>
-          <div className={styles.jawMedia}>
-            <JawFrameSequence
-              direction={direction}
-              onExactFrameDrawn={onExactFrameDrawn}
-              onPermanentFailure={onPermanentFailure}
-              profile={profile as JawSequenceProfile}
-              reducedMotion={prefersReducedMotion}
-              targetFrame={targetFrame}
-              visible={jawVisible}
-            />
+        {jawVisible ? (
+          <div className={styles.jawLayer} data-visible="true">
+            <div className={styles.jawViewport} data-testid="jaw-viewport">
+              <div className={styles.jawMedia}>
+                <JawFrameSequence
+                  direction={direction}
+                  onExactFrameDrawn={onExactFrameDrawn}
+                  onPermanentFailure={onPermanentFailure}
+                  profile={profile as JawSequenceProfile}
+                  reducedMotion={prefersReducedMotion}
+                  targetFrame={targetFrame}
+                  visible={jawVisible}
+                />
+              </div>
+              <div className={styles.scrim} aria-hidden="true" />
+              <JawZoneOverlay
+                analyticsConsent={analyticsConsent}
+                exactEndDrawn={exactEndDrawn || sequenceFailed}
+                presentation={mapPresentation}
+                reducedMotion={prefersReducedMotion}
+                visible={zoneVisible}
+              />
+            </div>
+            {renderMotion.state.cueOpacity > 0.01 ? (
+              <div className={styles.jawCue} aria-live="polite">
+                <span aria-hidden="true" className={styles.loadingRing} data-testid="jaw-loading-ring" />
+                <span>Zóny bolesti</span>
+              </div>
+            ) : null}
           </div>
-          <div className={styles.scrim} aria-hidden="true" />
-          {prefersReducedMotion ? (
-            <nav aria-label="Zóny čeľuste" className={styles.reducedZoneLinks}>
-              {JAW_ZONES.map((zone) => (
-                <a href={zone.route} key={zone.id}>
-                  {zone.label}
-                </a>
-              ))}
-            </nav>
-          ) : (
-            <JawZoneOverlay
-              analyticsConsent={analyticsConsent}
-              exactEndDrawn={exactEndDrawn || sequenceFailed}
-              interactive={zoneInteractive}
-              reducedMotion={false}
-              revealStartedAt={revealStartedAt}
-              visible={zoneVisible}
-            />
-          )}
-        </div>
+        ) : null}
+
+        <div aria-hidden="true" className={styles.exitGradient} />
 
         <noscript data-testid="jaw-noscript-fallback">
           <section className={styles.noScriptFallback}>

@@ -2,8 +2,13 @@
   --grow: 0;
   --pan: 0;
   --snap: 0;
-  --zoom: 0;
-  --photo-blur: 0;
+  --detail: 0;
+  --handoff: 0;
+  --sequence-progress: 0;
+  --cue-opacity: 0;
+  --tease: 0;
+  --map-reveal: 0;
+  --exit: 0;
   --jaw-opacity: 0;
   --travel: 0px;
   --handoff-left: 0px;
@@ -44,7 +49,7 @@
   padding: clamp(64px, 8dvh, 96px) 0 clamp(42px, 5dvh, 64px);
   gap: clamp(24px, 3dvh, 42px);
   inset: 0;
-  opacity: calc(1 - var(--zoom));
+  opacity: calc(1 - var(--detail));
   transition: opacity 120ms linear;
 }
 
@@ -144,10 +149,10 @@
   display: block;
   width: var(--handoff-width);
   height: var(--handoff-height);
-  border-radius: calc(4px * (1 - var(--zoom)));
+  border-radius: calc(4px * (1 - var(--detail)));
   filter: blur(calc(var(--handoff-blur) * 12px));
   object-fit: cover;
-  opacity: min(1, calc(var(--zoom) * 12));
+  opacity: min(1, calc(var(--detail) * 12));
   transform: scale(calc(1 + var(--handoff-blur) * 0.025));
   transform-origin: center;
   will-change: top, left, width, height, filter, transform;
@@ -166,10 +171,24 @@
   pointer-events: auto;
 }
 
-.jawMedia {
+.jawViewport {
   position: absolute;
   overflow: hidden;
-  inset: 0;
+  top: 50%;
+  left: 50%;
+  width: min(calc(100% - clamp(2rem, 7vw, 7rem)), 1440px, calc(82dvh * 16 / 9));
+  border: 1px solid rgb(230 204 157 / 34%);
+  border-radius: clamp(18px, 2.2vw, 32px);
+  aspect-ratio: 16 / 9;
+  background: #817866;
+  box-shadow: 0 2rem 6rem rgb(10 8 7 / 36%);
+  transform: translate(-50%, -50%) scale(calc(0.94 + var(--handoff) * 0.06));
+  transform-origin: center;
+}
+
+.jawMedia {
+  position: absolute;
+  inset: 0.1px;
 }
 
 .scrim {
@@ -182,27 +201,57 @@
   inset: 0;
 }
 
-.reducedZoneLinks {
+.jawCue {
   position: absolute;
-  z-index: 3;
-  bottom: clamp(1rem, 4vh, 3rem);
+  z-index: 8;
+  top: 50%;
   left: 50%;
-  display: flex;
-  width: min(48rem, calc(100% - 2rem));
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.65rem;
-  transform: translateX(-50%);
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  padding: 0.65rem 1rem;
+  border: 1px solid rgb(235 207 153 / 44%);
+  border-radius: 999px;
+  background: rgb(35 29 26 / 76%);
+  box-shadow: 0 1rem 3rem rgb(22 17 14 / 28%);
+  backdrop-filter: blur(16px);
+  color: var(--porcelain);
+  font-size: clamp(0.82rem, 1.2vw, 1rem);
+  font-weight: 700;
+  gap: 0.7rem;
+  letter-spacing: 0.08em;
+  opacity: var(--cue-opacity);
+  text-transform: uppercase;
+  transform: translate(-50%, -50%);
 }
 
-.reducedZoneLinks a {
-  min-height: 44px;
-  padding: 0.68rem 1rem;
-  border: 1px solid rgb(220 191 137 / 72%);
-  border-radius: 999px;
-  background: rgb(36 31 28 / 72%);
-  color: var(--porcelain);
-  text-decoration: none;
+.loadingRing {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgb(239 208 150 / 28%);
+  border-top-color: #efcf96;
+  border-radius: 50%;
+  animation: jaw-loading-spin 760ms linear infinite;
+}
+
+.exitGradient {
+  position: absolute;
+  z-index: 12;
+  background: linear-gradient(
+    180deg,
+    rgb(237 234 228 / 0%) 0%,
+    rgb(237 234 228 / 18%) 34%,
+    #edeae4 100%
+  );
+  opacity: var(--exit);
+  pointer-events: none;
+  inset: 0;
+}
+
+@keyframes jaw-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .noScriptFallback {
@@ -282,6 +331,17 @@
       linear-gradient(90deg, rgb(28 28 31 / 9%), transparent 70%);
   }
 
+  .jawViewport {
+    width: min(calc(100% - 1rem), calc(92dvh * 9 / 16));
+    border-radius: clamp(16px, 5vw, 26px);
+    aspect-ratio: 9 / 16;
+  }
+
+  .jawCue {
+    top: 50%;
+    white-space: nowrap;
+  }
+
   /*
    * The sequence overlay is deliberately 16:9 even on a portrait viewport.
    * Give its heading a constrained full-width lane, rather than letting the
@@ -333,6 +393,24 @@
 
 .reduced .jawLayer {
   position: relative;
-  height: min(72dvh, 720px);
+  height: min(82dvh, 820px);
   opacity: 1;
+}
+
+.reduced .jawViewport {
+  width: min(calc(100% - 2rem), 1200px, calc(72dvh * 16 / 9));
+  transform: translate(-50%, -50%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .galleryLayer,
+  .handoffPhoto,
+  .jawLayer,
+  .jawViewport {
+    transition: none;
+  }
+
+  .loadingRing {
+    animation: none;
+  }
 }
