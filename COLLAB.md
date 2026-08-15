@@ -5,7 +5,7 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Task 9 in progress — integrate approved WebP jaw sequence and remove legacy MP4 runtime
+- Status: Task 9 complete — localhost review pending; do not merge or push yet
 - Owner: Codex
 - Branch: `codex/higgsfield-jaw-sequence`
 - Base: `9e9cb08`
@@ -24,14 +24,14 @@ update it before taking or handing off work.
   drift, header, patients, media pipeline, and other app files remain protected
   and out of scope.
 
-- Task 9 reserves `components/home/ClinicStory.tsx`, `ClinicStory.test.tsx`,
+- Task 9 released `components/home/ClinicStory.tsx`, `ClinicStory.test.tsx`,
   `clinicStory.module.css`, `clinicStoryMotion.ts`, `clinicStoryMotion.test.ts`,
-  `app/page.test.tsx`, and exact legacy deletes: `jawSeekQueue.ts`,
+  `app/page.test.tsx`, plus the exact legacy deletes: `jawSeekQueue.ts`,
   `jawSeekQueue.test.ts`, `jawStoryMotion.ts`, `jawStoryMotion.test.ts`,
   `jawTracking.ts`, `jawTracking.test.ts`, `scripts/encode-jaw-story.sh`, and
-  every file under `public/media/jaw-story/`. Task 9 may consume but must not
-  edit current gallery content, jaw sequence player/overlay, routes, header,
-  patients, or drift files. It must identify the handoff only as
+  every file under `public/media/jaw-story/`. The gallery content, jaw sequence
+  player/overlay, routes, header, patients, and drift files remain protected.
+  The integration locates its handoff only with
   `photoFrames.find((frame) => frame.id === "detail")`.
 
 > Task 1 approval gate passed on 2026-08-14. The user rejected the original
@@ -518,6 +518,20 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   build, whitespace diff, credential scan, and desktop/375×812 localhost
   review passed with clean console. Task 8 exact files released; Task 9 may now
   use routes from the existing jaw overlay.
+
+- 2026-08-15 — Codex completed Task 9 on
+  `codex/higgsfield-jaw-sequence`: `ClinicStory` now preserves the complete
+  semantic gallery, finds the `detail` handoff by id, and runs the approved
+  WebP jaw sequence with native scroll, an approximately 180 ms critically
+  damped frame target, reverse-safe zone release, visibility pausing, reduced
+  static fallback, and six no-JS routes. The legacy segmented MP4 runtime,
+  seek queue, tracking/callout modules, encoder, and `jaw-story` media are
+  deleted. `overflow: clip` contains the deliberately wide gallery without
+  creating a sticky-breaking scroll ancestor. Full verification: 158 tests,
+  lint, TypeScript, jaw validator, production build, whitespace diff,
+  credential scan, and desktop/390×844 localhost smoke with clean console.
+  Task 9 exact files are released; user localhost approval is required before
+  merge or push.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,

@@ -31,24 +31,6 @@ export type ClinicStoryMotionInput = Readonly<{
   revealComplete: boolean;
 }>;
 
-/**
- * Temporary scalar-call result used by ClinicStory until Task 9 switches it to
- * JawSequenceMotionState. Do not add these video fields to the object-input
- * result; Task 9 removes this bridge.
- *
- * @deprecated Use JawSequenceMotionState through the object-input overload.
- */
-export type ClinicStoryMotionState = Readonly<{
-  grow: number;
-  pan: number;
-  snap: number;
-  zoom: number;
-  blur: number;
-  jawOpacity: number;
-  globalTime: number;
-  finalOpacity: number;
-}>;
-
 export type DampedMotionState = Readonly<{
   value: number;
   velocity: number;
@@ -119,57 +101,10 @@ function mapSequenceMotion(input: ClinicStoryMotionInput): JawSequenceMotionStat
   };
 }
 
-function mapLegacyDesktop(progressVh: number): ClinicStoryMotionState {
-  const value = normalizeProgress(progressVh, DESKTOP_STORY_SCROLL_VH);
-  const globalTime = round(range(value, 480, 930) * 8);
-
-  return {
-    grow: round(range(value, 0, 84)),
-    pan: round(range(value, 84, 380)),
-    snap: 1,
-    zoom: round(range(value, 380, 480)),
-    blur: round(range(value, 442, 480)),
-    jawOpacity: round(range(value, 447, 480)),
-    globalTime,
-    finalOpacity: round(range(globalTime, 6.7, 7.4)),
-  };
-}
-
-function mapLegacyMobile(progressVh: number): ClinicStoryMotionState {
-  const value = normalizeProgress(progressVh, MOBILE_STORY_SCROLL_VH);
-  const globalTime = round(range(value, 230, 680) * 8);
-
-  return {
-    grow: 1,
-    pan: 0,
-    snap: round(range(value, MOBILE_PHASES.galleryEnd, MOBILE_PHASES.snapEnd)),
-    zoom: round(range(value, MOBILE_PHASES.snapEnd, MOBILE_PHASES.handoffEnd)),
-    blur: round(range(value, 192, MOBILE_PHASES.handoffEnd)),
-    jawOpacity: round(range(value, 197, MOBILE_PHASES.handoffEnd)),
-    globalTime,
-    finalOpacity: round(range(globalTime, 6.7, 7.4)),
-  };
-}
-
 export function mapClinicStoryMotion(
   input: ClinicStoryMotionInput,
-): JawSequenceMotionState;
-/** @deprecated Temporary compatibility bridge; Task 9 removes this overload. */
-export function mapClinicStoryMotion(
-  progressVh: number,
-  profile: ClinicStoryProfile,
-): ClinicStoryMotionState;
-export function mapClinicStoryMotion(
-  inputOrProgressVh: ClinicStoryMotionInput | number,
-  profile?: ClinicStoryProfile,
-): JawSequenceMotionState | ClinicStoryMotionState {
-  if (typeof inputOrProgressVh !== "number") {
-    return mapSequenceMotion(inputOrProgressVh);
-  }
-
-  return profile === "mobile"
-    ? mapLegacyMobile(inputOrProgressVh)
-    : mapLegacyDesktop(inputOrProgressVh);
+): JawSequenceMotionState {
+  return mapSequenceMotion(input);
 }
 
 /** Critically damped progress filter; document scroll remains source of truth. */

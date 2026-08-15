@@ -205,30 +205,6 @@ describe("mapClinicStoryMotion sequence contract", () => {
   });
 });
 
-describe("temporary legacy ClinicStory compatibility", () => {
-  test("keeps old scalar overload until Task 9 removes the bridge", () => {
-    expect(mapClinicStoryMotion(110, "mobile")).toMatchObject({
-      grow: 1,
-      pan: 0,
-      snap: 0.5,
-      zoom: 0,
-      blur: 0,
-      jawOpacity: 0,
-      globalTime: 0,
-      finalOpacity: 0,
-    });
-    expect(mapClinicStoryMotion(705, "desktop")).toMatchObject({
-      grow: 1,
-      pan: 1,
-      snap: 1,
-      zoom: 1,
-      blur: 1,
-      jawOpacity: 1,
-      globalTime: 4,
-    });
-  });
-});
-
 describe("stepCriticallyDamped", () => {
   test("settles a coarse wheel jump without overshoot in about 180ms", () => {
     let state = { value: 0, velocity: 0 };

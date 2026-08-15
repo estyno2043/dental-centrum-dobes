@@ -1,6 +1,6 @@
 import { act, render, screen } from "@testing-library/react";
 import { afterEach, expect, test, vi } from "vitest";
-import { ClinicStory, jawSegments } from "./ClinicStory";
+import { ClinicStory } from "./ClinicStory";
 import { photoFrames } from "./photoStripContent";
 
 afterEach(() => {
@@ -21,9 +21,16 @@ function stubMatchMedia(reduced: boolean, wide = true) {
       dispatchEvent: vi.fn(),
     })),
   );
+  vi.stubGlobal(
+    "ResizeObserver",
+    class {
+      observe() {}
+      disconnect() {}
+    },
+  );
 }
 
-test("uses one region and one sticky viewport for gallery, handoff and jaw", () => {
+test("keeps complete semantic gallery and one sticky handoff into jaw sequence", () => {
   stubMatchMedia(false);
   const { container } = render(<ClinicStory />);
 
@@ -31,40 +38,29 @@ test("uses one region and one sticky viewport for gallery, handoff and jaw", () 
     screen.getByRole("region", { name: "Miesto, kde sa nikto neponáhľa." }),
   ).toBeInTheDocument();
   expect(screen.getAllByTestId("clinic-story-pin")).toHaveLength(1);
-  /*
-   * Counted from the content rather than hard-coded: the point of this
-   * assertion is that every frame reaches the DOM, not that there happen to be
-   * seven of them. Adding a photograph should not fail a structural test.
-   */
-  expect(container.querySelectorAll('[data-gallery-frame="true"]')).toHaveLength(
-    photoFrames.length,
+  expect(screen.getAllByTestId("clinic-frame")).toHaveLength(photoFrames.length);
+  expect(screen.getAllByTestId("clinic-frame").map((node) => node.dataset.frameId)).toEqual(
+    photoFrames.map((frame) => frame.id),
   );
-  expect(screen.getByTestId("clinic-story-final-frame")).toBeInTheDocument();
-  expect(screen.getByTestId("clinic-story-handoff")).toHaveAttribute(
-    "src",
-    "/media/strip-07-detail.jpg",
-  );
-  expect(screen.getAllByTestId("jaw-video-layer")).toHaveLength(2);
-  expect(screen.getByText("Prirodzený zhryz")).toBeInTheDocument();
-  expect(screen.getByText("Zachovať vlastný zub")).toBeInTheDocument();
-  expect(screen.getByText("Zdravý základ")).toBeInTheDocument();
+  expect(screen.getByTestId("clinic-handoff")).toHaveAttribute("data-frame-id", "detail");
+  expect(screen.getByTestId("clinic-story")).toHaveAttribute("data-desktop-vh", "1030");
+  expect(container.querySelector("video")).not.toBeInTheDocument();
+  expect(container.textContent).not.toContain("Prirodzený zhryz");
 });
 
 test("maps physical desktop scroll to sequential grow and pan phases", () => {
   stubMatchMedia(false);
   render(<ClinicStory />);
 
-  const section = screen.getByRole("region", {
-    name: "Miesto, kde sa nikto neponáhľa.",
-  });
+  const section = screen.getByTestId("clinic-story");
   const track = screen.getByRole("list");
   Object.defineProperty(window, "innerHeight", { configurable: true, value: 1000 });
   Object.defineProperty(window, "innerWidth", { configurable: true, value: 1440 });
   Object.defineProperty(track, "scrollWidth", { configurable: true, value: 4200 });
   section.getBoundingClientRect = () =>
     ({
-      bottom: 8980,
-      height: 11300,
+      bottom: 7980,
+      height: 10300,
       left: 0,
       right: 1440,
       top: -2320,
@@ -81,30 +77,34 @@ test("maps physical desktop scroll to sequential grow and pan phases", () => {
   expect(section.style.getPropertyValue("--travel")).toBe("2760px");
 });
 
-test("declares four independently seekable clips per asset profile", () => {
-  expect(jawSegments).toHaveLength(4);
-  expect(jawSegments.map((segment) => segment.desktop)).toEqual([
-    "/media/jaw-story/jaw-01-1080.mp4",
-    "/media/jaw-story/jaw-02-1080.mp4",
-    "/media/jaw-story/jaw-03-1080.mp4",
-    "/media/jaw-story/jaw-04-1080.mp4",
-  ]);
-  expect(jawSegments.map((segment) => segment.mobile)).toEqual([
-    "/media/jaw-story/jaw-01-720.mp4",
-    "/media/jaw-story/jaw-02-720.mp4",
-    "/media/jaw-story/jaw-03-720.mp4",
-    "/media/jaw-story/jaw-04-720.mp4",
-  ]);
-});
-
-test("uses static readable fallback with manual swipe under reduced motion", () => {
+test("renders static open sequence and six routes for reduced motion", () => {
   stubMatchMedia(true);
   const { container } = render(<ClinicStory />);
 
   expect(container.querySelector("video")).not.toBeInTheDocument();
-  expect(
-    container.querySelector('img[src="/media/jaw-story/jaw-poster.jpg"]'),
-  ).toBeInTheDocument();
   expect(screen.getByRole("list")).toHaveAttribute("data-native-swipe", "true");
-  expect(screen.getByText("Prirodzený zhryz")).toBeVisible();
+  expect(container.querySelector('[data-jaw-sequence-state="reduced"] img')).toHaveAttribute(
+    "src",
+    "/media/jaw-sequence/desktop/frame-072.webp",
+  );
+  expect(
+    screen.getAllByRole("link", {
+      name: /Predné zuby|Črenové zuby|Stoličky|Ďasná|Chýbajúci zub|Neviem/,
+    }),
+  ).toHaveLength(6);
+});
+
+test("keeps gallery and story geometry when sequence reports a permanent failure", () => {
+  stubMatchMedia(false);
+  render(<ClinicStory />);
+
+  const section = screen.getByTestId("clinic-story");
+  act(() => window.dispatchEvent(new Event("jaw-sequence-permanent-failure")));
+
+  expect(screen.getAllByTestId("clinic-frame")).toHaveLength(photoFrames.length);
+  expect(screen.getByTestId("clinic-handoff")).toHaveAttribute("data-frame-id", "detail");
+  expect(section).toHaveAttribute("data-desktop-vh", "1030");
+  expect(screen.getAllByTestId("clinic-frame").map((node) => node.dataset.frameId)).toEqual(
+    photoFrames.map((frame) => frame.id),
+  );
 });
