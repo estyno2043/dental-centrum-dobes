@@ -1,27 +1,60 @@
 export const DESKTOP_STORY_SCROLL_VH = 1030;
 export const MOBILE_STORY_SCROLL_VH = 780;
 
+export const DESKTOP_PHASES = Object.freeze({
+  galleryEnd: 370,
+  detailEnd: 460,
+  detailDwellEnd: 500,
+  handoffEnd: 530,
+  openingEnd: 670,
+  teaseEnd: 710,
+  mapEnd: 750,
+  interactiveEnd: 900,
+  storyEnd: DESKTOP_STORY_SCROLL_VH,
+});
+
 export const MOBILE_PHASES = Object.freeze({
   galleryEnd: 90,
   snapEnd: 130,
-  handoffEnd: 230,
-  sequenceEnd: 600,
-  zoneStart: 600,
+  detailDwellEnd: 170,
+  handoffEnd: 200,
+  openingEnd: 400,
+  teaseEnd: 455,
+  mapEnd: 510,
+  interactiveEnd: 680,
   storyEnd: 780,
 });
 
 export type ClinicStoryProfile = "desktop" | "mobile";
 
-export type JawSequenceMotionState = Readonly<{
+export type ClinicStoryPhase =
+  | "gallery"
+  | "detail"
+  | "handoff"
+  | "opening"
+  | "tease"
+  | "map"
+  | "interactive"
+  | "exit";
+
+export type ClinicStoryMotionState = Readonly<{
+  phase: ClinicStoryPhase;
   grow: number;
   pan: number;
-  zoom: number;
-  blur: number;
+  detail: number;
+  handoff: number;
   sequenceProgress: number;
+  cueOpacity: number;
+  teaseProgress: number;
+  mapReveal: number;
+  exit: number;
   targetFrame: number;
   zonesVisible: boolean;
   interactive: boolean;
 }>;
+
+/** @deprecated Use ClinicStoryMotionState. */
+export type JawSequenceMotionState = ClinicStoryMotionState;
 
 export type ClinicStoryMotionInput = Readonly<{
   progressVh: number;
@@ -68,42 +101,77 @@ function normalizeFrameCount(frameCount: number): number {
   return Math.max(1, Math.floor(frameCount));
 }
 
-function mapSequenceMotion(input: ClinicStoryMotionInput): JawSequenceMotionState {
+function phaseFor(
+  progressVh: number,
+  profile: ClinicStoryProfile,
+): ClinicStoryPhase {
+  const phases = profile === "mobile" ? MOBILE_PHASES : DESKTOP_PHASES;
+  if (progressVh < phases.galleryEnd) return "gallery";
+  if (progressVh < phases.detailDwellEnd) return "detail";
+  if (progressVh < phases.handoffEnd) return "handoff";
+  if (progressVh < phases.openingEnd) return "opening";
+  if (progressVh < phases.teaseEnd) return "tease";
+  if (progressVh < phases.mapEnd) return "map";
+  if (progressVh < phases.interactiveEnd) return "interactive";
+  return "exit";
+}
+
+function mapSequenceMotion(input: ClinicStoryMotionInput): ClinicStoryMotionState {
   const isMobile = input.profile === "mobile";
   const storyEnd = isMobile ? MOBILE_PHASES.storyEnd : DESKTOP_STORY_SCROLL_VH;
   const progressVh = normalizeProgress(input.progressVh, storyEnd);
   const frameCount = normalizeFrameCount(input.frameCount);
 
+  const galleryEnd = isMobile ? MOBILE_PHASES.galleryEnd : DESKTOP_PHASES.galleryEnd;
+  const detailEnd = isMobile ? MOBILE_PHASES.snapEnd : DESKTOP_PHASES.detailEnd;
+  const detailDwellEnd = isMobile
+    ? MOBILE_PHASES.detailDwellEnd
+    : DESKTOP_PHASES.detailDwellEnd;
+  const handoffEnd = isMobile ? MOBILE_PHASES.handoffEnd : DESKTOP_PHASES.handoffEnd;
+  const openingEnd = isMobile ? MOBILE_PHASES.openingEnd : DESKTOP_PHASES.openingEnd;
+  const teaseEnd = isMobile ? MOBILE_PHASES.teaseEnd : DESKTOP_PHASES.teaseEnd;
+  const mapEnd = isMobile ? MOBILE_PHASES.mapEnd : DESKTOP_PHASES.mapEnd;
+  const interactiveEnd = isMobile
+    ? MOBILE_PHASES.interactiveEnd
+    : DESKTOP_PHASES.interactiveEnd;
+
   const grow = isMobile ? 1 : range(progressVh, 0, 84);
-  const pan = isMobile ? 0 : range(progressVh, 84, 380);
-  const zoom = isMobile
-    ? range(progressVh, MOBILE_PHASES.snapEnd, MOBILE_PHASES.handoffEnd)
-    : range(progressVh, 380, 480);
-  const blur = isMobile
-    ? range(progressVh, 192, MOBILE_PHASES.handoffEnd)
-    : range(progressVh, 442, 480);
-  const sequenceProgress = isMobile
-    ? range(progressVh, MOBILE_PHASES.handoffEnd, MOBILE_PHASES.sequenceEnd)
-    : range(progressVh, 480, 840);
-  const zoneStart = isMobile ? MOBILE_PHASES.zoneStart : 840;
-  const zonesVisible = progressVh >= zoneStart;
+  const pan = isMobile ? 0 : range(progressVh, 84, DESKTOP_PHASES.galleryEnd);
+  const detail = range(progressVh, galleryEnd, detailEnd);
+  const handoff = range(progressVh, detailDwellEnd, handoffEnd);
+  const sequenceProgress = range(progressVh, handoffEnd, openingEnd);
+  const cueOpacity =
+    range(progressVh, handoffEnd + 5, handoffEnd + 22) *
+    (1 - range(progressVh, openingEnd - 20, openingEnd));
+  const teaseProgress = range(progressVh, openingEnd, teaseEnd);
+  const mapReveal = range(progressVh, teaseEnd, mapEnd);
+  const exit = range(progressVh, interactiveEnd, storyEnd);
+  const zonesVisible = progressVh >= teaseEnd;
 
   return {
+    phase: phaseFor(progressVh, input.profile),
     grow,
     pan,
-    zoom,
-    blur,
+    detail,
+    handoff,
     sequenceProgress,
+    cueOpacity,
+    teaseProgress,
+    mapReveal,
+    exit,
     targetFrame: 1 + Math.round(sequenceProgress * (frameCount - 1)),
     zonesVisible,
     interactive:
-      zonesVisible && input.exactEndDrawn && input.revealComplete,
+      progressVh >= mapEnd &&
+      progressVh < interactiveEnd &&
+      input.exactEndDrawn &&
+      input.revealComplete,
   };
 }
 
 export function mapClinicStoryMotion(
   input: ClinicStoryMotionInput,
-): JawSequenceMotionState {
+): ClinicStoryMotionState {
   return mapSequenceMotion(input);
 }
 
