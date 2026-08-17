@@ -1,29 +1,68 @@
 /*
- * The Tím page.
+ * The team section — the homepage's closing section, and the whole of `/tim`.
  *
- * Light, like the patients section — the cinematic dark belongs to the
- * homepage's hero, and a page whose whole job is to show people's faces should
- * not fight the photography for attention.
+ * Light, like the patients section. The cinematic dark belongs to the hero, and
+ * a section whose whole job is to show people's faces should not fight the
+ * photography for attention.
  */
 
-.page {
-  background: var(--porcelain);
+/* -------------------------------------------------------------- section --- */
+
+/*
+ * `--enter` and `--p` are written by `TeamSection.tsx`. Both default to their
+ * *settled* value here rather than their starting one: if the script never
+ * runs, the section should read as an ordinary page rather than as eleven
+ * invisible people on a blank ground.
+ */
+.section {
+  --enter: 1;
+  --p: 0.5;
+
+  /* The drifting-photograph scene above ends on this tone. */
+  --from-tone: #e2d7c3;
+  --to-tone: #f7f4ee;
+
+  position: relative;
+
+  /*
+   * Mixed rather than cross-faded between two layers: beginning on the
+   * previous section's own tone and cooling away from it makes the join a
+   * change of temperature instead of an edge. The handoff rides `--enter`, so
+   * it spends the section's whole approach — a full screen of scrolling —
+   * easing from one ground to the other and is settled before the first
+   * portrait is in view.
+   */
+  background: color-mix(
+    in oklab,
+    var(--to-tone) calc(var(--enter) * 100%),
+    var(--from-tone)
+  );
   color: var(--charcoal);
 }
 
 /* ---------------------------------------------------------------- intro --- */
 
+/*
+ * The intro arrives on the same value as the ground, a little behind it: by
+ * the time the section is two thirds of the way up the screen the copy has
+ * settled, so the reader finishes the crossing already reading.
+ */
 .intro {
+  --copy: clamp(0, calc((var(--enter) - 0.15) / 0.5), 1);
+
   display: grid;
   max-width: 1240px;
 
   /*
-   * Generous top padding rather than a first-screen hero: the header floats
-   * over this page, and the eyebrow would otherwise start underneath it.
+   * Enough headroom for the fixed header, which floats over this section on
+   * both pages — without it the eyebrow starts underneath the bar.
    */
   margin: 0 auto;
-  padding: clamp(140px, 16vh, 210px) clamp(20px, 5vw, 88px) clamp(48px, 7vw, 90px);
-  gap: 20px;
+  padding: clamp(120px, 15vh, 200px) clamp(20px, 5vw, 88px)
+    clamp(44px, 6vw, 84px);
+  gap: clamp(16px, 2vw, 26px);
+  opacity: var(--copy);
+  transform: translateY(calc((1 - var(--copy)) * 26px));
 }
 
 .eyebrow {
@@ -40,81 +79,78 @@
 
 .eyebrowRule {
   display: block;
-  width: clamp(22px, 4vw, 48px);
+
+  /* Draws itself as the section arrives rather than sitting there full length. */
+  width: calc(clamp(22px, 4vw, 48px) * var(--copy));
   height: 1px;
   flex: none;
   background: var(--taupe-deep);
 }
 
 .headline {
-  max-width: 20em;
+  max-width: 18em;
   margin: 0;
-  font-size: clamp(2rem, 5.4vw, 4.1rem);
+  font-size: clamp(2.1rem, 6vw, 4.6rem);
   font-weight: 600;
-  letter-spacing: -0.03em;
-  line-height: 1.08;
+  letter-spacing: -0.035em;
+  line-height: 1.04;
   text-wrap: balance;
 }
 
 /*
- * A stated measure rather than `ch`. `ch` resolves against this element's own
- * font size, which is why an earlier section came out one word per line.
+ * A stated measure rather than `ch`, which resolves against this element's own
+ * font size — that is what broke an earlier section into one word per line.
  */
 .lead {
-  max-width: 62ch;
+  max-width: 58ch;
   margin: 0;
-  color: rgb(38 38 42 / 68%);
-  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  color: rgb(38 38 42 / 66%);
+  font-size: clamp(1rem, 1.35vw, 1.15rem);
   line-height: 1.62;
 }
 
 /* ----------------------------------------------------------------- grid --- */
 
 /*
- * Two columns where only the left one travels. `--p` is how far the grid has
- * crossed the viewport, written once per scroll by `TeamGrid.tsx`; the odd
- * children read it and the even ones stay put, so the columns slide past each
- * other instead of scrolling as one block.
+ * Two columns where only the left one travels, so they slide past each other
+ * instead of scrolling as one block.
+ *
+ * Slightly unequal columns. Two identical ones read as a table of staff; a
+ * hair of asymmetry reads as a spread, and at this size the difference is felt
+ * rather than seen.
  *
  * The bottom padding is the drift's own room, and only the bottom: the column
  * moves as one piece, so the only edges that travel are the grid's own. Near
- * the top of the page the left column sits *below* its row and needs nothing
- * above it — a matching top padding just left a permanent 126px hole under the
- * intro.
+ * the top of the section the left column sits *below* its row and needs
+ * nothing above it — a matching top padding just left a permanent hole under
+ * the intro.
  */
 .grid {
-  --p: 0;
-
   /*
    * Half the column's total travel. Measured rather than guessed: the grid is
    * far taller than the viewport, so `--p` only ever covers about three
-   * quarters of its 0→1 range on this page and the reader sees roughly 1.5×
-   * this value of movement, not 2×. At 8vmin that came out as 108px across
-   * four thousand pixels of scroll — technically moving, visually still.
+   * quarters of its 0→1 range and the reader sees roughly 1.5× this value of
+   * movement, not 2×. At 8vmin that came out as 108px across four thousand
+   * pixels of scroll — technically moving, visually still.
    */
   --drift: 14vmin;
 
   display: grid;
   max-width: 1240px;
   margin: 0 auto;
-  padding: 0 clamp(20px, 5vw, 88px) calc(var(--drift) + 6vh);
-  gap: 18px;
-  grid-template-columns: repeat(2, 1fr);
+  padding: 0 clamp(20px, 5vw, 88px) calc(var(--drift) + 7vh);
+  gap: clamp(30px, 5vw, 60px) clamp(18px, 3vw, 38px);
+  grid-template-columns: 1.06fr 0.94fr;
   list-style: none;
 }
 
 .member {
   display: grid;
-  gap: 14px;
+  gap: 16px;
   align-content: start;
 }
 
-/*
- * +--drift at the top of its travel, −--drift at the bottom. The reference
- * site uses ±20vmin; ours is smaller because our grid is narrower and the
- * portraits are taller, so the same distance would pull a card most of the way
- * off its own row.
- */
+/* +--drift at the top of its travel, −--drift at the bottom. */
 .member:nth-child(odd) {
   transform: translateY(calc((1 - 2 * var(--p)) * var(--drift)));
   will-change: transform;
@@ -123,43 +159,100 @@
 .frame {
   position: relative;
   overflow: hidden;
-  border-radius: 3px;
+  border-radius: 2px;
   background: rgb(174 155 126 / 12%);
 }
 
+/*
+ * The portraits were shot on different days under different light. Holding
+ * them all back towards grey pulls eleven separate sittings into one set;
+ * hovering returns the photograph to itself, which is also the only reward
+ * this grid offers for looking closely.
+ */
 .portrait {
   display: block;
   width: 100%;
   height: auto;
   aspect-ratio: 4 / 5;
+  filter: grayscale(0.72) contrast(1.02);
   object-fit: cover;
-
-  /*
-   * The frames were shot on different days under different light. A shared
-   * slight desaturation pulls eleven separate sittings into one set; hovering
-   * returns the photograph to itself.
-   */
-  filter: saturate(0.92);
-  transition: filter 0.5s var(--ease), transform 0.7s var(--ease);
+  transform: scale(1.012);
+  transition:
+    filter 0.7s var(--ease),
+    transform 0.9s var(--ease);
 }
 
-.member:hover .portrait {
-  filter: saturate(1);
-  transform: scale(1.02);
+.member:hover .portrait,
+.member:focus-within .portrait {
+  filter: grayscale(0) contrast(1);
+  transform: scale(1.04);
 }
 
+/* ----------------------------------------------------------- name plate --- */
+
+/*
+ * A hairline over the name, drawn from the left on hover. The rule is the
+ * section's only ornament, and it earns its place by making the whole card
+ * feel like one object rather than a photograph with a caption under it.
+ */
 .info {
+  position: relative;
   display: grid;
-  gap: 5px;
+  gap: 7px;
+  padding-top: 13px;
+  border-top: 1px solid rgb(138 115 88 / 26%);
+}
+
+/*
+ * Sits exactly on the border above, spanning the card's width, and scales from
+ * nothing on hover. `-1px` rather than `0`: the border occupies that row, and
+ * without the offset the darker rule paints one pixel below it and reads as two
+ * lines instead of one turning darker.
+ */
+.info::before {
+  position: absolute;
+  height: 1px;
+  background: var(--taupe-deep);
+  content: "";
+  inset: -1px 0 auto 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.6s var(--ease);
+}
+
+.member:hover .info::before,
+.member:focus-within .info::before {
+  transform: scaleX(1);
+}
+
+/*
+ * The number sits on the baseline of the name rather than above it, so a name
+ * that wraps to two lines pushes it down with the second line instead of
+ * leaving it stranded at the top.
+ */
+.nameRow {
+  display: flex;
+  gap: 16px;
+  align-items: last baseline;
+  justify-content: space-between;
 }
 
 .name {
   margin: 0;
-  font-size: clamp(0.95rem, 1.35vw, 1.12rem);
+  font-size: clamp(1rem, 1.5vw, 1.28rem);
   font-weight: 600;
-  letter-spacing: -0.012em;
-  line-height: 1.28;
+  letter-spacing: -0.018em;
+  line-height: 1.22;
   text-wrap: pretty;
+}
+
+.index {
+  flex: none;
+  color: rgb(138 115 88 / 62%);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: 0.1em;
 }
 
 .role {
@@ -174,17 +267,32 @@
 /* ----------------------------------------------------------------- a11y --- */
 
 /*
- * With motion reduced the columns simply sit still. Nothing else changes:
- * the drift is decoration, and the page is the same eleven people without it.
+ * With motion reduced nothing travels and nothing fades in. The stylesheet's
+ * defaults are already the rest state, so this only has to stop the columns
+ * and the hover moves — the section is the same eleven people either way.
  */
 @media (prefers-reduced-motion: reduce) {
   .member:nth-child(odd) {
     transform: none;
   }
 
-  .portrait,
-  .member:hover .portrait {
+  .intro {
+    opacity: 1;
     transform: none;
+  }
+
+  .eyebrowRule {
+    width: clamp(22px, 4vw, 48px);
+  }
+
+  .portrait,
+  .member:hover .portrait,
+  .member:focus-within .portrait {
+    transform: none;
+    transition: none;
+  }
+
+  .info::before {
     transition: none;
   }
 }
@@ -193,15 +301,21 @@
 
 /*
  * One column on a phone, and no drift — with nothing beside it to slide past,
- * the travel reads as the page stuttering rather than as movement.
+ * the travel reads as the page stuttering rather than as movement. Hover moves
+ * go too: on a touch screen they either never fire or stick after a tap.
  */
 @media (max-width: 767px) {
   .grid {
-    gap: 30px;
+    gap: 34px;
     grid-template-columns: 1fr;
   }
 
   .member:nth-child(odd) {
+    transform: none;
+  }
+
+  .portrait {
+    filter: grayscale(0.35);
     transform: none;
   }
 }

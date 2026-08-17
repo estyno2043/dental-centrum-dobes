@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import type { JSX } from "react";
 
 import { SiteHeader } from "@/components/hero/SiteHeader";
-import { TeamGrid } from "@/components/team/TeamGrid";
-import { teamIntro, teamMembers } from "@/components/team/teamContent";
-import styles from "@/components/team/team.module.css";
+import { TeamSection } from "@/components/team/TeamSection";
+import { teamMembers } from "@/components/team/teamContent";
 
 export const metadata: Metadata = {
   title: "Tím — Dental Centrum Dobeš",
@@ -18,22 +17,13 @@ export default function TeamPage(): JSX.Element {
     <>
       <SiteHeader />
       {/*
-       * `data-header-mode="light"` for the whole page, not per section. There
-       * is no hero here to carry the logo, so the header would otherwise be
-       * hidden the moment the reader scrolls past the first screen — and on a
-       * subpage the way back to the rest of the site has to stay reachable.
+       * The same section the homepage closes on, with its headline promoted to
+       * `h1` — here the team is the page's subject rather than its last word.
+       * Sharing the component rather than copying it is what keeps the two from
+       * drifting apart as the roster changes.
        */}
-      <main className={styles.page} data-header-mode="light">
-        <header className={styles.intro}>
-          <p className={styles.eyebrow}>
-            <span className={styles.eyebrowRule} aria-hidden="true" />
-            {teamIntro.eyebrow}
-          </p>
-          <h1 className={styles.headline}>{teamIntro.headline}</h1>
-          <p className={styles.lead}>{teamIntro.lead}</p>
-        </header>
-
-        <TeamGrid />
+      <main>
+        <TeamSection headingLevel="h1" />
       </main>
     </>
   );

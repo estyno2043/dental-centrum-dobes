@@ -1,66 +1,29 @@
-"use client";
-
-import { useEffect, useRef, type JSX } from "react";
+import type { JSX } from "react";
 import { teamMembers } from "./teamContent";
 import styles from "./team.module.css";
 
+type TeamGridProps = Readonly<{
+  /** One level below the section's own headline. See `TeamSection`. */
+  nameLevel?: "h2" | "h3";
+}>;
+
 /**
- * The team grid.
+ * The eleven portraits.
  *
- * Two columns of portraits where only the left one travels: as the reader
- * scrolls, it rises past the right column so the two never line up for long.
- * The reference site does the same thing, and it works because it gives a
- * plain list of headshots a current without asking anyone to interact with it.
+ * A plain server component: everything that moves here is CSS reading `--p`,
+ * which `TeamSection` writes on the ancestor. Custom properties inherit, so
+ * the grid needs no state, no effect and no client bundle of its own.
  *
- * One number reaches the DOM — `--p`, how far the grid has crossed the
- * viewport — and CSS does the rest, so the cost per scroll frame is a single
- * custom-property write no matter how many people are on the page. Same
- * approach as the drifting-photograph scene, and for the same reason: a scroll
- * listener can be measured in this project's preview environment, while
- * scroll-driven animations and IntersectionObserver could not be.
+ * The left column travels while the right stays put, so the two slide past
+ * each other as the reader scrolls — the reference site's move, and it gives a
+ * list of headshots a current without asking anyone to interact with it.
  */
-export function TeamGrid(): JSX.Element {
-  const gridRef = useRef<HTMLUListElement>(null);
-
-  useEffect(() => {
-    const grid = gridRef.current;
-    if (!grid) return;
-
-    const reduced = globalThis.matchMedia?.(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    if (reduced) return; // the stylesheet leaves both columns at rest
-
-    const update = () => {
-      const rect = grid.getBoundingClientRect();
-
-      /*
-       * 0 when the grid's top edge is still at the bottom of the screen, 1
-       * once its bottom edge has risen to the top — the span over which any
-       * part of it is visible. Measured against that rather than the grid's
-       * own height so a tall grid and a short one drift at the same rate.
-       */
-      const span = rect.height + window.innerHeight;
-      const travelled = window.innerHeight - rect.top;
-      grid.style.setProperty(
-        "--p",
-        String(Math.min(1, Math.max(0, travelled / span))),
-      );
-    };
-
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-
-    return () => {
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-    };
-  }, []);
+export function TeamGrid({ nameLevel = "h3" }: TeamGridProps = {}): JSX.Element {
+  const Name = nameLevel;
 
   return (
-    <ul className={styles.grid} ref={gridRef}>
-      {teamMembers.map((member) => (
+    <ul className={styles.grid}>
+      {teamMembers.map((member, index) => (
         <li className={styles.member} key={member.slug}>
           <div className={styles.frame}>
             {/* eslint-disable-next-line @next/next/no-img-element -- Pre-cropped 4:5 portrait; the image service adds nothing here. */}
@@ -75,8 +38,19 @@ export function TeamGrid(): JSX.Element {
               width="1360"
             />
           </div>
+
           <div className={styles.info}>
-            <h2 className={styles.name}>{member.name}</h2>
+            <div className={styles.nameRow}>
+              <Name className={styles.name}>{member.name}</Name>
+              {/*
+               * Decorative, and marked as such: the count is already carried
+               * by the list itself, so reading "zero one" before every name
+               * would only add noise.
+               */}
+              <span aria-hidden="true" className={styles.index}>
+                {String(index + 1).padStart(2, "0")}
+              </span>
+            </div>
             {/*
              * Rendered only where the clinic states a role. Seven of the
              * eleven are published by the clinic with a degree and nothing

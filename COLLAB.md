@@ -597,8 +597,37 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   no horizontal overflow. `SiteHeader`'s logo and any nav item with a real
   path now route through `next/link`; the "Tím" item points at `/tim`.
 
-  Files reserved: `components/team/**`, `app/tim/**`, `public/media/tim/**`.
-  Awaiting the user's localhost approval before this reaches `main`.
+  Then, at the user's request, the same section was added to the homepage below
+  the drifting-photograph scene and the design pushed further. `TeamSection`
+  now owns the scroll listener and both pages share it — the homepage as its
+  closing section with an `h2`, `/tim` as the whole page with an `h1`, and
+  `TeamGrid` went back to being a plain server component reading the inherited
+  `--p`. Keeping one component rather than two copies is what stops the roster
+  from diverging.
+
+  The join reuses the pattern from the patients→drift boundary: the ground
+  starts on the drifting scene's own `#e2d7c3` and cools to `#f7f4ee` across a
+  full screen of approach on `--enter`, and the intro fades and rises on the
+  same value a little behind it. Measured at the boundary — at one viewport out
+  both grounds read oklab L 0.8826/0.8827, indistinguishable, then 0.9167 →
+  0.9423 → 0.9661 → 0.9678 settled, with the intro at 0 → 0.5 → 1 and the
+  header flipping to taupe exactly on the edge.
+
+  Modernisation, all of it measured at 1440×900 and 390×844: unequal columns
+  (560.7px against 497.3px), portraits held at `grayscale(0.72)` so eleven
+  separate sittings read as one set and return to colour on hover, a numbered
+  index on the name's last baseline, and a hairline over each name plate that
+  draws from the left on hover. Both `--enter` and `--p` default to their
+  settled values in CSS, so a page whose script fails shows the team rather
+  than eleven invisible people.
+
+  Verified: 136 tests, lint, TypeScript, production build, no horizontal
+  overflow at either size, all eleven portraits loading the right srcset
+  candidate.
+
+  Files reserved: `components/team/**`, `app/tim/**`, `public/media/tim/**`,
+  and `app/page.tsx`. Awaiting the user's localhost approval before this
+  reaches `main`. Still outstanding: the seven missing roles.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
