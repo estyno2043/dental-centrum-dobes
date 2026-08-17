@@ -38,6 +38,11 @@ type TeamSectionProps = Readonly<{
   headingLevel?: "h1" | "h2";
 }>;
 
+/** Fraction of the viewport, either side of its middle, that is fully lit. */
+const HOLD = 0.18;
+/** And the ramp from lit to grey beyond that. */
+const FADE = 0.2;
+
 export function TeamSection({
   headingLevel = "h2",
 }: TeamSectionProps = {}): JSX.Element {
@@ -77,10 +82,17 @@ export function TeamSection({
       );
 
       /*
-       * Colour follows the middle of the screen. `REACH` is how far from that
-       * middle a row still catches some of it — a little under half a screen,
-       * so one row is lit at a time and the rows above and below have gone
-       * back to grey.
+       * Colour follows the middle of the screen.
+       *
+       * A plateau, not a peak. A single falloff from the centre reaches full
+       * colour at exactly one scroll position, which in practice nobody sees —
+       * the row is always on its way in or out and spends the whole time
+       * part-grey. `HOLD` is the band where a row is fully lit and stays lit
+       * while it crosses; `FADE` is the ramp on either side of it.
+       *
+       * The two together are just under half the row pitch, which is what
+       * makes each row its own event: grey, then lit for a while, then grey
+       * again, with no two rows ever lit at once.
        *
        * Deliberately measured from `offsetTop` rather than the card's own
        * rect: the rect carries the left column's drift, which would light the
@@ -89,13 +101,15 @@ export function TeamSection({
        * effect — so the position used is the one the drift does not touch.
        */
       const middle = window.innerHeight / 2;
-      const reach = window.innerHeight * 0.46;
+      const hold = window.innerHeight * HOLD;
+      const fade = window.innerHeight * FADE;
       for (const card of cards) {
-        const centre =
-          rect.top + card.offsetTop + card.offsetHeight / 2 - middle;
+        const distance = Math.abs(
+          rect.top + card.offsetTop + card.offsetHeight / 2 - middle,
+        );
         card.style.setProperty(
           "--focus",
-          String(clamp(1 - Math.abs(centre) / reach)),
+          String(clamp((hold + fade - distance) / fade)),
         );
       }
     };

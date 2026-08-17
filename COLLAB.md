@@ -653,6 +653,24 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   grounds read oklab L 0.8826/0.8827, then 0.9339 → 0.9830 → 0.9850 settled.
   136 tests, lint, TypeScript, build; no horizontal overflow.
 
+  Fourth pass: the user could not see the colour effect at all. The cause was
+  not a bug — it measured correctly — it was that a single falloff from the
+  screen's middle reaches full colour at exactly one scroll position, so a row
+  is always on its way in or out and spends the whole time part-grey. The band
+  now has a plateau: fully lit while the row centre is within 0.18 of the
+  viewport either side of the middle, ramping to nothing over another 0.20. That
+  is 324px of full colour per row against a 695px row pitch, so each row is its
+  own event with nothing lit between them.
+
+  Desaturation alone was also too quiet, so a lit row now does four things at
+  once: takes its colour back (grayscale 1 → 0), brightens, gains a little
+  contrast, and rises 8px out of the page with a `0 22px 48px rgb(38 38 42 /
+  20%)` shadow that was not there before. Unlit rows are dimmed to 0.74 opacity
+  — the pale state is what makes the lit one read as lit — and the name greys
+  back with its portrait. Measured: the centred pair reads grayscale 0, opacity
+  1, full shadow; every other row reads grayscale 1, opacity 0.74, no shadow;
+  150px off centre the pair is still fully lit.
+
   Not verified: the ground's appearance. The preview pane renders this project's
   colours far darker than they compute and will not advance CSS transitions, so
   every colour claim above is a measurement, not something seen. The user asked

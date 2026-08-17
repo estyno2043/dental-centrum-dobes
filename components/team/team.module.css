@@ -236,23 +236,39 @@
 }
 
 .frame {
+  --lit: max(var(--focus), var(--hover));
+
   position: relative;
   overflow: hidden;
   border-radius: 2px;
   background: rgb(174 155 126 / 12%);
+
+  /*
+   * The lift. A portrait arriving in the light rises a little and casts a
+   * shadow that was not there a moment ago, so the change is a change in the
+   * object and not only in its colours — which is the difference between a
+   * photograph turning colour and a photograph coming forward.
+   */
+  box-shadow: 0 calc(var(--lit) * 22px) calc(var(--lit) * 48px)
+    rgb(38 38 42 / calc(var(--lit) * 20%));
+  transform: translateY(calc(var(--lit) * -8px));
 }
 
 /*
- * The portraits were shot on different days under different light. Holding
- * them all back towards grey pulls eleven separate sittings into one set.
+ * The portraits were shot on different days under different light. Held all the
+ * way back to grey they read as one set rather than eleven separate sittings.
  *
- * They recover their colour as the reader arrives at them and lose it again on
- * the way out — `--focus` is how near this row is to the band of light, written
- * per row by `TeamSection.tsx`. Hovering does the same thing on demand, and the
- * two are combined rather than one overriding the other, so a hover inside the
- * lit band cannot make a portrait *less* colourful than it already is.
+ * Arriving in the band of light, a row does four things at once, because one
+ * alone is not enough to notice: it takes its colour back, brightens, gains a
+ * little contrast, and comes up out of the page. Outside the band it is grey and
+ * deliberately dimmed — the pale state is what makes the lit one read as lit.
  *
- * No transition on the filter: `--focus` changes every scroll frame, and a
+ * `--focus` is how near this row is to the light, written per row by
+ * `TeamSection.tsx`; hovering does the same on demand. The two are combined
+ * rather than one overriding the other, so a hover inside the band cannot make
+ * a portrait *less* colourful than it already is.
+ *
+ * No transition on any of it: `--focus` changes every scroll frame, and a
  * transition on top of that only makes the colour lag behind the light.
  */
 .portrait {
@@ -262,10 +278,13 @@
   width: 100%;
   height: auto;
   aspect-ratio: 4 / 5;
-  filter: grayscale(calc((1 - var(--lit)) * 0.88));
+  filter: grayscale(calc(1 - var(--lit)))
+    brightness(calc(0.97 + var(--lit) * 0.09))
+    contrast(calc(0.96 + var(--lit) * 0.08))
+    saturate(calc(0.9 + var(--lit) * 0.22));
   object-fit: cover;
-  transform: scale(calc(1.006 + var(--lit) * 0.018));
-  transition: transform 0.9s var(--ease);
+  opacity: calc(0.74 + var(--lit) * 0.26);
+  transform: scale(calc(1.004 + var(--lit) * 0.026));
 }
 
 .member:hover,
@@ -324,6 +343,11 @@
 
 .name {
   margin: 0;
+  color: color-mix(
+    in oklab,
+    var(--charcoal) calc(58% + max(var(--focus), var(--hover)) * 42%),
+    #a9a29a
+  );
   font-size: clamp(1rem, 1.5vw, 1.28rem);
   font-weight: 600;
   letter-spacing: -0.018em;
@@ -371,14 +395,19 @@
   }
 
   /*
-   * Full colour, and no travel. With motion reduced there is no band of light
-   * to follow, so holding the portraits back towards grey would take something
-   * away rather than add anything.
+   * Full colour, no dimming, no lift. With motion reduced there is no band of
+   * light to travel through, so holding the portraits back would take
+   * something away rather than add anything.
    */
   .portrait {
     filter: none;
+    opacity: 1;
     transform: none;
-    transition: none;
+  }
+
+  .frame {
+    box-shadow: none;
+    transform: none;
   }
 
   .info::before {
@@ -408,13 +437,17 @@
   }
 
   /*
-   * The band still travels on a phone — it is the one screen size where the
-   * reader is always looking at the middle of the viewport — but it reaches
-   * less far towards grey, since there is no hover to recover a portrait that
-   * has scrolled past.
+   * The band matters most here — a phone shows one portrait at a time, so the
+   * one in the middle of the screen is the one being looked at. The lift goes,
+   * though: a shadow under a card that spans the whole screen width reads as
+   * the layout coming apart rather than as the photograph coming forward.
    */
+  .frame {
+    box-shadow: none;
+    transform: none;
+  }
+
   .portrait {
-    filter: grayscale(calc((1 - var(--focus)) * 0.6));
     transform: none;
   }
 }
