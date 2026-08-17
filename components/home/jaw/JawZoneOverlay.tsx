@@ -316,8 +316,17 @@ export function JawZoneOverlay({
         <p className={styles.cardKicker}>Vyberte problém</p>
         <h3>{activeZone.label}</h3>
         {visibleState.mode === "mobile" ? (
-          <button className={styles.closeButton} onClick={() => close(true)} type="button">
-            Zavrieť
+          <button
+            aria-label="Zavrieť"
+            className={styles.closeButton}
+            onClick={() => close(true)}
+            type="button"
+          >
+            {/* The glyph is decoration; the button's name comes from the label
+                above and the hidden word below, so nothing is lost when the
+                mark cannot be read. */}
+            <span aria-hidden="true">✕</span>
+            <span className={styles.srOnly}>Zavrieť</span>
           </button>
         ) : null}
       </div>

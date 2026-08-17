@@ -229,6 +229,57 @@ describe("JawZoneOverlay pain map", () => {
     expect(screen.getByRole("link", { name: "Chýba mi zub" })).toBeVisible();
   });
 
+  /*
+   * The close control is a glyph now, not the word it used to be. Its name has
+   * to survive that: the mark itself is hidden from assistive technology and
+   * the word is carried by the label and a visually hidden span, so a screen
+   * reader still hears "Zavrieť" rather than a multiplication sign.
+   */
+  it("keeps the close control named after it became an icon", async () => {
+    const user = userEvent.setup();
+    renderOverlay();
+    changeViewport(true);
+    await user.click(screen.getByTestId("jaw-hit-gum-upper"));
+
+    const close = screen.getByRole("button", { name: "Zavrieť" });
+    expect(close.querySelector("[aria-hidden='true']")).toBeInTheDocument();
+    expect(close.querySelector(`.${styles.srOnly}`)).toHaveTextContent("Zavrieť");
+  });
+
+  /*
+   * The three faults these buttons actually had. Each one is a thing a reader
+   * could hit, not a matter of taste, so each is pinned here.
+   */
+  it("keeps the button fixes: wrapping bar, no dangling rule, room in the close control", () => {
+    // The bar holds a question and two labels and used to be held on one line,
+    // which pushed it past its own max-width between the phone breakpoint and
+    // roughly 900px.
+    expect(cssText).toMatch(/\.assistanceBar\s*\{[^}]*flex-wrap:\s*wrap/);
+    expect(cssText).not.toMatch(/\.assistanceBar\s*\{[^}]*white-space:\s*nowrap/);
+
+    // Every problem row carried a bottom rule, including the last, which left
+    // a line hanging over the card's own edge.
+    expect(cssText).toMatch(/\.problemList li:last-child a\s*\{[^}]*border-bottom:\s*0/);
+
+    // "Zavrieť" sat in a 44px minimum with no padding of its own and ran into
+    // its border; the control is now a fixed round icon button.
+    expect(cssText).toMatch(/\.closeButton\s*\{[^}]*width:\s*44px/);
+    expect(cssText).toMatch(/\.closeButton\s*\{[^}]*height:\s*44px/);
+  });
+
+  /*
+   * Keyboard focus used to be signalled by the same fill that hover produces,
+   * which gives a keyboard user no way to tell the two apart.
+   */
+  it("gives every jaw control a focus ring of its own", () => {
+    for (const selector of ["directEntry", "problemList a", "closeButton"]) {
+      const pattern = selector.includes(" ")
+        ? String.raw`\.${selector.split(" ")[0]} a:focus-visible\s*\{[^}]*outline:`
+        : String.raw`\.${selector}:focus-visible\s*\{[^}]*outline:`;
+      expect(cssText).toMatch(new RegExp(pattern));
+    }
+  });
+
   it("keeps one centered 16:9 artboard and pop-motion contracts", () => {
     renderOverlay();
     expect(screen.getByTestId("jaw-artboard")).toHaveClass(styles.zoneArtboard);

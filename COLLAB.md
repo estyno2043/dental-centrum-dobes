@@ -677,9 +677,51 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   for a lighter background off the back of what they saw on their own machine,
   and only they can confirm the result.
 
+- 2026-08-17 — Claude reworked the jaw section's controls on the same branch,
+  at the user's request. This touches Codex's files: `JawZoneOverlay.tsx` and
+  `jawExperience.module.css`. Nothing about the anatomy, the sequence, the
+  zones or their geometry was changed — only the assistance bar, the problem
+  rows and the close control.
+
+  Three of the changes are defects rather than taste:
+
+  1. `.assistanceBar` held a question and two labels on one line with
+     `white-space: nowrap` under a `max-width: calc(100% - 2rem)`, so between
+     the phone breakpoint and roughly 900px it pushed past its own limit
+     instead of wrapping. It now wraps.
+  2. Every `.problemList` row carried a bottom rule including the last, which
+     left a line hanging over the card's bottom edge.
+  3. `.closeButton` was the word "Zavrieť" inside a 44px minimum with no
+     padding, so the text ran into its own border. It is now a fixed 44px round
+     icon button; the accessible name survives on `aria-label` plus a visually
+     hidden span, and a test pins that.
+
+  The rest is alignment with the site rather than a new design. These buttons
+  used a bespoke gold — `#e2c289`, `#ffe2a9`, `#dfbd80`, `#fffaf4` — that
+  appears nowhere else in the project, which is what made them read as
+  belonging to a different page. The chrome now uses the brand tokens and the
+  header's own button idiom: a hairline pill that fills with `--taupe` from the
+  left and flips its type to `--ink`. Problem rows step aside for an arrow and
+  light along their full width. Every control gained a real `:active` state and
+  an explicit `:focus-visible` ring — previously focus was signalled by the
+  same fill hover produces, so a keyboard user could not tell them apart.
+
+  The jaw's gold markers and drop-shadows were deliberately left alone: that
+  gold is the highlight on the anatomy, not UI chrome.
+
+  Not verified in a browser. The controls only mount once the 60-frame sequence
+  finishes loading, and the preview pane never leaves `data-jaw-sequence-state
+  = "loading"`, so none of this was seen. 139 tests, lint, TypeScript and the
+  production build pass, and the three defects above are pinned by assertions
+  against the stylesheet text, using the `cssText` pattern already in
+  `JawZoneOverlay.test.tsx`.
+
   Files reserved: `components/team/**`, `app/tim/**`, `public/media/tim/**`,
-  and `app/page.tsx`. Awaiting the user's localhost approval before this
-  reaches `main`. Still outstanding: the seven missing roles.
+  `app/page.tsx`, and — temporarily, for this change only —
+  `components/home/jaw/JawZoneOverlay.tsx` and
+  `components/home/jaw/jawExperience.module.css`. Awaiting the user's localhost
+  approval before this reaches `main`. Still outstanding: the seven missing
+  roles.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,

@@ -202,49 +202,107 @@
   filter: drop-shadow(0 0 16px rgba(248, 218, 160, 0.72));
 }
 
+/*
+ * The way out for anyone who cannot find their spot on the jaw.
+ *
+ * `flex-wrap` and no `nowrap`: the bar holds a question and two labels, and
+ * between the phone breakpoint and about 900px that is wider than the room it
+ * is given. Held on one line it pushed out of its own max-width instead of
+ * taking a second row.
+ */
 .assistanceBar {
   position: absolute;
   z-index: 8;
   bottom: clamp(0.85rem, 2.8dvh, 2rem);
   left: 50%;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 0.35rem;
+  gap: 0.3rem;
   max-width: calc(100% - 2rem);
   min-height: 44px;
-  padding: 0.35rem 0.5rem 0.35rem 0.9rem;
-  border: 1px solid rgba(226, 194, 137, 0.42);
+  padding: 0.3rem 0.4rem 0.3rem 1rem;
+  border: 1px solid rgb(174 155 126 / 38%);
   border-radius: 999px;
-  background: rgba(31, 27, 25, 0.66);
-  box-shadow: 0 0.75rem 2.5rem rgba(22, 17, 14, 0.22);
+  background: rgb(24 21 19 / 62%);
+  box-shadow: 0 0.75rem 2.5rem rgb(22 17 14 / 26%);
   backdrop-filter: blur(16px);
-  color: rgba(255, 250, 244, 0.68);
-  font-size: 0.78rem;
-  white-space: nowrap;
+  color: rgb(250 249 246 / 62%);
+  font-size: 0.76rem;
   pointer-events: auto;
   transform: translateX(-50%);
-  animation: assistance-pop 360ms 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: assistance-pop 360ms 420ms var(--ease) both;
 }
 
+/*
+ * The site already has a button, and it is the one in the header: a hairline
+ * pill that fills with the brand taupe from the left and flips its type to
+ * ink. These were flat text links in a bespoke gold that appears nowhere else
+ * on the site, which is what made them read as belonging to a different page.
+ *
+ * `isolation: isolate` keeps the sweeping fill behind the label without a
+ * positive z-index that would climb over the card.
+ */
 .directEntry {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 44px;
-  padding: 0.5rem 0.72rem;
+  min-height: 40px;
+  padding: 0.5rem 0.95rem;
+  overflow: hidden;
+  border: 1px solid rgb(174 155 126 / 46%);
   border-radius: 999px;
-  color: #fffaf4;
-  font-size: 0.8rem;
-  font-weight: 700;
+  color: var(--porcelain);
+  font-size: 0.68rem;
+  font-weight: 600;
+  isolation: isolate;
+  letter-spacing: 0.1em;
   text-decoration: none;
-  transition: background 160ms ease-out, color 160ms ease-out;
+  text-transform: uppercase;
+  transition:
+    color 0.35s var(--ease),
+    border-color 0.35s var(--ease),
+    transform 0.35s var(--ease);
+}
+
+.directEntry::before {
+  position: absolute;
+  z-index: -1;
+  background: var(--taupe);
+  content: "";
+  inset: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s var(--ease);
 }
 
 .directEntry:hover,
 .directEntry:focus-visible {
-  background: rgba(226, 194, 137, 0.16);
-  color: #ffe2a9;
+  border-color: var(--taupe);
+  color: var(--ink);
+}
+
+.directEntry:hover::before,
+.directEntry:focus-visible::before {
+  transform: scaleX(1);
+}
+
+/* Pressed state. Without one a pill that fills on hover feels unresponsive to
+   the click that follows it. */
+.directEntry:active {
+  transform: scale(0.97);
+}
+
+/*
+ * An explicit ring. The fill alone cannot serve as the focus indicator — it is
+ * the same thing hovering does, so a keyboard user would have no way to tell
+ * which of the two is showing.
+ */
+.directEntry:focus-visible {
+  outline: 2px solid var(--porcelain);
+  outline-offset: 2px;
 }
 
 .zoneCard {
@@ -297,29 +355,110 @@
   list-style: none;
 }
 
+/*
+ * Rows that behave like the buttons they are: the label steps aside for a
+ * chevron that arrives from the left, and the row lights along its whole width
+ * rather than only changing the colour of its text.
+ */
 .problemList a {
+  position: relative;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   min-height: 44px;
-  padding: 0.55rem 0;
-  border-bottom: 1px solid rgba(226, 194, 137, 0.22);
-  color: #f7f0e6;
+  padding: 0.55rem 0.65rem 0.55rem 0;
+  border-bottom: 1px solid rgb(174 155 126 / 22%);
+  border-radius: 4px;
+  color: rgb(250 249 246 / 88%);
   text-decoration: none;
+  transition:
+    background 0.3s var(--ease),
+    color 0.3s var(--ease),
+    padding-left 0.3s var(--ease);
+}
+
+/* The last row's rule would otherwise hang over the card's own bottom edge. */
+.problemList li:last-child a {
+  border-bottom: 0;
+}
+
+.problemList a::after {
+  color: var(--taupe);
+  content: "→";
+  opacity: 0;
+  transform: translateX(-6px);
+  transition:
+    opacity 0.3s var(--ease),
+    transform 0.35s var(--ease);
 }
 
 .problemList a:hover,
 .problemList a:focus-visible {
-  color: #ffe2a9;
+  padding-left: 0.65rem;
+  background: rgb(174 155 126 / 14%);
+  color: var(--porcelain);
 }
 
+.problemList a:hover::after,
+.problemList a:focus-visible::after {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.problemList a:focus-visible {
+  outline: 2px solid var(--taupe);
+  outline-offset: 2px;
+}
+
+/*
+ * A round icon button rather than a word in a pill. The label was "Zavrieť"
+ * inside a 44px minimum with no padding of its own, so the text ran into its
+ * own border; the name survives for assistive technology on the button's
+ * `aria-label` and in the visually hidden span.
+ */
 .closeButton {
-  min-width: 44px;
-  min-height: 44px;
-  border: 1px solid rgba(226, 194, 137, 0.62);
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(174 155 126 / 52%);
   border-radius: 999px;
   background: transparent;
-  color: #fffaf4;
+  color: var(--porcelain);
   cursor: pointer;
+  font-size: 1.05rem;
+  line-height: 1;
+  transition:
+    background 0.3s var(--ease),
+    border-color 0.3s var(--ease),
+    transform 0.3s var(--ease);
+}
+
+.closeButton:hover,
+.closeButton:focus-visible {
+  border-color: var(--taupe);
+  background: rgb(174 155 126 / 18%);
+}
+
+.closeButton:active {
+  transform: scale(0.94);
+}
+
+.closeButton:focus-visible {
+  outline: 2px solid var(--taupe);
+  outline-offset: 2px;
+}
+
+/* Available to any control here that shows a glyph but must still say a word. */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .zoneStatus {
@@ -490,7 +629,12 @@
   .zoneMask,
   .zoneMarker,
   .assistanceBar,
-  .zoneCard {
+  .zoneCard,
+  .directEntry,
+  .directEntry::before,
+  .problemList a,
+  .problemList a::after,
+  .closeButton {
     transition: none;
     animation: none;
   }
