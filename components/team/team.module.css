@@ -20,9 +20,10 @@
 
   /* The drifting-photograph scene above ends on this tone. */
   --from-tone: #e2d7c3;
-  --to-tone: #f7f4ee;
+  --to-tone: #fbfaf7;
 
   position: relative;
+  isolation: isolate;
 
   /*
    * Mixed rather than cross-faded between two layers: beginning on the
@@ -32,12 +33,48 @@
    * easing from one ground to the other and is settled before the first
    * portrait is in view.
    */
-  background: color-mix(
+  background-color: color-mix(
     in oklab,
     var(--to-tone) calc(var(--enter) * 100%),
     var(--from-tone)
   );
   color: var(--charcoal);
+}
+
+/*
+ * A band of light that travels with the reader.
+ *
+ * Sticky, one screen tall, so it holds in the middle of the viewport for the
+ * whole section and stops at its edges — the section's ground is never flat,
+ * but it is never a picture either. The row inside this band is the row that
+ * has its colour; the same middle-of-screen measurement drives both, so the
+ * light is not decoration laid over the effect, it *is* the effect.
+ *
+ * Warm white over the pale ground rather than a tint: the point is more light
+ * here, not a different colour here.
+ */
+.halo {
+  /*
+   * One name for the height so the negative margin cannot drift out of step
+   * with it — `dvh` and `vh` differ while the browser's own chrome is on
+   * screen, and a mismatch would leave a screen-tall gap under the intro.
+   */
+  --halo-height: 100dvh;
+
+  position: sticky;
+  z-index: -1;
+  top: 0;
+  height: var(--halo-height);
+
+  /* Pulled back up by its own height so it does not add a screen to the page. */
+  margin-bottom: calc(-1 * var(--halo-height));
+  background: radial-gradient(
+    62% 46% at 50% 50%,
+    rgb(255 253 247 / 92%) 0%,
+    rgb(255 253 247 / 46%) 42%,
+    rgb(255 253 247 / 0%) 74%
+  );
+  pointer-events: none;
 }
 
 /* ---------------------------------------------------------------- intro --- */
@@ -136,24 +173,66 @@
   --drift: 14vmin;
 
   display: grid;
-  max-width: 1240px;
+  max-width: 1180px;
   margin: 0 auto;
-  padding: 0 clamp(20px, 5vw, 88px) calc(var(--drift) + 7vh);
-  gap: clamp(30px, 5vw, 60px) clamp(18px, 3vw, 38px);
+  padding: 0 clamp(20px, 5vw, 88px) calc(var(--drift) + 8vh);
+
+  /*
+   * Generous on both axes, and more so down the page than across it: the rows
+   * are what the reader travels through, and air between them is what lets one
+   * row hold the light on its own.
+   */
+  gap: clamp(56px, 9vw, 130px) clamp(24px, 5vw, 72px);
   grid-template-columns: 1.06fr 0.94fr;
   list-style: none;
 }
 
 .member {
+  /*
+   * Narrower than its own track, and pushed to the outside of it. Cards that
+   * fill the grid read as a staff table; holding each one back and letting the
+   * gutter open up between the columns reads as a spread.
+   */
+  --focus: 1;
+  --hover: 0;
+
+  position: relative;
   display: grid;
+  width: min(100%, 392px);
   gap: 16px;
   align-content: start;
+
+  /*
+   * Declared here, not in the hover rule: a transition that only exists while
+   * hovered eases the arrival and then snaps back on the way out.
+   */
+  transition: --hover 0.55s var(--ease);
+}
+
+.member:nth-child(odd) {
+  justify-self: start;
+}
+
+.member:nth-child(even) {
+  justify-self: end;
 }
 
 /* +--drift at the top of its travel, −--drift at the bottom. */
 .member:nth-child(odd) {
   transform: translateY(calc((1 - 2 * var(--p)) * var(--drift)));
   will-change: transform;
+}
+
+/*
+ * `--hover` is registered so it can be transitioned. An inline `--focus` from
+ * the scroll listener always beats a stylesheet rule, so hover cannot simply
+ * override it — the two are combined with `max()` instead, and this is what
+ * lets the hover half of that ease rather than snap.
+ */
+@property --hover {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
 }
 
 .frame {
@@ -165,27 +244,33 @@
 
 /*
  * The portraits were shot on different days under different light. Holding
- * them all back towards grey pulls eleven separate sittings into one set;
- * hovering returns the photograph to itself, which is also the only reward
- * this grid offers for looking closely.
+ * them all back towards grey pulls eleven separate sittings into one set.
+ *
+ * They recover their colour as the reader arrives at them and lose it again on
+ * the way out — `--focus` is how near this row is to the band of light, written
+ * per row by `TeamSection.tsx`. Hovering does the same thing on demand, and the
+ * two are combined rather than one overriding the other, so a hover inside the
+ * lit band cannot make a portrait *less* colourful than it already is.
+ *
+ * No transition on the filter: `--focus` changes every scroll frame, and a
+ * transition on top of that only makes the colour lag behind the light.
  */
 .portrait {
+  --lit: max(var(--focus), var(--hover));
+
   display: block;
   width: 100%;
   height: auto;
   aspect-ratio: 4 / 5;
-  filter: grayscale(0.72) contrast(1.02);
+  filter: grayscale(calc((1 - var(--lit)) * 0.88));
   object-fit: cover;
-  transform: scale(1.012);
-  transition:
-    filter 0.7s var(--ease),
-    transform 0.9s var(--ease);
+  transform: scale(calc(1.006 + var(--lit) * 0.018));
+  transition: transform 0.9s var(--ease);
 }
 
-.member:hover .portrait,
-.member:focus-within .portrait {
-  filter: grayscale(0) contrast(1);
-  transform: scale(1.04);
+.member:hover,
+.member:focus-within {
+  --hover: 1;
 }
 
 /* ----------------------------------------------------------- name plate --- */
@@ -285,14 +370,22 @@
     width: clamp(22px, 4vw, 48px);
   }
 
-  .portrait,
-  .member:hover .portrait,
-  .member:focus-within .portrait {
+  /*
+   * Full colour, and no travel. With motion reduced there is no band of light
+   * to follow, so holding the portraits back towards grey would take something
+   * away rather than add anything.
+   */
+  .portrait {
+    filter: none;
     transform: none;
     transition: none;
   }
 
   .info::before {
+    transition: none;
+  }
+
+  .member {
     transition: none;
   }
 }
@@ -314,8 +407,14 @@
     transform: none;
   }
 
+  /*
+   * The band still travels on a phone — it is the one screen size where the
+   * reader is always looking at the middle of the viewport — but it reaches
+   * less far towards grey, since there is no hover to recover a portrait that
+   * has scrolled past.
+   */
   .portrait {
-    filter: grayscale(0.35);
+    filter: grayscale(calc((1 - var(--focus)) * 0.6));
     transform: none;
   }
 }

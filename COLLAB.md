@@ -625,6 +625,40 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   overflow at either size, all eleven portraits loading the right srcset
   candidate.
 
+  Third pass, on the user's notes: smaller portraits set further apart, colour
+  driven by scroll rather than only by hover, and a lighter ground.
+
+  Cards went from 560px to 392px and are held back inside their own tracks —
+  odd `justify-self: start`, even `justify-self: end` — which opens a 252px
+  gutter between the columns where there was 38px, with a 130px row gap.
+
+  Colour now follows a band of light in the middle of the screen. `TeamSection`
+  writes a `--focus` per card from that card's `offsetTop`, deliberately not
+  its rect: the rect carries the left column's drift, which would light the two
+  halves of a row unevenly, and the pair has to gain and lose colour together.
+  Measured by centring rows 1, 5 and 9 in turn — the centred pair reads
+  `grayscale(0.001)` on both cards while the row below reads `grayscale(0.88)`.
+  Hover still works and is combined with `max()` rather than overriding, since
+  an inline custom property always beats a stylesheet rule; `--hover` is
+  registered with `@property` so that half of it can ease.
+
+  The band is a real element, not an effect laid over one: a sticky, screen-tall
+  radial of warm white with `margin-bottom: calc(-1 * var(--halo-height))` so it
+  adds no height, at `z-index: -1` inside an isolated section so it paints over
+  the ground and under the cards. The same middle-of-screen measurement drives
+  both it and the colour. `--to-tone` also lightened from `#f7f4ee` to
+  `#fbfaf7`.
+
+  The join still measures clean after all of it: at one viewport out both
+  grounds read oklab L 0.8826/0.8827, then 0.9339 → 0.9830 → 0.9850 settled.
+  136 tests, lint, TypeScript, build; no horizontal overflow.
+
+  Not verified: the ground's appearance. The preview pane renders this project's
+  colours far darker than they compute and will not advance CSS transitions, so
+  every colour claim above is a measurement, not something seen. The user asked
+  for a lighter background off the back of what they saw on their own machine,
+  and only they can confirm the result.
+
   Files reserved: `components/team/**`, `app/tim/**`, `public/media/tim/**`,
   and `app/page.tsx`. Awaiting the user's localhost approval before this
   reaches `main`. Still outstanding: the seven missing roles.

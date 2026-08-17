@@ -18,6 +18,13 @@ import styles from "./team.module.css";
  *   --p      how far the grid has crossed the viewport, which is what makes
  *            the left column travel past the right one.
  *
+ * and one per portrait:
+ *
+ *   --focus  how near that row is to the band of light in the middle of the
+ *            screen. The portraits are held back towards grey and recover
+ *            their colour inside that band, so colour follows the reader down
+ *            the page rather than waiting to be hovered.
+ *
  * Both default to their settled state in CSS, not their starting one. A page
  * whose JavaScript fails should show the team, not eleven invisible people, and
  * the listener's first run happens on mount before a frame is painted.
@@ -48,6 +55,8 @@ export function TeamSection({
 
     const clamp = (value: number) => Math.min(1, Math.max(0, value));
 
+    const cards = Array.from(section.querySelectorAll<HTMLElement>("li"));
+
     const update = () => {
       const rect = section.getBoundingClientRect();
 
@@ -66,6 +75,29 @@ export function TeamSection({
         "--p",
         String(clamp((window.innerHeight - rect.top) / span)),
       );
+
+      /*
+       * Colour follows the middle of the screen. `REACH` is how far from that
+       * middle a row still catches some of it — a little under half a screen,
+       * so one row is lit at a time and the rows above and below have gone
+       * back to grey.
+       *
+       * Deliberately measured from `offsetTop` rather than the card's own
+       * rect: the rect carries the left column's drift, which would light the
+       * two halves of a row by different amounts. The two portraits beside
+       * each other should gain and lose colour together — that is the whole
+       * effect — so the position used is the one the drift does not touch.
+       */
+      const middle = window.innerHeight / 2;
+      const reach = window.innerHeight * 0.46;
+      for (const card of cards) {
+        const centre =
+          rect.top + card.offsetTop + card.offsetHeight / 2 - middle;
+        card.style.setProperty(
+          "--focus",
+          String(clamp(1 - Math.abs(centre) / reach)),
+        );
+      }
     };
 
     update();
@@ -90,6 +122,14 @@ export function TeamSection({
       data-header-mode="light"
       ref={sectionRef}
     >
+      {/*
+       * The band of light the colour follows. Sticky rather than fixed so it
+       * belongs to this section and stops at its edges, and purely decorative —
+       * it marks where a row turns colour without being an instruction to
+       * anyone reading with a screen reader.
+       */}
+      <div aria-hidden="true" className={styles.halo} />
+
       <header className={styles.intro}>
         <p className={styles.eyebrow}>
           <span className={styles.eyebrowRule} aria-hidden="true" />
