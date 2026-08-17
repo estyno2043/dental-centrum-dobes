@@ -3,6 +3,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid -- Destinations stay as approved placeholders until their sections exist. */
 /* eslint-disable @next/next/no-img-element -- Preserve the approved logo markup and extracted asset without an image-service rewrite. */
 
+import Link from "next/link";
 import { useEffect, useState, type JSX } from "react";
 import { MobileMenu } from "./MobileMenu";
 import { navigationItems } from "./heroContent";
@@ -87,7 +88,9 @@ export function SiteHeader(): JSX.Element {
         .filter(Boolean)
         .join(" ")}
     >
-      <a className={styles.logo} href="#">
+      {/* Home, not "#" — the header now appears on subpages too, where the
+          mark is the only way back. */}
+      <Link className={styles.logo} href="/">
         <img
           src="/media/dobes-logo-white.png"
           alt="Dental Centrum Dobeš"
@@ -97,15 +100,27 @@ export function SiteHeader(): JSX.Element {
         <span className={styles.tagline}>
           Súkromná zubná klinika pri Kramároch v&nbsp;Bratislave
         </span>
-      </a>
+      </Link>
 
       <div className={styles.navigationRight}>
         <div className={styles.navigationLinks}>
-          {navigationItems.map((item) => (
-            <a href={item.href} key={item.label}>
-              {item.label}
-            </a>
-          ))}
+          {/*
+           * Real destinations route through `Link` so the subpage is a client
+           * navigation and gets prefetched; the ones still parked on "#" stay
+           * plain anchors, since `Link` to a fragment prefetches nothing and
+           * only obscures which items are unfinished.
+           */}
+          {navigationItems.map((item) =>
+            item.href.startsWith("/") ? (
+              <Link href={item.href} key={item.label}>
+                {item.label}
+              </Link>
+            ) : (
+              <a href={item.href} key={item.label}>
+                {item.label}
+              </a>
+            ),
+          )}
         </div>
         <a className={styles.navigationButton} href="#">
           <span className={styles.tourRing} aria-hidden="true" />

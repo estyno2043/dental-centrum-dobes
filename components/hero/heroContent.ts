@@ -8,7 +8,7 @@ export const headlineVariants = [
 export const navigationItems = [
   { label: "Služby", href: "#" },
   { label: "Cenník", href: "#" },
-  { label: "Tím", href: "#" },
+  { label: "Tím", href: "/tim" },
   { label: "Ambulancia", href: "#" },
   { label: "Kontakt", href: "#" },
 ] as const;

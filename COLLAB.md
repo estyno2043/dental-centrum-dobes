@@ -340,6 +340,16 @@ the title — `Dipl. DH.` suggests a dental hygienist and `MUDr.`/`MDDr.` a
 dentist, but which of them lead, and what each specialises in, is not something
 to guess on a clinic's behalf.
 
+2026-08-17: cross-checked against the team page of the clinic's previous site,
+`bratislavazubar.sk/nas-team`. It carries the same eleven names in the same
+order and states a role for the same four nurses and nobody else, so the seven
+missing roles are still outstanding — the old site is not a source for them.
+Its order does pair the columns, dentists and the hygienist on the left against
+the nurses on the right, and `components/team/teamContent.ts` keeps that order.
+The old site also yields contact facts the new one still lacks: Vlárska 13/c,
+Bratislava-Kramáre 831 01, telefón 02/434 256 81, mobil 0918 800 002, ordinačné
+hodiny Po–Št 8:00–19:00 and Pi 8:00–14:00.
+
 ## Open Questions
 
 Both questions below are for the user; they gate the next content task.
@@ -561,6 +571,34 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   no console errors. Verification passed: 128 tests, lint, TypeScript, jaw
   media validation, production build, and whitespace check. No files remain
   reserved. The user approved localhost and authorized merge/push to `main`.
+
+- 2026-08-17 — Claude built the Tím page on `claude/tim-page`, at the user's
+  request in the style of the reference site's team section. Worth recording
+  about that reference: it has no team subpage at all — `#team` is a section on
+  its one-page site — so only its layout and motion were taken, and the page
+  lives on its own route `/tim` as the user asked. Its mechanism is a
+  two-column grid where the left column travels ±drift while the right stays
+  put, driven by one custom property; ours reproduces that with the same
+  scroll-listener approach as the drifting-photograph scene.
+
+  Eleven portraits were encoded from `~/Downloads/dobes-media-raw/portrety` to
+  `public/media/tim/<slug>.webp` plus `-mobile`, 4:5 at 1360×1700 and 680×850,
+  1.0 MiB for all 22 files. Portrait-orientation sources are cropped from the
+  top; the three that exist only in landscape are cropped by salience.
+  Novotňáková uses frame 5871 because the others place her off-centre.
+
+  `role` in `teamContent.ts` is optional and renders as absent when missing —
+  seven of the eleven still have no stated role and a guessed job title on a
+  named medical professional would be a false claim, not a placeholder. A test
+  fails if anyone adds a fallback string. Verified: 131 tests, lint,
+  TypeScript, production build, and measured at 1440×900 and 390×844 — two
+  539px columns with the left one travelling 104px→−86px, single column and no
+  drift on the phone, all eleven portraits loading the right srcset candidate,
+  no horizontal overflow. `SiteHeader`'s logo and any nav item with a real
+  path now route through `next/link`; the "Tím" item points at `/tim`.
+
+  Files reserved: `components/team/**`, `app/tim/**`, `public/media/tim/**`.
+  Awaiting the user's localhost approval before this reaches `main`.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,

@@ -1,0 +1,207 @@
+/*
+ * The Tím page.
+ *
+ * Light, like the patients section — the cinematic dark belongs to the
+ * homepage's hero, and a page whose whole job is to show people's faces should
+ * not fight the photography for attention.
+ */
+
+.page {
+  background: var(--porcelain);
+  color: var(--charcoal);
+}
+
+/* ---------------------------------------------------------------- intro --- */
+
+.intro {
+  display: grid;
+  max-width: 1240px;
+
+  /*
+   * Generous top padding rather than a first-screen hero: the header floats
+   * over this page, and the eyebrow would otherwise start underneath it.
+   */
+  margin: 0 auto;
+  padding: clamp(140px, 16vh, 210px) clamp(20px, 5vw, 88px) clamp(48px, 7vw, 90px);
+  gap: 20px;
+}
+
+.eyebrow {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin: 0;
+  color: var(--taupe-deep);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.eyebrowRule {
+  display: block;
+  width: clamp(22px, 4vw, 48px);
+  height: 1px;
+  flex: none;
+  background: var(--taupe-deep);
+}
+
+.headline {
+  max-width: 20em;
+  margin: 0;
+  font-size: clamp(2rem, 5.4vw, 4.1rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+/*
+ * A stated measure rather than `ch`. `ch` resolves against this element's own
+ * font size, which is why an earlier section came out one word per line.
+ */
+.lead {
+  max-width: 62ch;
+  margin: 0;
+  color: rgb(38 38 42 / 68%);
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  line-height: 1.62;
+}
+
+/* ----------------------------------------------------------------- grid --- */
+
+/*
+ * Two columns where only the left one travels. `--p` is how far the grid has
+ * crossed the viewport, written once per scroll by `TeamGrid.tsx`; the odd
+ * children read it and the even ones stay put, so the columns slide past each
+ * other instead of scrolling as one block.
+ *
+ * The bottom padding is the drift's own room, and only the bottom: the column
+ * moves as one piece, so the only edges that travel are the grid's own. Near
+ * the top of the page the left column sits *below* its row and needs nothing
+ * above it — a matching top padding just left a permanent 126px hole under the
+ * intro.
+ */
+.grid {
+  --p: 0;
+
+  /*
+   * Half the column's total travel. Measured rather than guessed: the grid is
+   * far taller than the viewport, so `--p` only ever covers about three
+   * quarters of its 0→1 range on this page and the reader sees roughly 1.5×
+   * this value of movement, not 2×. At 8vmin that came out as 108px across
+   * four thousand pixels of scroll — technically moving, visually still.
+   */
+  --drift: 14vmin;
+
+  display: grid;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 5vw, 88px) calc(var(--drift) + 6vh);
+  gap: 18px;
+  grid-template-columns: repeat(2, 1fr);
+  list-style: none;
+}
+
+.member {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+
+/*
+ * +--drift at the top of its travel, −--drift at the bottom. The reference
+ * site uses ±20vmin; ours is smaller because our grid is narrower and the
+ * portraits are taller, so the same distance would pull a card most of the way
+ * off its own row.
+ */
+.member:nth-child(odd) {
+  transform: translateY(calc((1 - 2 * var(--p)) * var(--drift)));
+  will-change: transform;
+}
+
+.frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 3px;
+  background: rgb(174 155 126 / 12%);
+}
+
+.portrait {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+
+  /*
+   * The frames were shot on different days under different light. A shared
+   * slight desaturation pulls eleven separate sittings into one set; hovering
+   * returns the photograph to itself.
+   */
+  filter: saturate(0.92);
+  transition: filter 0.5s var(--ease), transform 0.7s var(--ease);
+}
+
+.member:hover .portrait {
+  filter: saturate(1);
+  transform: scale(1.02);
+}
+
+.info {
+  display: grid;
+  gap: 5px;
+}
+
+.name {
+  margin: 0;
+  font-size: clamp(0.95rem, 1.35vw, 1.12rem);
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  line-height: 1.28;
+  text-wrap: pretty;
+}
+
+.role {
+  margin: 0;
+  color: var(--taupe-deep);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* ----------------------------------------------------------------- a11y --- */
+
+/*
+ * With motion reduced the columns simply sit still. Nothing else changes:
+ * the drift is decoration, and the page is the same eleven people without it.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .member:nth-child(odd) {
+    transform: none;
+  }
+
+  .portrait,
+  .member:hover .portrait {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ---------------------------------------------------------------- phone --- */
+
+/*
+ * One column on a phone, and no drift — with nothing beside it to slide past,
+ * the travel reads as the page stuttering rather than as movement.
+ */
+@media (max-width: 767px) {
+  .grid {
+    gap: 30px;
+    grid-template-columns: 1fr;
+  }
+
+  .member:nth-child(odd) {
+    transform: none;
+  }
+}
