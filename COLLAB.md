@@ -602,8 +602,8 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   effect referencing an element the desktop trigger never renders) was also
   caught and removed. Verification: 135 tests, lint, TypeScript, and the
   production build all pass; `git diff --check` and a credential scan of
-  every changed file are clean. Browser-verified at 1280×720 and 1024×768:
-  the trigger's position matches the tour button's exactly (34px unscrolled,
+  every changed file are clean. Browser-verified at 1440×900, 1280×720, and
+  1024×768: the trigger's position matches the tour button's exactly (34px unscrolled,
   24px scrolled, confirmed via `getBoundingClientRect`) with no drift between
   states, the trigger remains visible through the sections where the header
   hides, click/Escape/keyboard-focus/blur-close all behave correctly, and no
