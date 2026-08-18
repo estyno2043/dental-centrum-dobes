@@ -598,11 +598,6 @@
   background: rgb(28 28 31 / 30%);
 }
 
-.desktopMenuTrigger:hover .mobileMenuOrbit,
-.desktopMenuTrigger:focus-visible .mobileMenuOrbit {
-  opacity: 0;
-}
-
 /*
  * Anchored under the trigger by the root's own box (`position: fixed`
  * on `.desktopMenuRoot` makes it the containing block), not by a
