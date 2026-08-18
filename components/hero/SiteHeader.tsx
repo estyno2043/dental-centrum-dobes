@@ -5,8 +5,8 @@
 
 import Link from "next/link";
 import { useEffect, useState, type JSX } from "react";
+import { DesktopMenu } from "./DesktopMenu";
 import { MobileMenu } from "./MobileMenu";
-import { navigationItems } from "./heroContent";
 import styles from "./hero.module.css";
 
 /**
@@ -76,58 +76,42 @@ export function SiteHeader(): JSX.Element {
   }, []);
 
   return (
-    <nav
-      aria-label="Hlavná navigácia"
-      className={[
-        styles.navigation,
-        isScrolled ? styles.scrolled : "",
-        mode === "light" ? styles.onLight : "",
-        mode === "minimal" ? styles.onMinimal : "",
-        onHero ? styles.onHero : "",
-      ]
-        .filter(Boolean)
-        .join(" ")}
-    >
-      {/* Home, not "#" — the header now appears on subpages too, where the
-          mark is the only way back. */}
-      <Link className={styles.logo} href="/">
-        <img
-          src="/media/dobes-logo-white.png"
-          alt="Dental Centrum Dobeš"
-          width="900"
-          height="381"
-        />
-        <span className={styles.tagline}>
-          Súkromná zubná klinika pri Kramároch v&nbsp;Bratislave
-        </span>
-      </Link>
+    <>
+      <nav
+        aria-label="Hlavná navigácia"
+        className={[
+          styles.navigation,
+          isScrolled ? styles.scrolled : "",
+          mode === "light" ? styles.onLight : "",
+          mode === "minimal" ? styles.onMinimal : "",
+          onHero ? styles.onHero : "",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+      >
+        {/* Home, not "#" — the header appears on subpages now, where the mark
+            is the only way back. */}
+        <Link className={styles.logo} href="/">
+          <img
+            src="/media/dobes-logo-white.png"
+            alt="Dental Centrum Dobeš"
+            width="900"
+            height="381"
+          />
+          <span className={styles.tagline}>
+            Súkromná zubná klinika pri Kramároch v&nbsp;Bratislave
+          </span>
+        </Link>
 
-      <div className={styles.navigationRight}>
-        <div className={styles.navigationLinks}>
-          {/*
-           * Real destinations route through `Link` so the subpage is a client
-           * navigation and gets prefetched; the ones still parked on "#" stay
-           * plain anchors, since `Link` to a fragment prefetches nothing and
-           * only obscures which items are unfinished.
-           */}
-          {navigationItems.map((item) =>
-            item.href.startsWith("/") ? (
-              <Link href={item.href} key={item.label}>
-                {item.label}
-              </Link>
-            ) : (
-              <a href={item.href} key={item.label}>
-                {item.label}
-              </a>
-            ),
-          )}
+        <div className={styles.navigationRight}>
+          <a className={styles.navigationButton} href="#">
+            <span className={styles.tourRing} aria-hidden="true" />
+            Interaktívna prehliadka klinikou
+          </a>
+          <MobileMenu />
         </div>
-        <a className={styles.navigationButton} href="#">
-          <span className={styles.tourRing} aria-hidden="true" />
-          Interaktívna prehliadka klinikou
-        </a>
-        <MobileMenu />
-      </div>
-    </nav>
+      </nav>
+      <DesktopMenu scrolled={isScrolled} />
+    </>
   );
 }

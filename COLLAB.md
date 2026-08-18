@@ -5,19 +5,22 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Jaw map refinement approved on localhost — publication to `main` authorized
-- Owner: Codex
-- Branch: `codex/higgsfield-jaw-sequence`
-- Base: `1da74bc`
-- Task: delay jaw handoff until fullscreen `detail` gallery frame, compress the
-  jaw reveal, replace debug-like zone rectangles and premature CTA with a
-  progressive anatomical pain-map reveal, and add a gradient exit to patient
-  results.
+- Status: Desktop hover menu published to `main` — no active task
+- Owner: —
+- Branch: —
+- Task: none in progress. See the dated log entry below for the desktop hover
+  menu's final state.
 
 ## File Reservations
 
-- No active write reservations. The user approved the completed jaw-map
-  refinement on localhost and explicitly requested publication to `main`.
+- No active write reservations.
+
+- The desktop hover menu released all of its files. `components/hero/DesktopMenu.tsx`,
+  `DesktopMenu.test.tsx`, `SiteHeader.tsx`, `heroContent.ts`, and
+  `hero.module.css` are merged and published; nothing remains reserved.
+
+- The prior jaw-map refinement released all of its files; the user approved it
+  on localhost and it is published to `main`.
 
 - Task 8 released its exact files. `ClinicStory.tsx` remains on its temporary
   legacy call shape until Task 9; completed loader, Canvas sequence, gallery,
@@ -722,6 +725,78 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   `components/home/jaw/jawExperience.module.css`. Awaiting the user's localhost
   approval before this reaches `main`. Still outstanding: the seven missing
   roles.
+- 2026-08-18 — Claude implemented the desktop hover menu (spec:
+  `docs/superpowers/specs/2026-08-18-desktop-hover-menu-design.md`, plan:
+  `docs/superpowers/plans/2026-08-18-desktop-hover-menu.md`) via
+  subagent-driven development, task by task with spec-compliance and
+  code-quality review after each. The flat `.navigationLinks` header row is
+  gone; a new `DesktopMenu` component renders the existing Dental Menu Mark
+  capsule fixed at the header's top-right corner, opening a hover/click/
+  keyboard-driven panel (Služby, Cenník, Tím, Kontakt, plus the clinic phone
+  number) that survives the scroll range where `<nav>` itself hides via
+  `visibility`. `Ambulancia` was dropped from the shared `navigationItems`
+  list feeding both this and the phone menu — the clinic walkthrough now
+  belongs solely to the existing tour button. One real bug was caught and
+  fixed during review: a stale focus-suppression flag could silently break
+  keyboard-Tab access to the panel after an ordinary click-open/click-close
+  sequence; a regression test now guards it. One dead CSS rule (a hover
+  effect referencing an element the desktop trigger never renders) was also
+  caught and removed. Verification: 135 tests, lint, TypeScript, and the
+  production build all pass; `git diff --check` and a credential scan of
+  every changed file are clean. Browser-verified at 1440×900, 1280×720, and
+  1024×768: the trigger's position matches the tour button's exactly (34px unscrolled,
+  24px scrolled, confirmed via `getBoundingClientRect`) with no drift between
+  states, the trigger remains visible through the sections where the header
+  hides, click/Escape/keyboard-focus/blur-close all behave correctly, and no
+  console errors appear. Confirmed unchanged at 375×812: no desktop trigger
+  renders, and the existing mobile dialog opens normally with its four links.
+  One caveat: the Browser pane's tab ran with `document.visibilityState:
+  "hidden"` throughout testing, which halts `requestAnimationFrame` entirely
+  in that state (confirmed directly — zero rAF callbacks fired across a 2
+  second window) — so the `motion`-driven fade/slide/stagger on the panel
+  could not be visually confirmed smooth in this environment, only that the
+  underlying open/close state, DOM structure, and ARIA attributes are
+  correct throughout. The same animation pattern is already shipped and
+  working in `MobileMenu`, so risk is low, but a quick look in a normal
+  foregrounded browser tab is the one thing this verification pass could not
+  cover. No files remain reserved.
+
+- 2026-08-18 — The user reviewed the desktop hover menu on localhost in a
+  real browser and found one collision the automated pass had missed: with
+  the flat link row gone, `.navigationRight` held only the tour button, which
+  then sat flush against `<nav>`'s own 44px right padding — exactly where
+  `.desktopMenuTrigger` (fixed outside `<nav>`) also sits, so the two
+  overlapped at desktop widths. Fixed by reserving the trigger's width plus a
+  20px gap on `.navigationRight`, scoped to `min-width: 961px` so phone
+  layout is untouched. Verified a 20px gap with no overlap at 1440×900 and
+  1024×768, no horizontal overflow, mobile unaffected (`padding-right: 0px`
+  below the breakpoint). 135 tests, lint, and TypeScript passed.
+
+  The user then approved and asked to publish. `claude/desktop-hover-menu`
+  fast-forward merged into `main` at `fc11801` (no drift — `origin/main` had
+  not moved since the branch started) and pushed; `origin/main` confirmed at
+  `fc11801`. Tests (135), lint, TypeScript, and the production build all
+  passed on the merged result before pushing. Netlify deployment was not
+  verified — no CLI link or site URL was available in this environment; the
+  next person to touch this should confirm the live deployment matches
+  `fc11801` and share the URL here, per the shared workflow's requirement
+  that both developers and the user inspect the same live version.
+
+- 2026-08-18 — Claude merged `main` (the desktop hover menu, `c9075cc`) into
+  `claude/tim-page`. Three files conflicted and were resolved as follows.
+  `SiteHeader.tsx` took `main`'s version whole — the flat link row is gone and
+  `DesktopMenu` stays — with one change reapplied on top: the logo is a
+  `next/link` to `/` rather than an anchor to `#`, because the header now
+  appears on `/tim` where the mark is the only way back. `heroContent.ts` took
+  `main`'s shorter list, which drops "Ambulancia", and kept "Tím" pointing at
+  `/tim`. `COLLAB.md` kept both sides in date order.
+
+  Note for whoever owns the menu: `DesktopMenu` renders its items as
+  `motion.a`, so `/tim` is a full page load rather than a client navigation.
+  It works and lint does not flag it, but it is the one link in that list with
+  a real destination and it would be worth routing through `next/link`.
+
+  Merged result verified: 146 tests, lint, TypeScript, production build.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
