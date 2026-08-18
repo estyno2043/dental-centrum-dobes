@@ -5,38 +5,19 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Design approved by the user; spec written, implementation not started
-- Owner: Claude
-- Branch: `claude/desktop-hover-menu`
-- Base: `d2411e3` (`origin/main`)
-- Task: replace the flat desktop header link row with the existing dental
-  capsule trigger and a compact hover panel holding Služby, Cenník, Tím, and
-  Kontakt. The trigger stays fixed at the top-right corner and remains visible
-  where the header hides, so the cinematic sections are no longer navigationless.
-  Spec: `docs/superpowers/specs/2026-08-18-desktop-hover-menu-design.md`.
-
-  Deliberate reversal recorded here because it contradicts a documented
-  decision: `hero.module.css` states that the absent header over the hero and
-  cinematic sections is intentional. The user reviewed that trade-off and chose
-  persistent navigation access. The trigger stays quiet — no bar, no link row,
-  no logo beside it.
+- Status: Desktop hover menu published to `main` — no active task
+- Owner: —
+- Branch: —
+- Task: none in progress. See the dated log entry below for the desktop hover
+  menu's final state.
 
 ## File Reservations
 
-- Claude reserves, for the desktop hover menu:
-  `components/hero/DesktopMenu.tsx` (new), `components/hero/DesktopMenu.test.tsx`
-  (new), `components/hero/SiteHeader.tsx`, `components/hero/heroContent.ts`,
-  and `components/hero/hero.module.css`.
+- No active write reservations.
 
-  `MobileMenu.tsx`, `MobileMenu.test.tsx`, `Hero.tsx`, and every phone
-  behaviour at 960 px and below stay out of scope and must not change. The
-  clinic story, jaw sequence, patients, drift, routes, and media pipeline
-  remain protected.
-
-  The desktop hover menu work also touched `components/hero/Hero.test.tsx`
-  (the `<SiteHeader />` integration test) and `components/hero/MobileMenu.test.tsx`
-  (dropped the `Ambulancia` assertion) — direct fallout of the shared
-  `navigationItems` change, not scope creep.
+- The desktop hover menu released all of its files. `components/hero/DesktopMenu.tsx`,
+  `DesktopMenu.test.tsx`, `SiteHeader.tsx`, `heroContent.ts`, and
+  `hero.module.css` are merged and published; nothing remains reserved.
 
 - The prior jaw-map refinement released all of its files; the user approved it
   on localhost and it is published to `main`.
@@ -618,8 +599,28 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   correct throughout. The same animation pattern is already shipped and
   working in `MobileMenu`, so risk is low, but a quick look in a normal
   foregrounded browser tab is the one thing this verification pass could not
-  cover. No files remain reserved. Awaiting user localhost review before
-  merge or push to `main`.
+  cover. No files remain reserved.
+
+- 2026-08-18 — The user reviewed the desktop hover menu on localhost in a
+  real browser and found one collision the automated pass had missed: with
+  the flat link row gone, `.navigationRight` held only the tour button, which
+  then sat flush against `<nav>`'s own 44px right padding — exactly where
+  `.desktopMenuTrigger` (fixed outside `<nav>`) also sits, so the two
+  overlapped at desktop widths. Fixed by reserving the trigger's width plus a
+  20px gap on `.navigationRight`, scoped to `min-width: 961px` so phone
+  layout is untouched. Verified a 20px gap with no overlap at 1440×900 and
+  1024×768, no horizontal overflow, mobile unaffected (`padding-right: 0px`
+  below the breakpoint). 135 tests, lint, and TypeScript passed.
+
+  The user then approved and asked to publish. `claude/desktop-hover-menu`
+  fast-forward merged into `main` at `fc11801` (no drift — `origin/main` had
+  not moved since the branch started) and pushed; `origin/main` confirmed at
+  `fc11801`. Tests (135), lint, TypeScript, and the production build all
+  passed on the merged result before pushing. Netlify deployment was not
+  verified — no CLI link or site URL was available in this environment; the
+  next person to touch this should confirm the live deployment matches
+  `fc11801` and share the URL here, per the shared workflow's requirement
+  that both developers and the user inspect the same live version.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
