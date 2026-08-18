@@ -91,13 +91,15 @@ test("renders the approved hero copy and patient contact details", () => {
   expect(video).toHaveTextContent("Váš prehliadač nepodporuje video.");
 });
 
-test("includes the signature mobile menu without removing desktop navigation", () => {
+test("renders both navigation entry points alongside the tour button", () => {
   render(<SiteHeader />);
 
   expect(
     screen.getByRole("button", { name: "Otvoriť menu" }),
   ).toBeInTheDocument();
-  expect(screen.getByRole("link", { name: "Služby" })).toBeInTheDocument();
+  expect(
+    screen.getByRole("button", { name: "Otvoriť navigáciu" }),
+  ).toBeInTheDocument();
   expect(
     screen.getByRole("link", { name: /Interaktívna prehliadka klinikou/ }),
   ).toBeInTheDocument();

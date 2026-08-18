@@ -4,8 +4,8 @@
 /* eslint-disable @next/next/no-img-element -- Preserve the approved logo markup and extracted asset without an image-service rewrite. */
 
 import { useEffect, useState, type JSX } from "react";
+import { DesktopMenu } from "./DesktopMenu";
 import { MobileMenu } from "./MobileMenu";
-import { navigationItems } from "./heroContent";
 import styles from "./hero.module.css";
 
 /**
@@ -75,44 +75,40 @@ export function SiteHeader(): JSX.Element {
   }, []);
 
   return (
-    <nav
-      aria-label="Hlavná navigácia"
-      className={[
-        styles.navigation,
-        isScrolled ? styles.scrolled : "",
-        mode === "light" ? styles.onLight : "",
-        mode === "minimal" ? styles.onMinimal : "",
-        onHero ? styles.onHero : "",
-      ]
-        .filter(Boolean)
-        .join(" ")}
-    >
-      <a className={styles.logo} href="#">
-        <img
-          src="/media/dobes-logo-white.png"
-          alt="Dental Centrum Dobeš"
-          width="900"
-          height="381"
-        />
-        <span className={styles.tagline}>
-          Súkromná zubná klinika pri Kramároch v&nbsp;Bratislave
-        </span>
-      </a>
-
-      <div className={styles.navigationRight}>
-        <div className={styles.navigationLinks}>
-          {navigationItems.map((item) => (
-            <a href={item.href} key={item.label}>
-              {item.label}
-            </a>
-          ))}
-        </div>
-        <a className={styles.navigationButton} href="#">
-          <span className={styles.tourRing} aria-hidden="true" />
-          Interaktívna prehliadka klinikou
+    <>
+      <nav
+        aria-label="Hlavná navigácia"
+        className={[
+          styles.navigation,
+          isScrolled ? styles.scrolled : "",
+          mode === "light" ? styles.onLight : "",
+          mode === "minimal" ? styles.onMinimal : "",
+          onHero ? styles.onHero : "",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+      >
+        <a className={styles.logo} href="#">
+          <img
+            src="/media/dobes-logo-white.png"
+            alt="Dental Centrum Dobeš"
+            width="900"
+            height="381"
+          />
+          <span className={styles.tagline}>
+            Súkromná zubná klinika pri Kramároch v&nbsp;Bratislave
+          </span>
         </a>
-        <MobileMenu />
-      </div>
-    </nav>
+
+        <div className={styles.navigationRight}>
+          <a className={styles.navigationButton} href="#">
+            <span className={styles.tourRing} aria-hidden="true" />
+            Interaktívna prehliadka klinikou
+          </a>
+          <MobileMenu />
+        </div>
+      </nav>
+      <DesktopMenu scrolled={isScrolled} />
+    </>
   );
 }
