@@ -172,6 +172,19 @@
 }
 
 /*
+ * `.navigationRight` no longer shares its row with the link row that used to
+ * sit between the tour button and nav's own edge, so the tour button now
+ * sits flush against `right: 44px` — exactly where `.desktopMenuTrigger`
+ * (a fixed element outside `<nav>` entirely) also sits. This reserves the
+ * trigger's own width (86px) plus a 20px gap so the two never touch.
+ */
+@media (min-width: 961px) {
+  .navigationRight {
+    padding-right: 106px;
+  }
+}
+
+/*
  * The tour button.
  *
  * A pill with a dot orbiting a hairline ring — the clinic tour is a live thing
