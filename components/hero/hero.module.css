@@ -82,22 +82,6 @@
   visibility: visible;
 }
 
-.navigationLinks {
-  visibility: hidden;
-  opacity: 0;
-  transform: translateX(16px);
-  transition:
-    opacity 0.4s var(--ease),
-    transform 0.5s var(--ease),
-    visibility 0.4s var(--ease);
-}
-
-.navigation.onLight .navigationLinks {
-  visibility: visible;
-  opacity: 1;
-  transform: none;
-}
-
 /*
  * That scene is pale, so the white logo and the outlined button would both
  * disappear. Only a white logo asset exists, and `brightness(0)` turns its
@@ -185,25 +169,6 @@
   gap: 32px;
   align-items: center;
   padding-top: 8px;
-}
-
-.navigationLinks {
-  display: flex;
-  gap: 30px;
-  align-items: center;
-}
-
-.navigationLinks a {
-  color: rgb(255 255 255 / 82%);
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  text-decoration: none;
-  transition: color 0.2s var(--ease);
-}
-
-.navigationLinks a:hover {
-  color: #fff;
 }
 
 /*
@@ -557,6 +522,146 @@
   letter-spacing: 0.03em;
 }
 
+/*
+ * The desktop trigger is the same Dental Menu Mark the phone renders,
+ * fixed at the header's own top-right position but living outside
+ * `<nav>` — `.navigation` hides itself with `visibility` between the
+ * hero and the patients section, and a trigger nested inside it would
+ * disappear right along with it. 34px / 24px reproduce where the tour
+ * button already sits (26px or 16px of nav padding, plus the 8px
+ * `.navigationRight` adds); confirm this in the browser once real
+ * content is on screen rather than trusting the arithmetic.
+ */
+.desktopMenuRoot {
+  position: fixed;
+  z-index: 51;
+  top: 34px;
+  right: 44px;
+  transition: top 0.3s var(--ease);
+}
+
+.desktopMenuRoot.scrolled {
+  top: 24px;
+}
+
+@media (max-width: 960px) {
+  .desktopMenuRoot {
+    display: none;
+  }
+}
+
+.desktopMenuTrigger {
+  position: relative;
+  display: flex;
+  width: 86px;
+  height: 50px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  overflow: visible;
+  border: 1px solid rgb(250 249 246 / 24%);
+  border-radius: 15px;
+  background: rgb(28 28 31 / 78%);
+  box-shadow:
+    0 12px 34px rgb(0 0 0 / 24%),
+    inset 0 1px 0 rgb(255 255 255 / 10%);
+  color: var(--porcelain);
+  cursor: pointer;
+  isolation: isolate;
+  backdrop-filter: blur(14px);
+  transition:
+    background 0.4s var(--ease),
+    border-color 0.4s var(--ease),
+    color 0.4s var(--ease);
+}
+
+.desktopMenuTrigger:focus-visible {
+  outline: 2px solid var(--taupe);
+  outline-offset: 4px;
+}
+
+/* Same fill-on-hover treatment as the tour button. */
+.desktopMenuTrigger:hover,
+.desktopMenuTrigger:focus-visible {
+  background: var(--taupe);
+  border-color: var(--taupe);
+  color: var(--ink);
+}
+
+.desktopMenuTrigger:hover .mobileMenuAction span,
+.desktopMenuTrigger:focus-visible .mobileMenuAction span {
+  color: var(--ink);
+}
+
+.desktopMenuTrigger:hover .mobileMenuDivider,
+.desktopMenuTrigger:focus-visible .mobileMenuDivider {
+  background: rgb(28 28 31 / 30%);
+}
+
+.desktopMenuTrigger:hover .mobileMenuOrbit,
+.desktopMenuTrigger:focus-visible .mobileMenuOrbit {
+  opacity: 0;
+}
+
+/*
+ * Anchored under the trigger by the root's own box (`position: fixed`
+ * on `.desktopMenuRoot` makes it the containing block), not by a
+ * second copy of the top offset.
+ */
+.desktopMenuPanel {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 260px;
+  padding: 18px 10px 14px;
+  border: 1px solid rgb(174 155 126 / 32%);
+  border-radius: 14px;
+  background: rgb(28 28 31 / 96%);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 24px 60px rgb(0 0 0 / 30%);
+}
+
+.desktopMenuLinks {
+  display: flex;
+  flex-direction: column;
+}
+
+.desktopMenuLink {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  color: rgb(250 249 246 / 88%);
+  font-size: 19px;
+  font-weight: 560;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  transition:
+    color 0.2s var(--ease),
+    background 0.2s var(--ease);
+}
+
+.desktopMenuLink:hover,
+.desktopMenuLink:focus-visible {
+  background: rgb(174 155 126 / 14%);
+  color: var(--porcelain);
+}
+
+.desktopMenuLink > span {
+  flex: none;
+  color: var(--taupe);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.desktopMenuFooter {
+  margin-top: 14px;
+  padding: 14px 10px 0;
+  border-top: 1px solid rgb(255 255 255 / 10%);
+}
+
 .visuallyHidden {
   position: absolute;
   width: 1px;
@@ -870,10 +975,6 @@
 }
 
 @media (max-width: 960px) {
-  .navigationLinks {
-    display: none;
-  }
-
   .navigationButton {
     display: none;
   }
@@ -1038,7 +1139,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .navigation,
-  .navigationLinks a,
+  .desktopMenuRoot,
   .navigationButton,
   .navigationButton::before,
   .tourRing::after,
@@ -1057,22 +1158,4 @@
     opacity: 1;
     transform: none;
   }
-}
-
-.desktopMenuRoot {
-}
-
-.desktopMenuTrigger {
-}
-
-.desktopMenuPanel {
-}
-
-.desktopMenuLinks {
-}
-
-.desktopMenuLink {
-}
-
-.desktopMenuFooter {
 }
