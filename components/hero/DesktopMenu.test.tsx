@@ -118,3 +118,23 @@ test("keyboard focus opens the panel; focus leaving the root closes it", async (
   expect(screen.getByRole("button", { name: "Elsewhere" })).toHaveFocus();
   expect(trigger).toHaveAttribute("aria-expanded", "false");
 });
+
+test("keyboard focus still opens the panel after an open/close click sequence", async () => {
+  const user = userEvent.setup();
+  render(
+    <div>
+      <button type="button">Before</button>
+      <DesktopMenu scrolled={false} />
+    </div>,
+  );
+
+  const trigger = screen.getByRole("button", { name: "Otvoriť navigáciu" });
+  await user.click(trigger); // open
+  await user.click(trigger); // close — trigger stays focused, no new focus event fires
+
+  screen.getByRole("button", { name: "Before" }).focus();
+  await user.tab(); // genuine keyboard focus of the trigger
+
+  expect(trigger).toHaveFocus();
+  expect(trigger).toHaveAttribute("aria-expanded", "true");
+});

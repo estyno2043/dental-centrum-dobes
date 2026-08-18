@@ -106,6 +106,7 @@ export function DesktopMenu({ scrolled }: DesktopMenuProps): JSX.Element {
           suppressFocusOpenRef.current = true;
         }}
         onClick={() => {
+          suppressFocusOpenRef.current = false;
           clearTimers();
           setOpen((value) => !value);
         }}
