@@ -25,9 +25,6 @@ test("opens the complete mobile navigation", async () => {
   expect(screen.getByRole("link", { name: "Služby" })).toBeInTheDocument();
   expect(screen.getByRole("link", { name: "Cenník" })).toBeInTheDocument();
   expect(screen.getByRole("link", { name: "Tím" })).toBeInTheDocument();
-  expect(
-    screen.getByRole("link", { name: "Ambulancia" }),
-  ).toBeInTheDocument();
   expect(screen.getByRole("link", { name: "Kontakt" })).toBeInTheDocument();
   expect(
     screen.getByRole("link", { name: /Interaktívna prehliadka klinikou/ }),

@@ -9,7 +9,6 @@ export const navigationItems = [
   { label: "Služby", href: "#" },
   { label: "Cenník", href: "#" },
   { label: "Tím", href: "#" },
-  { label: "Ambulancia", href: "#" },
   { label: "Kontakt", href: "#" },
 ] as const;
 
