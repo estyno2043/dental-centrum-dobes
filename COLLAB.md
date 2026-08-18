@@ -5,19 +5,36 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Jaw map refinement approved on localhost — publication to `main` authorized
-- Owner: Codex
-- Branch: `codex/higgsfield-jaw-sequence`
-- Base: `1da74bc`
-- Task: delay jaw handoff until fullscreen `detail` gallery frame, compress the
-  jaw reveal, replace debug-like zone rectangles and premature CTA with a
-  progressive anatomical pain-map reveal, and add a gradient exit to patient
-  results.
+- Status: Design approved by the user; spec written, implementation not started
+- Owner: Claude
+- Branch: `claude/desktop-hover-menu`
+- Base: `d2411e3` (`origin/main`)
+- Task: replace the flat desktop header link row with the existing dental
+  capsule trigger and a compact hover panel holding Služby, Cenník, Tím, and
+  Kontakt. The trigger stays fixed at the top-right corner and remains visible
+  where the header hides, so the cinematic sections are no longer navigationless.
+  Spec: `docs/superpowers/specs/2026-08-18-desktop-hover-menu-design.md`.
+
+  Deliberate reversal recorded here because it contradicts a documented
+  decision: `hero.module.css` states that the absent header over the hero and
+  cinematic sections is intentional. The user reviewed that trade-off and chose
+  persistent navigation access. The trigger stays quiet — no bar, no link row,
+  no logo beside it.
 
 ## File Reservations
 
-- No active write reservations. The user approved the completed jaw-map
-  refinement on localhost and explicitly requested publication to `main`.
+- Claude reserves, for the desktop hover menu:
+  `components/hero/DesktopMenu.tsx` (new), `components/hero/DesktopMenu.test.tsx`
+  (new), `components/hero/SiteHeader.tsx`, `components/hero/heroContent.ts`,
+  and `components/hero/hero.module.css`.
+
+  `MobileMenu.tsx`, `MobileMenu.test.tsx`, `Hero.tsx`, and every phone
+  behaviour at 960 px and below stay out of scope and must not change. The
+  clinic story, jaw sequence, patients, drift, routes, and media pipeline
+  remain protected.
+
+- The prior jaw-map refinement released all of its files; the user approved it
+  on localhost and it is published to `main`.
 
 - Task 8 released its exact files. `ClinicStory.tsx` remains on its temporary
   legacy call shape until Task 9; completed loader, Canvas sequence, gallery,
