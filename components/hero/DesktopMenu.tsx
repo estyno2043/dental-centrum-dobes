@@ -9,11 +9,13 @@ import {
   type KeyboardEvent,
 } from "react";
 import { IconDental, IconMenuDeep } from "@tabler/icons-react";
+import { motion, useReducedMotion } from "motion/react";
 import { navigationItems } from "./heroContent";
 import styles from "./hero.module.css";
 
 const openDelayMs = 90;
 const closeDelayMs = 220;
+const premiumEase = [0.22, 1, 0.36, 1] as const;
 
 type DesktopMenuProps = Readonly<{
   scrolled: boolean;
@@ -26,6 +28,7 @@ export function DesktopMenu({ scrolled }: DesktopMenuProps): JSX.Element {
   const openTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const closeTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const suppressFocusOpenRef = useRef(false);
+  const prefersReducedMotion = useReducedMotion() ?? false;
 
   useEffect(() => {
     return () => {
@@ -121,15 +124,50 @@ export function DesktopMenu({ scrolled }: DesktopMenuProps): JSX.Element {
         </span>
       </button>
 
-      <div id="desktop-menu-panel" className={styles.desktopMenuPanel} inert={!open}>
-        <nav aria-label="Navigácia" className={styles.desktopMenuLinks}>
+      <motion.div
+        id="desktop-menu-panel"
+        className={styles.desktopMenuPanel}
+        inert={!open}
+        style={{ pointerEvents: open ? "auto" : "none" }}
+        initial={false}
+        animate={
+          prefersReducedMotion
+            ? { opacity: open ? 1 : 0 }
+            : { opacity: open ? 1 : 0, y: open ? 0 : -10, scale: open ? 1 : 0.97 }
+        }
+        transition={{ duration: prefersReducedMotion ? 0 : 0.38, ease: premiumEase }}
+      >
+        <motion.nav
+          aria-label="Navigácia"
+          className={styles.desktopMenuLinks}
+          initial={false}
+          animate={open ? "visible" : "hidden"}
+          variants={{
+            hidden: {},
+            visible: {
+              transition: {
+                delayChildren: prefersReducedMotion ? 0 : 0.06,
+                staggerChildren: prefersReducedMotion ? 0 : 0.06,
+              },
+            },
+          }}
+        >
           {navigationItems.map((item, index) => (
-            <a key={item.label} href={item.href} className={styles.desktopMenuLink}>
+            <motion.a
+              key={item.label}
+              href={item.href}
+              className={styles.desktopMenuLink}
+              variants={{
+                hidden: { opacity: 0, x: prefersReducedMotion ? 0 : 16 },
+                visible: { opacity: 1, x: 0 },
+              }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.42, ease: premiumEase }}
+            >
               <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
               {item.label}
-            </a>
+            </motion.a>
           ))}
-        </nav>
+        </motion.nav>
 
         <div className={styles.desktopMenuFooter}>
           <a className={styles.mobileMenuPhone} href="tel:+421918800002">
@@ -137,7 +175,7 @@ export function DesktopMenu({ scrolled }: DesktopMenuProps): JSX.Element {
             <strong>0918 800 002</strong>
           </a>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
