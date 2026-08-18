@@ -33,6 +33,11 @@ update it before taking or handing off work.
   clinic story, jaw sequence, patients, drift, routes, and media pipeline
   remain protected.
 
+  The desktop hover menu work also touched `components/hero/Hero.test.tsx`
+  (the `<SiteHeader />` integration test) and `components/hero/MobileMenu.test.tsx`
+  (dropped the `Ambulancia` assertion) — direct fallout of the shared
+  `navigationItems` change, not scope creep.
+
 - The prior jaw-map refinement released all of its files; the user approved it
   on localhost and it is published to `main`.
 
@@ -578,6 +583,43 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   no console errors. Verification passed: 128 tests, lint, TypeScript, jaw
   media validation, production build, and whitespace check. No files remain
   reserved. The user approved localhost and authorized merge/push to `main`.
+
+- 2026-08-18 — Claude implemented the desktop hover menu (spec:
+  `docs/superpowers/specs/2026-08-18-desktop-hover-menu-design.md`, plan:
+  `docs/superpowers/plans/2026-08-18-desktop-hover-menu.md`) via
+  subagent-driven development, task by task with spec-compliance and
+  code-quality review after each. The flat `.navigationLinks` header row is
+  gone; a new `DesktopMenu` component renders the existing Dental Menu Mark
+  capsule fixed at the header's top-right corner, opening a hover/click/
+  keyboard-driven panel (Služby, Cenník, Tím, Kontakt, plus the clinic phone
+  number) that survives the scroll range where `<nav>` itself hides via
+  `visibility`. `Ambulancia` was dropped from the shared `navigationItems`
+  list feeding both this and the phone menu — the clinic walkthrough now
+  belongs solely to the existing tour button. One real bug was caught and
+  fixed during review: a stale focus-suppression flag could silently break
+  keyboard-Tab access to the panel after an ordinary click-open/click-close
+  sequence; a regression test now guards it. One dead CSS rule (a hover
+  effect referencing an element the desktop trigger never renders) was also
+  caught and removed. Verification: 135 tests, lint, TypeScript, and the
+  production build all pass; `git diff --check` and a credential scan of
+  every changed file are clean. Browser-verified at 1280×720 and 1024×768:
+  the trigger's position matches the tour button's exactly (34px unscrolled,
+  24px scrolled, confirmed via `getBoundingClientRect`) with no drift between
+  states, the trigger remains visible through the sections where the header
+  hides, click/Escape/keyboard-focus/blur-close all behave correctly, and no
+  console errors appear. Confirmed unchanged at 375×812: no desktop trigger
+  renders, and the existing mobile dialog opens normally with its four links.
+  One caveat: the Browser pane's tab ran with `document.visibilityState:
+  "hidden"` throughout testing, which halts `requestAnimationFrame` entirely
+  in that state (confirmed directly — zero rAF callbacks fired across a 2
+  second window) — so the `motion`-driven fade/slide/stagger on the panel
+  could not be visually confirmed smooth in this environment, only that the
+  underlying open/close state, DOM structure, and ARIA attributes are
+  correct throughout. The same animation pattern is already shipped and
+  working in `MobileMenu`, so risk is low, but a quick look in a normal
+  foregrounded browser tab is the one thing this verification pass could not
+  cover. No files remain reserved. Awaiting user localhost review before
+  merge or push to `main`.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
