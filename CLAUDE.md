@@ -16,3 +16,16 @@ at pushing `claude/<topic>`: merge the approved commit into `main`, push
 `origin/main`, confirm the remote commit, then verify the Netlify deployment
 when the live site is connected. Record the commit and live result in
 `COLLAB.md` so both developers and the user inspect the same version.
+
+## Process weight matches task size
+
+For a single task, skip the full brainstorming-spec-plan-subagent pipeline.
+Propose a short design in chat, let the user confirm the wording, then
+implement directly with normal edits — no subagent dispatch, no per-task
+review cycle. Verify once at the end: tests/lint plus a localhost visual
+check.
+
+Reserve the subagent-driven pipeline (one implementer per task, spec and
+quality review after each) for work that is genuinely several independent
+tasks at once — building multiple subpages, for example — where each piece
+can be owned and checked separately.
