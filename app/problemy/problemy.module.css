@@ -1,3 +1,202 @@
+.problemHub {
+  min-height: 100dvh;
+  padding: clamp(5rem, 10vw, 9rem) clamp(1rem, 5vw, 5rem);
+  color: #fffaf4;
+  background:
+    radial-gradient(circle at 78% 9%, rgba(174, 155, 126, 0.18), transparent 30rem),
+    linear-gradient(160deg, #1c1c1f 0%, #232125 58%, #17171a 100%);
+}
+
+.problemHero,
+.zoneGrid,
+.hubClose {
+  width: min(100%, 88rem);
+  margin-inline: auto;
+}
+
+.problemHero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(16rem, 0.7fr);
+  align-items: end;
+  padding-bottom: clamp(2.5rem, 6vw, 5rem);
+  border-bottom: 1px solid rgba(220, 191, 137, 0.24);
+  gap: 1.5rem clamp(2rem, 8vw, 8rem);
+}
+
+.eyebrow {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #dcbf89;
+  font-size: 0.73rem;
+  font-weight: 750;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.problemHero h1 {
+  margin: 0;
+  max-width: 8ch;
+  font-size: clamp(3.4rem, 8vw, 8rem);
+  font-weight: 600;
+  letter-spacing: -0.065em;
+  line-height: 0.9;
+}
+
+.heroCopy {
+  max-width: 34rem;
+  margin: 0;
+  color: rgba(255, 250, 244, 0.68);
+  font-size: clamp(1rem, 1.6vw, 1.3rem);
+  line-height: 1.55;
+}
+
+.zoneGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-block: clamp(2rem, 5vw, 4.5rem);
+  padding: 0;
+  border-top: 1px solid rgba(220, 191, 137, 0.2);
+  border-left: 1px solid rgba(220, 191, 137, 0.2);
+  list-style: none;
+}
+
+.zoneGrid li {
+  min-width: 0;
+  border-right: 1px solid rgba(220, 191, 137, 0.2);
+  border-bottom: 1px solid rgba(220, 191, 137, 0.2);
+}
+
+.zoneCardLink {
+  position: relative;
+  display: grid;
+  min-height: clamp(15rem, 26vw, 22rem);
+  align-content: space-between;
+  padding: clamp(1.35rem, 3vw, 2.5rem);
+  overflow: hidden;
+  color: #fffaf4;
+  text-decoration: none;
+  transition: background 260ms var(--ease), transform 260ms var(--ease);
+}
+
+.zoneCardLink::before {
+  position: absolute;
+  background: linear-gradient(135deg, rgba(220, 191, 137, 0.16), transparent 62%);
+  content: "";
+  opacity: 0;
+  transition: opacity 260ms var(--ease);
+  inset: 0;
+}
+
+.zoneCardLink:hover,
+.zoneCardLink:focus-visible {
+  background: rgba(255, 250, 244, 0.035);
+}
+
+.zoneCardLink:hover::before,
+.zoneCardLink:focus-visible::before {
+  opacity: 1;
+}
+
+.zoneCardLink:focus-visible,
+.primaryAction:focus-visible,
+.secondaryAction:focus-visible {
+  outline: 2px solid #f8dfad;
+  outline-offset: 4px;
+}
+
+.zoneIndex {
+  position: relative;
+  color: #dcbf89;
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.16em;
+}
+
+.zoneCardLink h2 {
+  position: relative;
+  align-self: end;
+  margin: auto 0 0;
+  padding-top: clamp(2rem, 6vw, 6rem);
+  font-size: clamp(1.9rem, 3.6vw, 3.5rem);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.zoneCardLink p {
+  position: relative;
+  max-width: 38rem;
+  margin: 1rem 3rem 0 0;
+  color: rgba(255, 250, 244, 0.62);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.zoneArrow {
+  position: absolute;
+  right: clamp(1.35rem, 3vw, 2.5rem);
+  bottom: clamp(1.35rem, 3vw, 2.5rem);
+  display: grid;
+  width: 2.7rem;
+  height: 2.7rem;
+  border: 1px solid rgba(220, 191, 137, 0.4);
+  border-radius: 50%;
+  color: #f8dfad;
+  place-items: center;
+  transition: background 260ms var(--ease), transform 260ms var(--ease);
+}
+
+.zoneCardLink:hover .zoneArrow,
+.zoneCardLink:focus-visible .zoneArrow {
+  background: #dcbf89;
+  color: #1c1c1f;
+  transform: rotate(12deg) scale(1.06);
+}
+
+.hubClose {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: clamp(1.5rem, 4vw, 3rem);
+  border-top: 1px solid rgba(220, 191, 137, 0.24);
+  gap: 1.5rem 3rem;
+}
+
+.hubClose .disclaimer {
+  max-width: 34rem;
+  margin: 0;
+}
+
+.hubActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.primaryAction,
+.secondaryAction {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 0.78rem 1rem;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 750;
+  text-align: center;
+  text-decoration: none;
+}
+
+.primaryAction {
+  background: #dcbf89;
+  color: #201b19;
+}
+
+.secondaryAction {
+  border: 1px solid rgba(220, 191, 137, 0.5);
+  color: #fffaf4;
+}
+
 .page {
   display: grid;
   min-height: 100dvh;
@@ -145,6 +344,42 @@
 }
 
 @media (max-width: 560px) {
+  .problemHub {
+    padding: 4rem 1rem 3rem;
+  }
+
+  .problemHero {
+    grid-template-columns: 1fr;
+    padding-bottom: 2.25rem;
+  }
+
+  .problemHero h1 {
+    font-size: clamp(3.2rem, 18vw, 5rem);
+  }
+
+  .zoneGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .zoneCardLink {
+    min-height: 14rem;
+    padding: 1.25rem;
+  }
+
+  .zoneCardLink h2 {
+    padding-top: 2.5rem;
+  }
+
+  .hubClose,
+  .hubActions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .hubActions {
+    width: 100%;
+  }
+
   .fieldGrid {
     grid-template-columns: 1fr;
   }
