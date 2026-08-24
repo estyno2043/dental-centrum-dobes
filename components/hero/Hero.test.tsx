@@ -175,20 +175,6 @@ test("uses the static poster while reduced motion is preferred", () => {
   ).toBeInTheDocument();
 });
 
-/*
- * The package mark is three upright strokes, not three stacked lines. Three
- * horizontal lines is the hamburger, and the real menu sits in the corner
- * wearing exactly that — two identical marks meaning different things on one
- * screen is worse than no mark at all.
- */
-test("keeps the package mark from becoming a hamburger", () => {
-  const css = readFileSync("components/hero/hero.module.css", "utf8");
-  const rule = css.match(/\.packageMark > span \{[^}]*\}/)?.[0] ?? "";
-
-  expect(rule).toMatch(/width:\s*1\.5px/);
-  expect(rule).toMatch(/height:\s*100%/);
-  expect(css).toMatch(/\.packageMark \{[^}]*grid-auto-flow:\s*column/);
-});
 
 /* And the mark says nothing out loud — the link's own words do that. */
 test("keeps the package button's name to its label", () => {
@@ -200,27 +186,42 @@ test("keeps the package button's name to its label", () => {
   expect(button).toHaveAttribute("href", "/sluzby/vstupna-prehliadka");
 });
 
+
+
 /*
- * The fill opens from wherever the pointer crossed the edge, so the button
- * answers the gesture that woke it. Keyboard focus has no such point and gets
- * the centre — which is why the circle's position has defaults.
+ * The package button speaks the tour button's language — same pill, same
+ * hairline taupe, same translucency, same sweep — and differs only in size.
+ * Two primary-looking buttons in two different idioms is the thing this
+ * replaced.
  */
-test("opens its fill from where the pointer arrived", () => {
+test("wears the same idiom as the tour button", () => {
   const css = readFileSync("components/hero/hero.module.css", "utf8");
-  const fill = css.match(/\.packageButton::after \{[^}]*\}/)?.[0] ?? "";
+  // Anchored to the line start: `.navigationButton {` also occurs inside
+  // `.navigation.onMinimal .navigationButton {`, which is a different rule.
+  const pkg = css.match(/^\.packageButton \{[^}]*\}/m)?.[0] ?? "";
+  const tour = css.match(/^\.navigationButton \{[^}]*\}/m)?.[0] ?? "";
 
-  expect(fill).toMatch(/top:\s*var\(--y,\s*50%\)/);
-  expect(fill).toMatch(/left:\s*var\(--x,\s*50%\)/);
-  expect(fill).toMatch(/border-radius:\s*50%/);
-
-  // The circle has to reach the far corner from any starting point.
-  expect(fill).toMatch(/width:\s*220%/);
+  for (const rule of [pkg, tour]) {
+    expect(rule).toMatch(/border-radius:\s*999px/);
+    expect(rule).toMatch(/text-transform:\s*uppercase/);
+  }
+  expect(pkg).toMatch(/background:\s*rgb\(20 20 23 \/ 22%\)/);
+  expect(pkg).toMatch(/border:\s*1px solid rgb\(174 155 126 \/ 85%\)/);
 });
 
-/* And the shape is the site's own: every other button here is a pill. */
-test("wears the same pill as the rest of the site's buttons", () => {
+/*
+ * The ring is drawn as three arcs and closes into one on hover. The numbers
+ * are the circle's own: at r=7.5 the circumference is 47.12, so three arcs of
+ * 11.7 and three gaps of 4 go exactly once around. Change the radius without
+ * changing these and the arcs stop being three.
+ */
+test("draws the package ring as three arcs that close into one", () => {
   const css = readFileSync("components/hero/hero.module.css", "utf8");
-  const button = css.match(/\.packageButton \{[^}]*\}/)?.[0] ?? "";
 
-  expect(button).toMatch(/border-radius:\s*999px/);
+  expect(css).toMatch(/\.packageRing circle \{[^}]*stroke-dasharray:\s*11\.7 4/);
+  expect(css).toMatch(/stroke-dasharray:\s*47\.2 0/);
+
+  const arcs = 3;
+  const circumference = 2 * Math.PI * 7.5;
+  expect(arcs * 11.7 + arcs * 4).toBeCloseTo(circumference, 0);
 });

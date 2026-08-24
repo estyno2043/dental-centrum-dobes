@@ -877,34 +877,29 @@
 }
 
 /*
- * The page's primary action, and the only one on the hero that leads anywhere.
- * Heavier than the tour button in the corner on purpose: same family, louder
- * voice.
+ * The page's primary action, in the same language as the tour button in the
+ * corner: a barely-there pill, a hairline in the brand taupe, uppercase
+ * micro-type, and a fill that sweeps in from the left. The difference between
+ * them is size and nothing else — this is the loudest member of the family,
+ * not a different one.
  */
 .packageButton {
   position: relative;
   display: inline-flex;
-  gap: 16px;
+  gap: 13px;
   align-items: center;
   justify-content: center;
-  padding: 21px 38px 21px 30px;
+  padding: 19px 34px;
   overflow: hidden;
-  border: 1px solid rgb(255 255 255 / 35%);
-
-  /*
-   * A pill. Every other button on this site is one — the tour button, the
-   * booking submit, the jaw's direct entries — and this was the only rounded
-   * rectangle among them. Same family, and the size is what makes it the
-   * loudest member rather than a different shape.
-   */
+  border: 1px solid rgb(174 155 126 / 85%);
   border-radius: 999px;
-  background: rgb(28 28 31 / 82%);
-  backdrop-filter: blur(4px);
+  background: rgb(20 20 23 / 22%);
+  backdrop-filter: blur(3px);
   color: #fff;
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 600;
   isolation: isolate;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.18em;
   text-decoration: none;
   text-transform: uppercase;
   transition:
@@ -913,63 +908,76 @@
 }
 
 /*
- * The mark. Three strokes, one per part of the package — the examination, the
- * intraoral images, the panoramic one. Closed they are a stack seen along its
- * spine; on hover they splay like a hand of cards being spread.
+ * The ring, and what makes it this button's rather than the tour's. There a
+ * dot travels around it, because a tour is something you walk. Here it is
+ * drawn as three arcs — the examination, the intraoral images, the panoramic
+ * one — and hovering closes them into a single unbroken circle.
  *
- * Upright, not stacked flat. Three horizontal lines is the hamburger, and the
- * real menu sits a few centimetres away in the corner wearing exactly that —
- * two identical marks meaning different things on one screen is worse than no
- * mark at all.
+ * The numbers are the circle's own: at r=7.5 the circumference is 47.12, so
+ * three arcs of 11.7 with three gaps of 4 go exactly once around.
  */
-.packageMark {
-  display: grid;
-  height: 14px;
+.packageRing {
+  display: block;
+  width: 16px;
+  height: 16px;
   flex: none;
-  gap: 3px;
-  grid-auto-flow: column;
+  opacity: 0.85;
 }
 
-.packageMark > span {
-  width: 1.5px;
+.packageRing svg {
+  display: block;
+  width: 100%;
   height: 100%;
-  border-radius: 1px;
-  background: currentcolor;
-  transform-origin: bottom center;
-  transition: transform 0.46s var(--ease);
+  overflow: visible;
 }
 
-.packageButton:hover .packageMark > span:first-child,
-.packageButton:focus-visible .packageMark > span:first-child {
-  transform: translateX(-2px) rotate(-16deg);
+.packageRing circle {
+  fill: none;
+  stroke: currentcolor;
+  stroke-dasharray: 11.7 4;
+  stroke-width: 1;
+  transform-origin: center;
+  transition:
+    stroke-dasharray 0.55s var(--ease),
+    transform 0.7s var(--ease);
 }
 
-.packageButton:hover .packageMark > span:last-child,
-.packageButton:focus-visible .packageMark > span:last-child {
-  transform: translateX(2px) rotate(16deg);
+.packageButton:hover .packageRing circle,
+.packageButton:focus-visible .packageRing circle {
+  stroke-dasharray: 47.2 0;
+  transform: rotate(120deg);
+}
+
+/* The fill, sweeping from the left exactly as the tour button's does. */
+.packageButton::after {
+  position: absolute;
+  z-index: -1;
+  background: var(--taupe);
+  content: "";
+  inset: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s var(--ease);
+}
+
+.packageButton:hover,
+.packageButton:focus-visible {
+  border-color: var(--taupe);
+  color: var(--ink);
+}
+
+.packageButton:hover::after,
+.packageButton:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.packageButton:focus-visible {
+  outline: 2px solid var(--porcelain);
+  outline-offset: 3px;
 }
 
 .packageLabel {
   display: block;
-  transition: transform 0.46s var(--ease);
-}
-
-/* A half-step forward, in the direction the mark has just opened. */
-.packageButton:hover .packageLabel,
-.packageButton:focus-visible .packageLabel {
-  transform: translateX(3px);
-}
-
-.packageButton::before {
-  position: absolute;
-  inset: 4px;
-  border: 1px solid rgb(174 155 126 / 0%);
-  border-radius: 999px;
-  content: "";
-  pointer-events: none;
-  transition:
-    border-color 0.25s var(--ease),
-    inset 0.25s var(--ease);
 }
 
 /*
@@ -1004,11 +1012,6 @@
 .packageButton:focus-visible {
   border-color: var(--taupe);
   color: var(--ink);
-}
-
-.packageButton:hover::before,
-.packageButton:focus-visible::before {
-  border-color: rgb(28 28 31 / 22%);
 }
 
 .packageButton:hover::after,
@@ -1334,10 +1337,8 @@
   .navigationButton::before,
   .tourRing::after,
   .packageButton,
-  .packageButton::before,
   .packageButton::after,
-  .packageMark > span,
-  .packageLabel,
+  .packageRing circle,
   .phoneNumber,
   .variant,
   .scrollCue,

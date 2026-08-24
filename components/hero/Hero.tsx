@@ -108,49 +108,18 @@ export function Hero(): JSX.Element {
               the entry examination page carries the package it names, itemised
               against the clinic's own price list.
             */}
-            <Link
-              className={styles.packageButton}
-              href="/sluzby/vstupna-prehliadka"
-              /*
-               * The fill grows from wherever the pointer arrived, so the
-               * button answers the gesture that woke it rather than playing
-               * the same canned sweep every time. Two custom properties are
-               * all that reaches the DOM; the circle is CSS.
-               */
-              onPointerEnter={(event) => {
-                const box = event.currentTarget.getBoundingClientRect();
-                event.currentTarget.style.setProperty(
-                  "--x",
-                  `${event.clientX - box.left}px`,
-                );
-                event.currentTarget.style.setProperty(
-                  "--y",
-                  `${event.clientY - box.top}px`,
-                );
-              }}
-              /* Leaving from a different edge should collapse it back there. */
-              onPointerLeave={(event) => {
-                const box = event.currentTarget.getBoundingClientRect();
-                event.currentTarget.style.setProperty(
-                  "--x",
-                  `${event.clientX - box.left}px`,
-                );
-                event.currentTarget.style.setProperty(
-                  "--y",
-                  `${event.clientY - box.top}px`,
-                );
-              }}
-            >
+            <Link className={styles.packageButton} href="/sluzby/vstupna-prehliadka">
               {/*
-                Three lines, because the package has three parts — the
-                examination, the intraoral images and the panoramic one. Closed
-                they are a stack; on hover they fan out, which is the only
-                thing the mark is for.
+                The same ring the tour button wears, doing a different thing.
+                There it is a dot travelling around — a tour is something you
+                walk. Here the ring is drawn as three arcs, one per part of the
+                package, and hovering closes them into a single unbroken circle:
+                three things that turn out to be one.
               */}
-              <span aria-hidden="true" className={styles.packageMark}>
-                <span />
-                <span />
-                <span />
+              <span aria-hidden="true" className={styles.packageRing}>
+                <svg viewBox="0 0 20 20">
+                  <circle cx="10" cy="10" r="7.5" />
+                </svg>
               </span>
               <span className={styles.packageLabel}>
                 Vstupný balík pre nových pacientov
