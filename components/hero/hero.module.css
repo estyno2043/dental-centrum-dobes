@@ -115,6 +115,19 @@
   background: var(--taupe-deep);
 }
 
+/*
+ * `quiet` is `minimal` with the tour button withdrawn. A service page opens on
+ * its own offer and ends on a booking form; a second call to action floating
+ * in the corner competes with both.
+ */
+.navigation.onQuiet .navigationButton {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.35s var(--ease),
+    visibility 0.35s var(--ease);
+}
+
 .navigation.onMinimal .tourRing::after {
   background: var(--taupe-deep);
 }
@@ -638,9 +651,22 @@
   border-radius: 18px;
   background: rgb(20 20 23 / 22%);
   backdrop-filter: blur(10px) saturate(1.25);
+  transition: background 0.35s var(--ease);
   box-shadow:
     0 26px 64px rgb(0 0 0 / 26%),
     inset 0 1px 0 rgb(255 255 255 / 14%);
+}
+
+/*
+ * Over a pale section the same dark tint becomes a light wash and the white
+ * type goes with it. Only the hero is dark; everything below it is pale, so
+ * the panel weighs more everywhere else and the glass reads as smoked rather
+ * than clear. Still translucent — the shapes behind it stay visible — just
+ * dark enough that porcelain type has something to sit on.
+ */
+.desktopMenuRoot[data-ground="light"] .desktopMenuPanel {
+  border-color: rgb(250 249 246 / 16%);
+  background: rgb(18 17 16 / 82%);
 }
 
 .desktopMenuLinks {

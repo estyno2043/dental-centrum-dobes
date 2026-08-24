@@ -24,7 +24,9 @@ const HEADER_BAND = 104;
 
 export function SiteHeader(): JSX.Element {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [mode, setMode] = useState<"none" | "light" | "minimal">("none");
+  const [mode, setMode] = useState<"none" | "light" | "minimal" | "quiet">(
+    "none",
+  );
   const [onHero, setOnHero] = useState(true);
 
   /*
@@ -37,6 +39,8 @@ export function SiteHeader(): JSX.Element {
    *            white type would otherwise be unreadable
    *   minimal  no bar and no links — the logo and the tour button alone, the
    *            way the hero carries them
+   *   quiet    the mark on its own. For pages that carry their own call to
+   *            action, where a second one in the corner competes with it
    *
    * Deliberately not an IntersectionObserver, which would express this more
    * directly: measuring the rect in the scroll handler is a few lines more,
@@ -54,7 +58,11 @@ export function SiteHeader(): JSX.Element {
         return rect.top < HEADER_BAND && rect.bottom > 0;
       });
       const declared = covering?.getAttribute("data-header-mode");
-      setMode(declared === "light" || declared === "minimal" ? declared : "none");
+      setMode(
+        declared === "light" || declared === "minimal" || declared === "quiet"
+          ? declared
+          : "none",
+      );
 
       /*
        * Measured against scroll position rather than the hero's own rect: the
@@ -83,7 +91,8 @@ export function SiteHeader(): JSX.Element {
           styles.navigation,
           isScrolled ? styles.scrolled : "",
           mode === "light" ? styles.onLight : "",
-          mode === "minimal" ? styles.onMinimal : "",
+          mode === "minimal" || mode === "quiet" ? styles.onMinimal : "",
+          mode === "quiet" ? styles.onQuiet : "",
           onHero ? styles.onHero : "",
         ]
           .filter(Boolean)
@@ -111,7 +120,10 @@ export function SiteHeader(): JSX.Element {
           <MobileMenu />
         </div>
       </nav>
-      <DesktopMenu scrolled={isScrolled} />
+      <DesktopMenu
+        ground={mode === "none" && onHero ? "dark" : "light"}
+        scrolled={isScrolled}
+      />
     </>
   );
 }

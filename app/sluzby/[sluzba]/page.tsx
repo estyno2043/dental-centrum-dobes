@@ -87,7 +87,7 @@ export default async function ServicePage({
   return (
     <>
       <SiteHeader />
-      <main className={styles.page} data-header-mode="minimal">
+      <main className={styles.page} data-header-mode="quiet">
         {/*
           The service's own photograph, filling the page behind everything.
           It carries the `view-transition-name` the catalogue card hands over,
