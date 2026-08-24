@@ -887,10 +887,17 @@
   gap: 16px;
   align-items: center;
   justify-content: center;
-  padding: 20px 34px;
+  padding: 21px 38px 21px 30px;
   overflow: hidden;
   border: 1px solid rgb(255 255 255 / 35%);
-  border-radius: 12px;
+
+  /*
+   * A pill. Every other button on this site is one — the tour button, the
+   * booking submit, the jaw's direct entries — and this was the only rounded
+   * rectangle among them. Same family, and the size is what makes it the
+   * loudest member rather than a different shape.
+   */
+  border-radius: 999px;
   background: rgb(28 28 31 / 82%);
   backdrop-filter: blur(4px);
   color: #fff;
@@ -944,13 +951,20 @@
 
 .packageLabel {
   display: block;
+  transition: transform 0.46s var(--ease);
+}
+
+/* A half-step forward, in the direction the mark has just opened. */
+.packageButton:hover .packageLabel,
+.packageButton:focus-visible .packageLabel {
+  transform: translateX(3px);
 }
 
 .packageButton::before {
   position: absolute;
   inset: 4px;
   border: 1px solid rgb(174 155 126 / 0%);
-  border-radius: 8px;
+  border-radius: 999px;
   content: "";
   pointer-events: none;
   transition:
@@ -959,18 +973,31 @@
 }
 
 /*
- * The fill. `scaleX` rather than `width`: the same sweep, but handed to the
- * compositor instead of relaying the button on every frame.
+ * The fill grows out of the pointer.
+ *
+ * Every other button here wipes from its left edge, which is right for a row
+ * of them but says nothing on the one action the hero is built around. This
+ * one opens from wherever the cursor crossed the edge and closes back towards
+ * wherever it leaves, so the button feels met rather than triggered. Keyboard
+ * focus has no such point and gets the centre, which is the same gesture
+ * without a direction.
+ *
+ * 220% of the button's width: the circle has to reach the far corner from any
+ * starting point, and the longest that can be is the full diagonal.
  */
 .packageButton::after {
   position: absolute;
   z-index: -1;
+  top: var(--y, 50%);
+  left: var(--x, 50%);
+  width: 220%;
+  margin: -110% 0 0 -110%;
+  aspect-ratio: 1;
+  border-radius: 50%;
   background: var(--taupe);
   content: "";
-  inset: 0;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.45s var(--ease);
+  transform: scale(0);
+  transition: transform 0.52s var(--ease);
 }
 
 .packageButton:hover,
@@ -986,7 +1013,7 @@
 
 .packageButton:hover::after,
 .packageButton:focus-visible::after {
-  transform: scaleX(1);
+  transform: scale(1);
 }
 
 .packageButton:focus-visible {
@@ -1310,6 +1337,7 @@
   .packageButton::before,
   .packageButton::after,
   .packageMark > span,
+  .packageLabel,
   .phoneNumber,
   .variant,
   .scrollCue,

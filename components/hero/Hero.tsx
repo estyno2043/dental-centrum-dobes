@@ -108,7 +108,39 @@ export function Hero(): JSX.Element {
               the entry examination page carries the package it names, itemised
               against the clinic's own price list.
             */}
-            <Link className={styles.packageButton} href="/sluzby/vstupna-prehliadka">
+            <Link
+              className={styles.packageButton}
+              href="/sluzby/vstupna-prehliadka"
+              /*
+               * The fill grows from wherever the pointer arrived, so the
+               * button answers the gesture that woke it rather than playing
+               * the same canned sweep every time. Two custom properties are
+               * all that reaches the DOM; the circle is CSS.
+               */
+              onPointerEnter={(event) => {
+                const box = event.currentTarget.getBoundingClientRect();
+                event.currentTarget.style.setProperty(
+                  "--x",
+                  `${event.clientX - box.left}px`,
+                );
+                event.currentTarget.style.setProperty(
+                  "--y",
+                  `${event.clientY - box.top}px`,
+                );
+              }}
+              /* Leaving from a different edge should collapse it back there. */
+              onPointerLeave={(event) => {
+                const box = event.currentTarget.getBoundingClientRect();
+                event.currentTarget.style.setProperty(
+                  "--x",
+                  `${event.clientX - box.left}px`,
+                );
+                event.currentTarget.style.setProperty(
+                  "--y",
+                  `${event.clientY - box.top}px`,
+                );
+              }}
+            >
               {/*
                 Three lines, because the package has three parts — the
                 examination, the intraoral images and the panoramic one. Closed

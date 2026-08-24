@@ -199,3 +199,28 @@ test("keeps the package button's name to its label", () => {
   });
   expect(button).toHaveAttribute("href", "/sluzby/vstupna-prehliadka");
 });
+
+/*
+ * The fill opens from wherever the pointer crossed the edge, so the button
+ * answers the gesture that woke it. Keyboard focus has no such point and gets
+ * the centre — which is why the circle's position has defaults.
+ */
+test("opens its fill from where the pointer arrived", () => {
+  const css = readFileSync("components/hero/hero.module.css", "utf8");
+  const fill = css.match(/\.packageButton::after \{[^}]*\}/)?.[0] ?? "";
+
+  expect(fill).toMatch(/top:\s*var\(--y,\s*50%\)/);
+  expect(fill).toMatch(/left:\s*var\(--x,\s*50%\)/);
+  expect(fill).toMatch(/border-radius:\s*50%/);
+
+  // The circle has to reach the far corner from any starting point.
+  expect(fill).toMatch(/width:\s*220%/);
+});
+
+/* And the shape is the site's own: every other button here is a pill. */
+test("wears the same pill as the rest of the site's buttons", () => {
+  const css = readFileSync("components/hero/hero.module.css", "utf8");
+  const button = css.match(/\.packageButton \{[^}]*\}/)?.[0] ?? "";
+
+  expect(button).toMatch(/border-radius:\s*999px/);
+});
