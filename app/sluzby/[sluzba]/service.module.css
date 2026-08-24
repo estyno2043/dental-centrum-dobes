@@ -1,0 +1,62 @@
+/* Placeholder styling for the service pages, pending their real content. */
+
+.page {
+  min-height: 100dvh;
+  background: var(--porcelain);
+  color: var(--charcoal);
+}
+
+.body {
+  display: grid;
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: clamp(140px, 18vh, 230px) clamp(20px, 5vw, 88px) clamp(60px, 10vh, 120px);
+  gap: clamp(16px, 2vw, 26px);
+}
+
+.eyebrow {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin: 0;
+  color: var(--taupe-deep);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.eyebrowRule {
+  display: block;
+  width: clamp(22px, 4vw, 48px);
+  height: 1px;
+  flex: none;
+  background: var(--taupe-deep);
+}
+
+.headline {
+  max-width: 16em;
+  margin: 0;
+  font-size: clamp(2.1rem, 5.6vw, 4rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: 56ch;
+  margin: 0;
+  color: rgb(38 38 42 / 68%);
+  font-size: clamp(1rem, 1.35vw, 1.15rem);
+  line-height: 1.62;
+}
+
+.pending {
+  margin: 0;
+  color: var(--taupe-deep);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}

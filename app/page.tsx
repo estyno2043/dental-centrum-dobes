@@ -3,6 +3,7 @@ import { Hero } from "@/components/hero/Hero";
 import { ClinicStory } from "@/components/home/ClinicStory";
 import { DriftScene } from "@/components/drift/DriftScene";
 import { PatientsSection } from "@/components/patients/PatientsSection";
+import { ServicesSection } from "@/components/services/ServicesSection";
 import { SiteHeader } from "@/components/hero/SiteHeader";
 import { TeamSection } from "@/components/team/TeamSection";
 import styles from "@/components/home/home.module.css";
@@ -29,10 +30,12 @@ export default function HomePage() {
       <PatientsSection />
       <DriftScene />
       {/*
-       * The page's last word. It carries its own crossing from the drifting
-       * scene's warm ground, so the two sections join on a change of
-       * temperature rather than an edge — see `team.module.css`.
+       * Each of the three sections below carries its own crossing from the one
+       * above it, so the grounds hand over on a change of temperature rather
+       * than an edge. The chain is #e2d7c3 -> #f0ece3 -> #fbfaf7, and moving
+       * one of them means moving the next one's `--from-tone` with it.
        */}
+      <ServicesSection />
       <TeamSection />
     </>
   );

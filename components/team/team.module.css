@@ -18,8 +18,8 @@
   --enter: 1;
   --p: 0.5;
 
-  /* The drifting-photograph scene above ends on this tone. */
-  --from-tone: #e2d7c3;
+  /* The services section above ends on this tone. */
+  --from-tone: #f0ece3;
   --to-tone: #fbfaf7;
 
   position: relative;

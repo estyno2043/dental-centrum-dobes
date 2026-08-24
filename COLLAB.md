@@ -866,6 +866,60 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   Awaiting the user's localhost approval before any of this reaches `main`.
   Still outstanding: the seven missing team roles.
 
+- 2026-08-18 — Claude built the "Služby" section on `claude/tim-page`, between
+  the drifting-photograph scene and the team, at the user's request and in the
+  reference site's five-plus-five shape.
+
+  The ten come from the clinic's own list on bratislavazubar.sk with
+  parodontológia added. Several of their entries are folded: entry and
+  preventive check-ups into one, ceramic crowns and whitening into the
+  aesthetic service, both prosthetics pages into one. The five that lead are
+  ordered as a patient's own journey, not by price.
+
+  Layout is one tall card beside a two-by-two block rather than the reference's
+  banner-plus-row — chosen because every one of our five sources is portrait or
+  crops to 4:5 natively, where a wide banner would have meant upscaling. Cards
+  reveal on a stagger, the picture drifts inside its frame on scroll, and each
+  lead is held back until the card is hovered. The feature keeps its lead
+  visible; on a phone and with motion reduced, all five are printed, since
+  hover cannot be relied on to reveal them.
+
+  The ground chain is now `#e2d7c3` → `#f0ece3` → `#fbfaf7` across drift →
+  services → team, and `team.module.css`'s `--from-tone` moved with it.
+  Measured at both boundaries: one viewport out the two grounds read oklab L
+  0.882633/0.882655 and 0.943713/0.943713 — indistinguishable — then settle.
+
+  Photography: `strip-panorama`, `drift-05`, `strip-05-ordinacia`,
+  `strip-06-diagnostika` and `strip-03-mikroskop-praca`, all re-encoded 4:5 to
+  `public/media/sluzby/`, 276 KiB for ten files. A first pass tinted them with
+  a warm veil and all five came out looking like faded photocopies; the veil is
+  gone and the treatment now lives on the image itself. ⚠️ Two are stand-ins:
+  the aesthetic card is a photograph of a treatment room and the implant card
+  is the imaging room. Both need a real shoot.
+
+  `/sluzby/[sluzba]` exists for all ten but is a PLACEHOLDER — name, one line,
+  nothing else — so the cards lead somewhere real while the pages are written
+  one at a time. It must not be published as a finished page.
+
+  Two things the next step has to deal with:
+
+  1. `JawAppointmentForm` requires a `zone: JawZone`, so it cannot yet sit at
+     the foot of a service page as the user asked. Five of the ten services
+     have no jaw zone at all, so the coupling has to be loosened first.
+  2. `/problemy/*` still exists. The user approved redirecting all seven to the
+     matching service; that lands with the subpages, together with repointing
+     the jaw's own buttons, so the site is never in a state where they aim at
+     nothing.
+
+  Verified: 151 tests, lint, TypeScript, production build, and the section
+  measured on a temporary local route (since the homepage cannot be screenshot
+  after scrolling here) — that route was deleted.
+
+  Files reserved: `components/team/**`, `components/services/**`, `app/tim/**`,
+  `app/sluzby/**`, `public/media/tim/**`, `public/media/sluzby/**`,
+  `app/page.tsx`, `components/home/jaw/**`. Awaiting the user's localhost
+  approval; nothing here has reached `main`.
+
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
 credentials, tokens, or local configuration values in repository files,
