@@ -1,15 +1,15 @@
-export const DESKTOP_STORY_SCROLL_VH = 1030;
-export const MOBILE_STORY_SCROLL_VH = 780;
+export const DESKTOP_STORY_SCROLL_VH = 990;
+export const MOBILE_STORY_SCROLL_VH = 710;
 
 export const DESKTOP_PHASES = Object.freeze({
   galleryEnd: 370,
   detailEnd: 460,
   detailDwellEnd: 500,
   handoffEnd: 530,
-  openingEnd: 670,
-  teaseEnd: 710,
-  mapEnd: 750,
-  interactiveEnd: 900,
+  openingEnd: 630,
+  teaseEnd: 660,
+  mapEnd: 700,
+  interactiveEnd: 860,
   storyEnd: DESKTOP_STORY_SCROLL_VH,
 });
 
@@ -18,11 +18,11 @@ export const MOBILE_PHASES = Object.freeze({
   snapEnd: 130,
   detailDwellEnd: 170,
   handoffEnd: 200,
-  openingEnd: 400,
-  teaseEnd: 455,
-  mapEnd: 510,
-  interactiveEnd: 680,
-  storyEnd: 780,
+  openingEnd: 345,
+  teaseEnd: 385,
+  mapEnd: 430,
+  interactiveEnd: 610,
+  storyEnd: MOBILE_STORY_SCROLL_VH,
 });
 
 export type ClinicStoryProfile = "desktop" | "mobile";
@@ -141,8 +141,8 @@ function mapSequenceMotion(input: ClinicStoryMotionInput): ClinicStoryMotionStat
   const handoff = range(progressVh, detailDwellEnd, handoffEnd);
   const sequenceProgress = range(progressVh, handoffEnd, openingEnd);
   const cueOpacity =
-    range(progressVh, handoffEnd + 5, handoffEnd + 22) *
-    (1 - range(progressVh, openingEnd - 20, openingEnd));
+    range(progressVh, handoffEnd + 5, handoffEnd + 20) *
+    (1 - range(progressVh, openingEnd - 18, openingEnd));
   const teaseProgress = range(progressVh, openingEnd, teaseEnd);
   const mapReveal = range(progressVh, teaseEnd, mapEnd);
   const exit = range(progressVh, interactiveEnd, storyEnd);

@@ -68,22 +68,22 @@ describe("mapClinicStoryMotion gallery-first contract", () => {
       detailEnd: 460,
       detailDwellEnd: 500,
       handoffEnd: 530,
-      openingEnd: 670,
-      teaseEnd: 710,
-      mapEnd: 750,
-      interactiveEnd: 900,
-      storyEnd: 1030,
+      openingEnd: 630,
+      teaseEnd: 660,
+      mapEnd: 700,
+      interactiveEnd: 860,
+      storyEnd: 990,
     });
     expect(MOBILE_PHASES).toEqual({
       galleryEnd: 90,
       snapEnd: 130,
       detailDwellEnd: 170,
       handoffEnd: 200,
-      openingEnd: 400,
-      teaseEnd: 455,
-      mapEnd: 510,
-      interactiveEnd: 680,
-      storyEnd: 780,
+      openingEnd: 345,
+      teaseEnd: 385,
+      mapEnd: 430,
+      interactiveEnd: 610,
+      storyEnd: 710,
     });
     expect(Object.isFrozen(DESKTOP_PHASES)).toBe(true);
     expect(Object.isFrozen(MOBILE_PHASES)).toBe(true);
@@ -97,12 +97,12 @@ describe("mapClinicStoryMotion gallery-first contract", () => {
     [499, "detail", 1, 1, 1, 0],
     [500, "handoff", 1, 1, 1, 0],
     [530, "opening", 1, 1, 1, 0],
-    [600, "opening", 1, 1, 1, 0.5],
-    [670, "tease", 1, 1, 1, 1],
-    [710, "map", 1, 1, 1, 1],
-    [750, "interactive", 1, 1, 1, 1],
-    [900, "exit", 1, 1, 1, 1],
-    [1030, "exit", 1, 1, 1, 1],
+    [580, "opening", 1, 1, 1, 0.5],
+    [630, "tease", 1, 1, 1, 1],
+    [660, "map", 1, 1, 1, 1],
+    [700, "interactive", 1, 1, 1, 1],
+    [860, "exit", 1, 1, 1, 1],
+    [990, "exit", 1, 1, 1, 1],
   ])(
     "maps desktop %svh to %s",
     (progressVh, phase, grow, pan, detail, sequenceProgress) => {
@@ -136,33 +136,36 @@ describe("mapClinicStoryMotion gallery-first contract", () => {
   test("shows Zóny bolesti cue only during opening", () => {
     expect(mapDesktop(534.99).cueOpacity).toBe(0);
     expect(mapDesktop(540).cueOpacity).toBeGreaterThan(0);
-    expect(mapDesktop(600).cueOpacity).toBe(1);
-    expect(mapDesktop(669).cueOpacity).toBeGreaterThan(0);
-    expect(mapDesktop(670).cueOpacity).toBe(0);
+    expect(mapDesktop(550).cueOpacity).toBe(1);
+    expect(mapDesktop(580).cueOpacity).toBe(1);
+    expect(mapDesktop(612).cueOpacity).toBe(1);
+    expect(mapDesktop(629).cueOpacity).toBeGreaterThan(0);
+    expect(mapDesktop(630).cueOpacity).toBe(0);
   });
 
   test("sequences tease, map reveal, interaction, and gradient exit", () => {
-    expect(mapDesktop(669.99)).toMatchObject({ teaseProgress: 0, mapReveal: 0, exit: 0 });
-    expect(mapDesktop(690)).toMatchObject({ teaseProgress: 0.5, mapReveal: 0, exit: 0 });
-    expect(mapDesktop(730)).toMatchObject({ teaseProgress: 1, mapReveal: 0.5, exit: 0 });
-    expect(mapDesktop(899.99).exit).toBe(0);
-    expect(mapDesktop(965).exit).toBe(0.5);
-    expect(mapDesktop(1030).exit).toBe(1);
+    expect(mapDesktop(629.99)).toMatchObject({ teaseProgress: 0, mapReveal: 0, exit: 0 });
+    expect(mapDesktop(645)).toMatchObject({ teaseProgress: 0.5, mapReveal: 0, exit: 0 });
+    expect(mapDesktop(680)).toMatchObject({ teaseProgress: 1, mapReveal: 0.5, exit: 0 });
+    expect(mapDesktop(859.99).exit).toBe(0);
+    expect(mapDesktop(925).exit).toBe(0.5);
+    expect(mapDesktop(990).exit).toBe(1);
   });
 
   test("gates interaction on map endpoint and reveal completion", () => {
     const ready = { exactEndDrawn: true, revealComplete: true };
-    expect(mapDesktop(749.99, ready)).toMatchObject({ zonesVisible: true, interactive: false });
-    expect(mapDesktop(750, { exactEndDrawn: false, revealComplete: true }).interactive).toBe(false);
-    expect(mapDesktop(750, { exactEndDrawn: true, revealComplete: false }).interactive).toBe(false);
-    expect(mapDesktop(750, ready)).toMatchObject({ zonesVisible: true, interactive: true });
-    expect(mapDesktop(900, ready)).toMatchObject({ zonesVisible: true, interactive: false });
+    expect(mapDesktop(699.99, ready)).toMatchObject({ zonesVisible: true, interactive: false });
+    expect(mapDesktop(700, { exactEndDrawn: false, revealComplete: true }).interactive).toBe(false);
+    expect(mapDesktop(700, { exactEndDrawn: true, revealComplete: false }).interactive).toBe(false);
+    expect(mapDesktop(700, ready)).toMatchObject({ zonesVisible: true, interactive: true });
+    expect(mapDesktop(860, ready)).toMatchObject({ zonesVisible: true, interactive: false });
   });
 
   test("uses shorter desktop opening and one-based target frames", () => {
     expect(mapDesktop(529.99).targetFrame).toBe(1);
-    expect(mapDesktop(600).targetFrame).toBe(37);
-    expect(mapDesktop(670).targetFrame).toBe(72);
+    expect(mapDesktop(580).sequenceProgress).toBe(0.5);
+    expect(mapDesktop(580).targetFrame).toBe(37);
+    expect(mapDesktop(630).targetFrame).toBe(72);
     expect(DESKTOP_PHASES.openingEnd - DESKTOP_PHASES.handoffEnd).toBeLessThan(360);
   });
 
@@ -171,20 +174,20 @@ describe("mapClinicStoryMotion gallery-first contract", () => {
     expect(mapMobile(110)).toMatchObject({ phase: "detail", detail: 0.5, sequenceProgress: 0 });
     expect(mapMobile(169.99)).toMatchObject({ phase: "detail", detail: 1, handoff: 0 });
     expect(mapMobile(200)).toMatchObject({ phase: "opening", handoff: 1, sequenceProgress: 0 });
-    expect(mapMobile(300)).toMatchObject({ phase: "opening", sequenceProgress: 0.5, targetFrame: 31 });
-    expect(mapMobile(455)).toMatchObject({ phase: "map", teaseProgress: 1, mapReveal: 0 });
-    expect(mapMobile(510, { exactEndDrawn: true, revealComplete: true })).toMatchObject({
+    expect(mapMobile(272.5)).toMatchObject({ phase: "opening", sequenceProgress: 0.5, targetFrame: 31 });
+    expect(mapMobile(385)).toMatchObject({ phase: "map", teaseProgress: 1, mapReveal: 0 });
+    expect(mapMobile(430, { exactEndDrawn: true, revealComplete: true })).toMatchObject({
       phase: "interactive",
       interactive: true,
     });
-    expect(mapMobile(680, { exactEndDrawn: true, revealComplete: true })).toMatchObject({
+    expect(mapMobile(610, { exactEndDrawn: true, revealComplete: true })).toMatchObject({
       phase: "exit",
       interactive: false,
     });
   });
 
   test("returns identical states during forward and reverse traversal", () => {
-    const positions = [0, 84, 369.99, 370, 460, 499.99, 500, 530, 600, 670, 710, 750, 900, 1030];
+    const positions = [0, 84, 369.99, 370, 460, 499.99, 500, 530, 580, 630, 660, 700, 860, 990];
     const forward = new Map(positions.map((position) => [position, mapDesktop(position)]));
     for (const position of positions.toReversed()) {
       expect(mapDesktop(position)).toEqual(forward.get(position));
@@ -193,10 +196,10 @@ describe("mapClinicStoryMotion gallery-first contract", () => {
 
   test("closes interaction immediately on raw reverse threshold crossing", () => {
     const ready = { exactEndDrawn: true, revealComplete: true };
-    expect(mapDesktop(750, ready).interactive).toBe(true);
-    expect(mapDesktop(749.99, ready).interactive).toBe(false);
-    expect(mapMobile(510, ready).interactive).toBe(true);
-    expect(mapMobile(509.99, ready).interactive).toBe(false);
+    expect(mapDesktop(700, ready).interactive).toBe(true);
+    expect(mapDesktop(699.99, ready).interactive).toBe(false);
+    expect(mapMobile(430, ready).interactive).toBe(true);
+    expect(mapMobile(429.99, ready).interactive).toBe(false);
   });
 
   test("normalizes invalid frame counts and progress", () => {
