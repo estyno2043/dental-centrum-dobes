@@ -17,7 +17,8 @@
   --to-tone: #f0ece3;
 
   position: relative;
-  padding-bottom: clamp(70px, 10vh, 130px);
+
+  /* No bottom padding: `.furtherWrap` below carries the rest of the section. */
   background-color: color-mix(
     in oklab,
     var(--to-tone) calc(var(--enter) * 100%),
@@ -309,10 +310,24 @@
 
 /* -------------------------------------------------------- the other five --- */
 
+/*
+ * Where the cream stops. The five with photographs stand on the warm ground
+ * the page has been climbing through; the five without stand on white, so the
+ * difference between them is something you see before you read it.
+ *
+ * The spacing above the first row is this wrapper's padding rather than the
+ * list's margin — a margin would collapse straight through and take the edge
+ * of the white down with it.
+ */
+.furtherWrap {
+  padding: clamp(30px, 3.6vw, 52px) 0 clamp(70px, 10vh, 130px);
+  background: #fff;
+}
+
 .further {
   display: grid;
   max-width: 1240px;
-  margin: clamp(28px, 4vw, 54px) auto 0;
+  margin: 0 auto;
   padding: 0 clamp(20px, 5vw, 88px);
   list-style: none;
 }

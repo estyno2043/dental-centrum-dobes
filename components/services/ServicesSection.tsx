@@ -126,23 +126,30 @@ export function ServicesSection(): JSX.Element {
         The other five. A list rather than five more cards: they matter, but
         not equally, and photographs the clinic has not shot yet would be
         filler standing in for a decision.
+
+        The wrapper exists to carry the white: the cream ground runs from the
+        section's top down to here and stops on the edge of the sixth service,
+        so the five with photographs and the five without stand on visibly
+        different ground.
       */}
-      <ul className={styles.further}>
-        {furtherServices.map((service, index) => (
-          <li key={service.slug} style={{ "--index": index } as CSSProperties}>
-            <Link className={styles.row} href={`/sluzby/${service.slug}`}>
-              <span aria-hidden="true" className={styles.rowIndex}>
-                {String(featuredServices.length + index + 1).padStart(2, "0")}
-              </span>
-              <span className={styles.rowName}>{service.name}</span>
-              <span className={styles.rowLead}>{service.lead}</span>
-              <span aria-hidden="true" className={styles.rowArrow}>
-                →
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <div className={styles.furtherWrap}>
+        <ul className={styles.further}>
+          {furtherServices.map((service, index) => (
+            <li key={service.slug} style={{ "--index": index } as CSSProperties}>
+              <Link className={styles.row} href={`/sluzby/${service.slug}`}>
+                <span aria-hidden="true" className={styles.rowIndex}>
+                  {String(featuredServices.length + index + 1).padStart(2, "0")}
+                </span>
+                <span className={styles.rowName}>{service.name}</span>
+                <span className={styles.rowLead}>{service.lead}</span>
+                <span aria-hidden="true" className={styles.rowArrow}>
+                  →
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
     </section>
   );
 }

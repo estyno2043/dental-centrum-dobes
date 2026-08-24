@@ -18,8 +18,8 @@
   --enter: 1;
   --p: 0.5;
 
-  /* The services section above ends on this tone. */
-  --from-tone: #f0ece3;
+  /* The services section above ends on white. */
+  --from-tone: #fff;
   --to-tone: #fbfaf7;
 
   position: relative;
