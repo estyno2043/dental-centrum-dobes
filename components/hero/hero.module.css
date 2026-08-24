@@ -621,11 +621,12 @@
  * two read as one piece of glass rather than a light control next to a solid
  * card.
  *
- * The blur is the part that does the work. At 22% the panel is barely a tint,
- * and it is only legible because everything behind it is diffused first; the
- * button next to it can get away with 3px because it holds four words, a panel
- * of links cannot. `saturate` above 1 puts back the colour the blur drains,
- * which is what keeps it looking like glass instead of fog.
+ * The blur is deliberately modest. Pushed hard enough it destroys every shape
+ * behind the panel, and a uniform wash is indistinguishable from an opaque
+ * card no matter how low the tint goes — which is exactly how a 26px blur read
+ * here. Glass looks like glass because you can still make out what is behind
+ * it, so this stays low enough to keep those shapes and leans on the type
+ * instead for legibility.
  */
 .desktopMenuPanel {
   position: absolute;
@@ -636,7 +637,7 @@
   border: 1px solid rgb(250 249 246 / 22%);
   border-radius: 18px;
   background: rgb(20 20 23 / 22%);
-  backdrop-filter: blur(26px) saturate(1.35);
+  backdrop-filter: blur(10px) saturate(1.25);
   box-shadow:
     0 26px 64px rgb(0 0 0 / 26%),
     inset 0 1px 0 rgb(255 255 255 / 14%);
@@ -660,9 +661,14 @@
   overflow: hidden;
   border-radius: 11px;
 
-  /* Full porcelain, not 88%. The panel behind it is a 22% tint, so the type
-     has nothing to spare over a bright frame of the hero video. */
+  /*
+   * Full porcelain, and a shadow under it. The panel is a 22% tint over
+   * whatever the hero video happens to be showing, so the type cannot rely on
+   * its ground at all — it has to carry its own contrast, the way a caption
+   * burned into a photograph does.
+   */
   color: var(--porcelain);
+  text-shadow: 0 1px 10px rgb(10 9 8 / 62%);
   column-gap: 11px;
   font-size: 19px;
   font-weight: 560;
@@ -718,7 +724,7 @@
 }
 
 .desktopMenuIndex {
-  color: rgb(174 155 126 / 85%);
+  color: var(--taupe);
   font-size: 9.5px;
   font-variant-numeric: tabular-nums;
   font-weight: 700;
