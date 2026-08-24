@@ -7,6 +7,7 @@ import {
   getJawProblem,
   getJawZoneBySlug,
 } from "./jawContent";
+import { ENTRY_EXAM_FACTS, problemHref } from "../../problems/problemContent";
 
 const expectedContent = [
   {
@@ -89,6 +90,7 @@ const expectedContent = [
 
 describe("jaw content", () => {
   it("exposes the six approved routes, price, and orientation disclaimer", () => {
+    expect(JAW_ZONES).toHaveLength(6);
     expect(JAW_ZONES.map((zone) => zone.route)).toEqual([
       "/problemy/predne-zuby",
       "/problemy/crenove-zuby",
@@ -97,10 +99,25 @@ describe("jaw content", () => {
       "/problemy/chybajuci-zub",
       "/problemy/neviem",
     ]);
-    expect(ENTRY_EXAM_LABEL).toBe("Vstupné vyšetrenie — 100 EUR");
+    expect(ENTRY_EXAM_LABEL).toBe("Vstupné vyšetrenie — 100 €");
     expect(JAW_DISCLAIMER).toBe(
       "Orientačná pomôcka. Presnú príčinu určí až vyšetrenie.",
     );
+  });
+
+  it("builds controlled problem routes and shares confirmed examination facts", () => {
+    expect(problemHref(JAW_ZONES[0], JAW_ZONES[0].problems[1])).toBe(
+      "/problemy/predne-zuby?problem=chipped",
+    );
+    expect(problemHref(JAW_ZONES[5])).toBe("/problemy/neviem");
+    expect(ENTRY_EXAM_FACTS).toEqual([
+      "Približne 30 minút",
+      "Panoramatická snímka",
+      "Intraorálne fotografie a skeny",
+      "CT iba vtedy, keď je klinicky indikované",
+      "Liečebný plán a ďalšia cena podľa nálezu",
+    ]);
+    expect(Object.isFrozen(ENTRY_EXAM_FACTS)).toBe(true);
   });
 
   it("keeps exact Slovak patient labels and descriptive service destinations", () => {

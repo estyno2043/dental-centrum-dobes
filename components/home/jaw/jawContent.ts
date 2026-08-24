@@ -37,7 +37,7 @@ export type JawZone = Readonly<{
 
 export const JAW_DISCLAIMER =
   "Orientačná pomôcka. Presnú príčinu určí až vyšetrenie.";
-export const ENTRY_EXAM_LABEL = "Vstupné vyšetrenie — 100 EUR";
+export const ENTRY_EXAM_LABEL = "Vstupné vyšetrenie — 100 €";
 
 type JawProblemSource = Readonly<{
   id: JawProblemId;
