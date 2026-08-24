@@ -10,7 +10,9 @@
   position: relative;
   min-height: 100dvh;
   padding-bottom: clamp(70px, 10vh, 130px);
-  background: var(--porcelain);
+
+  /* The clinic's cream, matching the scrim in `serviceTransition.ts`. */
+  background: #f4f0e8;
   color: var(--charcoal);
 }
 

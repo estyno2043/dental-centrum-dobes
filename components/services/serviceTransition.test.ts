@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   BACKDROP_ATTRIBUTE,
+  BACKDROP_CREAM,
   BACKDROP_FILTER,
   BACKDROP_SCRIM,
   CARD_PHOTO_ATTRIBUTE,
@@ -111,6 +112,36 @@ describe("service photo transition", () => {
 
     expect(hook).toMatch(/setTimeout\(cleanup/);
     expect(hook).toMatch(/if \(cleared\) return/);
+  });
+
+  /*
+   * The flight must not animate `filter`. A full-screen gaussian re-rendered
+   * on every frame is the most expensive thing a browser can be asked to do
+   * sixty times a second, and it is what made the morph stutter. The clone
+   * flies sharp and the blur arrives afterwards, as a settle.
+   */
+  it("never animates the blur", () => {
+    const hook = readFileSync(
+      "components/services/useServiceTransition.ts",
+      "utf8",
+    );
+    const code = hook
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/^\s*\/\/.*$/gm, "");
+
+    // The keyframes may set a box and a radius, never a filter.
+    expect(code).not.toMatch(/filter:/);
+    expect(code).toContain("SETTLE_MS");
+  });
+
+  /*
+   * The ground is the clinic's cream, not white. Porcelain washed the
+   * photographs out until there was little point in having them.
+   */
+  it("stands the page on cream rather than white", () => {
+    expect(BACKDROP_SCRIM).toContain(BACKDROP_CREAM);
+    expect(BACKDROP_SCRIM).not.toMatch(/250 249 246/);
+    expect(pageCss).toMatch(/background:\s*#f4f0e8/);
   });
 
   it("names the thing the incoming page is recognised by", () => {

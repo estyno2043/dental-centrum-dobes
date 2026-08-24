@@ -5,11 +5,11 @@ import { useCallback, type MouseEvent } from "react";
 
 import {
   BACKDROP_ATTRIBUTE,
-  BACKDROP_FILTER,
   BACKDROP_SCRIM,
   CARD_PHOTO_ATTRIBUTE,
   MORPH_EASING,
   MORPH_MS,
+  SETTLE_MS,
 } from "./serviceTransition";
 
 /**
@@ -85,6 +85,9 @@ export function useServiceTransition() {
         "margin:0",
         "object-fit:cover",
         "pointer-events:none",
+        // The box is what moves; telling the compositor so keeps it on its own
+        // layer instead of repainting whatever it happens to be over.
+        "will-change:left,top,width,height",
       ].join(";");
 
       /* The porcelain the destination lays over its photograph, arriving with
@@ -107,6 +110,16 @@ export function useServiceTransition() {
         fill: "both",
       };
 
+      /*
+       * No `filter` in here, deliberately.
+       *
+       * Animating towards the backdrop's blur meant re-rendering a full-screen
+       * gaussian on every frame, which is the single most expensive thing a
+       * browser can be asked to do sixty times a second — and it was what made
+       * the morph stutter. The clone flies sharp; the blur arrives afterwards,
+       * when the clone fades out and the real backdrop shows through. Read as
+       * a photograph settling into being a background rather than as a defect.
+       */
       const morph = flying.animate(
         [
           {
@@ -115,7 +128,6 @@ export function useServiceTransition() {
             width: `${from.width}px`,
             height: `${from.height}px`,
             borderRadius: radius,
-            filter: "blur(0px) saturate(1) brightness(1) contrast(1)",
           },
           {
             left: "0px",
@@ -123,7 +135,6 @@ export function useServiceTransition() {
             width: "100vw",
             height: "100vh",
             borderRadius: "0px",
-            filter: BACKDROP_FILTER,
           },
         ],
         timing,
@@ -175,13 +186,31 @@ export function useServiceTransition() {
         veil.remove();
       };
 
+      /*
+       * The settle: once the clone has arrived and the real page is behind it,
+       * it dissolves into the backdrop it is already sitting exactly on top of.
+       * Opacity only, so this half costs the compositor almost nothing.
+       */
       Promise.all([
         morph.finished.catch(() => undefined),
         fade.finished.catch(() => undefined),
         landed,
-      ]).then(cleanup);
+      ]).then(() => {
+        if (cleared) return;
+        const settle = flying.animate([{ opacity: 1 }, { opacity: 0 }], {
+          duration: SETTLE_MS,
+          easing: "linear",
+          fill: "both",
+        });
+        veil.animate([{ opacity: 1 }, { opacity: 0 }], {
+          duration: SETTLE_MS,
+          easing: "linear",
+          fill: "both",
+        });
+        settle.finished.catch(() => undefined).then(cleanup);
+      });
 
-      setTimeout(cleanup, MORPH_MS + 1400);
+      setTimeout(cleanup, MORPH_MS + SETTLE_MS + 1400);
     },
     [router],
   );

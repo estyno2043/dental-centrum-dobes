@@ -20,19 +20,40 @@ export const CARD_PHOTO_ATTRIBUTE = "data-service-photo";
 export const BACKDROP_ATTRIBUTE = "data-service-backdrop";
 
 /** How long the photograph takes to grow into the page. */
-export const MORPH_MS = 560;
+export const MORPH_MS = 680;
 
-/** The site's easing. */
-export const MORPH_EASING = "cubic-bezier(0.22, 1, 0.36, 1)";
+/** How long it then takes to settle into being a background. */
+export const SETTLE_MS = 260;
 
-/** What the photograph looks like once it is the page's background. */
+/*
+ * Gentler than the site's usual easing. `cubic-bezier(0.22, 1, 0.36, 1)` is
+ * almost all deceleration — right for something arriving, wrong for something
+ * growing, which leaps off the mark and then crawls. This one leaves slowly
+ * and still lands softly.
+ */
+export const MORPH_EASING = "cubic-bezier(0.32, 0.72, 0, 1)";
+
+/**
+ * What the photograph looks like once it is the page's background.
+ *
+ * ⚠️ Never animate towards this. A full-screen `blur()` is re-rendered from
+ * scratch every frame, and that alone is what made the morph stutter — the
+ * clone flies sharp and the blur arrives afterwards, as a settle.
+ */
 export const BACKDROP_FILTER =
-  "blur(9px) saturate(0.42) brightness(1.28) contrast(0.82)";
+  "blur(9px) saturate(0.5) brightness(1.18) contrast(0.86)";
 
-/** And the porcelain laid over it, so ink reads on any photograph. */
+/**
+ * The cream laid over it, so ink reads on any photograph.
+ *
+ * The clinic's own warm tone rather than porcelain: white washed the pictures
+ * out until there was little point having them.
+ */
+export const BACKDROP_CREAM = "244 240 232";
+
 export const BACKDROP_SCRIM =
   "linear-gradient(to bottom, " +
-  "rgb(250 249 246 / 92%) 0%, " +
-  "rgb(250 249 246 / 82%) 30%, " +
-  "rgb(250 249 246 / 84%) 66%, " +
-  "rgb(250 249 246 / 94%) 100%)";
+  `rgb(${BACKDROP_CREAM} / 88%) 0%, ` +
+  `rgb(${BACKDROP_CREAM} / 72%) 30%, ` +
+  `rgb(${BACKDROP_CREAM} / 76%) 66%, ` +
+  `rgb(${BACKDROP_CREAM} / 92%) 100%)`;
