@@ -301,6 +301,54 @@ describe("JawZoneOverlay pain map", () => {
     }
   });
 
+  /*
+   * Both leaders used to miss the teeth they name. Measured against the
+   * sequence's final frame — 1280x720 onto this 1920x1080 viewBox at exactly
+   * 1.5x — the lower arch's midline is x≈981 and its four incisors span
+   * 910–1053, which puts the premolars at roughly 760–864 and the molars at
+   * 1202–1290. The premolar anchor sat at 720, past its own teeth and on the
+   * molars; the molar anchor sat at 1300, off the gum entirely.
+   */
+  it("aims each leader at the teeth it names", () => {
+    renderOverlay();
+
+    const MIDLINE = 981;
+    const at = (zone: string) =>
+      Number(screen.getByTestId(`jaw-anchor-${zone}`).getAttribute("cx"));
+
+    const premolar = at("premolar");
+    const molar = at("molar");
+
+    // Premolars sit in front of molars, so the premolar anchor has to be the
+    // nearer of the two to the midline. Swap them back and this fails.
+    expect(Math.abs(premolar - MIDLINE)).toBeLessThan(Math.abs(molar - MIDLINE));
+
+    // And both have to land on the arch rather than beside it.
+    for (const x of [premolar, molar]) {
+      expect(x).toBeGreaterThan(560);
+      expect(x).toBeLessThan(1400);
+    }
+
+    // Each anchor belongs to its own side's teeth, not the other's.
+    expect(premolar).toBeGreaterThan(760);
+    expect(premolar).toBeLessThan(910);
+    expect(molar).toBeGreaterThan(1190);
+  });
+
+  /*
+   * With a card open, every zone must still be reachable. The card used to be
+   * anchored to the bottom and left to size itself, which worked at one window
+   * height and at shorter ones grew straight up over the premolar control —
+   * opening any other zone then took that quarter of the map out of reach.
+   * Pinning the top below the controls is what makes that impossible, so the
+   * property is pinned here rather than the pixel values.
+   */
+  it("holds the problem card below the controls by its top edge", () => {
+    expect(cssText).toMatch(/\.zoneCard\s*\{[^}]*\btop:\s*5[0-9]%/);
+    expect(cssText).not.toMatch(/\.zoneCard\s*\{[^}]*\btop:\s*auto/);
+    expect(cssText).toMatch(/\.zoneCard\s*\{[^}]*overflow-y:\s*auto/);
+  });
+
   it("keeps one centered 16:9 artboard and pop-motion contracts", () => {
     renderOverlay();
     expect(screen.getByTestId("jaw-artboard")).toHaveClass(styles.zoneArtboard);

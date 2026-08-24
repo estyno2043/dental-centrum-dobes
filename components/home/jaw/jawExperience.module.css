@@ -503,13 +503,20 @@
   z-index: 10;
 
   /*
-   * Low, not centred. The two side controls sit at the jaw's own mid-height,
-   * so a vertically centred card sat straight across one of them and took a
-   * quarter of the map out of reach for as long as it was open.
+   * Held below the controls by its top edge, not by its height.
+   *
+   * The two side buttons sit at the jaw's own mid-height — 48.6% and 51.4% of
+   * the artboard. Anchoring the card to the bottom and hoping it stayed short
+   * enough worked at one window size and failed at others: a shorter viewport
+   * grew it straight up over the premolar control, and with a card open that
+   * quarter of the map could not be reached at all. Pinning the top at 58%
+   * makes that impossible at any size, and the scroll below is the safety
+   * valve for when the remaining room is not enough.
    */
-  top: auto;
-  bottom: clamp(3.5rem, 11dvh, 6.5rem);
+  top: 58%;
+  bottom: clamp(2.5rem, 8dvh, 5rem);
   left: clamp(1rem, 4vw, 4rem);
+  overflow-y: auto;
   width: min(21rem, 32vw);
   padding: 1.3rem;
   border: 1px solid rgba(226, 194, 137, 0.58);

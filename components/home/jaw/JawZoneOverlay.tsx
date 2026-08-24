@@ -124,19 +124,35 @@ const MARKERS: readonly ZoneMarker[] = [
     revealIndex: 0,
     origin: "bottom",
   },
+  /*
+   * Both of these used to miss. Measured against the sequence's final frame,
+   * whose 1280x720 maps onto this 1920x1080 viewBox at exactly 1.5x, the
+   * lower arch's midline sits at x≈981 and its four incisors span 910–1053.
+   * Counting outwards from there puts the left premolars at roughly 760–864
+   * and the right molars at 1202–1290.
+   *
+   * The old premolar anchor at x=720 was past the premolars entirely and sat
+   * on the left molars' chewing surfaces; the old molar anchor at x=1300 was
+   * off the gum altogether, on the blurred background behind it.
+   */
   {
     zone: "premolar",
-    anchor: [720, 535],
-    leader: "M 480 525 C 565 525 635 530 720 535",
-    label: [385, 525],
+    anchor: [830, 585],
+    /*
+     * Dips as it travels, so it grazes under the left molars rather than
+     * across them — a line to the premolars that crosses the molars on its way
+     * is its own kind of wrong answer.
+     */
+    leader: "M 480 540 C 600 556 715 572 830 585",
+    label: [385, 532],
     revealIndex: 1,
     origin: "right",
   },
   {
     zone: "molar",
-    anchor: [1300, 555],
-    leader: "M 1535 555 C 1455 555 1380 555 1300 555",
-    label: [1625, 555],
+    anchor: [1240, 535],
+    leader: "M 1535 548 C 1440 543 1340 538 1240 535",
+    label: [1625, 552],
     revealIndex: 2,
     origin: "left",
   },
