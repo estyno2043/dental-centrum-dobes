@@ -14,6 +14,10 @@ import {
   allServices,
   getServiceBySlug,
 } from "@/components/services/servicesContent";
+import {
+  BACKDROP_ATTRIBUTE,
+  SERVICE_PHOTO,
+} from "@/components/services/serviceTransition";
 import styles from "./service.module.css";
 
 /**
@@ -82,7 +86,38 @@ export default async function ServicePage({
   return (
     <>
       <SiteHeader />
-      <main className={styles.page} data-header-mode="light">
+      <main className={styles.page} data-header-mode="minimal">
+        {/*
+          The service's own photograph, filling the page behind everything.
+          It carries the `view-transition-name` the catalogue card hands over,
+          so opening a service grows the picture out of its card and into this.
+          Decorative — the page says what it is in words.
+        */}
+        <div
+          aria-hidden="true"
+          className={styles.backdrop}
+          /*
+           * Inline, not in the stylesheet. CSS Modules scopes the *value* of
+           * `view-transition-name` the same way it scopes class names, so the
+           * module turned "service-photo" into a hashed name — and the card,
+           * which sets the plain name from script, would never have matched it.
+           * Two ends of a morph that cannot find each other simply do not
+           * animate, and nothing reports it.
+           */
+          style={{ viewTransitionName: SERVICE_PHOTO }}
+          {...{ [BACKDROP_ATTRIBUTE]: "" }}
+        >
+          {service.image ? (
+            /* eslint-disable-next-line @next/next/no-img-element -- Pre-cropped clinic asset. */
+            <img
+              alt=""
+              className={styles.backdropPhoto}
+              src={`/media/sluzby/${service.image}.webp`}
+            />
+          ) : null}
+          <span className={styles.scrim} />
+        </div>
+
         <header className={styles.intro}>
           <p className={styles.eyebrow}>
             <span className={styles.eyebrowRule} aria-hidden="true" />
@@ -94,10 +129,6 @@ export default async function ServicePage({
 
         {detail ? (
           <>
-            <div className={styles.hero}>
-              <Photo photo={detail.hero} ratio={2 / 3} sizes="(max-width: 900px) 100vw, 68rem" />
-            </div>
-
             <dl className={styles.facts}>
               {detail.facts.map((fact) => (
                 <div key={fact.label}>

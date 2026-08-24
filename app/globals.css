@@ -32,3 +32,40 @@ body {
   color: #fff;
   font-family: "Hanken Grotesk", sans-serif;
 }
+
+/*
+ * The service photograph growing out of its card and into the page behind it.
+ * The name is put on the card at the moment of the click and lives permanently
+ * on the page's backdrop — see `useServiceTransition.ts`.
+ */
+::view-transition-group(service-photo) {
+  animation-duration: 560ms;
+  animation-timing-function: var(--ease);
+}
+
+::view-transition-old(service-photo),
+::view-transition-new(service-photo) {
+  /* The picture is the same picture; cross-fading it against itself only
+     muddies the morph. */
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 380ms;
+  animation-timing-function: var(--ease);
+}
+
+/*
+ * Nothing here is load-bearing: the navigation happens either way, and the
+ * hook does not start a transition at all when motion is reduced. This is the
+ * belt to that braces.
+ */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

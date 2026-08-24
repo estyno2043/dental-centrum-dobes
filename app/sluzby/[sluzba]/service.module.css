@@ -7,16 +7,71 @@
  */
 
 .page {
+  position: relative;
   min-height: 100dvh;
   padding-bottom: clamp(70px, 10vh, 130px);
-  background: var(--porcelain);
-  color: var(--charcoal);
+  background: var(--ink);
+  color: var(--porcelain);
 }
 
-.page > * {
+.page > *:not(.backdrop) {
+  position: relative;
+  z-index: 1;
   max-width: 68rem;
   margin-inline: auto;
   padding-inline: clamp(20px, 5vw, 88px);
+}
+
+/* ------------------------------------------------------------- backdrop --- */
+
+/*
+ * The service's photograph, held still while the page scrolls over it.
+ *
+ * `fixed` rather than a tall absolute image: the page is longer than the
+ * picture would ever be, and a background that travels with the reader keeps
+ * the service in view the whole way down instead of scrolling out of its own
+ * page.
+ */
+.backdrop {
+  position: fixed;
+  z-index: 0;
+  overflow: hidden;
+  inset: 0;
+  pointer-events: none;
+}
+
+/*
+ * Darkened and softened, but still a photograph — the point is that you can
+ * see which service you are on without reading anything. The blur is what lets
+ * the darkening stay light enough for the picture to survive it.
+ */
+.backdropPhoto {
+  width: 100%;
+  height: 100%;
+  filter: blur(8px) saturate(0.8) brightness(0.42);
+  object-fit: cover;
+
+  /* Blur samples past the edges; growing the image hides the soft frame. */
+  transform: scale(1.06);
+}
+
+/*
+ * A second layer over the blur, heavier at the top where the header sits and
+ * at the foot where the form does. A flat tint would either wash the picture
+ * out or leave the type fighting it, depending on the photograph.
+ */
+.scrim {
+  position: absolute;
+  background:
+    linear-gradient(
+      to bottom,
+      rgb(18 16 14 / 80%) 0%,
+      rgb(18 16 14 / 58%) 34%,
+      rgb(18 16 14 / 64%) 68%,
+      rgb(18 16 14 / 88%) 100%
+    );
+  content: "";
+  inset: 0;
 }
 
 .page img {
@@ -41,7 +96,7 @@
   gap: 14px;
   align-items: center;
   margin: 0;
-  color: var(--taupe-deep);
+  color: var(--taupe);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.26em;
@@ -53,7 +108,7 @@
   width: clamp(22px, 4vw, 48px);
   height: 1px;
   flex: none;
-  background: var(--taupe-deep);
+  background: var(--taupe);
 }
 
 .headline {
@@ -69,13 +124,13 @@
 .lead {
   max-width: 46ch;
   margin: 0;
-  color: rgb(38 38 42 / 70%);
+  color: rgb(250 249 246 / 78%);
   font-size: clamp(1.05rem, 1.5vw, 1.25rem);
   line-height: 1.55;
 }
 
 .pending {
-  color: var(--taupe-deep);
+  color: var(--taupe);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.16em;
@@ -83,10 +138,6 @@
 }
 
 /* --------------------------------------------------------------- images --- */
-
-.hero {
-  padding-bottom: clamp(26px, 3.4vw, 42px);
-}
 
 .gallery {
   display: grid;
@@ -104,13 +155,13 @@
   display: grid;
   margin: 0;
   padding-top: clamp(18px, 2vw, 26px);
-  border-top: 1px solid rgb(138 115 88 / 26%);
+  border-top: 1px solid rgb(250 249 246 / 22%);
   gap: clamp(16px, 2.4vw, 34px);
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr));
 }
 
 .facts dt {
-  color: var(--taupe-deep);
+  color: var(--taupe);
   font-size: 10.5px;
   font-weight: 600;
   letter-spacing: 0.16em;
@@ -158,7 +209,7 @@
   gap: 12px;
   align-items: start;
   grid-template-columns: auto 1fr;
-  color: rgb(38 38 42 / 82%);
+  color: rgb(250 249 246 / 88%);
   font-size: clamp(0.95rem, 1.15vw, 1.05rem);
   line-height: 1.45;
 }
@@ -187,7 +238,7 @@
   gap: 16px;
   align-items: baseline;
   padding: clamp(13px, 1.6vw, 18px) 0;
-  border-bottom: 1px solid rgb(138 115 88 / 22%);
+  border-bottom: 1px solid rgb(250 249 246 / 18%);
   counter-increment: step;
   font-size: clamp(0.95rem, 1.15vw, 1.05rem);
   grid-template-columns: auto 1fr;
@@ -195,7 +246,7 @@
 
 .steps > li::before {
   content: counter(step, decimal-leading-zero);
-  color: rgb(138 115 88 / 70%);
+  color: var(--taupe);
   font-size: 10.5px;
   font-variant-numeric: tabular-nums;
   font-weight: 600;
@@ -203,24 +254,27 @@
 }
 
 .steps > li:first-child {
-  border-top: 1px solid rgb(138 115 88 / 22%);
+  border-top: 1px solid rgb(250 249 246 / 18%);
 }
 
 /* --------------------------------------------------------------- bundle --- */
 
 /* The one block that changes ground — it is what the hero's button points at. */
+/*
+ * A panel rather than a band across the page. On a photograph a full-bleed
+ * block of colour reads as a hole cut in it; a panel reads as something laid
+ * on top, which is what the offer is.
+ */
 .bundle {
-  max-width: none;
   margin-top: clamp(46px, 6vw, 84px);
-  padding-block: clamp(40px, 5.5vw, 72px);
-  padding-inline: 0;
-  background: #f0ece3;
 }
 
 .bundleInner {
-  max-width: 68rem;
-  margin-inline: auto;
-  padding-inline: clamp(20px, 5vw, 88px);
+  padding: clamp(28px, 3.6vw, 48px);
+  border: 1px solid rgb(250 249 246 / 16%);
+  border-radius: 4px;
+  background: rgb(22 19 17 / 62%);
+  backdrop-filter: blur(14px);
 }
 
 .bundleList {
@@ -237,7 +291,7 @@
   align-items: baseline;
   justify-content: space-between;
   padding: clamp(11px, 1.4vw, 16px) 0;
-  border-bottom: 1px solid rgb(138 115 88 / 26%);
+  border-bottom: 1px solid rgb(250 249 246 / 18%);
   font-size: clamp(0.95rem, 1.15vw, 1.05rem);
 }
 
@@ -259,7 +313,7 @@
   margin: clamp(14px, 1.8vw, 20px) 0 0;
   padding-left: 14px;
   border-left: 2px solid var(--taupe);
-  color: rgb(38 38 42 / 62%);
+  color: rgb(250 249 246 / 66%);
   font-size: 0.86rem;
   line-height: 1.5;
 }
@@ -273,7 +327,7 @@
 
 .caseNote {
   margin-top: 12px;
-  color: rgb(38 38 42 / 55%);
+  color: rgb(250 249 246 / 60%);
   font-size: 0.8rem;
   line-height: 1.5;
 }
@@ -283,5 +337,5 @@
 .booking {
   margin-top: clamp(50px, 7vw, 90px);
   padding-top: clamp(36px, 5vw, 58px);
-  border-top: 1px solid rgb(138 115 88 / 26%);
+  border-top: 1px solid rgb(250 249 246 / 22%);
 }

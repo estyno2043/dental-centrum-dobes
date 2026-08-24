@@ -8,6 +8,7 @@ import {
   furtherServices,
   servicesIntro,
 } from "./servicesContent";
+import { useServiceTransition } from "./useServiceTransition";
 import styles from "./services.module.css";
 
 /**
@@ -27,6 +28,12 @@ import styles from "./services.module.css";
  */
 export function ServicesSection(): JSX.Element {
   const sectionRef = useRef<HTMLElement>(null);
+  /*
+   * Opening a service grows its photograph out of the card and into the page's
+   * own background. Where the browser or the reader has no appetite for that,
+   * the `Link` simply navigates.
+   */
+  const openService = useServiceTransition();
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -84,7 +91,11 @@ export function ServicesSection(): JSX.Element {
             key={service.slug}
             style={{ "--index": index } as CSSProperties}
           >
-            <Link className={styles.cardLink} href={`/sluzby/${service.slug}`}>
+            <Link
+              className={styles.cardLink}
+              href={`/sluzby/${service.slug}`}
+              onClick={(event) => openService(event, `/sluzby/${service.slug}`)}
+            >
               <span className={styles.frame}>
                 {/* eslint-disable-next-line @next/next/no-img-element -- Pre-cropped 4:5 clinic asset; the image service adds nothing here. */}
                 <img
