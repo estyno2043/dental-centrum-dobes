@@ -30,10 +30,11 @@ export default function HomePage() {
       <PatientsSection />
       <DriftScene />
       {/*
-       * Each of the three sections below carries its own crossing from the one
-       * above it, so the grounds hand over on a change of temperature rather
-       * than an edge. The chain is #e2d7c3 -> #f0ece3 -> #fbfaf7, and moving
-       * one of them means moving the next one's `--from-tone` with it.
+       * The services section holds the drifting scene's own end tone rather
+       * than crossing away from it: the two sit on screen together for a full
+       * viewport, and two flat fills that disagree show an edge between them.
+       * It ends on white further down, and the team picks that up as its
+       * `--from-tone` — move one and the next has to move with it.
        */}
       <ServicesSection />
       <TeamSection />
