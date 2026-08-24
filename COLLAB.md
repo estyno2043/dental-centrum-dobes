@@ -5,22 +5,30 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Flagship completion written design complete — pending user review
+- Status: Flagship completion design and three implementation plans complete — awaiting execution
 - Owner: Codex
 - Branch: `codex/flagship-completion-design`
-- Task: Review one coordinated release made of two isolated workstreams:
+- Task: Plan one coordinated release made of two isolated workstreams:
   Codex owns the patient-problem engine and jaw-map refinement; Claude owns the
   team, trust, contact, price, navigation, closing CTA, and footer shell. The
   design is at
   `docs/superpowers/specs/2026-08-24-flagship-completion-release-design.md`.
-  No production implementation starts until the user reviews this written
-  version and separate task-level plans are prepared.
+  User approved the written version and confirmed that the later unreviewed
+  Claude Služby work stays outside this release. The task-level plans are now:
+  `docs/superpowers/plans/2026-08-24-patient-problem-engine.md`,
+  `docs/superpowers/plans/2026-08-24-trust-conversion-shell.md`, and
+  `docs/superpowers/plans/2026-08-24-flagship-completion-integration.md`.
+  Execution remains inline only; the user prohibited subagents.
 
 ## File Reservations
 
 - Codex reserves only `COLLAB.md` and
-  `docs/superpowers/specs/2026-08-24-flagship-completion-release-design.md`
-  for the current design pass. No application or media file is reserved or
+  `docs/superpowers/specs/2026-08-24-flagship-completion-release-design.md`,
+  plus the three plan files
+  `docs/superpowers/plans/2026-08-24-patient-problem-engine.md`,
+  `docs/superpowers/plans/2026-08-24-trust-conversion-shell.md`, and
+  `docs/superpowers/plans/2026-08-24-flagship-completion-integration.md` for
+  the current planning pass. No application or media file is reserved or
   changed during planning.
 
 - The desktop hover menu released all of its files. `components/hero/DesktopMenu.tsx`,

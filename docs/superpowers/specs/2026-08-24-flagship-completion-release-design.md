@@ -2,8 +2,9 @@
 
 ## Status
 
-Direction A approved by the user on 2026-08-24. This written specification is
-pending the user's final review before implementation plans are created.
+Direction A and this written specification were approved by the user on
+2026-08-24. Task-level Codex, Claude, and integration plans are now recorded in
+`docs/superpowers/plans/`.
 
 ## Release goal
 
@@ -27,17 +28,24 @@ owns final integration and publication after localhost approval.
 The design starts from `origin/main` at
 `4e4185ec27c9d3c64f9ebfea048f6c1215e9cdd3`. There is no open pull request.
 
-`origin/claude/tim-page` was fetched and inspected at `23b73d2`. It contains:
+`origin/claude/tim-page` was first fetched at `23b73d2` and then advanced to
+`3d4bd9d` during planning. It contains:
 
 - a useful team page, homepage team section, eleven approved portraits, and
   clinic-supplied roles;
 - two jaw redesign commits that overlap the Codex workstream;
-- a merge commit bringing in desktop navigation that already exists on main.
+- a merge commit bringing in desktop navigation that already exists on main;
+- three later Služby commits with a new homepage section, ten placeholder
+  service routes, stand-in photography, and copy that still needs a separate
+  medical/content review.
 
 The branch must not be merged wholesale. Claude may port only the team-specific
 commits `2be19a5`, `08cf9e6`, `08f6ccc`, `2877914`, and `23b73d2` onto a fresh
 branch from current `origin/main`. Commits `d272063`, `3eaac82`, and `709c91b`
-are excluded.
+are excluded. The user explicitly confirmed on 2026-08-24 that service commits
+`cbbada2`, `c8502a4`, and `3d4bd9d` are also excluded from this release. The
+approved `/problemy` patient-language architecture takes priority; service
+pages may be reviewed later without redirecting or deleting those routes.
 
 ## Product principles
 
