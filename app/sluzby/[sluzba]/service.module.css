@@ -1,0 +1,352 @@
+/*
+ * A service page.
+ *
+ * Short and plain. Someone reaches this page having decided to look into one
+ * thing; the job is to answer it and get out of the way, so the benefits are
+ * single lines and the photographs carry what prose would otherwise have to.
+ */
+
+.page {
+  position: relative;
+  min-height: 100dvh;
+  padding-bottom: clamp(70px, 10vh, 130px);
+
+  /* The clinic's cream, matching the scrim in `serviceTransition.ts`. */
+  background: #f4f0e8;
+  color: var(--charcoal);
+}
+
+.page > *:not(.backdrop) {
+  position: relative;
+  z-index: 1;
+  max-width: 68rem;
+  margin-inline: auto;
+  padding-inline: clamp(20px, 5vw, 88px);
+}
+
+/* ------------------------------------------------------------- backdrop --- */
+
+/*
+ * The service's photograph, held still while the page scrolls over it.
+ *
+ * `fixed` rather than a tall absolute image: the page is longer than the
+ * picture would ever be, and a background that travels with the reader keeps
+ * the service in view the whole way down instead of scrolling out of its own
+ * page.
+ */
+.backdrop {
+  position: fixed;
+  z-index: 0;
+  overflow: hidden;
+  inset: 0;
+  pointer-events: none;
+}
+
+/*
+ * Darkened and softened, but still a photograph — the point is that you can
+ * see which service you are on without reading anything. The blur is what lets
+ * the darkening stay light enough for the picture to survive it.
+ */
+/*
+ * Lifted and drained rather than darkened. The rest of the site is pale, and a
+ * subpage that goes dark reads as a different website — so the photograph is
+ * washed almost to paper and the type stays ink, as everywhere else.
+ */
+.backdropPhoto {
+  width: 100%;
+  height: 100%;
+  /* `filter` is applied inline from `serviceTransition.ts` — see the page. */
+  object-fit: cover;
+
+  /* Blur samples past the edges; growing the image hides the soft frame. */
+  transform: scale(1.06);
+}
+
+/*
+ * A second layer over the blur, heavier at the top where the header sits and
+ * at the foot where the form does. A flat tint would either wash the picture
+ * out or leave the type fighting it, depending on the photograph.
+ */
+/*
+ * Porcelain over the wash, heaviest where the type is densest. Enough that ink
+ * on it always reads, little enough that the picture is still a picture.
+ */
+.scrim {
+  position: absolute;
+
+  /* `background` is applied inline from `serviceTransition.ts`. */
+  content: "";
+  inset: 0;
+}
+
+.page img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 3px;
+  object-fit: cover;
+}
+
+/* ---------------------------------------------------------------- intro --- */
+
+.intro {
+  display: grid;
+  padding-top: clamp(130px, 17vh, 200px);
+  padding-bottom: clamp(28px, 4vw, 46px);
+  gap: clamp(14px, 1.8vw, 20px);
+}
+
+.eyebrow {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin: 0;
+  color: var(--taupe-deep);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.eyebrowRule {
+  display: block;
+  width: clamp(22px, 4vw, 48px);
+  height: 1px;
+  flex: none;
+  background: var(--taupe-deep);
+}
+
+.headline {
+  max-width: 14em;
+  margin: 0;
+  font-size: clamp(2.1rem, 5.4vw, 3.9rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: 46ch;
+  margin: 0;
+  /* Denser than a lead would normally be: it sits over the brightest part
+     of the photograph, where a lighter grey simply disappears. */
+  color: rgb(38 38 42 / 84%);
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+  line-height: 1.55;
+}
+
+.pending {
+  color: var(--taupe-deep);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------- images --- */
+
+.gallery {
+  display: grid;
+  padding-top: clamp(30px, 4vw, 52px);
+  gap: clamp(10px, 1.4vw, 18px);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+}
+
+.gallery figure {
+  margin: 0;
+}
+
+/* The four hard facts, on a rule so they read as a strip rather than a list. */
+.facts {
+  display: grid;
+  margin: 0;
+  padding-top: clamp(18px, 2vw, 26px);
+  border-top: 1px solid rgb(138 115 88 / 30%);
+  gap: clamp(16px, 2.4vw, 34px);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr));
+}
+
+.facts dt {
+  color: var(--taupe-deep);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.facts dd {
+  margin: 5px 0 0;
+  font-size: clamp(1.05rem, 1.6vw, 1.3rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* --------------------------------------------------------------- blocks --- */
+
+.block {
+  padding-top: clamp(44px, 6vw, 80px);
+}
+
+.blockHeading {
+  margin: 0 0 clamp(18px, 2.4vw, 30px);
+  font-size: clamp(1.35rem, 2.4vw, 2rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+/*
+ * One line each, two columns. Twelve short lines read as a list of what you
+ * get; twelve short paragraphs read as a wall, which is the same information
+ * arranged to be skipped.
+ */
+.benefits {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  gap: clamp(11px, 1.3vw, 15px) clamp(24px, 4vw, 60px);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  list-style: none;
+}
+
+.benefits > li {
+  display: grid;
+  gap: 12px;
+  align-items: start;
+  grid-template-columns: auto 1fr;
+  color: rgb(38 38 42 / 86%);
+  font-size: clamp(0.95rem, 1.15vw, 1.05rem);
+  line-height: 1.45;
+}
+
+/* A small ring rather than a checkmark: nothing here is being ticked off. */
+.tick {
+  width: 7px;
+  height: 7px;
+  margin-top: 0.52em;
+  border: 1.5px solid var(--taupe);
+  border-radius: 50%;
+}
+
+.steps {
+  display: grid;
+  max-width: 44rem;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.steps > li {
+  display: grid;
+  gap: 16px;
+  align-items: baseline;
+  padding: clamp(13px, 1.6vw, 18px) 0;
+  border-bottom: 1px solid rgb(138 115 88 / 26%);
+  counter-increment: step;
+  font-size: clamp(0.95rem, 1.15vw, 1.05rem);
+  grid-template-columns: auto 1fr;
+}
+
+.steps > li::before {
+  content: counter(step, decimal-leading-zero);
+  color: var(--taupe-deep);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+}
+
+.steps > li:first-child {
+  border-top: 1px solid rgb(138 115 88 / 26%);
+}
+
+/* --------------------------------------------------------------- bundle --- */
+
+/* The one block that changes ground — it is what the hero's button points at. */
+/*
+ * A panel rather than a band across the page. On a photograph a full-bleed
+ * block of colour reads as a hole cut in it; a panel reads as something laid
+ * on top, which is what the offer is.
+ */
+.bundle {
+  margin-top: clamp(46px, 6vw, 84px);
+}
+
+/*
+ * The one dark thing on the page, and deliberately so: it is the offer the
+ * site's first button points at, and on a pale ground a dark panel is the
+ * loudest thing available without raising the voice of anything else.
+ */
+.bundleInner {
+  padding: clamp(28px, 3.6vw, 48px);
+  border-radius: 4px;
+  background: var(--ink);
+  color: var(--porcelain);
+}
+
+.bundleList {
+  display: grid;
+  max-width: 38rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bundleList > li {
+  display: flex;
+  gap: 18px;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: clamp(11px, 1.4vw, 16px) 0;
+  border-bottom: 1px solid rgb(138 115 88 / 26%);
+  font-size: clamp(0.95rem, 1.15vw, 1.05rem);
+}
+
+.bundlePrice {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.bundleTotal {
+  border-bottom: 0 !important;
+  font-size: clamp(1.1rem, 1.7vw, 1.4rem) !important;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.bundleNote {
+  max-width: 46ch;
+  margin: clamp(14px, 1.8vw, 20px) 0 0;
+  padding-left: 14px;
+  border-left: 2px solid var(--taupe);
+  color: rgb(250 249 246 / 70%);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+/* ----------------------------------------------------------------- case --- */
+
+.case {
+  max-width: 42rem;
+  margin: 0;
+}
+
+.caseNote {
+  margin-top: 12px;
+  color: rgb(38 38 42 / 58%);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+/* -------------------------------------------------------------- booking --- */
+
+.booking {
+  margin-top: clamp(50px, 7vw, 90px);
+  padding-top: clamp(36px, 5vw, 58px);
+  border-top: 1px solid rgb(138 115 88 / 30%);
+}

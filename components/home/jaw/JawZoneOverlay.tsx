@@ -7,7 +7,6 @@ import {
   useRef,
   useState,
   type CSSProperties,
-  type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
 } from "react";
@@ -44,8 +43,12 @@ type ZoneMarker = Readonly<{
   anchor: readonly [number, number];
   leader: string;
   label: readonly [number, number];
-  width: number;
   revealIndex: number;
+  /**
+   * Which edge of the button the hover fill sweeps in from — always the edge
+   * facing its own line, so the fill runs towards the anatomy it points at.
+   */
+  origin: "top" | "right" | "bottom" | "left";
 }>;
 
 type OverlayState = Readonly<{
@@ -118,32 +121,48 @@ const MARKERS: readonly ZoneMarker[] = [
     anchor: [960, 470],
     leader: "M 960 292 C 960 340 960 405 960 470",
     label: [960, 255],
-    width: 210,
     revealIndex: 0,
+    origin: "bottom",
   },
+  /*
+   * Both of these used to miss. Measured against the sequence's final frame,
+   * whose 1280x720 maps onto this 1920x1080 viewBox at exactly 1.5x, the
+   * lower arch's midline sits at x≈981 and its four incisors span 910–1053.
+   * Counting outwards from there puts the left premolars at roughly 760–864
+   * and the right molars at 1202–1290.
+   *
+   * The old premolar anchor at x=720 was past the premolars entirely and sat
+   * on the left molars' chewing surfaces; the old molar anchor at x=1300 was
+   * off the gum altogether, on the blurred background behind it.
+   */
   {
     zone: "premolar",
-    anchor: [720, 535],
-    leader: "M 480 525 C 565 525 635 530 720 535",
-    label: [385, 525],
-    width: 230,
+    anchor: [830, 585],
+    /*
+     * Dips as it travels, so it grazes under the left molars rather than
+     * across them — a line to the premolars that crosses the molars on its way
+     * is its own kind of wrong answer.
+     */
+    leader: "M 480 540 C 600 556 715 572 830 585",
+    label: [385, 532],
     revealIndex: 1,
+    origin: "right",
   },
   {
     zone: "molar",
-    anchor: [1300, 555],
-    leader: "M 1535 555 C 1455 555 1380 555 1300 555",
-    label: [1625, 555],
-    width: 190,
+    anchor: [1240, 535],
+    leader: "M 1535 548 C 1440 543 1340 538 1240 535",
+    label: [1625, 552],
     revealIndex: 2,
+    origin: "left",
   },
   {
     zone: "gum",
     anchor: [960, 745],
     leader: "M 960 880 C 960 835 960 790 960 745",
     label: [960, 920],
-    width: 170,
     revealIndex: 3,
+    origin: "top",
   },
 ] as const;
 
@@ -186,8 +205,8 @@ export function JawZoneOverlay({
   visible,
 }: JawZoneOverlayProps) {
   const rootRef = useRef<HTMLDivElement>(null);
-  const triggerRefs = useRef<Partial<Record<JawSurfaceId, SVGPathElement>>>({});
-  const activeSurfaceRef = useRef<JawSurfaceId | null>(null);
+  const triggerRefs = useRef<Partial<Record<InteractiveZoneId, HTMLButtonElement>>>({});
+  const activeTriggerRef = useRef<InteractiveZoneId | null>(null);
   const skipRestoredFocusRef = useRef(false);
   const [state, setState] = useState<OverlayState>(() => ({
     openZone: null,
@@ -205,18 +224,18 @@ export function JawZoneOverlay({
   const visibleState = enabled ? state : { ...state, openZone: null, pinned: false };
   const activeZone = visibleState.openZone ? ZONES[visibleState.openZone] : undefined;
 
-  const focusTrigger = useCallback((surfaceId: JawSurfaceId | null) => {
-    triggerRefs.current[surfaceId ?? "front"]?.focus();
+  const focusTrigger = useCallback((zoneId: InteractiveZoneId | null) => {
+    triggerRefs.current[zoneId ?? "front"]?.focus();
   }, []);
 
   const close = useCallback(
     (restoreFocus: boolean) => {
-      const surfaceId = activeSurfaceRef.current;
-      activeSurfaceRef.current = null;
+      const zoneId = activeTriggerRef.current;
+      activeTriggerRef.current = null;
       setState((current) => ({ ...current, openZone: null, pinned: false }));
       if (restoreFocus) {
         skipRestoredFocusRef.current = true;
-        focusTrigger(surfaceId);
+        focusTrigger(zoneId);
       }
     },
     [focusTrigger],
@@ -225,7 +244,7 @@ export function JawZoneOverlay({
   useEffect(() => {
     if (enabled) return;
     const focusedInside = rootRef.current?.contains(document.activeElement) ?? false;
-    activeSurfaceRef.current = null;
+    activeTriggerRef.current = null;
     if (focusedInside) rootRef.current?.focus();
     const timer = window.setTimeout(() => {
       setState((current) => ({ ...current, openZone: null, pinned: false }));
@@ -238,7 +257,7 @@ export function JawZoneOverlay({
     const onChange = (event: MediaQueryListEvent) => {
       const nextMode: OverlayState["mode"] = event.matches ? "mobile" : "desktop";
       const focusedInside = rootRef.current?.contains(document.activeElement) ?? false;
-      activeSurfaceRef.current = null;
+      activeTriggerRef.current = null;
       setState((current) => ({ ...current, mode: nextMode, openZone: null, pinned: false }));
       if (focusedInside) rootRef.current?.focus();
     };
@@ -254,36 +273,27 @@ export function JawZoneOverlay({
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [close, state.pinned]);
 
-  const open = useCallback((surface: Surface, pin: boolean) => {
+  const open = useCallback((zoneId: InteractiveZoneId, pin: boolean) => {
     if (!enabled) return;
-    activeSurfaceRef.current = surface.id;
+    activeTriggerRef.current = zoneId;
     setState((current) => ({
       ...current,
-      openZone: surface.zone,
+      openZone: zoneId,
       pinned: pin || current.pinned,
     }));
   }, [enabled]);
 
-  const closeUnpinned = useCallback((event: ReactPointerEvent<SVGPathElement | HTMLElement>) => {
+  const closeUnpinned = useCallback((event: ReactPointerEvent<HTMLElement>) => {
     const related = event.relatedTarget;
     if (related instanceof Node && rootRef.current?.contains(related)) return;
     setState((current) => current.pinned ? current : { ...current, openZone: null });
   }, []);
 
-  const activateZone = useCallback((surface: Surface) => {
+  const activateZone = useCallback((zoneId: InteractiveZoneId) => {
     if (!enabled) return;
-    open(surface, true);
-    emitJawAnalytics({ consent: analyticsConsent, event: "jaw_zone_click", zone: surface.zone });
+    open(zoneId, true);
+    emitJawAnalytics({ consent: analyticsConsent, event: "jaw_zone_click", zone: zoneId });
   }, [analyticsConsent, enabled, open]);
-
-  const onSurfaceKeyDown = useCallback((
-    event: ReactKeyboardEvent<SVGPathElement>,
-    surface: Surface,
-  ) => {
-    if (event.key !== "Enter" && event.key !== " ") return;
-    event.preventDefault();
-    activateZone(surface);
-  }, [activateZone]);
 
   const onDirectClick = useCallback((zone: JawZone, event: ReactMouseEvent<HTMLAnchorElement>) => {
     if (!enabled) {
@@ -308,6 +318,12 @@ export function JawZoneOverlay({
     <section
       aria-label={activeZone.label}
       className={classNames(styles.zoneCard, visibleState.mode === "mobile" && styles.zonePanel)}
+      /*
+       * Away from the active zone's own button. Only the premolar control sits
+       * out to the left; the card's default side would sit straight on top of
+       * it.
+       */
+      data-side={visibleState.openZone === "premolar" ? "right" : "left"}
       onPointerEnter={() => undefined}
       onPointerLeave={closeUnpinned}
       role={visibleState.mode === "mobile" ? "dialog" : "region"}
@@ -316,8 +332,17 @@ export function JawZoneOverlay({
         <p className={styles.cardKicker}>Vyberte problém</p>
         <h3>{activeZone.label}</h3>
         {visibleState.mode === "mobile" ? (
-          <button className={styles.closeButton} onClick={() => close(true)} type="button">
-            Zavrieť
+          <button
+            aria-label="Zavrieť"
+            className={styles.closeButton}
+            onClick={() => close(true)}
+            type="button"
+          >
+            {/* The glyph is decoration; the button's name comes from the label
+                above and the hidden word below, so nothing is lost when the
+                mark cannot be read. */}
+            <span aria-hidden="true">✕</span>
+            <span className={styles.srOnly}>Zavrieť</span>
           </button>
         ) : null}
       </div>
@@ -354,7 +379,7 @@ export function JawZoneOverlay({
       {mapVisible ? (
         <>
           <h2 className={styles.zoneHeading}>Kde vás to trápi?</h2>
-          <p className={styles.zonePrompt}>Kliknite na miesto a vyberte, čo cítite.</p>
+          <p className={styles.zonePrompt}>Vyberte oblasť a povedzte nám, čo cítite.</p>
         </>
       ) : null}
       {artworkVisible ? (
@@ -368,17 +393,6 @@ export function JawZoneOverlay({
                 <stop offset="0" stopColor="#efd8a3" />
                 <stop offset="1" stopColor="#d68f89" />
               </linearGradient>
-              <marker
-                id="jaw-arrowhead"
-                markerHeight="8"
-                markerWidth="8"
-                orient="auto"
-                refX="7"
-                refY="4"
-                viewBox="0 0 8 8"
-              >
-                <path d="M 0 0 L 8 4 L 0 8 Z" />
-              </marker>
             </defs>
             {SURFACES.map((surface) => (
               <path
@@ -404,7 +418,26 @@ export function JawZoneOverlay({
                   className={styles.zoneLeader}
                   d={marker.leader}
                   data-testid={`jaw-leader-${marker.zone}`}
-                  markerEnd="url(#jaw-arrowhead)"
+                  pathLength={100}
+                />
+                {/*
+                  The same path again, drawn as one short dash that runs from
+                  the button end to the jaw end while the zone is active — the
+                  button sending a signal to the place it names. Two elements
+                  rather than one because the line has to stay drawn underneath
+                  while the dash travels over it.
+                */}
+                <path
+                  className={styles.zonePulse}
+                  d={marker.leader}
+                  data-testid={`jaw-pulse-${marker.zone}`}
+                  pathLength={100}
+                />
+                <circle
+                  className={styles.zoneHalo}
+                  cx={marker.anchor[0]}
+                  cy={marker.anchor[1]}
+                  r="8"
                 />
                 <circle
                   className={styles.zoneAnchor}
@@ -413,50 +446,74 @@ export function JawZoneOverlay({
                   data-testid={`jaw-anchor-${marker.zone}`}
                   r="8"
                 />
-                <g
-                  className={styles.zoneLabel}
-                  data-testid={`jaw-zone-label-${marker.zone}`}
-                  transform={`translate(${marker.label[0]} ${marker.label[1]})`}
-                >
-                  <rect height="54" rx="27" width={marker.width} x={-marker.width / 2} y="-27" />
-                  <text dominantBaseline="middle" textAnchor="middle" y="1">
-                    {ZONES[marker.zone].label}
-                  </text>
-                </g>
               </g>
             )) : null}
-            {SURFACES.map((surface) => (
-              <path
-                aria-hidden={!enabled}
-                aria-label={enabled ? ZONES[surface.zone].label : undefined}
-                aria-pressed={enabled ? visibleState.openZone === surface.zone : undefined}
-                className={styles.zoneHit}
-                d={surface.path}
-                data-testid={`jaw-hit-${surface.id}`}
-                data-zone={surface.zone}
-                key={`hit-${surface.id}`}
-                onBlur={() => {
-                  if (!state.pinned) setState((current) => ({ ...current, openZone: null }));
-                }}
-                onClick={() => activateZone(surface)}
-                onFocus={() => {
-                  if (skipRestoredFocusRef.current) {
-                    skipRestoredFocusRef.current = false;
-                    return;
-                  }
-                  open(surface, false);
-                }}
-                onKeyDown={(event) => onSurfaceKeyDown(event, surface)}
-                onPointerEnter={() => open(surface, false)}
-                onPointerLeave={closeUnpinned}
-                ref={(element) => {
-                  triggerRefs.current[surface.id] = element ?? undefined;
-                }}
-                role={enabled ? "button" : undefined}
-                tabIndex={enabled ? 0 : -1}
-              />
-            ))}
           </svg>
+
+          {/*
+            The controls. HTML rather than shapes inside the SVG: a real button
+            brings its own focus handling, its own keyboard behaviour and a
+            hit area that does not depend on where a path happens to be
+            painted.
+
+            This replaces seven invisible hit paths laid over the anatomy. Those
+            sat edge to edge, so reaching the front teeth from outside the jaw
+            meant crossing the molar and premolar surfaces, and each crossing
+            opened its own card on the way past. Four separated buttons cannot
+            do that to each other.
+
+            Positioned from the same master coordinates the lines are drawn in.
+            The artboard is locked to 16:9 and the viewBox is 1920×1080, so a
+            percentage of the box and a fraction of the viewBox are the same
+            place.
+          */}
+          <div className={styles.zoneButtons} data-testid="jaw-zone-buttons">
+              {MARKERS.map((marker) => (
+                <button
+                  aria-expanded={enabled ? visibleState.openZone === marker.zone : undefined}
+                  aria-hidden={!enabled}
+                  className={styles.zoneButton}
+                  data-active={visibleState.openZone === marker.zone}
+                  data-origin={marker.origin}
+                  data-testid={`jaw-zone-button-${marker.zone}`}
+                  data-zone={marker.zone}
+                  disabled={!enabled}
+                  key={marker.zone}
+                  onBlur={() => {
+                    if (!state.pinned) setState((current) => ({ ...current, openZone: null }));
+                  }}
+                  onClick={() => activateZone(marker.zone)}
+                  onFocus={() => {
+                    if (skipRestoredFocusRef.current) {
+                      skipRestoredFocusRef.current = false;
+                      return;
+                    }
+                    open(marker.zone, false);
+                  }}
+                  onPointerEnter={() => open(marker.zone, false)}
+                  onPointerLeave={closeUnpinned}
+                  ref={(element) => {
+                    triggerRefs.current[marker.zone] = element ?? undefined;
+                  }}
+                  /*
+                   * A `<button>` cannot shed its implicit role, and until the
+                   * map is live these are labels rather than controls — the
+                   * same contract the paths they replaced held.
+                   */
+                  role={enabled ? undefined : "presentation"}
+                  style={{
+                    "--x": `${(marker.label[0] / MASTER_WIDTH) * 100}%`,
+                    "--y": `${(marker.label[1] / MASTER_HEIGHT) * 100}%`,
+                    "--zone-index": marker.revealIndex,
+                  } as CSSProperties}
+                  tabIndex={enabled ? 0 : -1}
+                  type="button"
+                >
+                  <span aria-hidden="true" className={styles.zoneButtonMark} />
+                  <span className={styles.zoneButtonLabel}>{ZONES[marker.zone].label}</span>
+                </button>
+              ))}
+          </div>
         </div>
       ) : null}
       {enabled ? (

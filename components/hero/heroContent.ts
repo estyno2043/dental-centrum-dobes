@@ -8,7 +8,8 @@ export const headlineVariants = [
 export const navigationItems = [
   { label: "Služby", href: "#" },
   { label: "Cenník", href: "#" },
-  { label: "Tím", href: "#" },
+  // The one destination that exists. Everything else stays a placeholder.
+  { label: "Tím", href: "/tim" },
   { label: "Kontakt", href: "#" },
 ] as const;
 

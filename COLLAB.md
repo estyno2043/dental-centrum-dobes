@@ -343,6 +343,30 @@ the title — `Dipl. DH.` suggests a dental hygienist and `MUDr.`/`MDDr.` a
 dentist, but which of them lead, and what each specialises in, is not something
 to guess on a clinic's behalf.
 
+2026-08-18: the user supplied the seven missing roles — Dobeš "Hlava kliniky,
+zubár"; Dobešová, Kunová and Novotňáková "Zubár"; Vaňková "Dentálna
+hygienička, hlava sociálnych sietí"; Petschuchová "Zdravotná sestra"; Voľný
+"Recepcia, manažment". Two of them cut against the degrees: Petschuchová
+carries `Dipl. DH.` and is a nurse, Vaňková is the hygienist. That is the
+clinic's own answer and it overrides the titles — which is exactly why these
+were never guessed. Vaňková and Petschuchová also swapped places in the grid
+at the user's request, so the hygienist takes the left column. Every entry in
+`components/team/teamContent.ts` now carries a role; none was inferred.
+
+Open question for the user: the roles were given in the masculine ("Zubár")
+for women. Left verbatim rather than feminised, since these are real people's
+stated titles.
+
+2026-08-17: cross-checked against the team page of the clinic's previous site,
+`bratislavazubar.sk/nas-team`. It carries the same eleven names in the same
+order and states a role for the same four nurses and nobody else, so the seven
+missing roles are still outstanding — the old site is not a source for them.
+Its order does pair the columns, dentists and the hygienist on the left against
+the nurses on the right, and `components/team/teamContent.ts` keeps that order.
+The old site also yields contact facts the new one still lacks: Vlárska 13/c,
+Bratislava-Kramáre 831 01, telefón 02/434 256 81, mobil 0918 800 002, ordinačné
+hodiny Po–Št 8:00–19:00 and Pi 8:00–14:00.
+
 ## Open Questions
 
 Both questions below are for the user; they gate the next content task.
@@ -565,6 +589,156 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   media validation, production build, and whitespace check. No files remain
   reserved. The user approved localhost and authorized merge/push to `main`.
 
+- 2026-08-17 — Claude built the Tím page on `claude/tim-page`, at the user's
+  request in the style of the reference site's team section. Worth recording
+  about that reference: it has no team subpage at all — `#team` is a section on
+  its one-page site — so only its layout and motion were taken, and the page
+  lives on its own route `/tim` as the user asked. Its mechanism is a
+  two-column grid where the left column travels ±drift while the right stays
+  put, driven by one custom property; ours reproduces that with the same
+  scroll-listener approach as the drifting-photograph scene.
+
+  Eleven portraits were encoded from `~/Downloads/dobes-media-raw/portrety` to
+  `public/media/tim/<slug>.webp` plus `-mobile`, 4:5 at 1360×1700 and 680×850,
+  1.0 MiB for all 22 files. Portrait-orientation sources are cropped from the
+  top; the three that exist only in landscape are cropped by salience.
+  Novotňáková uses frame 5871 because the others place her off-centre.
+
+  `role` in `teamContent.ts` is optional and renders as absent when missing —
+  seven of the eleven still have no stated role and a guessed job title on a
+  named medical professional would be a false claim, not a placeholder. A test
+  fails if anyone adds a fallback string. Verified: 131 tests, lint,
+  TypeScript, production build, and measured at 1440×900 and 390×844 — two
+  539px columns with the left one travelling 104px→−86px, single column and no
+  drift on the phone, all eleven portraits loading the right srcset candidate,
+  no horizontal overflow. `SiteHeader`'s logo and any nav item with a real
+  path now route through `next/link`; the "Tím" item points at `/tim`.
+
+  Then, at the user's request, the same section was added to the homepage below
+  the drifting-photograph scene and the design pushed further. `TeamSection`
+  now owns the scroll listener and both pages share it — the homepage as its
+  closing section with an `h2`, `/tim` as the whole page with an `h1`, and
+  `TeamGrid` went back to being a plain server component reading the inherited
+  `--p`. Keeping one component rather than two copies is what stops the roster
+  from diverging.
+
+  The join reuses the pattern from the patients→drift boundary: the ground
+  starts on the drifting scene's own `#e2d7c3` and cools to `#f7f4ee` across a
+  full screen of approach on `--enter`, and the intro fades and rises on the
+  same value a little behind it. Measured at the boundary — at one viewport out
+  both grounds read oklab L 0.8826/0.8827, indistinguishable, then 0.9167 →
+  0.9423 → 0.9661 → 0.9678 settled, with the intro at 0 → 0.5 → 1 and the
+  header flipping to taupe exactly on the edge.
+
+  Modernisation, all of it measured at 1440×900 and 390×844: unequal columns
+  (560.7px against 497.3px), portraits held at `grayscale(0.72)` so eleven
+  separate sittings read as one set and return to colour on hover, a numbered
+  index on the name's last baseline, and a hairline over each name plate that
+  draws from the left on hover. Both `--enter` and `--p` default to their
+  settled values in CSS, so a page whose script fails shows the team rather
+  than eleven invisible people.
+
+  Verified: 136 tests, lint, TypeScript, production build, no horizontal
+  overflow at either size, all eleven portraits loading the right srcset
+  candidate.
+
+  Third pass, on the user's notes: smaller portraits set further apart, colour
+  driven by scroll rather than only by hover, and a lighter ground.
+
+  Cards went from 560px to 392px and are held back inside their own tracks —
+  odd `justify-self: start`, even `justify-self: end` — which opens a 252px
+  gutter between the columns where there was 38px, with a 130px row gap.
+
+  Colour now follows a band of light in the middle of the screen. `TeamSection`
+  writes a `--focus` per card from that card's `offsetTop`, deliberately not
+  its rect: the rect carries the left column's drift, which would light the two
+  halves of a row unevenly, and the pair has to gain and lose colour together.
+  Measured by centring rows 1, 5 and 9 in turn — the centred pair reads
+  `grayscale(0.001)` on both cards while the row below reads `grayscale(0.88)`.
+  Hover still works and is combined with `max()` rather than overriding, since
+  an inline custom property always beats a stylesheet rule; `--hover` is
+  registered with `@property` so that half of it can ease.
+
+  The band is a real element, not an effect laid over one: a sticky, screen-tall
+  radial of warm white with `margin-bottom: calc(-1 * var(--halo-height))` so it
+  adds no height, at `z-index: -1` inside an isolated section so it paints over
+  the ground and under the cards. The same middle-of-screen measurement drives
+  both it and the colour. `--to-tone` also lightened from `#f7f4ee` to
+  `#fbfaf7`.
+
+  The join still measures clean after all of it: at one viewport out both
+  grounds read oklab L 0.8826/0.8827, then 0.9339 → 0.9830 → 0.9850 settled.
+  136 tests, lint, TypeScript, build; no horizontal overflow.
+
+  Fourth pass: the user could not see the colour effect at all. The cause was
+  not a bug — it measured correctly — it was that a single falloff from the
+  screen's middle reaches full colour at exactly one scroll position, so a row
+  is always on its way in or out and spends the whole time part-grey. The band
+  now has a plateau: fully lit while the row centre is within 0.18 of the
+  viewport either side of the middle, ramping to nothing over another 0.20. That
+  is 324px of full colour per row against a 695px row pitch, so each row is its
+  own event with nothing lit between them.
+
+  Desaturation alone was also too quiet, so a lit row now does four things at
+  once: takes its colour back (grayscale 1 → 0), brightens, gains a little
+  contrast, and rises 8px out of the page with a `0 22px 48px rgb(38 38 42 /
+  20%)` shadow that was not there before. Unlit rows are dimmed to 0.74 opacity
+  — the pale state is what makes the lit one read as lit — and the name greys
+  back with its portrait. Measured: the centred pair reads grayscale 0, opacity
+  1, full shadow; every other row reads grayscale 1, opacity 0.74, no shadow;
+  150px off centre the pair is still fully lit.
+
+  Not verified: the ground's appearance. The preview pane renders this project's
+  colours far darker than they compute and will not advance CSS transitions, so
+  every colour claim above is a measurement, not something seen. The user asked
+  for a lighter background off the back of what they saw on their own machine,
+  and only they can confirm the result.
+
+- 2026-08-17 — Claude reworked the jaw section's controls on the same branch,
+  at the user's request. This touches Codex's files: `JawZoneOverlay.tsx` and
+  `jawExperience.module.css`. Nothing about the anatomy, the sequence, the
+  zones or their geometry was changed — only the assistance bar, the problem
+  rows and the close control.
+
+  Three of the changes are defects rather than taste:
+
+  1. `.assistanceBar` held a question and two labels on one line with
+     `white-space: nowrap` under a `max-width: calc(100% - 2rem)`, so between
+     the phone breakpoint and roughly 900px it pushed past its own limit
+     instead of wrapping. It now wraps.
+  2. Every `.problemList` row carried a bottom rule including the last, which
+     left a line hanging over the card's bottom edge.
+  3. `.closeButton` was the word "Zavrieť" inside a 44px minimum with no
+     padding, so the text ran into its own border. It is now a fixed 44px round
+     icon button; the accessible name survives on `aria-label` plus a visually
+     hidden span, and a test pins that.
+
+  The rest is alignment with the site rather than a new design. These buttons
+  used a bespoke gold — `#e2c289`, `#ffe2a9`, `#dfbd80`, `#fffaf4` — that
+  appears nowhere else in the project, which is what made them read as
+  belonging to a different page. The chrome now uses the brand tokens and the
+  header's own button idiom: a hairline pill that fills with `--taupe` from the
+  left and flips its type to `--ink`. Problem rows step aside for an arrow and
+  light along their full width. Every control gained a real `:active` state and
+  an explicit `:focus-visible` ring — previously focus was signalled by the
+  same fill hover produces, so a keyboard user could not tell them apart.
+
+  The jaw's gold markers and drop-shadows were deliberately left alone: that
+  gold is the highlight on the anatomy, not UI chrome.
+
+  Not verified in a browser. The controls only mount once the 60-frame sequence
+  finishes loading, and the preview pane never leaves `data-jaw-sequence-state
+  = "loading"`, so none of this was seen. 139 tests, lint, TypeScript and the
+  production build pass, and the three defects above are pinned by assertions
+  against the stylesheet text, using the `cssText` pattern already in
+  `JawZoneOverlay.test.tsx`.
+
+  Files reserved: `components/team/**`, `app/tim/**`, `public/media/tim/**`,
+  `app/page.tsx`, and — temporarily, for this change only —
+  `components/home/jaw/JawZoneOverlay.tsx` and
+  `components/home/jaw/jawExperience.module.css`. Awaiting the user's localhost
+  approval before this reaches `main`. Still outstanding: the seven missing
+  roles.
 - 2026-08-18 — Claude implemented the desktop hover menu (spec:
   `docs/superpowers/specs/2026-08-18-desktop-hover-menu-design.md`, plan:
   `docs/superpowers/plans/2026-08-18-desktop-hover-menu.md`) via
@@ -621,6 +795,221 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   next person to touch this should confirm the live deployment matches
   `fc11801` and share the URL here, per the shared workflow's requirement
   that both developers and the user inspect the same live version.
+
+- 2026-08-18 — Claude merged `main` (the desktop hover menu, `c9075cc`) into
+  `claude/tim-page`. Three files conflicted and were resolved as follows.
+  `SiteHeader.tsx` took `main`'s version whole — the flat link row is gone and
+  `DesktopMenu` stays — with one change reapplied on top: the logo is a
+  `next/link` to `/` rather than an anchor to `#`, because the header now
+  appears on `/tim` where the mark is the only way back. `heroContent.ts` took
+  `main`'s shorter list, which drops "Ambulancia", and kept "Tím" pointing at
+  `/tim`. `COLLAB.md` kept both sides in date order.
+
+  Note for whoever owns the menu: `DesktopMenu` renders its items as
+  `motion.a`, so `/tim` is a full page load rather than a client navigation.
+  It works and lint does not flag it, but it is the one link in that list with
+  a real destination and it would be worth routing through `next/link`.
+
+  Merged result verified: 146 tests, lint, TypeScript, production build.
+
+- 2026-08-18 — Claude replaced the jaw map's interaction model on
+  `claude/tim-page`, at the user's request. This is a substantial change to
+  Codex's `JawZoneOverlay.tsx` and `jawExperience.module.css`; the anatomy,
+  the frame sequence, the zone geometry and the routes are untouched.
+
+  The fault the user reported: seven `.zoneHit` paths lay over the jaw edge to
+  edge, with `stroke-width: 24` and `pointer-events: painted`. Travelling to
+  the front teeth from outside the jaw meant crossing the molar and premolar
+  surfaces, and each crossing fired `open()` on the way past, so the card
+  flickered through zones and the intended one was hard to land on.
+
+  All seven are gone. The four leader lines Codex already drew are now the
+  interaction: each ends in an HTML `<button>` carrying its zone's name,
+  positioned from the same master coordinates the line is drawn in (the
+  artboard is locked to 16:9 against a 1920×1080 viewBox, so a percentage of
+  the box and a fraction of the viewBox are the same place). Hovering or
+  focusing a button lights its line, its anchor and its jaw region; clicking
+  pins the card. A pointer sweep of 1440 points across the anatomy now returns
+  no interactive element anywhere on the jaw.
+
+  New motion: the leader draws itself in on reveal, a short dash runs the line
+  from button to jaw while the zone is live, and a ring expands out of the
+  anchor as it lands. Both leader copies carry `pathLength="100"`, so the
+  draw-in and the pulse are written as percentages rather than measured per
+  path. The button's fill sweeps in from the edge its own line leaves by.
+
+  Three defects found and fixed while verifying:
+
+  1. The button's centring and its hover lean were both on `transform`, so
+     each button transitioned *into its own position* on first paint — a 71px
+     slide. The lean moved to the independent `translate` property.
+  2. The leader's resting state was undrawn, so a blocked or frozen animation
+     left the line invisible. It rests drawn; the animation draws it in.
+  3. The problem card was centred vertically and pinned left, which is exactly
+     where the premolar control sits — opening any zone covered a button and
+     took it out of reach. The card is anchored low now, and flips right for
+     the premolar zone. Verified across all four zones: it covers no button
+     and does not reach the assistance bar.
+
+  On a phone the connectors are hidden and the four controls become a 2×2 grid
+  of 44px targets under the jaw — at 390×844 the artboard is 219px tall, where
+  a button pinned to master coordinates would be a few millimetres wide.
+
+  Verified on a temporary local route rendering the overlay directly, since the
+  frame sequence never leaves `loading` in this preview environment: geometry
+  at 1440×900 and 390×844, exactly one zone active at a time with its mask and
+  leader, no button ever covered, no horizontal overflow. That route was
+  deleted. 146 tests, lint, TypeScript and the production build pass.
+
+  Files reserved: `components/team/**`, `app/tim/**`, `public/media/tim/**`,
+  `app/page.tsx`, and — still, for this work — `components/home/jaw/**`.
+  Awaiting the user's localhost approval before any of this reaches `main`.
+  Still outstanding: the seven missing team roles.
+
+- 2026-08-18 — Claude built the "Služby" section on `claude/tim-page`, between
+  the drifting-photograph scene and the team, at the user's request and in the
+  reference site's five-plus-five shape.
+
+  The ten come from the clinic's own list on bratislavazubar.sk with
+  parodontológia added. Several of their entries are folded: entry and
+  preventive check-ups into one, ceramic crowns and whitening into the
+  aesthetic service, both prosthetics pages into one. The five that lead are
+  ordered as a patient's own journey, not by price.
+
+  Layout is one tall card beside a two-by-two block rather than the reference's
+  banner-plus-row — chosen because every one of our five sources is portrait or
+  crops to 4:5 natively, where a wide banner would have meant upscaling. Cards
+  reveal on a stagger, the picture drifts inside its frame on scroll, and each
+  lead is held back until the card is hovered. The feature keeps its lead
+  visible; on a phone and with motion reduced, all five are printed, since
+  hover cannot be relied on to reveal them.
+
+  The ground chain is now `#e2d7c3` → `#f0ece3` → `#fbfaf7` across drift →
+  services → team, and `team.module.css`'s `--from-tone` moved with it.
+  Measured at both boundaries: one viewport out the two grounds read oklab L
+  0.882633/0.882655 and 0.943713/0.943713 — indistinguishable — then settle.
+
+  Photography: `strip-panorama`, `drift-05`, `strip-05-ordinacia`,
+  `strip-06-diagnostika` and `strip-03-mikroskop-praca`, all re-encoded 4:5 to
+  `public/media/sluzby/`, 276 KiB for ten files. A first pass tinted them with
+  a warm veil and all five came out looking like faded photocopies; the veil is
+  gone and the treatment now lives on the image itself. ⚠️ Two are stand-ins:
+  the aesthetic card is a photograph of a treatment room and the implant card
+  is the imaging room. Both need a real shoot.
+
+  `/sluzby/[sluzba]` exists for all ten but is a PLACEHOLDER — name, one line,
+  nothing else — so the cards lead somewhere real while the pages are written
+  one at a time. It must not be published as a finished page.
+
+  Two things the next step has to deal with:
+
+  1. `JawAppointmentForm` requires a `zone: JawZone`, so it cannot yet sit at
+     the foot of a service page as the user asked. Five of the ten services
+     have no jaw zone at all, so the coupling has to be loosened first.
+  2. `/problemy/*` still exists. The user approved redirecting all seven to the
+     matching service; that lands with the subpages, together with repointing
+     the jaw's own buttons, so the site is never in a state where they aim at
+     nothing.
+
+  Verified: 151 tests, lint, TypeScript, production build, and the section
+  measured on a temporary local route (since the homepage cannot be screenshot
+  after scrolling here) — that route was deleted.
+
+  Files reserved: `components/team/**`, `components/services/**`, `app/tim/**`,
+  `app/sluzby/**`, `public/media/tim/**`, `public/media/sluzby/**`,
+  `app/page.tsx`, `components/home/jaw/**`. Awaiting the user's localhost
+  approval; nothing here has reached `main`.
+
+- 2026-08-24 — Claude built the first real service page,
+  `/sluzby/vstupna-prehliadka`, and pointed the hero's "Vstupný balík pre
+  nových pacientov" button at it — that button had been on `#` since the hero
+  was built.
+
+  Every line on the page traces to something the clinic already publishes.
+  The prose comes from bratislavazubar.sk ("Prvé ošetrenie celej ústnej
+  dutiny…", "Váš starý zubný záznam nie je pre nás dôležitý, urobíme si
+  vlastný", the painless-anaesthesia passage, the six-month recall) and every
+  figure from their own Cenník zdravotníckych výkonov: komplexné vyšetrenie
+  40 €, intraorálny snímok 10 €, panoramatický 20 €, CT 3D 120 €.
+
+  That also explains Codex's `ENTRY_EXAM_LABEL = "Vstupné vyšetrenie — 100
+  EUR"`, which does not appear anywhere in the clinic's price list: 40 + 4×10 +
+  20 = 100. The page itemises it rather than asserting it, and a test fails if
+  the total ever drifts from its parts.
+
+  ⚠️ Two things on that page are not publishable as they stand:
+
+  1. The before/after is the same unconsented test pair the homepage carries.
+     The layout is there to be reviewed; the photographs must be replaced by
+     consented cases first.
+  2. The clinic's free-RTG wording was seasonal ("Počas leta ponúkame ku
+     každému vstupnému vyšetreniu Rtg vyšetrenie bezplatne"). It renders as
+     something to ask about by telephone, never as a standing offer, and a test
+     keeps it that way.
+
+  `ServiceBooking` is a new, minimal light-theme form for the foot of service
+  pages. It posts to the same Netlify form name and honeypot as
+  `JawAppointmentForm` so both land in one inbox, but it is a separate
+  component: the jaw form requires a `zone: JawZone` and a symptom, and five of
+  the ten services have neither. Folding the two together is worth doing once
+  the remaining pages exist and the shape they need has settled. Neither form
+  delivers anything until the site is on Netlify — Netlify Forms harvests them
+  from prerendered HTML at build time.
+
+  Removing the hero's last placeholder anchor made its
+  `jsx-a11y/anchor-is-valid` disable dead; eslint said so and it is gone.
+
+  Verified: 156 tests, lint, TypeScript, production build, and the page
+  measured at 1440 wide — eight benefits, four steps, the itemised package, the
+  before/after and the form all present, no horizontal overflow.
+
+  Files reserved: `components/team/**`, `components/services/**`,
+  `components/booking/**`, `app/tim/**`, `app/sluzby/**`, `app/page.tsx`,
+  `components/hero/Hero.tsx`, `components/home/jaw/**`,
+  `public/media/{tim,sluzby}/**`. Nothing here has reached `main`.
+
+- 2026-08-24 — Claude published the whole Tím/Služby line to `main` after the
+  user approved it on localhost. Twenty-one commits: the Tím page and section
+  with the clinic's real roster and roles, the Služby section and its ten
+  routes, the entry-examination page, the jaw map's rebuilt controls, and the
+  service photograph's morph.
+
+  Worth carrying forward, because each cost a wrong turn:
+
+  - The service morph is a hand-built flying clone, not the View Transitions
+    API. That API skips itself whenever the document is hidden, needs the
+    router's DOM commit inside a callback that suppresses rendering, and
+    reports none of its own failures — three ways to get no animation and
+    nothing to read. Three fixes were guesses because it cannot be exercised
+    in this preview environment at all.
+  - Do not animate `filter` towards the backdrop's blur. A full-screen
+    gaussian re-rendered every frame is what made the morph stutter; the clone
+    flies sharp and the blur arrives as a 260ms settle.
+  - A heavy `backdrop-filter` reads as opaque however low the tint. The menu
+    panel sat at the tour button's exact 22% and still looked like a solid
+    card at 26px of blur, because a uniform wash is indistinguishable from an
+    opaque ground. It is 10px now.
+  - CSS Modules scopes the *value* of `view-transition-name`, and a constant
+    exported from a `"use client"` module reaches a server component as a
+    client reference. Both fail silently.
+
+  Verified on the merged tree before pushing: 164 tests, lint, TypeScript,
+  production build, `git diff --check`, and a credential scan of the diff.
+
+  ⚠️ Still not publishable, and now sitting in `main`:
+
+  1. The before/after on the homepage *and* on `/sluzby/vstupna-prehliadka` is
+     the same unconsented test pair. Written consent is outstanding and the
+     case text describes nobody. Netlify is still not connected, so nothing is
+     live — but this must be replaced before it is.
+  2. The free-RTG offer was seasonal and renders as something to ask about by
+     telephone. If it has lapsed for good, remove it.
+  3. Nine of the ten service pages are placeholders — name, one line, booking
+     form. Only the entry examination is written.
+
+  No files reserved. Next: the remaining service pages one at a time, and the
+  redirects from `/problemy/*` onto them together with repointing the jaw's
+  buttons, so the site is never in a state where they aim at nothing.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,

@@ -1,0 +1,453 @@
+/*
+ * The team section — the homepage's closing section, and the whole of `/tim`.
+ *
+ * Light, like the patients section. The cinematic dark belongs to the hero, and
+ * a section whose whole job is to show people's faces should not fight the
+ * photography for attention.
+ */
+
+/* -------------------------------------------------------------- section --- */
+
+/*
+ * `--enter` and `--p` are written by `TeamSection.tsx`. Both default to their
+ * *settled* value here rather than their starting one: if the script never
+ * runs, the section should read as an ordinary page rather than as eleven
+ * invisible people on a blank ground.
+ */
+.section {
+  --enter: 1;
+  --p: 0.5;
+
+  /* The services section above ends on white. */
+  --from-tone: #fff;
+  --to-tone: #fbfaf7;
+
+  position: relative;
+  isolation: isolate;
+
+  /*
+   * Mixed rather than cross-faded between two layers: beginning on the
+   * previous section's own tone and cooling away from it makes the join a
+   * change of temperature instead of an edge. The handoff rides `--enter`, so
+   * it spends the section's whole approach — a full screen of scrolling —
+   * easing from one ground to the other and is settled before the first
+   * portrait is in view.
+   */
+  background-color: color-mix(
+    in oklab,
+    var(--to-tone) calc(var(--enter) * 100%),
+    var(--from-tone)
+  );
+  color: var(--charcoal);
+}
+
+/*
+ * A band of light that travels with the reader.
+ *
+ * Sticky, one screen tall, so it holds in the middle of the viewport for the
+ * whole section and stops at its edges — the section's ground is never flat,
+ * but it is never a picture either. The row inside this band is the row that
+ * has its colour; the same middle-of-screen measurement drives both, so the
+ * light is not decoration laid over the effect, it *is* the effect.
+ *
+ * Warm white over the pale ground rather than a tint: the point is more light
+ * here, not a different colour here.
+ */
+.halo {
+  /*
+   * One name for the height so the negative margin cannot drift out of step
+   * with it — `dvh` and `vh` differ while the browser's own chrome is on
+   * screen, and a mismatch would leave a screen-tall gap under the intro.
+   */
+  --halo-height: 100dvh;
+
+  position: sticky;
+  z-index: -1;
+  top: 0;
+  height: var(--halo-height);
+
+  /* Pulled back up by its own height so it does not add a screen to the page. */
+  margin-bottom: calc(-1 * var(--halo-height));
+  background: radial-gradient(
+    62% 46% at 50% 50%,
+    rgb(255 253 247 / 92%) 0%,
+    rgb(255 253 247 / 46%) 42%,
+    rgb(255 253 247 / 0%) 74%
+  );
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------- intro --- */
+
+/*
+ * The intro arrives on the same value as the ground, a little behind it: by
+ * the time the section is two thirds of the way up the screen the copy has
+ * settled, so the reader finishes the crossing already reading.
+ */
+.intro {
+  --copy: clamp(0, calc((var(--enter) - 0.15) / 0.5), 1);
+
+  display: grid;
+  max-width: 1240px;
+
+  /*
+   * Enough headroom for the fixed header, which floats over this section on
+   * both pages — without it the eyebrow starts underneath the bar.
+   */
+  margin: 0 auto;
+  padding: clamp(120px, 15vh, 200px) clamp(20px, 5vw, 88px)
+    clamp(44px, 6vw, 84px);
+  gap: clamp(16px, 2vw, 26px);
+  opacity: var(--copy);
+  transform: translateY(calc((1 - var(--copy)) * 26px));
+}
+
+.eyebrow {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin: 0;
+  color: var(--taupe-deep);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.eyebrowRule {
+  display: block;
+
+  /* Draws itself as the section arrives rather than sitting there full length. */
+  width: calc(clamp(22px, 4vw, 48px) * var(--copy));
+  height: 1px;
+  flex: none;
+  background: var(--taupe-deep);
+}
+
+.headline {
+  max-width: 18em;
+  margin: 0;
+  font-size: clamp(2.1rem, 6vw, 4.6rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+/*
+ * A stated measure rather than `ch`, which resolves against this element's own
+ * font size — that is what broke an earlier section into one word per line.
+ */
+.lead {
+  max-width: 58ch;
+  margin: 0;
+  color: rgb(38 38 42 / 66%);
+  font-size: clamp(1rem, 1.35vw, 1.15rem);
+  line-height: 1.62;
+}
+
+/* ----------------------------------------------------------------- grid --- */
+
+/*
+ * Two columns where only the left one travels, so they slide past each other
+ * instead of scrolling as one block.
+ *
+ * Slightly unequal columns. Two identical ones read as a table of staff; a
+ * hair of asymmetry reads as a spread, and at this size the difference is felt
+ * rather than seen.
+ *
+ * The bottom padding is the drift's own room, and only the bottom: the column
+ * moves as one piece, so the only edges that travel are the grid's own. Near
+ * the top of the section the left column sits *below* its row and needs
+ * nothing above it — a matching top padding just left a permanent hole under
+ * the intro.
+ */
+.grid {
+  /*
+   * Half the column's total travel. Measured rather than guessed: the grid is
+   * far taller than the viewport, so `--p` only ever covers about three
+   * quarters of its 0→1 range and the reader sees roughly 1.5× this value of
+   * movement, not 2×. At 8vmin that came out as 108px across four thousand
+   * pixels of scroll — technically moving, visually still.
+   */
+  --drift: 14vmin;
+
+  display: grid;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 5vw, 88px) calc(var(--drift) + 8vh);
+
+  /*
+   * Generous on both axes, and more so down the page than across it: the rows
+   * are what the reader travels through, and air between them is what lets one
+   * row hold the light on its own.
+   */
+  gap: clamp(56px, 9vw, 130px) clamp(24px, 5vw, 72px);
+  grid-template-columns: 1.06fr 0.94fr;
+  list-style: none;
+}
+
+.member {
+  /*
+   * Narrower than its own track, and pushed to the outside of it. Cards that
+   * fill the grid read as a staff table; holding each one back and letting the
+   * gutter open up between the columns reads as a spread.
+   */
+  --focus: 1;
+  --hover: 0;
+
+  position: relative;
+  display: grid;
+  width: min(100%, 392px);
+  gap: 16px;
+  align-content: start;
+
+  /*
+   * Declared here, not in the hover rule: a transition that only exists while
+   * hovered eases the arrival and then snaps back on the way out.
+   */
+  transition: --hover 0.55s var(--ease);
+}
+
+.member:nth-child(odd) {
+  justify-self: start;
+}
+
+.member:nth-child(even) {
+  justify-self: end;
+}
+
+/* +--drift at the top of its travel, −--drift at the bottom. */
+.member:nth-child(odd) {
+  transform: translateY(calc((1 - 2 * var(--p)) * var(--drift)));
+  will-change: transform;
+}
+
+/*
+ * `--hover` is registered so it can be transitioned. An inline `--focus` from
+ * the scroll listener always beats a stylesheet rule, so hover cannot simply
+ * override it — the two are combined with `max()` instead, and this is what
+ * lets the hover half of that ease rather than snap.
+ */
+@property --hover {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+.frame {
+  --lit: max(var(--focus), var(--hover));
+
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+  background: rgb(174 155 126 / 12%);
+
+  /*
+   * The lift. A portrait arriving in the light rises a little and casts a
+   * shadow that was not there a moment ago, so the change is a change in the
+   * object and not only in its colours — which is the difference between a
+   * photograph turning colour and a photograph coming forward.
+   */
+  box-shadow: 0 calc(var(--lit) * 22px) calc(var(--lit) * 48px)
+    rgb(38 38 42 / calc(var(--lit) * 20%));
+  transform: translateY(calc(var(--lit) * -8px));
+}
+
+/*
+ * The portraits were shot on different days under different light. Held all the
+ * way back to grey they read as one set rather than eleven separate sittings.
+ *
+ * Arriving in the band of light, a row does four things at once, because one
+ * alone is not enough to notice: it takes its colour back, brightens, gains a
+ * little contrast, and comes up out of the page. Outside the band it is grey and
+ * deliberately dimmed — the pale state is what makes the lit one read as lit.
+ *
+ * `--focus` is how near this row is to the light, written per row by
+ * `TeamSection.tsx`; hovering does the same on demand. The two are combined
+ * rather than one overriding the other, so a hover inside the band cannot make
+ * a portrait *less* colourful than it already is.
+ *
+ * No transition on any of it: `--focus` changes every scroll frame, and a
+ * transition on top of that only makes the colour lag behind the light.
+ */
+.portrait {
+  --lit: max(var(--focus), var(--hover));
+
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  filter: grayscale(calc(1 - var(--lit)))
+    brightness(calc(0.97 + var(--lit) * 0.09))
+    contrast(calc(0.96 + var(--lit) * 0.08))
+    saturate(calc(0.9 + var(--lit) * 0.22));
+  object-fit: cover;
+  opacity: calc(0.74 + var(--lit) * 0.26);
+  transform: scale(calc(1.004 + var(--lit) * 0.026));
+}
+
+.member:hover,
+.member:focus-within {
+  --hover: 1;
+}
+
+/* ----------------------------------------------------------- name plate --- */
+
+/*
+ * A hairline over the name, drawn from the left on hover. The rule is the
+ * section's only ornament, and it earns its place by making the whole card
+ * feel like one object rather than a photograph with a caption under it.
+ */
+.info {
+  position: relative;
+  display: grid;
+  gap: 7px;
+  padding-top: 13px;
+  border-top: 1px solid rgb(138 115 88 / 26%);
+}
+
+/*
+ * Sits exactly on the border above, spanning the card's width, and scales from
+ * nothing on hover. `-1px` rather than `0`: the border occupies that row, and
+ * without the offset the darker rule paints one pixel below it and reads as two
+ * lines instead of one turning darker.
+ */
+.info::before {
+  position: absolute;
+  height: 1px;
+  background: var(--taupe-deep);
+  content: "";
+  inset: -1px 0 auto 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.6s var(--ease);
+}
+
+.member:hover .info::before,
+.member:focus-within .info::before {
+  transform: scaleX(1);
+}
+
+/*
+ * The number sits on the baseline of the name rather than above it, so a name
+ * that wraps to two lines pushes it down with the second line instead of
+ * leaving it stranded at the top.
+ */
+.nameRow {
+  display: flex;
+  gap: 16px;
+  align-items: last baseline;
+  justify-content: space-between;
+}
+
+.name {
+  margin: 0;
+  color: color-mix(
+    in oklab,
+    var(--charcoal) calc(58% + max(var(--focus), var(--hover)) * 42%),
+    #a9a29a
+  );
+  font-size: clamp(1rem, 1.5vw, 1.28rem);
+  font-weight: 600;
+  letter-spacing: -0.018em;
+  line-height: 1.22;
+  text-wrap: pretty;
+}
+
+.index {
+  flex: none;
+  color: rgb(138 115 88 / 62%);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+
+.role {
+  margin: 0;
+  color: var(--taupe-deep);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* ----------------------------------------------------------------- a11y --- */
+
+/*
+ * With motion reduced nothing travels and nothing fades in. The stylesheet's
+ * defaults are already the rest state, so this only has to stop the columns
+ * and the hover moves — the section is the same eleven people either way.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .member:nth-child(odd) {
+    transform: none;
+  }
+
+  .intro {
+    opacity: 1;
+    transform: none;
+  }
+
+  .eyebrowRule {
+    width: clamp(22px, 4vw, 48px);
+  }
+
+  /*
+   * Full colour, no dimming, no lift. With motion reduced there is no band of
+   * light to travel through, so holding the portraits back would take
+   * something away rather than add anything.
+   */
+  .portrait {
+    filter: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .frame {
+    box-shadow: none;
+    transform: none;
+  }
+
+  .info::before {
+    transition: none;
+  }
+
+  .member {
+    transition: none;
+  }
+}
+
+/* ---------------------------------------------------------------- phone --- */
+
+/*
+ * One column on a phone, and no drift — with nothing beside it to slide past,
+ * the travel reads as the page stuttering rather than as movement. Hover moves
+ * go too: on a touch screen they either never fire or stick after a tap.
+ */
+@media (max-width: 767px) {
+  .grid {
+    gap: 34px;
+    grid-template-columns: 1fr;
+  }
+
+  .member:nth-child(odd) {
+    transform: none;
+  }
+
+  /*
+   * The band matters most here — a phone shows one portrait at a time, so the
+   * one in the middle of the screen is the one being looked at. The lift goes,
+   * though: a shadow under a card that spans the whole screen width reads as
+   * the layout coming apart rather than as the photograph coming forward.
+   */
+  .frame {
+    box-shadow: none;
+    transform: none;
+  }
+
+  .portrait {
+    transform: none;
+  }
+}

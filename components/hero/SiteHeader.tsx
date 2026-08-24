@@ -3,6 +3,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid -- Destinations stay as approved placeholders until their sections exist. */
 /* eslint-disable @next/next/no-img-element -- Preserve the approved logo markup and extracted asset without an image-service rewrite. */
 
+import Link from "next/link";
 import { useEffect, useState, type JSX } from "react";
 import { DesktopMenu } from "./DesktopMenu";
 import { MobileMenu } from "./MobileMenu";
@@ -88,7 +89,9 @@ export function SiteHeader(): JSX.Element {
           .filter(Boolean)
           .join(" ")}
       >
-        <a className={styles.logo} href="#">
+        {/* Home, not "#" — the header appears on subpages now, where the mark
+            is the only way back. */}
+        <Link className={styles.logo} href="/">
           <img
             src="/media/dobes-logo-white.png"
             alt="Dental Centrum Dobeš"
@@ -98,7 +101,7 @@ export function SiteHeader(): JSX.Element {
           <span className={styles.tagline}>
             Súkromná zubná klinika pri Kramároch v&nbsp;Bratislave
           </span>
-        </a>
+        </Link>
 
         <div className={styles.navigationRight}>
           <a className={styles.navigationButton} href="#">

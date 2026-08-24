@@ -74,17 +74,38 @@ describe("JawZoneOverlay pain map", () => {
     expect(container.querySelector('[data-presentation="tease"]')).toBeInTheDocument();
   });
 
-  it("renders seven anatomical masks and four clear arrow labels without debug boxes", () => {
+  it("renders seven anatomical masks and four connectors, and no hit paths over the jaw", () => {
     const { container } = renderOverlay();
 
     expect(screen.getAllByTestId(/jaw-mask-/)).toHaveLength(7);
-    expect(screen.getAllByTestId(/jaw-hit-/)).toHaveLength(7);
     expect(screen.getAllByTestId(/jaw-anchor-/)).toHaveLength(4);
+
+    /*
+     * The regression this whole rework exists for. Seven invisible hit paths
+     * used to cover the jaw edge to edge, so travelling to the front teeth
+     * from outside crossed the molar and premolar surfaces and opened each of
+     * them on the way past. Nothing over the anatomy may be interactive again.
+     */
+    expect(screen.queryAllByTestId(/jaw-hit-/)).toHaveLength(0);
+    expect(screen.getAllByTestId(/jaw-zone-button-/)).toHaveLength(4);
+    expect(screen.getAllByTestId(/jaw-pulse-/)).toHaveLength(4);
     const leaders = screen.getAllByTestId(/jaw-leader-/);
     expect(leaders).toHaveLength(4);
-    expect(leaders.every((leader) => leader.getAttribute("marker-end") === "url(#jaw-arrowhead)"))
-      .toBe(true);
-    expect(screen.getAllByTestId(/jaw-zone-label-/)).toHaveLength(4);
+    /*
+     * The arrowhead is gone — a leader now ends in the anchor ring, which is
+     * also what the travelling pulse lands on. Both copies of the path declare
+     * `pathLength="100"`, which is what lets the draw-in and the pulse be
+     * written as percentages instead of measured per path; drop it and both
+     * animations silently mistime.
+     */
+    expect(leaders.every((leader) => leader.getAttribute("marker-end"))).toBe(false);
+    expect(leaders.every((leader) => leader.getAttribute("pathLength") === "100")).toBe(true);
+    expect(
+      screen.getAllByTestId(/jaw-pulse-/).every((pulse) => pulse.getAttribute("pathLength") === "100"),
+    ).toBe(true);
+    for (const label of ["Predné zuby", "Črenové zuby", "Stoličky", "Ďasná"]) {
+      expect(screen.getByRole("button", { name: label })).toBeInTheDocument();
+    }
     expect(container.querySelectorAll("polygon")).toHaveLength(0);
     expect(container.querySelector('[data-testid="jaw-debug-rect"]')).not.toBeInTheDocument();
     expect(screen.getAllByTestId(/jaw-mask-/).every((mask) => mask.getAttribute("d")?.includes("C")))
@@ -94,7 +115,7 @@ describe("JawZoneOverlay pain map", () => {
   it("opens patient-language problems from hover focus and tap", async () => {
     const user = userEvent.setup();
     renderOverlay();
-    const molar = screen.getByTestId("jaw-hit-molar-left");
+    const molar = screen.getByTestId("jaw-zone-button-molar");
 
     fireEvent.pointerEnter(molar);
     expect(screen.getByRole("region", { name: "Stoličky" })).toBeVisible();
@@ -115,7 +136,7 @@ describe("JawZoneOverlay pain map", () => {
     const user = userEvent.setup();
     renderOverlay({ analyticsConsent: true });
 
-    await user.click(screen.getByTestId("jaw-hit-molar-right"));
+    await user.click(screen.getByTestId("jaw-zone-button-molar"));
     expect(dataLayer.push).toHaveBeenCalledWith({
       event: "jaw_zone_click",
       jaw_zone: "molar",
@@ -172,7 +193,7 @@ describe("JawZoneOverlay pain map", () => {
   it("closes pinned card on Escape and restores exact SVG trigger focus", async () => {
     const user = userEvent.setup();
     renderOverlay();
-    const front = screen.getByTestId("jaw-hit-front");
+    const front = screen.getByTestId("jaw-zone-button-front");
     await user.click(front);
 
     await user.keyboard("{Escape}");
@@ -184,7 +205,7 @@ describe("JawZoneOverlay pain map", () => {
   it("closes immediately and focuses safe root when presentation reverses", async () => {
     const user = userEvent.setup();
     const { rerender } = renderOverlay();
-    await user.click(screen.getByTestId("jaw-hit-front"));
+    await user.click(screen.getByTestId("jaw-zone-button-front"));
 
     rerender(
       <JawZoneOverlay
@@ -203,7 +224,7 @@ describe("JawZoneOverlay pain map", () => {
   it("opens compact mobile problem sheet and reconciles viewport changes", async () => {
     const user = userEvent.setup();
     renderOverlay();
-    const gum = screen.getByTestId("jaw-hit-gum-upper");
+    const gum = screen.getByTestId("jaw-zone-button-gum");
     await user.click(gum);
     expect(screen.getByRole("region", { name: "Ďasná" })).toBeVisible();
 
@@ -225,8 +246,107 @@ describe("JawZoneOverlay pain map", () => {
     expect(screen.getByRole("heading", { name: "Kde vás to trápi?" })).toBeVisible();
     expect(screen.getAllByRole("button", {
       name: /Predné zuby|Črenové zuby|Stoličky|Ďasná/,
-    })).toHaveLength(7);
+    })).toHaveLength(4);
     expect(screen.getByRole("link", { name: "Chýba mi zub" })).toBeVisible();
+  });
+
+  /*
+   * The close control is a glyph now, not the word it used to be. Its name has
+   * to survive that: the mark itself is hidden from assistive technology and
+   * the word is carried by the label and a visually hidden span, so a screen
+   * reader still hears "Zavrieť" rather than a multiplication sign.
+   */
+  it("keeps the close control named after it became an icon", async () => {
+    const user = userEvent.setup();
+    renderOverlay();
+    changeViewport(true);
+    await user.click(screen.getByTestId("jaw-zone-button-gum"));
+
+    const close = screen.getByRole("button", { name: "Zavrieť" });
+    expect(close.querySelector("[aria-hidden='true']")).toBeInTheDocument();
+    expect(close.querySelector(`.${styles.srOnly}`)).toHaveTextContent("Zavrieť");
+  });
+
+  /*
+   * The three faults these buttons actually had. Each one is a thing a reader
+   * could hit, not a matter of taste, so each is pinned here.
+   */
+  it("keeps the button fixes: wrapping bar, no dangling rule, room in the close control", () => {
+    // The bar holds a question and two labels and used to be held on one line,
+    // which pushed it past its own max-width between the phone breakpoint and
+    // roughly 900px.
+    expect(cssText).toMatch(/\.assistanceBar\s*\{[^}]*flex-wrap:\s*wrap/);
+    expect(cssText).not.toMatch(/\.assistanceBar\s*\{[^}]*white-space:\s*nowrap/);
+
+    // Every problem row carried a bottom rule, including the last, which left
+    // a line hanging over the card's own edge.
+    expect(cssText).toMatch(/\.problemList li:last-child a\s*\{[^}]*border-bottom:\s*0/);
+
+    // "Zavrieť" sat in a 44px minimum with no padding of its own and ran into
+    // its border; the control is now a fixed round icon button.
+    expect(cssText).toMatch(/\.closeButton\s*\{[^}]*width:\s*44px/);
+    expect(cssText).toMatch(/\.closeButton\s*\{[^}]*height:\s*44px/);
+  });
+
+  /*
+   * Keyboard focus used to be signalled by the same fill that hover produces,
+   * which gives a keyboard user no way to tell the two apart.
+   */
+  it("gives every jaw control a focus ring of its own", () => {
+    for (const selector of ["directEntry", "problemList a", "closeButton"]) {
+      const pattern = selector.includes(" ")
+        ? String.raw`\.${selector.split(" ")[0]} a:focus-visible\s*\{[^}]*outline:`
+        : String.raw`\.${selector}:focus-visible\s*\{[^}]*outline:`;
+      expect(cssText).toMatch(new RegExp(pattern));
+    }
+  });
+
+  /*
+   * Both leaders used to miss the teeth they name. Measured against the
+   * sequence's final frame — 1280x720 onto this 1920x1080 viewBox at exactly
+   * 1.5x — the lower arch's midline is x≈981 and its four incisors span
+   * 910–1053, which puts the premolars at roughly 760–864 and the molars at
+   * 1202–1290. The premolar anchor sat at 720, past its own teeth and on the
+   * molars; the molar anchor sat at 1300, off the gum entirely.
+   */
+  it("aims each leader at the teeth it names", () => {
+    renderOverlay();
+
+    const MIDLINE = 981;
+    const at = (zone: string) =>
+      Number(screen.getByTestId(`jaw-anchor-${zone}`).getAttribute("cx"));
+
+    const premolar = at("premolar");
+    const molar = at("molar");
+
+    // Premolars sit in front of molars, so the premolar anchor has to be the
+    // nearer of the two to the midline. Swap them back and this fails.
+    expect(Math.abs(premolar - MIDLINE)).toBeLessThan(Math.abs(molar - MIDLINE));
+
+    // And both have to land on the arch rather than beside it.
+    for (const x of [premolar, molar]) {
+      expect(x).toBeGreaterThan(560);
+      expect(x).toBeLessThan(1400);
+    }
+
+    // Each anchor belongs to its own side's teeth, not the other's.
+    expect(premolar).toBeGreaterThan(760);
+    expect(premolar).toBeLessThan(910);
+    expect(molar).toBeGreaterThan(1190);
+  });
+
+  /*
+   * With a card open, every zone must still be reachable. The card used to be
+   * anchored to the bottom and left to size itself, which worked at one window
+   * height and at shorter ones grew straight up over the premolar control —
+   * opening any other zone then took that quarter of the map out of reach.
+   * Pinning the top below the controls is what makes that impossible, so the
+   * property is pinned here rather than the pixel values.
+   */
+  it("holds the problem card below the controls by its top edge", () => {
+    expect(cssText).toMatch(/\.zoneCard\s*\{[^}]*\btop:\s*5[0-9]%/);
+    expect(cssText).not.toMatch(/\.zoneCard\s*\{[^}]*\btop:\s*auto/);
+    expect(cssText).toMatch(/\.zoneCard\s*\{[^}]*overflow-y:\s*auto/);
   });
 
   it("keeps one centered 16:9 artboard and pop-motion contracts", () => {

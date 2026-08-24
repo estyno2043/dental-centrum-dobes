@@ -1,0 +1,507 @@
+/*
+ * "Služby" — between the drifting photographs and the team.
+ *
+ * The section is the crest of the page's light half: it arrives on the
+ * drifting scene's warm ground and hands the team a paler one. Everything
+ * below derives from `--enter`, the approach, written once per scroll by
+ * `ServicesSection.tsx`.
+ */
+
+/*
+ * The ground does not move here, and that is deliberate.
+ *
+ * A scroll-driven crossing works when a section arrives over one that has
+ * already scrolled away. This one sits directly under the drifting-photograph
+ * scene, which stays on screen beside it for a full viewport: two flat fills
+ * that only agree at the single scroll position where the crossing starts, and
+ * a visible horizontal edge between them at every other. Holding the drifting
+ * scene's own end tone means there is nothing to see at that join at all.
+ *
+ * `--enter` is still written and still used — by the intro and the cards for
+ * their reveal, further down.
+ */
+.section {
+  /* Settled by default: a page whose script fails shows the services. */
+  --enter: 1;
+
+  position: relative;
+
+  /* The tone the drifting-photograph scene above settles on. */
+  background-color: #e2d7c3;
+  color: var(--charcoal);
+}
+
+/* ---------------------------------------------------------------- intro --- */
+
+.intro {
+  --copy: clamp(0, calc((var(--enter) - 0.12) / 0.5), 1);
+
+  display: grid;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: clamp(110px, 14vh, 190px) clamp(20px, 5vw, 88px) clamp(40px, 6vw, 76px);
+  gap: clamp(16px, 2vw, 26px);
+  opacity: var(--copy);
+  transform: translateY(calc((1 - var(--copy)) * 24px));
+}
+
+.eyebrow {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin: 0;
+  color: var(--taupe-deep);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.eyebrowRule {
+  display: block;
+  width: calc(clamp(22px, 4vw, 48px) * var(--copy));
+  height: 1px;
+  flex: none;
+  background: var(--taupe-deep);
+}
+
+.headline {
+  max-width: 17em;
+  margin: 0;
+  font-size: clamp(2.1rem, 5.6vw, 4.3rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: 56ch;
+  margin: 0;
+  color: rgb(38 38 42 / 66%);
+  font-size: clamp(1rem, 1.3vw, 1.12rem);
+  line-height: 1.62;
+}
+
+/* ------------------------------------------------------------ five cards --- */
+
+/*
+ * One tall card beside a two-by-two block. Five equal tiles would say the five
+ * are interchangeable; they are not, and the first is where a patient who does
+ * not know what they need should start.
+ */
+.grid {
+  display: grid;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 5vw, 88px);
+  gap: clamp(14px, 1.6vw, 22px);
+  grid-template-columns: 1.12fr 1fr 1fr;
+  list-style: none;
+}
+
+.feature {
+  grid-row: span 2;
+}
+
+/*
+ * Each card arrives on the section's own approach, one after another. The
+ * stagger is small — this is a row of doors, not a performance.
+ */
+.feature,
+.card {
+  --appear: clamp(0, calc((var(--enter) - 0.18 - var(--index) * 0.05) / 0.34), 1);
+
+  opacity: var(--appear);
+  transform: translateY(calc((1 - var(--appear)) * 30px));
+}
+
+.cardLink {
+  position: relative;
+  display: flex;
+  height: 100%;
+  min-height: clamp(220px, 26vw, 320px);
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: clamp(18px, 2vw, 30px);
+  overflow: hidden;
+  border-radius: 4px;
+  color: var(--porcelain);
+  isolation: isolate;
+  text-decoration: none;
+}
+
+.feature .cardLink {
+  min-height: clamp(420px, 54vw, 660px);
+}
+
+/* -------------------------------------------------------------- picture --- */
+
+.frame {
+  position: absolute;
+  z-index: -2;
+  overflow: hidden;
+  inset: 0;
+}
+
+/*
+ * Taller than its frame and pulled up as the section arrives, so the picture
+ * drifts inside the card instead of sitting still in it. `will-change` is
+ * deliberate: five of these move together.
+ */
+.photo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 112%;
+
+  /*
+   * Five photographs shot on five different days, pulled into one set: held
+   * back from full colour, warmed, and taken down in brightness so white type
+   * has something to sit on. This is doing the work a tinted overlay was doing
+   * badly — a warm veil over a bright photograph only lifts it, and all five
+   * came out looking like faded photocopies.
+   */
+  filter: saturate(0.8) sepia(0.14) contrast(1.06) brightness(0.86);
+  object-fit: cover;
+  transform: translateY(calc(var(--enter) * -10%));
+  transition: transform 0.9s var(--ease);
+  will-change: transform;
+}
+
+/*
+ * Every photograph was shot on a different day. A shared warm veil and a
+ * darkening towards the foot of the card pull them into one set and give the
+ * type something to sit on — without it, white on a bright ceiling is
+ * unreadable.
+ */
+/*
+ * The scrim. Heaviest at the foot, where the name is, but never fully clear at
+ * the top either — the number and the corner mark are white too, and card 01
+ * is a white machine against a white wall.
+ */
+.cardLink::after {
+  position: absolute;
+  z-index: -1;
+  background: linear-gradient(
+    to top,
+    rgb(18 14 11 / 86%) 0%,
+    rgb(18 14 11 / 52%) 40%,
+    rgb(18 14 11 / 28%) 72%,
+    rgb(18 14 11 / 24%) 100%
+  );
+  content: "";
+  inset: 0;
+  transition: opacity 0.6s var(--ease);
+}
+
+.cardLink:hover .photo,
+.cardLink:focus-visible .photo {
+  transform: translateY(calc(var(--enter) * -10%)) scale(1.05);
+}
+
+.cardLink:hover::after,
+.cardLink:focus-visible::after {
+  opacity: 0.82;
+}
+
+.cardLink:focus-visible {
+  outline: 2px solid var(--porcelain);
+  outline-offset: 3px;
+}
+
+/* --------------------------------------------------------------- labels --- */
+
+.index {
+  position: absolute;
+  top: clamp(18px, 2vw, 30px);
+  left: clamp(18px, 2vw, 30px);
+  font-size: clamp(11px, 0.9vw, 13px);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  opacity: 0.82;
+}
+
+/*
+ * The corner mark. Its arrow leaves towards the corner it points at and a
+ * second one takes its place from the opposite side, so the button reads as
+ * something already on its way rather than something waiting to be pressed.
+ */
+.arrow {
+  position: absolute;
+  top: clamp(14px, 1.6vw, 24px);
+  right: clamp(14px, 1.6vw, 24px);
+  display: grid;
+  width: clamp(34px, 3.4vw, 46px);
+  height: clamp(34px, 3.4vw, 46px);
+  overflow: hidden;
+  border: 1px solid rgb(250 249 246 / 46%);
+  border-radius: 50%;
+  background: rgb(250 249 246 / 12%);
+  backdrop-filter: blur(6px);
+  place-items: center;
+  transition:
+    background 0.45s var(--ease),
+    border-color 0.45s var(--ease);
+}
+
+.arrow svg {
+  width: 42%;
+  height: 42%;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+  transition: transform 0.5s var(--ease);
+}
+
+.cardLink:hover .arrow,
+.cardLink:focus-visible .arrow {
+  border-color: var(--porcelain);
+  background: var(--porcelain);
+  color: var(--ink);
+}
+
+.cardLink:hover .arrow svg,
+.cardLink:focus-visible .arrow svg {
+  transform: translate(2px, -2px);
+}
+
+.cardBody {
+  display: grid;
+  gap: 8px;
+}
+
+.name {
+  font-size: clamp(1.05rem, 1.6vw, 1.4rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.18;
+  text-wrap: balance;
+}
+
+.feature .name {
+  font-size: clamp(1.35rem, 2.3vw, 2.05rem);
+}
+
+/*
+ * The lead is the card's second breath: held back until the card is looked at,
+ * because five paragraphs at once is a wall and the names alone are the index.
+ * The feature keeps its lead visible — it is the one a lost reader should be
+ * able to read without hovering anything.
+ */
+.cardLead {
+  max-width: 34ch;
+  color: rgb(250 249 246 / 78%);
+  font-size: clamp(0.82rem, 1vw, 0.95rem);
+  line-height: 1.5;
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.45s var(--ease),
+    transform 0.5s var(--ease);
+}
+
+.feature .cardLead,
+.cardLink:hover .cardLead,
+.cardLink:focus-visible .cardLead {
+  opacity: 1;
+  transform: none;
+}
+
+/* -------------------------------------------------------- the other five --- */
+
+/*
+ * Where the cream stops. The five with photographs stand on the warm ground
+ * the page has been climbing through; the five without stand on white, so the
+ * difference between them is something you see before you read it.
+ *
+ * The spacing above the first row is this wrapper's padding rather than the
+ * list's margin — a margin would collapse straight through and take the edge
+ * of the white down with it.
+ */
+/*
+ * The white starts halfway down the gap under the cards — the margin above is
+ * the section's own ground showing through, the padding below it is already
+ * white, so the edge lands between the foot of the photographs and the first
+ * line of text rather than against either of them.
+ */
+.furtherWrap {
+  /*
+   * Not an even split of the gap: the first row brings its own top padding and
+   * rule below this edge, so matching the margin to the padding put the change
+   * eleven pixels high. Measured against the foot of the cards and the top of
+   * the first line of type, which is what the eye actually reads it against.
+   */
+  margin-top: clamp(24px, 2.8vw, 40px);
+  padding: clamp(10px, 1.15vw, 17px) 0 clamp(70px, 10vh, 130px);
+  background: #fff;
+}
+
+.further {
+  display: grid;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 5vw, 88px);
+  list-style: none;
+}
+
+.further li {
+  --appear: clamp(0, calc((var(--enter) - 0.42 - var(--index) * 0.03) / 0.3), 1);
+
+  opacity: var(--appear);
+}
+
+.row {
+  display: grid;
+  align-items: baseline;
+  padding: clamp(15px, 1.7vw, 22px) 0;
+  border-bottom: 1px solid rgb(138 115 88 / 22%);
+  color: var(--charcoal);
+  column-gap: clamp(14px, 2vw, 34px);
+  grid-template-columns: auto minmax(auto, 15rem) 1fr auto;
+  text-decoration: none;
+  transition: padding-left 0.4s var(--ease), border-color 0.4s var(--ease);
+}
+
+.further li:first-child .row {
+  border-top: 1px solid rgb(138 115 88 / 22%);
+}
+
+.rowIndex {
+  color: rgb(138 115 88 / 62%);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+}
+
+.rowName {
+  font-size: clamp(0.98rem, 1.35vw, 1.18rem);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.rowLead {
+  color: rgb(38 38 42 / 60%);
+  font-size: clamp(0.82rem, 1vw, 0.95rem);
+  line-height: 1.45;
+}
+
+.rowArrow {
+  color: var(--taupe-deep);
+  font-size: 1rem;
+  opacity: 0;
+  transform: translateX(-8px);
+  transition:
+    opacity 0.4s var(--ease),
+    transform 0.45s var(--ease);
+}
+
+.row:hover,
+.row:focus-visible {
+  padding-left: clamp(8px, 1vw, 16px);
+  border-color: var(--taupe-deep);
+}
+
+.row:hover .rowArrow,
+.row:focus-visible .rowArrow {
+  opacity: 1;
+  transform: none;
+}
+
+.row:focus-visible {
+  outline: 2px solid var(--taupe-deep);
+  outline-offset: 3px;
+}
+
+/* ----------------------------------------------------------------- a11y --- */
+
+/*
+ * With motion reduced nothing travels and nothing waits to be hovered. Every
+ * lead is simply printed — a reader who cannot trigger a hover reveal should
+ * not be the only one who never sees what a service is.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .intro,
+  .feature,
+  .card,
+  .further li {
+    opacity: 1;
+    transform: none;
+  }
+
+  .eyebrowRule {
+    width: clamp(22px, 4vw, 48px);
+  }
+
+  .photo,
+  .cardLink:hover .photo {
+    transform: none;
+    transition: none;
+  }
+
+  .cardLink::after {
+    transition: none;
+  }
+
+  .cardLead {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .rowArrow {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* --------------------------------------------------------------- tablet --- */
+
+@media (max-width: 1099px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .feature {
+    grid-row: auto;
+    grid-column: 1 / -1;
+  }
+
+  .feature .cardLink {
+    min-height: clamp(320px, 46vw, 460px);
+  }
+}
+
+/* ---------------------------------------------------------------- phone --- */
+
+/*
+ * One column, and every lead printed. Hover does not exist here, so a lead
+ * that waits for it would never be read.
+ */
+@media (max-width: 767px) {
+  .grid {
+    gap: 14px;
+    grid-template-columns: 1fr;
+  }
+
+  .cardLead {
+    opacity: 1;
+    transform: none;
+  }
+
+  .row {
+    align-items: start;
+    column-gap: 14px;
+    grid-template-columns: auto 1fr auto;
+    row-gap: 4px;
+  }
+
+  .rowLead {
+    grid-column: 2 / -1;
+  }
+}
