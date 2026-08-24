@@ -39,12 +39,11 @@ type Surface = Readonly<{
   revealIndex: number;
 }>;
 
-type ZoneMarker = Readonly<{
+type ZoneLabel = Readonly<{
   zone: InteractiveZoneId;
   anchor: readonly [number, number];
-  leader: string;
   label: readonly [number, number];
-  width: number;
+  connector: string;
   revealIndex: number;
 }>;
 
@@ -112,40 +111,43 @@ const SURFACES: readonly Surface[] = [
   },
 ] as const;
 
-const MARKERS: readonly ZoneMarker[] = [
+const LABELS: readonly ZoneLabel[] = [
   {
     zone: "front",
-    anchor: [960, 470],
-    leader: "M 960 292 C 960 340 960 405 960 470",
-    label: [960, 255],
-    width: 210,
+    anchor: [1030, 420],
+    label: [1120, 330],
+    connector: "M 1088 353 C 1070 372 1050 397 1030 420",
     revealIndex: 0,
   },
   {
     zone: "premolar",
-    anchor: [720, 535],
-    leader: "M 480 525 C 565 525 635 530 720 535",
-    label: [385, 525],
-    width: 230,
+    anchor: [735, 435],
+    label: [650, 340],
+    connector: "M 682 365 C 700 388 718 414 735 435",
     revealIndex: 1,
   },
   {
     zone: "molar",
-    anchor: [1300, 555],
-    leader: "M 1535 555 C 1455 555 1380 555 1300 555",
-    label: [1625, 555],
-    width: 190,
+    anchor: [1310, 480],
+    label: [1400, 395],
+    connector: "M 1366 418 C 1348 438 1328 460 1310 480",
     revealIndex: 2,
   },
   {
     zone: "gum",
-    anchor: [960, 745],
-    leader: "M 960 880 C 960 835 960 790 960 745",
-    label: [960, 920],
-    width: 170,
+    anchor: [1170, 760],
+    label: [1260, 845],
+    connector: "M 1228 822 C 1208 803 1188 781 1170 760",
     revealIndex: 3,
   },
 ] as const;
+
+const LABEL_WIDTHS: Readonly<Record<InteractiveZoneId, number>> = Object.freeze({
+  front: 174,
+  premolar: 196,
+  molar: 132,
+  gum: 112,
+});
 
 const ZONES: Readonly<Record<InteractiveZoneId, JawZone>> = Object.freeze(
   Object.fromEntries(
@@ -304,62 +306,19 @@ export function JawZoneOverlay({
     </a>
   )), [onDirectClick]);
 
-  const card = enabled && activeZone ? (
-    <section
-      aria-label={activeZone.label}
-      className={classNames(styles.zoneCard, visibleState.mode === "mobile" && styles.zonePanel)}
-      onPointerEnter={() => undefined}
-      onPointerLeave={closeUnpinned}
-      role={visibleState.mode === "mobile" ? "dialog" : "region"}
-    >
-      <div className={styles.cardTop}>
-        <p className={styles.cardKicker}>Vyberte problém</p>
-        <h3>{activeZone.label}</h3>
-        {visibleState.mode === "mobile" ? (
-          <button className={styles.closeButton} onClick={() => close(true)} type="button">
-            Zavrieť
-          </button>
-        ) : null}
-      </div>
-      <ul className={styles.problemList}>
-        {activeZone.problems.map((problem) => (
-          <li key={problem.id}>
-            <a
-              href={zoneHref(activeZone, problem.id)}
-              onClick={() => {
-                emitJawAnalytics({
-                  consent: analyticsConsent,
-                  event: "jaw_problem_click",
-                  zone: activeZone.id,
-                  problem: problem.id as JawProblemId,
-                });
-              }}
-            >
-              {problem.patientLabel}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </section>
-  ) : null;
-
   return (
     <div
       className={classNames(styles.zoneOverlay, !enabled && styles.zoneOverlayDisabled)}
+      data-active-zone={visibleState.openZone ?? undefined}
       data-presentation={artworkVisible ? effectivePresentation : "hidden"}
       data-testid="jaw-zone-overlay"
       ref={rootRef}
       tabIndex={-1}
     >
-      {mapVisible ? (
-        <>
-          <h2 className={styles.zoneHeading}>Kde vás to trápi?</h2>
-          <p className={styles.zonePrompt}>Kliknite na miesto a vyberte, čo cítite.</p>
-        </>
-      ) : null}
       {artworkVisible ? (
         <div className={styles.zoneArtboard} data-testid="jaw-artboard">
           <svg
+            aria-hidden={!enabled}
             className={styles.zoneArtwork}
             viewBox={`0 0 ${MASTER_WIDTH} ${MASTER_HEIGHT}`}
           >
@@ -368,17 +327,6 @@ export function JawZoneOverlay({
                 <stop offset="0" stopColor="#efd8a3" />
                 <stop offset="1" stopColor="#d68f89" />
               </linearGradient>
-              <marker
-                id="jaw-arrowhead"
-                markerHeight="8"
-                markerWidth="8"
-                orient="auto"
-                refX="7"
-                refY="4"
-                viewBox="0 0 8 8"
-              >
-                <path d="M 0 0 L 8 4 L 0 8 Z" />
-              </marker>
             </defs>
             {SURFACES.map((surface) => (
               <path
@@ -393,38 +341,40 @@ export function JawZoneOverlay({
                 style={{ "--zone-index": surface.revealIndex } as CSSProperties}
               />
             ))}
-            {mapVisible ? MARKERS.map((marker) => (
-              <g
-                className={styles.zoneMarker}
-                data-active={visibleState.openZone === marker.zone}
-                key={marker.zone}
-                style={{ "--zone-index": marker.revealIndex } as CSSProperties}
-              >
-                <path
-                  className={styles.zoneLeader}
-                  d={marker.leader}
-                  data-testid={`jaw-leader-${marker.zone}`}
-                  markerEnd="url(#jaw-arrowhead)"
-                />
-                <circle
-                  className={styles.zoneAnchor}
-                  cx={marker.anchor[0]}
-                  cy={marker.anchor[1]}
-                  data-testid={`jaw-anchor-${marker.zone}`}
-                  r="8"
-                />
+            {mapVisible ? LABELS.map((label) => {
+              const width = LABEL_WIDTHS[label.zone];
+              return (
                 <g
-                  className={styles.zoneLabel}
-                  data-testid={`jaw-zone-label-${marker.zone}`}
-                  transform={`translate(${marker.label[0]} ${marker.label[1]})`}
+                  className={styles.zoneMarker}
+                  data-active={visibleState.openZone === label.zone}
+                  data-zone-label={label.zone}
+                  key={label.zone}
+                  style={{ "--zone-index": label.revealIndex } as CSSProperties}
                 >
-                  <rect height="54" rx="27" width={marker.width} x={-marker.width / 2} y="-27" />
-                  <text dominantBaseline="middle" textAnchor="middle" y="1">
-                    {ZONES[marker.zone].label}
-                  </text>
+                  <path
+                    className={styles.zoneConnector}
+                    d={label.connector}
+                    data-testid={`jaw-connector-${label.zone}`}
+                  />
+                  <circle
+                    className={styles.zoneAnchor}
+                    cx={label.anchor[0]}
+                    cy={label.anchor[1]}
+                    r="6"
+                  />
+                  <g
+                    className={styles.zoneLabel}
+                    data-testid={`jaw-zone-label-${label.zone}`}
+                    transform={`translate(${label.label[0]} ${label.label[1]})`}
+                  >
+                    <rect height="42" rx="21" width={width} x={-width / 2} y="-21" />
+                    <text dominantBaseline="middle" textAnchor="middle" y="1">
+                      {ZONES[label.zone].label}
+                    </text>
+                  </g>
                 </g>
-              </g>
-            )) : null}
+              );
+            }) : null}
             {SURFACES.map((surface) => (
               <path
                 aria-hidden={!enabled}
@@ -459,13 +409,63 @@ export function JawZoneOverlay({
           </svg>
         </div>
       ) : null}
+
       {enabled ? (
-        <div className={styles.assistanceBar} data-testid="jaw-assistance">
-          <span>Nenašli ste miesto?</span>
-          {directLinks}
-        </div>
+        <aside
+          aria-label={activeZone?.label ?? "Výber zóny bolesti"}
+          className={classNames(styles.guidanceRail, state.mode === "mobile" && styles.zonePanel)}
+          data-problem-panel={state.mode}
+          data-testid={activeZone ? "jaw-problem-panel" : "jaw-zone-guidance"}
+          onPointerEnter={() => undefined}
+          onPointerLeave={closeUnpinned}
+          role={state.mode === "mobile" && activeZone ? "dialog" : "region"}
+        >
+          {activeZone ? (
+            <>
+              <div className={styles.cardTop}>
+                <div>
+                  <p className={styles.cardKicker}>Vyberte problém</p>
+                  <h2>{activeZone.label}</h2>
+                </div>
+                {state.mode === "mobile" ? (
+                  <button className={styles.closeButton} onClick={() => close(true)} type="button">
+                    Zavrieť
+                  </button>
+                ) : null}
+              </div>
+              <ul className={styles.problemList}>
+                {activeZone.problems.map((problem) => (
+                  <li key={problem.id}>
+                    <a
+                      href={zoneHref(activeZone, problem.id)}
+                      onClick={() => {
+                        emitJawAnalytics({
+                          consent: analyticsConsent,
+                          event: "jaw_problem_click",
+                          zone: activeZone.id,
+                          problem: problem.id as JawProblemId,
+                        });
+                      }}
+                    >
+                      {problem.patientLabel}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : (
+            <>
+              <p className={styles.cardKicker}>Zóny bolesti</p>
+              <h2>Vyberte zvýraznenú oblasť</h2>
+              <p className={styles.guidanceCopy}>Kliknite na miesto, kde problém cítite.</p>
+              <nav aria-label="Iná situácia" className={styles.directEntries}>
+                {directLinks}
+              </nav>
+            </>
+          )}
+        </aside>
       ) : null}
-      {card}
+
       <p aria-live="polite" className={styles.zoneStatus}>
         {visibleState.pinned && activeZone ? `${activeZone.label}: vyberte problém.` : ""}
       </p>

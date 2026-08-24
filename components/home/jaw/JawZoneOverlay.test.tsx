@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { readFileSync } from "node:fs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -64,52 +64,78 @@ describe("JawZoneOverlay pain map", () => {
     delete (window as Window & { dataLayer?: unknown }).dataLayer;
   });
 
-  it("teases anatomy without exposing heading controls or direct routes", () => {
+  it("teases anatomy without exposing guidance, controls, or routes", () => {
     const { container } = renderOverlay({ presentation: "tease" });
 
-    expect(screen.queryByRole("heading", { name: "Kde vás to trápi?" })).not.toBeInTheDocument();
+    expect(screen.queryByTestId("jaw-zone-guidance")).not.toBeInTheDocument();
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
     expect(screen.getAllByTestId(/jaw-mask-/)).toHaveLength(7);
     expect(container.querySelector('[data-presentation="tease"]')).toBeInTheDocument();
   });
 
-  it("renders seven anatomical masks and four clear arrow labels without debug boxes", () => {
+  it("renders compact anatomical labels and one stable idle rail", () => {
     const { container } = renderOverlay();
 
     expect(screen.getAllByTestId(/jaw-mask-/)).toHaveLength(7);
     expect(screen.getAllByTestId(/jaw-hit-/)).toHaveLength(7);
-    expect(screen.getAllByTestId(/jaw-anchor-/)).toHaveLength(4);
-    const leaders = screen.getAllByTestId(/jaw-leader-/);
-    expect(leaders).toHaveLength(4);
-    expect(leaders.every((leader) => leader.getAttribute("marker-end") === "url(#jaw-arrowhead)"))
-      .toBe(true);
+    expect(screen.getAllByTestId(/jaw-connector-/)).toHaveLength(4);
     expect(screen.getAllByTestId(/jaw-zone-label-/)).toHaveLength(4);
-    expect(container.querySelectorAll("polygon")).toHaveLength(0);
-    expect(container.querySelector('[data-testid="jaw-debug-rect"]')).not.toBeInTheDocument();
-    expect(screen.getAllByTestId(/jaw-mask-/).every((mask) => mask.getAttribute("d")?.includes("C")))
-      .toBe(true);
+    expect(container.querySelector("marker")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("jaw-assistance")).not.toBeInTheDocument();
+
+    const guidance = screen.getByTestId("jaw-zone-guidance");
+    expect(guidance).toHaveTextContent("Vyberte zvýraznenú oblasť");
+    expect(within(guidance).getByRole("link", { name: "Chýba mi zub" })).toHaveAttribute(
+      "href",
+      "/problemy/chybajuci-zub",
+    );
+    expect(within(guidance).getByRole("link", { name: "Neviem / bolí to celé" })).toHaveAttribute(
+      "href",
+      "/problemy/neviem",
+    );
   });
 
-  it("opens patient-language problems from hover focus and tap", async () => {
+  it("moves patient-language problems into the desktop rail", async () => {
     const user = userEvent.setup();
     renderOverlay();
     const molar = screen.getByTestId("jaw-hit-molar-left");
 
     fireEvent.pointerEnter(molar);
-    expect(screen.getByRole("region", { name: "Stoličky" })).toBeVisible();
-    expect(screen.getByRole("link", { name: "Bolí ma pri hryzení" })).toBeVisible();
+    const rail = screen.getByTestId("jaw-problem-panel");
+    expect(rail).toHaveTextContent("Stoličky");
+    expect(rail).toHaveAttribute("data-problem-panel", "desktop");
+    expect(within(rail).getByRole("link", { name: "Bolí ma pri hryzení" })).toHaveAttribute(
+      "href",
+      "/problemy/stolicky?problem=bite-pain",
+    );
+    expect(screen.getByTestId("jaw-zone-overlay")).toHaveAttribute("data-active-zone", "molar");
+
     fireEvent.pointerLeave(molar);
-    expect(screen.queryByRole("region", { name: "Stoličky" })).not.toBeInTheDocument();
+    expect(screen.queryByTestId("jaw-problem-panel")).not.toBeInTheDocument();
+    expect(screen.getByTestId("jaw-zone-guidance")).toBeVisible();
 
     fireEvent.focus(molar);
-    expect(screen.getByRole("region", { name: "Stoličky" })).toBeVisible();
+    expect(screen.getByTestId("jaw-problem-panel")).toBeVisible();
     await user.click(molar);
     fireEvent.pointerLeave(molar);
-    expect(screen.getByRole("region", { name: "Stoličky" })).toBeVisible();
+    expect(screen.getByTestId("jaw-problem-panel")).toBeVisible();
   });
 
-  it("uses existing problem routes and consent-gated analytics", async () => {
+  it("keeps click-to-pin, Escape, and exact trigger focus restoration", async () => {
+    const user = userEvent.setup();
+    renderOverlay();
+    const front = screen.getByTestId("jaw-hit-front");
+    await user.click(front);
+
+    expect(front).toHaveAttribute("aria-pressed", "true");
+    await user.keyboard("{Escape}");
+
+    expect(screen.queryByTestId("jaw-problem-panel")).not.toBeInTheDocument();
+    expect(front).toHaveFocus();
+  });
+
+  it("uses controlled problem routes and consent-gated analytics", async () => {
     const dataLayer = { push: vi.fn() };
     Object.assign(window, { dataLayer });
     const user = userEvent.setup();
@@ -126,26 +152,11 @@ describe("JawZoneOverlay pain map", () => {
     );
   });
 
-  it("moves direct entries into subtle bottom-centre assistance bar", () => {
-    renderOverlay();
-
-    const assistance = screen.getByTestId("jaw-assistance");
-    expect(assistance).toHaveTextContent("Nenašli ste miesto?");
-    expect(screen.getByRole("link", { name: "Chýba mi zub" })).toHaveAttribute(
-      "href",
-      "/problemy/chybajuci-zub",
-    );
-    expect(screen.getByRole("link", { name: "Neviem / bolí to celé" })).toHaveAttribute(
-      "href",
-      "/problemy/neviem",
-    );
-    expect(assistance).toHaveClass(styles.assistanceBar);
-  });
-
   it("keeps reveal labels inert until final interaction gate", () => {
     const { container } = renderOverlay({ presentation: "reveal" });
 
-    expect(screen.getByRole("heading", { name: "Kde vás to trápi?" })).toBeVisible();
+    expect(screen.getAllByTestId(/jaw-zone-label-/)).toHaveLength(4);
+    expect(screen.queryByTestId("jaw-zone-guidance")).not.toBeInTheDocument();
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
     expect(container.querySelector('[data-presentation="reveal"]')).toBeInTheDocument();
@@ -153,7 +164,7 @@ describe("JawZoneOverlay pain map", () => {
 
   it("requires visibility and exact final frame at public boundary", () => {
     const { rerender } = renderOverlay({ exactEndDrawn: false });
-    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("jaw-zone-guidance")).not.toBeInTheDocument();
 
     rerender(
       <JawZoneOverlay
@@ -164,21 +175,9 @@ describe("JawZoneOverlay pain map", () => {
         visible={false}
       />,
     );
-    expect(screen.queryByRole("heading", { name: "Kde vás to trápi?" })).not.toBeInTheDocument();
+    expect(screen.queryByTestId("jaw-zone-guidance")).not.toBeInTheDocument();
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
-  });
-
-  it("closes pinned card on Escape and restores exact SVG trigger focus", async () => {
-    const user = userEvent.setup();
-    renderOverlay();
-    const front = screen.getByTestId("jaw-hit-front");
-    await user.click(front);
-
-    await user.keyboard("{Escape}");
-
-    expect(screen.queryByRole("region", { name: "Predné zuby" })).not.toBeInTheDocument();
-    expect(front).toHaveFocus();
   });
 
   it("closes immediately and focuses safe root when presentation reverses", async () => {
@@ -196,21 +195,26 @@ describe("JawZoneOverlay pain map", () => {
       />,
     );
 
-    expect(screen.queryByRole("region", { name: "Predné zuby" })).not.toBeInTheDocument();
+    expect(screen.queryByTestId("jaw-problem-panel")).not.toBeInTheDocument();
     expect(screen.getByTestId("jaw-zone-overlay")).toHaveFocus();
   });
 
-  it("opens compact mobile problem sheet and reconciles viewport changes", async () => {
+  it("opens a compact mobile problem sheet and reconciles viewport changes", async () => {
     const user = userEvent.setup();
     renderOverlay();
     const gum = screen.getByTestId("jaw-hit-gum-upper");
     await user.click(gum);
-    expect(screen.getByRole("region", { name: "Ďasná" })).toBeVisible();
+    expect(screen.getByTestId("jaw-problem-panel")).toHaveAttribute(
+      "data-problem-panel",
+      "desktop",
+    );
 
     changeViewport(true);
-    expect(screen.queryByRole("region", { name: "Ďasná" })).not.toBeInTheDocument();
+    expect(screen.queryByTestId("jaw-problem-panel")).not.toBeInTheDocument();
     await user.click(gum);
-    expect(screen.getByRole("dialog", { name: "Ďasná" })).toBeVisible();
+    const sheet = screen.getByRole("dialog", { name: "Ďasná" });
+    expect(sheet).toHaveAttribute("data-problem-panel", "mobile");
+    expect(gum).toHaveAttribute("aria-pressed", "true");
     await user.click(screen.getByRole("button", { name: "Zavrieť" }));
     expect(gum).toHaveFocus();
   });
@@ -222,25 +226,24 @@ describe("JawZoneOverlay pain map", () => {
       reducedMotion: true,
     });
 
-    expect(screen.getByRole("heading", { name: "Kde vás to trápi?" })).toBeVisible();
+    expect(screen.getByTestId("jaw-zone-guidance")).toHaveTextContent(
+      "Vyberte zvýraznenú oblasť",
+    );
     expect(screen.getAllByRole("button", {
       name: /Predné zuby|Črenové zuby|Stoličky|Ďasná/,
     })).toHaveLength(7);
     expect(screen.getByRole("link", { name: "Chýba mi zub" })).toBeVisible();
   });
 
-  it("keeps one centered 16:9 artboard and pop-motion contracts", () => {
+  it("locks desktop rail, touch targets, mobile sheet, and pop-motion contracts", () => {
     renderOverlay();
     expect(screen.getByTestId("jaw-artboard")).toHaveClass(styles.zoneArtboard);
-    expect(cssText).toMatch(/\.zoneArtboard[\s\S]*aspect-ratio:\s*16\s*\/\s*9/);
+    expect(cssText).toMatch(/\.zoneOverlay[\s\S]*grid-template-columns:\s*340px\s+minmax\(0,\s*1fr\)/);
+    expect(cssText).toMatch(/\.guidanceRail[\s\S]*width:\s*340px/);
+    expect(cssText).toMatch(/\.zoneConnector[\s\S]*stroke-width:\s*2[\s\S]*vector-effect:\s*non-scaling-stroke/);
+    expect(cssText).toMatch(/\.zoneHit[\s\S]*stroke-width:\s*48[\s\S]*vector-effect:\s*non-scaling-stroke/);
+    expect(cssText).toMatch(/\.zonePanel[\s\S]*max-height:\s*min\(44dvh,\s*24rem\)/);
     expect(cssText).toMatch(/@keyframes\s+zone-pop/);
     expect(cssText).toMatch(/@keyframes\s+zone-mask-pop[\s\S]*opacity:\s*0\.18/);
-    expect(cssText).toMatch(/\.zoneOverlay\[data-presentation="reveal"\] \.zoneMask[\s\S]*animation:\s*zone-mask-pop/);
-    expect(cssText).toMatch(/@keyframes\s+zone-tease/);
-    expect(cssText).toMatch(/@keyframes\s+zone-heading-pop[\s\S]*translate\(-50%,\s*0\)/);
-    expect(cssText).toMatch(/@keyframes\s+assistance-pop[\s\S]*translateX\(-50%\)/);
-    expect(cssText).toMatch(/\.zoneHeading[\s\S]*animation:\s*zone-heading-pop/);
-    expect(cssText).toMatch(/\.assistanceBar[\s\S]*animation:\s*assistance-pop/);
-    expect(cssText).toMatch(/\.assistanceBar[\s\S]*left:\s*50%/);
   });
 });
