@@ -142,11 +142,30 @@ export default async function ServicePage({
               <h2 className={styles.blockHeading} id="benefits-heading">
                 {detail.benefitsHeading}
               </h2>
-              <ul className={styles.benefits}>
-                {detail.benefits.map((benefit) => (
-                  <li key={benefit}>
+              {/*
+                Four things, each with its own line of explanation. What was
+                here before was a dozen mixed together — the deliverables and
+                the conveniences in one column — which read as a wall and hid
+                the four that the price actually buys.
+              */}
+              <ul className={styles.inclusions}>
+                {detail.benefits.map((benefit, index) => (
+                  <li key={benefit.title}>
+                    <span aria-hidden="true" className={styles.inclusionIndex}>
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <h3 className={styles.inclusionTitle}>{benefit.title}</h3>
+                    <p className={styles.inclusionNote}>{benefit.note}</p>
+                  </li>
+                ))}
+              </ul>
+
+              <h3 className={styles.extrasHeading}>{detail.extrasHeading}</h3>
+              <ul className={styles.extras}>
+                {detail.extras.map((extra) => (
+                  <li key={extra}>
                     <span aria-hidden="true" className={styles.tick} />
-                    {benefit}
+                    {extra}
                   </li>
                 ))}
               </ul>
@@ -172,18 +191,33 @@ export default async function ServicePage({
                   </h2>
                   <ul className={styles.bundleList}>
                     {detail.bundle.items.map((item) => (
-                      <li key={item.label}>
+                      <li className={item.free ? styles.bundleFree : undefined} key={item.label}>
                         <span>{item.label}</span>
-                        <span className={styles.bundlePrice}>{item.price}</span>
+                        <span className={styles.bundlePrice}>
+                          {item.free ? (
+                            <>
+                              {/* The price stays, struck through: what it is
+                                  worth is the reason free means anything. */}
+                              <s>{item.price}</s>
+                              <em className={styles.freeTag}>zdarma</em>
+                            </>
+                          ) : (
+                            item.price
+                          )}
+                        </span>
                       </li>
                     ))}
                     <li className={styles.bundleTotal}>
                       <span>Spolu</span>
                       <span className={styles.bundlePrice}>
+                        <s className={styles.bundleWas}>
+                          {detail.bundle.listTotal}
+                        </s>
                         {detail.bundle.total}
                       </span>
                     </li>
                   </ul>
+                  <p className={styles.bundleSaving}>{detail.bundle.saving}</p>
                   {/*
                     A question to ask, not an offer. The clinic's own wording
                     was seasonal, and a promotion that has quietly lapsed is
