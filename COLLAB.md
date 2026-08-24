@@ -798,6 +798,60 @@ not achievable without interpolation artifacts, whatever the export is tagged.
 
   Merged result verified: 146 tests, lint, TypeScript, production build.
 
+- 2026-08-18 — Claude replaced the jaw map's interaction model on
+  `claude/tim-page`, at the user's request. This is a substantial change to
+  Codex's `JawZoneOverlay.tsx` and `jawExperience.module.css`; the anatomy,
+  the frame sequence, the zone geometry and the routes are untouched.
+
+  The fault the user reported: seven `.zoneHit` paths lay over the jaw edge to
+  edge, with `stroke-width: 24` and `pointer-events: painted`. Travelling to
+  the front teeth from outside the jaw meant crossing the molar and premolar
+  surfaces, and each crossing fired `open()` on the way past, so the card
+  flickered through zones and the intended one was hard to land on.
+
+  All seven are gone. The four leader lines Codex already drew are now the
+  interaction: each ends in an HTML `<button>` carrying its zone's name,
+  positioned from the same master coordinates the line is drawn in (the
+  artboard is locked to 16:9 against a 1920×1080 viewBox, so a percentage of
+  the box and a fraction of the viewBox are the same place). Hovering or
+  focusing a button lights its line, its anchor and its jaw region; clicking
+  pins the card. A pointer sweep of 1440 points across the anatomy now returns
+  no interactive element anywhere on the jaw.
+
+  New motion: the leader draws itself in on reveal, a short dash runs the line
+  from button to jaw while the zone is live, and a ring expands out of the
+  anchor as it lands. Both leader copies carry `pathLength="100"`, so the
+  draw-in and the pulse are written as percentages rather than measured per
+  path. The button's fill sweeps in from the edge its own line leaves by.
+
+  Three defects found and fixed while verifying:
+
+  1. The button's centring and its hover lean were both on `transform`, so
+     each button transitioned *into its own position* on first paint — a 71px
+     slide. The lean moved to the independent `translate` property.
+  2. The leader's resting state was undrawn, so a blocked or frozen animation
+     left the line invisible. It rests drawn; the animation draws it in.
+  3. The problem card was centred vertically and pinned left, which is exactly
+     where the premolar control sits — opening any zone covered a button and
+     took it out of reach. The card is anchored low now, and flips right for
+     the premolar zone. Verified across all four zones: it covers no button
+     and does not reach the assistance bar.
+
+  On a phone the connectors are hidden and the four controls become a 2×2 grid
+  of 44px targets under the jaw — at 390×844 the artboard is 219px tall, where
+  a button pinned to master coordinates would be a few millimetres wide.
+
+  Verified on a temporary local route rendering the overlay directly, since the
+  frame sequence never leaves `loading` in this preview environment: geometry
+  at 1440×900 and 390×844, exactly one zone active at a time with its mask and
+  leader, no button ever covered, no horizontal overflow. That route was
+  deleted. 146 tests, lint, TypeScript and the production build pass.
+
+  Files reserved: `components/team/**`, `app/tim/**`, `public/media/tim/**`,
+  `app/page.tsx`, and — still, for this work — `components/home/jaw/**`.
+  Awaiting the user's localhost approval before any of this reaches `main`.
+  Still outstanding: the seven missing team roles.
+
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
 credentials, tokens, or local configuration values in repository files,

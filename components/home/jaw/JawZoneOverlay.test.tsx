@@ -74,17 +74,38 @@ describe("JawZoneOverlay pain map", () => {
     expect(container.querySelector('[data-presentation="tease"]')).toBeInTheDocument();
   });
 
-  it("renders seven anatomical masks and four clear arrow labels without debug boxes", () => {
+  it("renders seven anatomical masks and four connectors, and no hit paths over the jaw", () => {
     const { container } = renderOverlay();
 
     expect(screen.getAllByTestId(/jaw-mask-/)).toHaveLength(7);
-    expect(screen.getAllByTestId(/jaw-hit-/)).toHaveLength(7);
     expect(screen.getAllByTestId(/jaw-anchor-/)).toHaveLength(4);
+
+    /*
+     * The regression this whole rework exists for. Seven invisible hit paths
+     * used to cover the jaw edge to edge, so travelling to the front teeth
+     * from outside crossed the molar and premolar surfaces and opened each of
+     * them on the way past. Nothing over the anatomy may be interactive again.
+     */
+    expect(screen.queryAllByTestId(/jaw-hit-/)).toHaveLength(0);
+    expect(screen.getAllByTestId(/jaw-zone-button-/)).toHaveLength(4);
+    expect(screen.getAllByTestId(/jaw-pulse-/)).toHaveLength(4);
     const leaders = screen.getAllByTestId(/jaw-leader-/);
     expect(leaders).toHaveLength(4);
-    expect(leaders.every((leader) => leader.getAttribute("marker-end") === "url(#jaw-arrowhead)"))
-      .toBe(true);
-    expect(screen.getAllByTestId(/jaw-zone-label-/)).toHaveLength(4);
+    /*
+     * The arrowhead is gone — a leader now ends in the anchor ring, which is
+     * also what the travelling pulse lands on. Both copies of the path declare
+     * `pathLength="100"`, which is what lets the draw-in and the pulse be
+     * written as percentages instead of measured per path; drop it and both
+     * animations silently mistime.
+     */
+    expect(leaders.every((leader) => leader.getAttribute("marker-end"))).toBe(false);
+    expect(leaders.every((leader) => leader.getAttribute("pathLength") === "100")).toBe(true);
+    expect(
+      screen.getAllByTestId(/jaw-pulse-/).every((pulse) => pulse.getAttribute("pathLength") === "100"),
+    ).toBe(true);
+    for (const label of ["Predné zuby", "Črenové zuby", "Stoličky", "Ďasná"]) {
+      expect(screen.getByRole("button", { name: label })).toBeInTheDocument();
+    }
     expect(container.querySelectorAll("polygon")).toHaveLength(0);
     expect(container.querySelector('[data-testid="jaw-debug-rect"]')).not.toBeInTheDocument();
     expect(screen.getAllByTestId(/jaw-mask-/).every((mask) => mask.getAttribute("d")?.includes("C")))
@@ -94,7 +115,7 @@ describe("JawZoneOverlay pain map", () => {
   it("opens patient-language problems from hover focus and tap", async () => {
     const user = userEvent.setup();
     renderOverlay();
-    const molar = screen.getByTestId("jaw-hit-molar-left");
+    const molar = screen.getByTestId("jaw-zone-button-molar");
 
     fireEvent.pointerEnter(molar);
     expect(screen.getByRole("region", { name: "Stoličky" })).toBeVisible();
@@ -115,7 +136,7 @@ describe("JawZoneOverlay pain map", () => {
     const user = userEvent.setup();
     renderOverlay({ analyticsConsent: true });
 
-    await user.click(screen.getByTestId("jaw-hit-molar-right"));
+    await user.click(screen.getByTestId("jaw-zone-button-molar"));
     expect(dataLayer.push).toHaveBeenCalledWith({
       event: "jaw_zone_click",
       jaw_zone: "molar",
@@ -172,7 +193,7 @@ describe("JawZoneOverlay pain map", () => {
   it("closes pinned card on Escape and restores exact SVG trigger focus", async () => {
     const user = userEvent.setup();
     renderOverlay();
-    const front = screen.getByTestId("jaw-hit-front");
+    const front = screen.getByTestId("jaw-zone-button-front");
     await user.click(front);
 
     await user.keyboard("{Escape}");
@@ -184,7 +205,7 @@ describe("JawZoneOverlay pain map", () => {
   it("closes immediately and focuses safe root when presentation reverses", async () => {
     const user = userEvent.setup();
     const { rerender } = renderOverlay();
-    await user.click(screen.getByTestId("jaw-hit-front"));
+    await user.click(screen.getByTestId("jaw-zone-button-front"));
 
     rerender(
       <JawZoneOverlay
@@ -203,7 +224,7 @@ describe("JawZoneOverlay pain map", () => {
   it("opens compact mobile problem sheet and reconciles viewport changes", async () => {
     const user = userEvent.setup();
     renderOverlay();
-    const gum = screen.getByTestId("jaw-hit-gum-upper");
+    const gum = screen.getByTestId("jaw-zone-button-gum");
     await user.click(gum);
     expect(screen.getByRole("region", { name: "Ďasná" })).toBeVisible();
 
@@ -225,7 +246,7 @@ describe("JawZoneOverlay pain map", () => {
     expect(screen.getByRole("heading", { name: "Kde vás to trápi?" })).toBeVisible();
     expect(screen.getAllByRole("button", {
       name: /Predné zuby|Črenové zuby|Stoličky|Ďasná/,
-    })).toHaveLength(7);
+    })).toHaveLength(4);
     expect(screen.getByRole("link", { name: "Chýba mi zub" })).toBeVisible();
   });
 
@@ -239,7 +260,7 @@ describe("JawZoneOverlay pain map", () => {
     const user = userEvent.setup();
     renderOverlay();
     changeViewport(true);
-    await user.click(screen.getByTestId("jaw-hit-gum-upper"));
+    await user.click(screen.getByTestId("jaw-zone-button-gum"));
 
     const close = screen.getByRole("button", { name: "Zavrieť" });
     expect(close.querySelector("[aria-hidden='true']")).toBeInTheDocument();

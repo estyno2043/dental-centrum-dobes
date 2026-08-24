@@ -83,6 +83,13 @@
   position: absolute;
   top: 50%;
   left: 50%;
+
+  /*
+   * A container, so the buttons laid over it can be sized in `cqw` and shrink
+   * with the artwork instead of staying at a fixed pixel size that swamps the
+   * jaw on a laptop and disappears on a large monitor.
+   */
+  container-type: inline-size;
   width: min(100%, calc(100dvh * 16 / 9));
   aspect-ratio: 16 / 9;
   transform: translate(-50%, -50%);
@@ -137,69 +144,249 @@
   animation: zone-pop 380ms calc(var(--zone-index) * 165ms) cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/*
+ * The line from the anatomy out to its button.
+ *
+ * `pathLength="100"` on the element normalises every leader to a hundred
+ * units, so the draw-in and the travelling pulse below are written once as
+ * percentages rather than measured per path.
+ */
 .zoneLeader {
   fill: none;
-  stroke: rgba(239, 208, 150, 0.9);
+  stroke: rgb(239 208 150 / 62%);
+  stroke-dasharray: 100;
+  stroke-dashoffset: 0;
+  stroke-linecap: round;
+  stroke-width: 2;
+  transition:
+    stroke 260ms ease-out,
+    stroke-width 260ms ease-out;
+}
+
+.zoneOverlay[data-presentation="reveal"] .zoneLeader,
+.zoneOverlay[data-presentation="interactive"] .zoneLeader {
+  animation: zone-leader-draw 620ms calc(var(--zone-index) * 165ms + 120ms)
+    cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/*
+ * One short dash on the same path, run from the button end to the jaw end
+ * while the zone is active: the control sending a signal to the place it
+ * names. Idle it is invisible rather than parked, so nothing sits on the line
+ * when nothing is happening.
+ */
+.zonePulse {
+  fill: none;
+  stroke: #fff2ca;
+  stroke-dasharray: 14 100;
+  stroke-dashoffset: 114;
   stroke-linecap: round;
   stroke-width: 3;
+  opacity: 0;
+}
+
+.zoneMarker[data-active="true"] .zonePulse {
+  opacity: 1;
+  animation: zone-pulse-run 1.15s linear infinite;
 }
 
 .zoneAnchor {
   fill: #f0cf91;
-  stroke: rgba(47, 37, 31, 0.75);
+  stroke: rgb(47 37 31 / 75%);
   stroke-width: 4;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: fill 240ms ease-out, transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.zoneLabel rect {
-  fill: rgba(36, 30, 27, 0.82);
-  stroke: rgba(239, 208, 150, 0.75);
+/*
+ * A ring that expands out of the anchor and fades, once per second, while the
+ * zone is active — the arrival of the pulse, landing on the spot.
+ */
+.zoneHalo {
+  fill: none;
+  stroke: rgb(255 226 169 / 80%);
   stroke-width: 2;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
 }
 
-.zoneLabel text {
-  fill: #fffaf4;
-  font-family: inherit;
-  font-size: 25px;
-  font-weight: 700;
-  letter-spacing: 0.01em;
+.zoneMarker[data-active="true"] .zoneHalo {
+  animation: zone-halo 1.15s ease-out infinite;
 }
 
 .zoneMarker[data-active="true"] .zoneLeader {
-  stroke: #ffe2a9;
-  stroke-width: 4;
+  stroke: rgb(255 226 169 / 95%);
+  stroke-width: 3;
 }
 
 .zoneMarker[data-active="true"] .zoneAnchor {
   fill: #fff2ca;
-  filter: drop-shadow(0 0 12px rgba(248, 218, 160, 0.9));
+  filter: drop-shadow(0 0 12px rgb(248 218 160 / 90%));
+  transform: scale(1.25);
 }
 
-.zoneMarker[data-active="true"] .zoneLabel rect {
-  fill: rgba(55, 43, 35, 0.94);
-  stroke: #ffe2a9;
-}
+/* ------------------------------------------------------- zone buttons --- */
 
-.zoneArtwork :global(#jaw-arrowhead) path {
-  fill: #f0cf91;
-}
-
-.zoneHit {
-  fill: rgba(255, 255, 255, 0.001);
-  stroke: transparent;
-  stroke-width: 24;
+/*
+ * The controls that replaced the invisible hit paths over the anatomy.
+ *
+ * Those covered the jaw edge to edge, so travelling to the front teeth from
+ * outside crossed the molar and premolar surfaces and opened each of them on
+ * the way past. These four cannot reach each other.
+ *
+ * Laid over the artboard at the same master coordinates the lines are drawn
+ * in: the artboard is locked to 16:9 against a 1920×1080 viewBox, so a
+ * percentage of the box and a fraction of the viewBox are the same place.
+ */
+.zoneButtons {
+  position: absolute;
+  z-index: 6;
   pointer-events: none;
-  outline: none;
+  inset: 0;
 }
 
-.zoneOverlay[data-presentation="interactive"] .zoneHit {
+/*
+ * Mounted through every state but only shown from the reveal onwards. It stays
+ * in the tree during the tease because the overlay has to be able to see that
+ * focus is inside itself when the presentation reverses — unmounting the
+ * focused control sends focus to the body first, and the moment is lost.
+ */
+.zoneOverlay[data-presentation="tease"] .zoneButtons,
+.zoneOverlay[data-presentation="hidden"] .zoneButtons {
+  visibility: hidden;
+}
+
+.zoneButton {
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+  display: inline-flex;
+  gap: 0.62em;
+  align-items: center;
+  padding: 0.72em 1.15em;
+  overflow: hidden;
+  border: 1px solid rgb(239 208 150 / 44%);
+  border-radius: 999px;
+  background: rgb(24 20 18 / 62%);
+  backdrop-filter: blur(10px);
+  color: var(--porcelain);
+
+  /* Scales with the artboard, floored and capped so it stays legible. */
+  font: inherit;
+  font-size: clamp(9px, 0.86cqw, 15px);
+  font-weight: 600;
+  isolation: isolate;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  /*
+   * Centring only, and never transitioned. The lean below uses the independent
+   * `translate` property instead, because putting both on `transform` means the
+   * element transitions *into its own position* on first paint — it starts at
+   * the untranslated corner and slides half its own width into place.
+   */
+  transform: translate(-50%, -50%);
+  transition:
+    border-color 300ms ease-out,
+    color 300ms ease-out,
+    box-shadow 300ms ease-out,
+    translate 380ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.zoneOverlay[data-presentation="interactive"] .zoneButton {
   cursor: pointer;
-  pointer-events: painted;
+  pointer-events: auto;
 }
 
-.zoneHit:focus-visible {
-  stroke: rgba(255, 226, 169, 0.92);
-  stroke-width: 6;
-  filter: drop-shadow(0 0 16px rgba(248, 218, 160, 0.72));
+.zoneButton:disabled {
+  cursor: default;
+  pointer-events: none;
+}
+
+.zoneOverlay[data-presentation="reveal"] .zoneButton,
+.zoneOverlay[data-presentation="interactive"] .zoneButton {
+  animation: zone-button-in 420ms calc(var(--zone-index) * 165ms + 300ms)
+    cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/*
+ * The fill sweeps in from the edge the line leaves by, so it travels towards
+ * the anatomy the button points at rather than in some arbitrary direction.
+ */
+.zoneButton::before {
+  position: absolute;
+  z-index: -1;
+  background: linear-gradient(120deg, #efd8a3, #e8bd8a);
+  content: "";
+  inset: 0;
+  transform: scale(0);
+  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.zoneButton[data-origin="bottom"]::before { transform: scaleY(0); transform-origin: bottom; }
+.zoneButton[data-origin="top"]::before { transform: scaleY(0); transform-origin: top; }
+.zoneButton[data-origin="left"]::before { transform: scaleX(0); transform-origin: left; }
+.zoneButton[data-origin="right"]::before { transform: scaleX(0); transform-origin: right; }
+
+.zoneButton:hover::before,
+.zoneButton:focus-visible::before,
+.zoneButton[data-active="true"]::before {
+  transform: scale(1);
+}
+
+.zoneButton:hover,
+.zoneButton:focus-visible,
+.zoneButton[data-active="true"] {
+  border-color: #ffe2a9;
+  color: #201b19;
+  box-shadow: 0 0.6rem 1.8rem rgb(20 14 10 / 34%);
+}
+
+/*
+ * Leans a step towards its own line — the button pointing back at the jaw.
+ * `translate` rather than `transform`, so the centring above stays untouched
+ * and only this three-pixel move is animated.
+ */
+.zoneButton[data-origin="bottom"]:hover,
+.zoneButton[data-origin="bottom"][data-active="true"] { translate: 0 4px; }
+.zoneButton[data-origin="top"]:hover,
+.zoneButton[data-origin="top"][data-active="true"] { translate: 0 -4px; }
+.zoneButton[data-origin="left"]:hover,
+.zoneButton[data-origin="left"][data-active="true"] { translate: -4px 0; }
+.zoneButton[data-origin="right"]:hover,
+.zoneButton[data-origin="right"][data-active="true"] { translate: 4px 0; }
+
+.zoneButton:focus-visible {
+  outline: 2px solid #fff2ca;
+  outline-offset: 3px;
+}
+
+/*
+ * A small ring that fills when the zone is live — the same mark as the anchor
+ * out on the jaw, so the two ends of the line are recognisably one object.
+ */
+.zoneButtonMark {
+  width: 0.62em;
+  height: 0.62em;
+  flex: none;
+  border: 1px solid currentcolor;
+  border-radius: 50%;
+  background: transparent;
+  transition: background 300ms ease-out, transform 380ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.zoneButton:hover .zoneButtonMark,
+.zoneButton:focus-visible .zoneButtonMark,
+.zoneButton[data-active="true"] .zoneButtonMark {
+  background: currentcolor;
+  transform: scale(1.25);
+}
+
+.zoneButtonLabel {
+  display: block;
 }
 
 /*
@@ -305,10 +492,23 @@
   outline-offset: 2px;
 }
 
+/*
+ * Anchored low and to one side, and both of those are about staying out of the
+ * controls' way. A card that covers a button takes that zone out of reach for
+ * as long as it is open, which is the fault this whole rework exists to fix —
+ * it would be poor to reintroduce it one layer up.
+ */
 .zoneCard {
   position: absolute;
   z-index: 10;
-  top: 52%;
+
+  /*
+   * Low, not centred. The two side controls sit at the jaw's own mid-height,
+   * so a vertically centred card sat straight across one of them and took a
+   * quarter of the map out of reach for as long as it was open.
+   */
+  top: auto;
+  bottom: clamp(3.5rem, 11dvh, 6.5rem);
   left: clamp(1rem, 4vw, 4rem);
   width: min(21rem, 32vw);
   padding: 1.3rem;
@@ -318,8 +518,18 @@
   box-shadow: 0 1.4rem 4rem rgba(0, 0, 0, 0.34);
   backdrop-filter: blur(20px);
   pointer-events: auto;
-  transform: translateY(-50%);
   animation: card-pop 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/*
+ * The premolar control is the only one on the left, so its card goes right.
+ * The low anchoring above already clears it at today's card heights; this is
+ * what keeps that true if a zone ever gains enough problems to grow the card
+ * back up into the buttons' band.
+ */
+.zoneCard[data-side="right"] {
+  right: clamp(1rem, 4vw, 4rem);
+  left: auto;
 }
 
 .cardTop {
@@ -485,6 +695,50 @@
   }
 }
 
+@keyframes zone-leader-draw {
+  from {
+    stroke-dashoffset: 100;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes zone-pulse-run {
+  from {
+    stroke-dashoffset: 114;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes zone-halo {
+  0% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(3.4);
+  }
+}
+
+@keyframes zone-button-in {
+  from {
+    opacity: 0;
+    filter: blur(2px);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
 @keyframes zone-pop {
   from {
     opacity: 0;
@@ -545,15 +799,17 @@
   }
 }
 
+/* Rises into place. It is anchored to the bottom now, so there is no centring
+   offset for the keyframes to preserve. */
 @keyframes card-pop {
   from {
     opacity: 0;
-    transform: translateY(-46%) scale(0.94);
+    transform: translateY(14px) scale(0.96);
   }
 
   to {
     opacity: 1;
-    transform: translateY(-50%) scale(1);
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -596,6 +852,42 @@
     text-align: center;
   }
 
+  /*
+   * The artboard is barely two hundred pixels tall on a phone, so a button
+   * pinned to its master coordinates would be a few millimetres wide and two
+   * of them would overlap. The connectors are hidden and the four controls
+   * become a plain pair of rows under the jaw — the same choice, without the
+   * pointing.
+   */
+  .zoneMarker {
+    display: none;
+  }
+
+  .zoneButtons {
+    top: 100%;
+    right: 0;
+    bottom: auto;
+    left: 0;
+    display: grid;
+    gap: 0.4rem;
+    grid-template-columns: 1fr 1fr;
+    padding: 0.9rem 0.65rem 0;
+  }
+
+  .zoneButton {
+    position: static;
+    justify-content: center;
+    min-height: 44px;
+    font-size: 0.66rem;
+    transform: none;
+  }
+
+  /* The lean points at a line that is no longer drawn. */
+  .zoneButton[data-origin]:hover,
+  .zoneButton[data-origin][data-active="true"] {
+    translate: none;
+  }
+
   .zonePanel {
     top: auto;
     right: 0;
@@ -630,6 +922,10 @@
   .zoneMarker,
   .assistanceBar,
   .zoneCard,
+  .zoneButton,
+  .zoneButton::before,
+  .zoneButtonMark,
+  .zoneAnchor,
   .directEntry,
   .directEntry::before,
   .problemList a,
@@ -637,5 +933,21 @@
   .closeButton {
     transition: none;
     animation: none;
+  }
+
+  /*
+   * The leader is *drawn* by its animation, so simply switching that off would
+   * leave the dash pattern with nothing to reveal it — an invisible line. It
+   * has to be handed its finished state instead.
+   */
+  .zoneLeader {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+
+  /* Both exist only to move. */
+  .zonePulse,
+  .zoneHalo {
+    display: none;
   }
 }

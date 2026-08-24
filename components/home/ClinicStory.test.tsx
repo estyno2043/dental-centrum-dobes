@@ -179,7 +179,7 @@ test("renders static open map and six routes for reduced motion", () => {
   ).toHaveLength(2);
   expect(screen.getAllByRole("button", {
     name: /Predné zuby|Črenové zuby|Stoličky|Ďasná/,
-  })).toHaveLength(7);
+  })).toHaveLength(4);
 });
 
 test("keeps gallery geometry when sequence reports permanent failure", () => {
