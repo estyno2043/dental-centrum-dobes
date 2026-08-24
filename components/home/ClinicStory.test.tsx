@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { readFileSync } from "node:fs";
 import { afterEach, expect, test, vi } from "vitest";
 import { ClinicStory } from "./ClinicStory";
+import { JAW_DISCLAIMER, JAW_ZONES } from "./jaw/jawContent";
 import { photoFrames } from "./photoStripContent";
 
 vi.mock("./jaw/JawFrameSequence", () => ({
@@ -72,8 +73,8 @@ function installDesktopGeometry() {
   Object.defineProperty(track, "scrollWidth", { configurable: true, value: 4200 });
   section.getBoundingClientRect = () =>
     ({
-      bottom: 10300 - progressVh * 10,
-      height: 10300,
+      bottom: 9900 - progressVh * 10,
+      height: 9900,
       left: 0,
       right: 1440,
       top: -progressVh * 10,
@@ -114,14 +115,17 @@ test("keeps complete gallery and semantic detail handoff before jaw pixels", () 
     photoFrames.map((frame) => frame.id),
   );
   expect(screen.getByTestId("clinic-handoff")).toHaveAttribute("data-frame-id", "detail");
-  expect(section).toHaveAttribute("data-desktop-vh", "1030");
+  expect(section).toHaveAttribute("id", "ambulancia");
+  expect(section).toHaveAttribute("data-desktop-vh", "990");
+  expect(section).toHaveAttribute("data-mobile-vh", "710");
+  expect(screen.getAllByTestId("clinic-story-pin")).toHaveLength(1);
 
   setProgress(460);
   expect(section.style.getPropertyValue("--detail")).toBe("1");
   expect(section.style.getPropertyValue("--handoff")).toBe("0");
   expect(container.querySelector('[data-jaw-sequence-state]')).not.toBeInTheDocument();
   expect(screen.queryByText("Zóny bolesti")).not.toBeInTheDocument();
-  expect(screen.queryByRole("heading", { name: "Kde vás to trápi?" })).not.toBeInTheDocument();
+  expect(screen.queryByTestId("jaw-zone-guidance")).not.toBeInTheDocument();
 });
 
 test("shows contained jaw with transient pain-zone loading cue", () => {
@@ -133,7 +137,7 @@ test("shows contained jaw with transient pain-zone loading cue", () => {
   expect(screen.getByTestId("jaw-viewport")).toBeInTheDocument();
   expect(screen.getByText("Zóny bolesti")).toBeVisible();
   expect(screen.getByTestId("jaw-loading-ring")).toBeInTheDocument();
-  expect(screen.queryByRole("heading", { name: "Kde vás to trápi?" })).not.toBeInTheDocument();
+  expect(screen.queryByTestId("jaw-zone-guidance")).not.toBeInTheDocument();
   expect(screen.queryByRole("link", { name: "Chýba mi zub" })).not.toBeInTheDocument();
 });
 
@@ -142,23 +146,42 @@ test("teases zones before map labels then removes loading cue", () => {
   render(<ClinicStory />);
   const { setProgress } = installDesktopGeometry();
 
-  setProgress(685);
+  setProgress(640);
   expect(screen.queryByText("Zóny bolesti")).not.toBeInTheDocument();
   fireEvent.click(screen.getByTestId("jaw-exact-frame-signal"));
   expect(screen.getByTestId("jaw-zone-overlay")).toHaveAttribute("data-presentation", "tease");
-  expect(screen.queryByRole("heading", { name: "Kde vás to trápi?" })).not.toBeInTheDocument();
+  expect(screen.queryByTestId("jaw-zone-guidance")).not.toBeInTheDocument();
   expect(screen.queryAllByRole("button", { name: /Predné|Črenové|Stoličky|Ďasná/ })).toHaveLength(0);
 
-  setProgress(730);
-  expect(screen.getByRole("heading", { name: "Kde vás to trápi?" })).toBeVisible();
-  expect(screen.getAllByTestId(/jaw-leader-/)).toHaveLength(4);
+  setProgress(680);
+  expect(screen.queryByTestId("jaw-zone-guidance")).not.toBeInTheDocument();
+  expect(screen.getAllByTestId(/jaw-connector-/)).toHaveLength(4);
   expect(screen.queryAllByRole("button", { name: /Predné|Črenové|Stoličky|Ďasná/ })).toHaveLength(0);
 });
 
+test("shows final guidance only after exact end frame and reveal completion", () => {
+  vi.useFakeTimers();
+  stubMatchMedia(false);
+  render(<ClinicStory />);
+  const { setProgress } = installDesktopGeometry();
+
+  setProgress(700);
+  expect(screen.queryByTestId("jaw-zone-guidance")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByTestId("jaw-exact-frame-signal"));
+  act(() => vi.advanceTimersByTime(721));
+
+  expect(screen.getByTestId("jaw-zone-guidance")).toHaveTextContent(
+    "Vyberte zvýraznenú oblasť",
+  );
+  expect(screen.queryByText("Zóny bolesti", { selector: "div" })).not.toBeInTheDocument();
+});
+
 test("uses contained rounded scene and gradient dissolve into next section", () => {
+  expect(cssText).toMatch(/\.section[\s\S]*height:\s*990vh;[\s\S]*height:\s*990dvh;/);
   expect(cssText).toMatch(/\.jawViewport[\s\S]*border-radius:\s*clamp\(/);
-  expect(cssText).toMatch(/\.jawViewport[\s\S]*width:\s*min\(/);
-  expect(cssText).toMatch(/\.exitGradient[\s\S]*linear-gradient/);
+  expect(cssText).toMatch(/\.jawViewport[\s\S]*width:\s*min\(calc\(100% - clamp\(2rem,\s*6vw,\s*6rem\)\),\s*1440px\)/);
+  expect(cssText).toMatch(/\.exitGradient[\s\S]*opacity:\s*var\(--exit\)[\s\S]*linear-gradient/);
+  expect(cssText).toMatch(/@media \(max-width:\s*767px\)[\s\S]*\.section[\s\S]*height:\s*710vh;[\s\S]*height:\s*710dvh;/);
   expect(cssText).toMatch(/@keyframes\s+jaw-loading-spin/);
   expect(cssText).toMatch(/\.jawMedia\s*\{[^}]*inset:\s*0\.1px;/);
 });
@@ -171,12 +194,9 @@ test("renders static open map and six routes for reduced motion", () => {
     "src",
     "/media/jaw-sequence/desktop/frame-072.webp",
   );
-  expect(screen.getByRole("heading", { name: "Kde vás to trápi?" })).toBeVisible();
-  expect(
-    screen.getAllByRole("link", {
-      name: /Chýba mi zub|Neviem \/ bolí to celé/,
-    }),
-  ).toHaveLength(2);
+  expect(screen.getByTestId("jaw-zone-guidance")).toHaveTextContent("Vyberte zvýraznenú oblasť");
+  expect(screen.getByText(JAW_DISCLAIMER)).toBeVisible();
+  expect(screen.getAllByTestId("jaw-reduced-route")).toHaveLength(JAW_ZONES.length);
   expect(screen.getAllByRole("button", {
     name: /Predné zuby|Črenové zuby|Stoličky|Ďasná/,
   })).toHaveLength(7);
@@ -191,5 +211,5 @@ test("keeps gallery geometry when sequence reports permanent failure", () => {
   fireEvent(window, new Event("jaw-sequence-permanent-failure"));
   expect(screen.getAllByTestId("clinic-frame")).toHaveLength(photoFrames.length);
   expect(screen.getByTestId("clinic-handoff")).toHaveAttribute("data-frame-id", "detail");
-  expect(section).toHaveAttribute("data-desktop-vh", "1030");
+  expect(section).toHaveAttribute("data-desktop-vh", "990");
 });

@@ -18,8 +18,8 @@
   --handoff-blur: 0;
 
   position: relative;
-  height: 1030vh;
-  height: 1030dvh;
+  height: 990vh;
+  height: 990dvh;
   background: var(--ink);
 }
 
@@ -176,7 +176,8 @@
   overflow: hidden;
   top: 50%;
   left: 50%;
-  width: min(calc(100% - clamp(2rem, 7vw, 7rem)), 1440px, calc(82dvh * 16 / 9));
+  width: min(calc(100% - clamp(2rem, 6vw, 6rem)), 1440px);
+  max-height: 94dvh;
   border: 1px solid rgb(230 204 157 / 34%);
   border-radius: clamp(18px, 2.2vw, 32px);
   aspect-ratio: 16 / 9;
@@ -237,15 +238,19 @@
 .exitGradient {
   position: absolute;
   z-index: 12;
+  opacity: var(--exit);
   background: linear-gradient(
     180deg,
     rgb(237 234 228 / 0%) 0%,
     rgb(237 234 228 / 18%) 34%,
     #edeae4 100%
   );
-  opacity: var(--exit);
   pointer-events: none;
   inset: 0;
+}
+
+.reducedNavigation {
+  display: none;
 }
 
 @keyframes jaw-loading-spin {
@@ -284,8 +289,8 @@
 
 @media (max-width: 767px) {
   .section {
-    height: 780vh;
-    height: 780dvh;
+    height: 710vh;
+    height: 710dvh;
   }
 
   .galleryLayer {
@@ -332,7 +337,8 @@
   }
 
   .jawViewport {
-    width: min(calc(100% - 1rem), calc(92dvh * 9 / 16));
+    width: calc(100% - 1rem);
+    max-height: 94dvh;
     border-radius: clamp(16px, 5vw, 26px);
     aspect-ratio: 9 / 16;
   }
@@ -342,22 +348,6 @@
     white-space: nowrap;
   }
 
-  /*
-   * The sequence overlay is deliberately 16:9 even on a portrait viewport.
-   * Give its heading a constrained full-width lane, rather than letting the
-   * absolute shrink-to-fit box force three short lines into the prompt below.
-   */
-  .jawLayer h2 {
-    top: 1.25rem;
-    width: calc(100% - 2rem);
-    max-width: 25rem;
-    font-size: clamp(1.75rem, 8.6vw, 2.4rem);
-    line-height: 1.05;
-  }
-
-  .jawLayer h2 + p {
-    top: clamp(7.35rem, 16vh, 8.75rem);
-  }
 }
 
 .reduced {
@@ -393,13 +383,55 @@
 
 .reduced .jawLayer {
   position: relative;
-  height: min(82dvh, 820px);
+  display: grid;
+  height: auto;
+  min-height: min(82dvh, 820px);
+  padding: clamp(1rem, 4vw, 3rem) 0;
   opacity: 1;
+  gap: 1.25rem;
 }
 
 .reduced .jawViewport {
+  position: relative;
+  top: auto;
+  left: auto;
   width: min(calc(100% - 2rem), 1200px, calc(72dvh * 16 / 9));
-  transform: translate(-50%, -50%);
+  margin: 0 auto;
+  transform: none;
+}
+
+.reducedNavigation {
+  width: min(calc(100% - 2rem), 1200px);
+  margin: 0 auto;
+  padding: 1rem;
+  border: 1px solid rgb(230 204 157 / 25%);
+  border-radius: 1rem;
+  color: var(--porcelain);
+}
+
+.reducedNavigation p {
+  margin: 0;
+  color: rgb(255 250 244 / 70%);
+}
+
+.reducedNavigation ul {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 1rem 0 0;
+  padding: 0;
+  gap: 0.5rem;
+  list-style: none;
+}
+
+.reducedNavigation a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid rgb(230 204 157 / 35%);
+  border-radius: 999px;
+  color: var(--porcelain);
+  text-decoration: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

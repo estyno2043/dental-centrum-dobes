@@ -308,6 +308,7 @@ export function ClinicStory(): JSX.Element {
       data-desktop-vh={DESKTOP_STORY_SCROLL_VH}
       data-mobile-vh={MOBILE_STORY_SCROLL_VH}
       data-testid="clinic-story"
+      id="ambulancia"
       ref={sectionRef}
       aria-labelledby="clinic-story-heading"
       style={{ pointerEvents: "auto" }}
@@ -393,6 +394,20 @@ export function ClinicStory(): JSX.Element {
                 <span aria-hidden="true" className={styles.loadingRing} data-testid="jaw-loading-ring" />
                 <span>Zóny bolesti</span>
               </div>
+            ) : null}
+            {prefersReducedMotion ? (
+              <nav aria-label="Zóny bolesti" className={styles.reducedNavigation}>
+                <p>{JAW_DISCLAIMER}</p>
+                <ul>
+                  {JAW_ZONES.map((zone) => (
+                    <li key={zone.id}>
+                      <a data-testid="jaw-reduced-route" href={zone.route}>
+                        {zone.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
             ) : null}
           </div>
         ) : null}
