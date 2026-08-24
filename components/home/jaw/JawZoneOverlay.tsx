@@ -12,6 +12,7 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from "react";
 
+import { useMediaQuery } from "../../hero/useMediaQuery";
 import { emitJawAnalytics } from "./jawAnalytics";
 import {
   JAW_ZONES,
@@ -50,7 +51,6 @@ type ZoneLabel = Readonly<{
 type OverlayState = Readonly<{
   openZone: InteractiveZoneId | null;
   pinned: boolean;
-  mode: "desktop" | "mobile";
 }>;
 
 export type JawMapPresentation = "hidden" | "tease" | "reveal" | "interactive";
@@ -161,12 +161,6 @@ const DIRECT_ZONES = JAW_ZONES.filter(
   (zone) => zone.id === "missing" || zone.id === "unsure",
 );
 
-function getMode(): OverlayState["mode"] {
-  return typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches
-    ? "mobile"
-    : "desktop";
-}
-
 function zoneHref(zone: JawZone, problemId: string): string {
   const problem = zone.problems.find((candidate) => candidate.id === problemId);
   return problem ? `${zone.route}?problem=${encodeURIComponent(problem.id)}` : zone.route;
@@ -191,10 +185,11 @@ export function JawZoneOverlay({
   const triggerRefs = useRef<Partial<Record<JawSurfaceId, SVGPathElement>>>({});
   const activeSurfaceRef = useRef<JawSurfaceId | null>(null);
   const skipRestoredFocusRef = useRef(false);
+  const isMobileViewport = useMediaQuery("(max-width: 767px)", false);
+  const mode = isMobileViewport ? "mobile" : "desktop";
   const [state, setState] = useState<OverlayState>(() => ({
     openZone: null,
     pinned: false,
-    mode: getMode(),
   }));
 
   const effectivePresentation: JawMapPresentation = reducedMotion
@@ -237,11 +232,10 @@ export function JawZoneOverlay({
 
   useEffect(() => {
     const media = window.matchMedia("(max-width: 767px)");
-    const onChange = (event: MediaQueryListEvent) => {
-      const nextMode: OverlayState["mode"] = event.matches ? "mobile" : "desktop";
+    const onChange = () => {
       const focusedInside = rootRef.current?.contains(document.activeElement) ?? false;
       activeSurfaceRef.current = null;
-      setState((current) => ({ ...current, mode: nextMode, openZone: null, pinned: false }));
+      setState((current) => ({ ...current, openZone: null, pinned: false }));
       if (focusedInside) rootRef.current?.focus();
     };
     media.addEventListener("change", onChange);
@@ -413,12 +407,12 @@ export function JawZoneOverlay({
       {enabled ? (
         <aside
           aria-label={activeZone?.label ?? "Výber zóny bolesti"}
-          className={classNames(styles.guidanceRail, state.mode === "mobile" && styles.zonePanel)}
-          data-problem-panel={state.mode}
+          className={classNames(styles.guidanceRail, mode === "mobile" && styles.zonePanel)}
+          data-problem-panel={mode}
           data-testid={activeZone ? "jaw-problem-panel" : "jaw-zone-guidance"}
           onPointerEnter={() => undefined}
           onPointerLeave={closeUnpinned}
-          role={state.mode === "mobile" && activeZone ? "dialog" : "region"}
+          role={mode === "mobile" && activeZone ? "dialog" : "region"}
         >
           {activeZone ? (
             <>
@@ -427,7 +421,7 @@ export function JawZoneOverlay({
                   <p className={styles.cardKicker}>Vyberte problém</p>
                   <h2>{activeZone.label}</h2>
                 </div>
-                {state.mode === "mobile" ? (
+                {mode === "mobile" ? (
                   <button className={styles.closeButton} onClick={() => close(true)} type="button">
                     Zavrieť
                   </button>

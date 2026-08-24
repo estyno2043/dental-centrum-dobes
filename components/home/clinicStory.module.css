@@ -343,6 +343,11 @@
     aspect-ratio: 9 / 16;
   }
 
+  .jawMedia {
+    transform: scale(1.7);
+    transform-origin: center 43%;
+  }
+
   .jawCue {
     top: 50%;
     white-space: nowrap;

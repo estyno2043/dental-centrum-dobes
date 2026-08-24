@@ -33,6 +33,7 @@ vi.mock("./jaw/JawFrameSequence", () => ({
 }));
 
 const cssText = readFileSync("components/home/clinicStory.module.css", "utf8");
+const jawCssText = readFileSync("components/home/jaw/jawExperience.module.css", "utf8");
 
 afterEach(() => {
   vi.useRealTimers();
@@ -184,6 +185,12 @@ test("uses contained rounded scene and gradient dissolve into next section", () 
   expect(cssText).toMatch(/@media \(max-width:\s*767px\)[\s\S]*\.section[\s\S]*height:\s*710vh;[\s\S]*height:\s*710dvh;/);
   expect(cssText).toMatch(/@keyframes\s+jaw-loading-spin/);
   expect(cssText).toMatch(/\.jawMedia\s*\{[^}]*inset:\s*0\.1px;/);
+  expect(cssText).toMatch(
+    /@media \(max-width:\s*767px\)[\s\S]*\.jawMedia[\s\S]*transform:\s*scale\(1\.7\)/,
+  );
+  expect(jawCssText).toMatch(
+    /@media \(max-width:\s*767px\)[\s\S]*\.zoneArtboard[\s\S]*width:\s*min\(153vw,/,
+  );
 });
 
 test("renders static open map and six routes for reduced motion", () => {
