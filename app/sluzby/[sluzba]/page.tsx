@@ -16,7 +16,8 @@ import {
 } from "@/components/services/servicesContent";
 import {
   BACKDROP_ATTRIBUTE,
-  SERVICE_PHOTO,
+  BACKDROP_FILTER,
+  BACKDROP_SCRIM,
 } from "@/components/services/serviceTransition";
 import styles from "./service.module.css";
 
@@ -96,15 +97,6 @@ export default async function ServicePage({
         <div
           aria-hidden="true"
           className={styles.backdrop}
-          /*
-           * Inline, not in the stylesheet. CSS Modules scopes the *value* of
-           * `view-transition-name` the same way it scopes class names, so the
-           * module turned "service-photo" into a hashed name — and the card,
-           * which sets the plain name from script, would never have matched it.
-           * Two ends of a morph that cannot find each other simply do not
-           * animate, and nothing reports it.
-           */
-          style={{ viewTransitionName: SERVICE_PHOTO }}
           {...{ [BACKDROP_ATTRIBUTE]: "" }}
         >
           {service.image ? (
@@ -113,9 +105,17 @@ export default async function ServicePage({
               alt=""
               className={styles.backdropPhoto}
               src={`/media/sluzby/${service.image}.webp`}
+              /*
+               * The look lives in `serviceTransition.ts` and is applied from
+               * there, not from the stylesheet. The clone that flies out of the
+               * catalogue card animates towards these exact values — two copies
+               * of them would drift the first time either was touched, and the
+               * symptom is an unexplainable flicker as the animation lands.
+               */
+              style={{ filter: BACKDROP_FILTER }}
             />
           ) : null}
-          <span className={styles.scrim} />
+          <span className={styles.scrim} style={{ background: BACKDROP_SCRIM }} />
         </div>
 
         <header className={styles.intro}>

@@ -5,79 +5,36 @@ import { useCallback, type MouseEvent } from "react";
 
 import {
   BACKDROP_ATTRIBUTE,
+  BACKDROP_FILTER,
+  BACKDROP_SCRIM,
   CARD_PHOTO_ATTRIBUTE,
-  SERVICE_PHOTO,
+  MORPH_EASING,
+  MORPH_MS,
 } from "./serviceTransition";
-
-type ViewTransitionDocument = Document & {
-  startViewTransition?: (callback: () => void | Promise<void>) => {
-    finished: Promise<void>;
-  };
-};
-
-/**
- * Waits for the incoming page's backdrop to exist.
- *
- * `router.push` resolves before React has necessarily committed the new tree,
- * and a view transition captures the "after" state the moment its callback
- * settles — settle too early and it snapshots the old page twice, which shows
- * as no transition at all. Polling for the element the new page is known to
- * render is cruder than an official hook and it is honest about what it is
- * waiting for.
- *
- * The timeout matters as much as the wait: if the navigation fails or the page
- * has no backdrop, the transition must still finish rather than hold the whole
- * document frozen behind a pending snapshot.
- */
-function waitForBackdrop(timeout = 1200): Promise<void> {
-  const selector = `[${BACKDROP_ATTRIBUTE}]`;
-
-  return new Promise((resolve) => {
-    if (document.querySelector(selector)) {
-      resolve();
-      return;
-    }
-
-    /*
-     * A MutationObserver, deliberately not `requestAnimationFrame`.
-     *
-     * A view transition suppresses rendering while its callback runs, and a
-     * poll built on animation frames can therefore sit there never being
-     * called — so the wait times out, the second snapshot is taken of the old
-     * page, and the morph does not happen. Nothing reports any of that. An
-     * observer is driven by the DOM change itself and does not care whether
-     * anything is being painted.
-     */
-    const settle = () => {
-      observer.disconnect();
-      clearTimeout(timer);
-      resolve();
-    };
-
-    const observer = new MutationObserver(() => {
-      if (document.querySelector(selector)) settle();
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-
-    // If the navigation fails or the destination has no backdrop, the
-    // transition still has to finish rather than hold the document frozen.
-    const timer = setTimeout(settle, timeout);
-  });
-}
 
 /**
  * Opens a service page by growing its photograph out of the card that was
- * clicked and into the page's own background.
+ * clicked until it fills the screen, landing exactly on the background the
+ * new page renders.
  *
- * Returns a click handler; where the API or the appetite for motion is
- * missing it does nothing and the `Link` it sits on navigates normally.
+ * This was built on the View Transitions API first and that was a mistake. The
+ * API skips itself whenever the document is not visible, needs the router's
+ * DOM commit to land inside a callback that suppresses rendering, and reports
+ * none of its own failures — three ways to end up with no animation and
+ * nothing to read. What replaces it is a plain flying clone: an image
+ * positioned over the card, animated to fill the viewport, removed once the
+ * real page is behind it. It works in every browser, it does not care what the
+ * router is doing, and every step of it can be measured.
+ *
+ * `prefers-reduced-motion` still turns it off — then the `Link` simply
+ * navigates.
  */
 export function useServiceTransition() {
   const router = useRouter();
 
   return useCallback(
     (event: MouseEvent<HTMLAnchorElement>, href: string) => {
-      // Let the browser have modified clicks: new tab, new window, download.
+      // Leave modified clicks alone: new tab, new window, download.
       if (
         event.defaultPrevented ||
         event.metaKey ||
@@ -89,49 +46,142 @@ export function useServiceTransition() {
         return;
       }
 
-      const doc = document as ViewTransitionDocument;
-      const reduced = globalThis.matchMedia?.(
-        "(prefers-reduced-motion: reduce)",
-      ).matches;
-      if (!doc.startViewTransition || reduced) return;
+      if (globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+        return;
+      }
 
-      const photo = event.currentTarget.querySelector<HTMLElement>(
+      const frame = event.currentTarget.querySelector<HTMLElement>(
         `[${CARD_PHOTO_ATTRIBUTE}]`,
       );
-      if (!photo) return;
+      const source = frame?.querySelector("img");
+      if (!frame || !source) return;
 
       event.preventDefault();
 
-      // The name is put on at the last moment and taken off again after: two
-      // elements sharing one `view-transition-name` is invalid, and every card
-      // on this page holds a candidate.
-      photo.style.viewTransitionName = SERVICE_PHOTO;
+      const from = frame.getBoundingClientRect();
 
-      const transition = doc.startViewTransition(async () => {
-        router.push(href);
-        await waitForBackdrop();
+      /*
+       * The rounding comes off the card, not off the frame. The frame is the
+       * image's container, inset to nothing inside the link and clipped by it,
+       * so it has the right rectangle but no corners of its own — reading them
+       * there starts the morph square when the card on screen is not.
+       */
+      const radius = getComputedStyle(event.currentTarget).borderRadius;
 
-        /*
-         * Cleared here, inside the callback, and not afterwards.
-         *
-         * The router keeps the outgoing page mounted while the incoming one
-         * renders, so for a moment the card and the new page's backdrop both
-         * carry this name — and two elements sharing one
-         * `view-transition-name` when the second snapshot is taken aborts the
-         * whole transition with "invalid state". The first snapshot was
-         * already captured before this callback ran, so the card keeps its
-         * name exactly as long as it needs it.
-         */
-        photo.style.viewTransitionName = "";
+      /*
+       * The picture itself. `left/top/width/height` are animated rather than a
+       * transform: the image is `object-fit: cover` at both ends and the two
+       * ends are different shapes, so scaling it would squash the crop on the
+       * way. Animating the box keeps the crop honest at every frame, and one
+       * element for half a second can afford the layout.
+       */
+      const flying = document.createElement("img");
+      flying.src = source.currentSrc || source.src;
+      flying.alt = "";
+      flying.setAttribute("aria-hidden", "true");
+      flying.style.cssText = [
+        "position:fixed",
+        "z-index:9999",
+        "margin:0",
+        "object-fit:cover",
+        "pointer-events:none",
+      ].join(";");
+
+      /* The porcelain the destination lays over its photograph, arriving with
+         it so the landing is not a step change in brightness. */
+      const veil = document.createElement("div");
+      veil.setAttribute("aria-hidden", "true");
+      veil.style.cssText = [
+        "position:fixed",
+        "inset:0",
+        "z-index:9999",
+        "pointer-events:none",
+        `background:${BACKDROP_SCRIM}`,
+      ].join(";");
+
+      document.body.append(flying, veil);
+
+      const timing: KeyframeAnimationOptions = {
+        duration: MORPH_MS,
+        easing: MORPH_EASING,
+        fill: "both",
+      };
+
+      const morph = flying.animate(
+        [
+          {
+            left: `${from.left}px`,
+            top: `${from.top}px`,
+            width: `${from.width}px`,
+            height: `${from.height}px`,
+            borderRadius: radius,
+            filter: "blur(0px) saturate(1) brightness(1) contrast(1)",
+          },
+          {
+            left: "0px",
+            top: "0px",
+            width: "100vw",
+            height: "100vh",
+            borderRadius: "0px",
+            filter: BACKDROP_FILTER,
+          },
+        ],
+        timing,
+      );
+
+      const fade = veil.animate([{ opacity: 0 }, { opacity: 1 }], timing);
+
+      /*
+       * The clone comes away only when the real backdrop is behind it. Taking
+       * it off on the animation's own schedule shows whatever the router has
+       * managed so far, which on a slow load is the old page.
+       */
+      const landed = new Promise<void>((resolve) => {
+        const selector = `[${BACKDROP_ATTRIBUTE}]`;
+        if (document.querySelector(selector)) {
+          resolve();
+          return;
+        }
+        const settle = () => {
+          observer.disconnect();
+          clearTimeout(timer);
+          resolve();
+        };
+        const observer = new MutationObserver(() => {
+          if (document.querySelector(selector)) settle();
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+        // However the navigation goes, the clone must not be left on screen.
+        const timer = setTimeout(settle, 2000);
       });
 
-      // A net for the cases the callback never reaches: a failed navigation,
-      // a transition skipped by another starting on top of it.
-      transition.finished
-        .catch(() => undefined)
-        .finally(() => {
-          photo.style.viewTransitionName = "";
-        });
+      router.push(href);
+
+      /*
+       * Idempotent, and called from two places.
+       *
+       * Normally the clone comes away once the animation has run and the real
+       * backdrop is behind it. But a clone is an opaque thing covering the
+       * whole screen, and every reason it might never be told to leave —
+       * a paused document clock, a rejected navigation, an animation the
+       * browser declines to run — ends with the page unusable behind it. So
+       * there is also a timer, and it does not ask anyone's permission.
+       */
+      let cleared = false;
+      const cleanup = () => {
+        if (cleared) return;
+        cleared = true;
+        flying.remove();
+        veil.remove();
+      };
+
+      Promise.all([
+        morph.finished.catch(() => undefined),
+        fade.finished.catch(() => undefined),
+        landed,
+      ]).then(cleanup);
+
+      setTimeout(cleanup, MORPH_MS + 1400);
     },
     [router],
   );

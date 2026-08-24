@@ -1,24 +1,38 @@
 /**
- * Names shared by the two ends of the service photograph's morph.
+ * The shared shape of the service photograph's morph.
  *
- * Deliberately in a module of their own, with no `"use client"` on it. These
- * are imported by both the client hook that starts the transition and the
- * server component that renders its destination, and a constant exported from
- * a client module reaches the server as a client *reference* rather than as
- * its value — which spreads into the DOM as an attribute named after the
- * proxy's error message.
+ * Deliberately in a module with no `"use client"` on it: these are imported by
+ * both the client hook that runs the animation and the server component that
+ * renders its destination, and a value exported from a client module reaches
+ * the server as a client *reference* rather than as itself.
+ *
+ * The look of the destination backdrop lives here, not in the stylesheet, and
+ * is applied inline by the page. That is what lets the flying clone land
+ * *exactly* on the real thing: two copies of the same filter, one in CSS and
+ * one in script, drift apart the first time either is touched, and the symptom
+ * is a flicker at the end of the animation that nobody can explain.
  */
 
-/** The `view-transition-name` both ends carry. Only one element may hold it. */
-export const SERVICE_PHOTO = "service-photo";
+/** The card marks the box the morph starts from — the frame, not the picture. */
+export const CARD_PHOTO_ATTRIBUTE = "data-service-photo";
 
-/** The incoming page marks its backdrop with this, so the hook knows it landed. */
+/** The incoming page marks its backdrop, so the hook knows when it has landed. */
 export const BACKDROP_ATTRIBUTE = "data-service-backdrop";
 
-/**
- * The catalogue card marks the element the morph starts from — the frame, not
- * the picture inside it. The frame is what the reader sees: the image is
- * taller than its box and clipped, so a snapshot of the image would begin the
- * morph from a rectangle that was never on screen.
- */
-export const CARD_PHOTO_ATTRIBUTE = "data-service-photo";
+/** How long the photograph takes to grow into the page. */
+export const MORPH_MS = 560;
+
+/** The site's easing. */
+export const MORPH_EASING = "cubic-bezier(0.22, 1, 0.36, 1)";
+
+/** What the photograph looks like once it is the page's background. */
+export const BACKDROP_FILTER =
+  "blur(9px) saturate(0.42) brightness(1.28) contrast(0.82)";
+
+/** And the porcelain laid over it, so ink reads on any photograph. */
+export const BACKDROP_SCRIM =
+  "linear-gradient(to bottom, " +
+  "rgb(250 249 246 / 92%) 0%, " +
+  "rgb(250 249 246 / 82%) 30%, " +
+  "rgb(250 249 246 / 84%) 66%, " +
+  "rgb(250 249 246 / 94%) 100%)";
