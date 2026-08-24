@@ -14,3 +14,11 @@ export const SERVICE_PHOTO = "service-photo";
 
 /** The incoming page marks its backdrop with this, so the hook knows it landed. */
 export const BACKDROP_ATTRIBUTE = "data-service-backdrop";
+
+/**
+ * The catalogue card marks the element the morph starts from — the frame, not
+ * the picture inside it. The frame is what the reader sees: the image is
+ * taller than its box and clipped, so a snapshot of the image would begin the
+ * morph from a rectangle that was never on screen.
+ */
+export const CARD_PHOTO_ATTRIBUTE = "data-service-photo";

@@ -3,7 +3,11 @@
 import { useRouter } from "next/navigation";
 import { useCallback, type MouseEvent } from "react";
 
-import { BACKDROP_ATTRIBUTE, SERVICE_PHOTO } from "./serviceTransition";
+import {
+  BACKDROP_ATTRIBUTE,
+  CARD_PHOTO_ATTRIBUTE,
+  SERVICE_PHOTO,
+} from "./serviceTransition";
 
 type ViewTransitionDocument = Document & {
   startViewTransition?: (callback: () => void | Promise<void>) => {
@@ -25,20 +29,39 @@ type ViewTransitionDocument = Document & {
  * has no backdrop, the transition must still finish rather than hold the whole
  * document frozen behind a pending snapshot.
  */
-function waitForBackdrop(timeout = 900): Promise<void> {
+function waitForBackdrop(timeout = 1200): Promise<void> {
+  const selector = `[${BACKDROP_ATTRIBUTE}]`;
+
   return new Promise((resolve) => {
-    const started = performance.now();
-    const look = () => {
-      if (
-        document.querySelector(`[${BACKDROP_ATTRIBUTE}]`) ||
-        performance.now() - started > timeout
-      ) {
-        resolve();
-        return;
-      }
-      requestAnimationFrame(look);
+    if (document.querySelector(selector)) {
+      resolve();
+      return;
+    }
+
+    /*
+     * A MutationObserver, deliberately not `requestAnimationFrame`.
+     *
+     * A view transition suppresses rendering while its callback runs, and a
+     * poll built on animation frames can therefore sit there never being
+     * called — so the wait times out, the second snapshot is taken of the old
+     * page, and the morph does not happen. Nothing reports any of that. An
+     * observer is driven by the DOM change itself and does not care whether
+     * anything is being painted.
+     */
+    const settle = () => {
+      observer.disconnect();
+      clearTimeout(timer);
+      resolve();
     };
-    look();
+
+    const observer = new MutationObserver(() => {
+      if (document.querySelector(selector)) settle();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // If the navigation fails or the destination has no backdrop, the
+    // transition still has to finish rather than hold the document frozen.
+    const timer = setTimeout(settle, timeout);
   });
 }
 
@@ -72,7 +95,9 @@ export function useServiceTransition() {
       ).matches;
       if (!doc.startViewTransition || reduced) return;
 
-      const photo = event.currentTarget.querySelector("img");
+      const photo = event.currentTarget.querySelector<HTMLElement>(
+        `[${CARD_PHOTO_ATTRIBUTE}]`,
+      );
       if (!photo) return;
 
       event.preventDefault();

@@ -96,7 +96,8 @@ export function ServicesSection(): JSX.Element {
               href={`/sluzby/${service.slug}`}
               onClick={(event) => openService(event, `/sluzby/${service.slug}`)}
             >
-              <span className={styles.frame}>
+              {/* The morph starts from this box — see `serviceTransition.ts`. */}
+              <span className={styles.frame} data-service-photo>
                 {/* eslint-disable-next-line @next/next/no-img-element -- Pre-cropped 4:5 clinic asset; the image service adds nothing here. */}
                 <img
                   alt=""
