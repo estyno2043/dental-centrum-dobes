@@ -5,15 +5,23 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Desktop hover menu published to `main` — no active task
-- Owner: —
-- Branch: —
-- Task: none in progress. See the dated log entry below for the desktop hover
-  menu's final state.
+- Status: Flagship completion written design complete — pending user review
+- Owner: Codex
+- Branch: `codex/flagship-completion-design`
+- Task: Review one coordinated release made of two isolated workstreams:
+  Codex owns the patient-problem engine and jaw-map refinement; Claude owns the
+  team, trust, contact, price, navigation, closing CTA, and footer shell. The
+  design is at
+  `docs/superpowers/specs/2026-08-24-flagship-completion-release-design.md`.
+  No production implementation starts until the user reviews this written
+  version and separate task-level plans are prepared.
 
 ## File Reservations
 
-- No active write reservations.
+- Codex reserves only `COLLAB.md` and
+  `docs/superpowers/specs/2026-08-24-flagship-completion-release-design.md`
+  for the current design pass. No application or media file is reserved or
+  changed during planning.
 
 - The desktop hover menu released all of its files. `components/hero/DesktopMenu.tsx`,
   `DesktopMenu.test.tsx`, `SiteHeader.tsx`, `heroContent.ts`, and
@@ -621,6 +629,18 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   next person to touch this should confirm the live deployment matches
   `fc11801` and share the URL here, per the shared workflow's requirement
   that both developers and the user inspect the same live version.
+
+- 2026-08-24 — User approved Flagship completion direction A. Codex fetched
+  current GitHub state: `origin/main` remains `4e4185e`, no pull request is
+  open, and `origin/claude/tim-page` advanced to `23b73d2`. Review confirmed
+  that the Claude branch now contains clinic-supplied roles plus another jaw
+  rewrite; it must not be merged wholesale. Written design splits delivery
+  into non-overlapping Codex patient-problem and Claude trust/conversion
+  branches, followed by one Codex integration branch and localhost approval.
+  The spec locks real routes, one confirmed 100 € price, form/privacy
+  boundaries, jaw composition, team recovery commits, file ownership,
+  verification, and publication order. Baseline on current `origin/main` is
+  135 tests passing. No application or media file changed.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
