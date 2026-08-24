@@ -5,19 +5,17 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Desktop hover menu published to `main` — no active task
-- Owner: —
-- Branch: —
-- Task: none in progress. See the dated log entry below for the desktop hover
-  menu's final state.
+- Status: Trust and conversion shell built; awaiting localhost approval
+- Owner: Claude
+- Branch: `claude/trust-conversion-shell`
+- Base: `4e4185e` (`origin/main`)
+- Task: finish `/tim`, add a homepage team preview, build `/kontakt` and
+  `/cennik`, add the closing conversion block and the site footer, and point
+  every navigation destination at a real route.
 
 ## File Reservations
 
-- No active write reservations.
-
-- The desktop hover menu released all of its files. `components/hero/DesktopMenu.tsx`,
-  `DesktopMenu.test.tsx`, `SiteHeader.tsx`, `heroContent.ts`, and
-  `hero.module.css` are merged and published; nothing remains reserved.
+- No active write reservations. The work below is committed and released.
 
 - The prior jaw-map refinement released all of its files; the user approved it
   on localhost and it is published to `main`.
@@ -621,6 +619,98 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   next person to touch this should confirm the live deployment matches
   `fc11801` and share the URL here, per the shared workflow's requirement
   that both developers and the user inspect the same live version.
+
+- 2026-08-19 — Claude built the trust and conversion shell on
+  `claude/trust-conversion-shell`, branched from `origin/main` at `4e4185e`.
+
+  **Team work transferred selectively.** `claude/tim-page` carries the team
+  page but also jaw changes the user did not want. Rather than merge it, the
+  final team state was taken file by file from `2877914` with
+  `git checkout 2877914 -- components/team app/tim public/media/tim`, which
+  preserves the exact bytes those four team commits produced. `d272063` and
+  `709c91b` were excluded, and nothing under `components/home/jaw/`,
+  `ClinicStory*` or `jawExperience.module.css` was touched — verified by
+  grepping the staged file list against those paths.
+
+  `teamContent.ts` came across unchanged, including its rule that a role is
+  rendered only where the clinic states one. Seven of the eleven still have
+  none, and the homepage preview shows no role at all.
+
+  **New.** `components/site/siteContent.ts` is now the one source for
+  navigation and for the facts the clinic has confirmed; both menus, the
+  footer and `/kontakt` read from it. `Footer` and `PageShell` are plain
+  server components. `TeamPreview` (four faces, CTA to `/tim`),
+  `ConversionBlock` and `ContactForm` are client components only because they
+  need motion or form state.
+
+  **Navigation.** Every destination is real: logo and footer logo to `/`,
+  Problémy a riešenia to `/problemy`, Cenník to `/cennik`, Tím to `/tim`,
+  Ambulancia and the tour button to `/#ambulancia`, Kontakt to `/kontakt`.
+  `navigationItems` lost "Služby" and gained "Problémy a riešenia" and
+  "Ambulancia". No user-facing `href="#"` remains, and a test asserts it.
+  `components/hero/navigation.test.tsx` compares what the two menus actually
+  render, so a destination cannot go stale in one of them.
+
+  **Two files outside the given ownership list were touched, both minimally
+  and deliberately.** `components/home/ExperienceBand.tsx` gained one
+  attribute, `id="ambulancia"` — the "Ambulancia" eyebrow belongs to
+  `ClinicStory`, which this task may not modify, so the anchor sits on the
+  statement immediately before it. `app/page.test.tsx` gained an
+  `IntersectionObserver` stub, without which the new `whileInView` sections
+  crash the existing homepage tests.
+
+  **A bug found and fixed during the browser pass.** Motion renders the hidden
+  half of a `whileInView` variant server-side, so `TeamPreview` and
+  `ConversionBlock` shipped `style="opacity:0"` in the static HTML — without
+  JavaScript both sections would have been invisible. Each now carries a
+  scoped `<noscript>` style overriding it, confirmed present in the built
+  HTML. The team grid solves the same problem by defaulting to its settled
+  state in CSS; a reveal driven by inline styles cannot, so it overrides
+  instead.
+
+  `/kontakt` needs no hidden detection form in `app/layout.tsx`: it is
+  statically prerendered, so its markup reaches Netlify's build-time scanner
+  directly — verified by grepping `data-netlify="true"` and `name="kontakt"`
+  out of `.next/server/app/kontakt.html`. The jaw form still needs its
+  stand-in because its route is server-rendered on demand.
+
+  Verified: 164 tests across 25 files, lint, TypeScript, production build,
+  `git diff --check`, and a credential scan of every changed file, all clean.
+  Measured at 1440x900 — no horizontal overflow, the preview grid resolves to
+  four equal 269.5px columns, the footer to 685.99/490 — and at 390x844 — no
+  overflow, two 166px columns, single-column footer, full-width CTA. Mobile
+  menu opens and its five destinations match the desktop menu exactly. No
+  console errors.
+
+  One thing could not be confirmed visually: the Browser pane ran at
+  `document.visibilityState: "hidden"` for most of the pass, which halts
+  `requestAnimationFrame` and therefore both motion's reveal and CSS
+  transitions. `/kontakt` and `/cennik` were seen rendering correctly while
+  the pane was briefly fronted; the homepage's team preview and conversion
+  block were verified by measurement with the settled state forced, not by
+  eye. Worth one look in a normal browser tab.
+
+  **Blockers, all content or legal, none of them code.**
+  1. `/problemy` has no index route. Two links point at it — the footer and
+     the conversion block's secondary CTA — because that is the agreed
+     destination, but `app/problemy/**` was out of scope for this task, so the
+     route must be created by whoever owns it or both links 404.
+  2. No privacy notice exists, so the consent checkbox on both forms links to
+     nothing. Informed consent under GDPR needs a notice naming the operator,
+     the purpose and the retention period. The jaw form has carried this gap
+     since it was built; `/kontakt` now shares it deliberately, with identical
+     wording, so both can be corrected in one pass.
+  3. No operator identification anywhere: obchodné meno, sídlo, IČO, DIČ. The
+     footer has no legal row at all rather than a placeholder one.
+  4. The clinic's address, e-mail and opening hours are still unconfirmed and
+     appear nowhere. `/kontakt` states only free parking, card and cash, and
+     priority for acute patients. Tests assert their absence so nobody adds a
+     plausible guess later.
+  5. Seven of the eleven team members still have no stated role.
+  6. `/cennik` publishes one figure, the 100 EUR entry examination. A test
+     fails if any other amount reaches the page.
+
+  Nothing pushed. `main` untouched, no pull request opened.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,

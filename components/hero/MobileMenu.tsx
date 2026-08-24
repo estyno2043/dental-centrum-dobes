@@ -1,7 +1,5 @@
 "use client";
 
-/* eslint-disable jsx-a11y/anchor-is-valid -- Destinations stay as approved placeholders until their sections exist. */
-
 import * as Dialog from "@radix-ui/react-dialog";
 import {
   IconDental,
@@ -9,8 +7,9 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import Link from "next/link";
 import { useState, type JSX } from "react";
-import { navigationItems } from "./heroContent";
+import { navigationItems } from "@/components/site/siteContent";
 import styles from "./hero.module.css";
 
 const premiumEase = [0.22, 1, 0.36, 1] as const;
@@ -110,7 +109,7 @@ export function MobileMenu(): JSX.Element {
                   >
                     {navigationItems.map((item, index) => (
                       <motion.div
-                        key={item.label}
+                        key={item.href}
                         variants={{
                           hidden: {
                             opacity: 0,
@@ -125,12 +124,12 @@ export function MobileMenu(): JSX.Element {
                         }}
                       >
                         <Dialog.Close asChild>
-                          <a className={styles.mobileMenuLink} href={item.href}>
+                          <Link className={styles.mobileMenuLink} href={item.href}>
                             <span aria-hidden="true">
                               {String(index + 1).padStart(2, "0")}
                             </span>
                             {item.label}
-                          </a>
+                          </Link>
                         </Dialog.Close>
                       </motion.div>
                     ))}
@@ -138,10 +137,10 @@ export function MobileMenu(): JSX.Element {
 
                   <div className={styles.mobileMenuFooter}>
                     <Dialog.Close asChild>
-                      <a className={styles.mobileMenuTour} href="#">
+                      <Link className={styles.mobileMenuTour} href="/#ambulancia">
                         Interaktívna prehliadka klinikou
                         <span aria-hidden="true">↗</span>
-                      </a>
+                      </Link>
                     </Dialog.Close>
                     <a className={styles.mobileMenuPhone} href="tel:+421918800002">
                       <span>Objednajte sa</span>

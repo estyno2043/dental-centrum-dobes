@@ -5,13 +5,6 @@ export const headlineVariants = [
   "Dental Centrum Dobeš.",
 ] as const;
 
-export const navigationItems = [
-  { label: "Služby", href: "#" },
-  { label: "Cenník", href: "#" },
-  { label: "Tím", href: "#" },
-  { label: "Kontakt", href: "#" },
-] as const;
-
 export const trustItems = [
   { value: "4,5", accent: "★", label: "Google hodnotenie" },
   { value: "do 19:00", label: "otvorené Po–Št" },

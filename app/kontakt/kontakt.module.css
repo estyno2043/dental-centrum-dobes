@@ -1,0 +1,95 @@
+.layout {
+  display: grid;
+  max-width: 1180px;
+  gap: clamp(36px, 5vw, 72px);
+  margin: clamp(44px, 6vw, 80px) auto 0;
+}
+
+@media (min-width: 900px) {
+  .layout {
+    grid-template-columns: 0.85fr 1.15fr;
+    align-items: start;
+  }
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.phoneCard {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: clamp(20px, 3vw, 28px);
+  border: 1px solid rgb(138 115 88 / 32%);
+  border-radius: 16px;
+  background: rgb(250 249 246 / 70%);
+  color: var(--ink);
+  text-decoration: none;
+  transition:
+    border-color 0.35s var(--ease),
+    background 0.35s var(--ease);
+}
+
+.phoneCard:hover {
+  border-color: var(--taupe-deep);
+  background: var(--porcelain);
+}
+
+.phoneCard:focus-visible {
+  outline: 2px solid var(--taupe-deep);
+  outline-offset: 4px;
+}
+
+.phoneLabel {
+  color: var(--taupe-deep);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.phoneNumber {
+  font-size: clamp(26px, 4vw, 36px);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.facts {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  list-style: none;
+}
+
+.facts li {
+  position: relative;
+  padding-left: 20px;
+  color: rgb(28 28 31 / 72%);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.facts li::before {
+  position: absolute;
+  top: 0.62em;
+  left: 0;
+  width: 9px;
+  height: 1.5px;
+  background: var(--taupe-deep);
+  content: "";
+}
+
+.formColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.formTitle {
+  font-size: clamp(17px, 2vw, 21px);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}

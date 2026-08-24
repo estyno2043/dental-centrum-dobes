@@ -67,6 +67,14 @@ export function ExperienceBand(): JSX.Element {
       className={styles.band}
       ref={bandRef}
       aria-labelledby="experience-heading"
+      /*
+       * The target of the header's "Interaktívna prehliadka klinikou" link.
+       * It sits on the statement rather than on the gallery that carries the
+       * "Ambulancia" eyebrow, because that gallery lives in `ClinicStory` and
+       * this task may not touch it — and the statement is the way into that
+       * sequence anyway, one section early rather than one section wrong.
+       */
+      id="ambulancia"
       style={{ pointerEvents: "none" }}
     >
       <div className={styles.pin}>

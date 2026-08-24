@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, expect, test, vi } from "vitest";
+import { navigationItems } from "@/components/site/siteContent";
 import { DesktopMenu } from "./DesktopMenu";
 
 afterEach(() => {
@@ -23,7 +24,9 @@ test("clicking the trigger opens the panel and makes its links reachable", async
   await user.click(trigger);
 
   expect(trigger).toHaveAttribute("aria-expanded", "true");
-  expect(screen.getByRole("link", { name: "Služby" })).toBeInTheDocument();
+  expect(
+    screen.getByRole("link", { name: "Problémy a riešenia" }),
+  ).toHaveAttribute("href", "/problemy");
   expect(screen.getByRole("link", { name: "Cenník" })).toBeInTheDocument();
   expect(screen.getByRole("link", { name: "Tím" })).toBeInTheDocument();
   expect(screen.getByRole("link", { name: "Kontakt" })).toBeInTheDocument();
@@ -105,15 +108,17 @@ test("keyboard focus opens the panel; focus leaving the root closes it", async (
   expect(trigger).toHaveFocus();
   expect(trigger).toHaveAttribute("aria-expanded", "true");
 
-  // 5 focusable links inside the open panel (Služby, Cenník, Tím, Kontakt,
-  // then the phone CTA) sit between the trigger and the next external
-  // element, so 6 tabs are needed to reach it.
-  await user.tab();
-  await user.tab();
-  await user.tab();
-  await user.tab();
-  await user.tab();
-  await user.tab();
+  /*
+   * The panel holds one focusable element per nav item plus the phone CTA, so
+   * stepping through all of them and on to the next element outside the
+   * component takes one tab more than that. Derived rather than hard-coded, so
+   * adding a destination does not silently turn this into a test of the wrong
+   * thing.
+   */
+  const focusableInsidePanel = navigationItems.length + 1;
+  for (let step = 0; step < focusableInsidePanel + 1; step += 1) {
+    await user.tab();
+  }
 
   expect(screen.getByRole("button", { name: "Elsewhere" })).toHaveFocus();
   expect(trigger).toHaveAttribute("aria-expanded", "false");

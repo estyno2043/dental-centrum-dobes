@@ -1,0 +1,103 @@
+.footer {
+  position: relative;
+  z-index: 1;
+  padding: clamp(48px, 7vw, 88px) clamp(20px, 5vw, 64px) 28px;
+  background: var(--ink);
+  color: var(--porcelain);
+}
+
+.inner {
+  display: grid;
+  max-width: 1240px;
+  gap: clamp(36px, 5vw, 64px);
+  margin: 0 auto;
+}
+
+@media (min-width: 900px) {
+  .inner {
+    grid-template-columns: 1.4fr 1fr;
+    align-items: start;
+  }
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.logo img {
+  display: block;
+  width: auto;
+  height: 44px;
+}
+
+.tagline {
+  max-width: 28ch;
+  color: var(--taupe);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  line-height: 1.7;
+  text-transform: uppercase;
+}
+
+.phone {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 6px;
+  color: var(--porcelain);
+  text-decoration: none;
+}
+
+.phoneLabel {
+  color: var(--taupe);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.phoneNumber {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.phone:hover .phoneNumber {
+  color: var(--taupe);
+}
+
+.nav ul {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  list-style: none;
+}
+
+.nav a {
+  color: rgb(250 249 246 / 82%);
+  font-size: 15px;
+  text-decoration: none;
+  transition: color 0.2s var(--ease);
+}
+
+.nav a:hover {
+  color: var(--taupe);
+}
+
+.legal {
+  max-width: 1240px;
+  padding-top: 26px;
+  margin: clamp(36px, 5vw, 60px) auto 0;
+  border-top: 1px solid rgb(250 249 246 / 12%);
+  color: rgb(250 249 246 / 45%);
+  font-size: 12px;
+}
+
+.footer a:focus-visible {
+  outline: 2px solid var(--taupe);
+  outline-offset: 4px;
+}

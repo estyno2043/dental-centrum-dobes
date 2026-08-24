@@ -22,7 +22,9 @@ test("opens the complete mobile navigation", async () => {
     name: "Hlavná navigácia",
   });
   expect(dialog).toBeInTheDocument();
-  expect(screen.getByRole("link", { name: "Služby" })).toBeInTheDocument();
+  expect(
+    screen.getByRole("link", { name: "Problémy a riešenia" }),
+  ).toHaveAttribute("href", "/problemy");
   expect(screen.getByRole("link", { name: "Cenník" })).toBeInTheDocument();
   expect(screen.getByRole("link", { name: "Tím" })).toBeInTheDocument();
   expect(screen.getByRole("link", { name: "Kontakt" })).toBeInTheDocument();
@@ -40,7 +42,9 @@ test("closes after a destination is activated", async () => {
   render(<MobileMenu />);
 
   await user.click(screen.getByRole("button", { name: "Otvoriť menu" }));
-  await user.click(await screen.findByRole("link", { name: "Služby" }));
+  await user.click(
+    await screen.findByRole("link", { name: "Problémy a riešenia" }),
+  );
 
   await waitFor(() => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();

@@ -10,12 +10,20 @@ import {
 } from "react";
 import { IconDental, IconMenuDeep } from "@tabler/icons-react";
 import { motion, useReducedMotion } from "motion/react";
-import { navigationItems } from "./heroContent";
+import Link from "next/link";
+import { navigationItems } from "@/components/site/siteContent";
 import styles from "./hero.module.css";
 
 const openDelayMs = 90;
 const closeDelayMs = 220;
 const premiumEase = [0.22, 1, 0.36, 1] as const;
+
+/*
+ * The panel's links animate and route, so they need to be both. Created once
+ * at module scope — building it inside the component would hand React a new
+ * component type on every render and remount every link.
+ */
+const MotionLink = motion.create(Link);
 
 type DesktopMenuProps = Readonly<{
   scrolled: boolean;
@@ -153,8 +161,8 @@ export function DesktopMenu({ scrolled }: DesktopMenuProps): JSX.Element {
           }}
         >
           {navigationItems.map((item, index) => (
-            <motion.a
-              key={item.label}
+            <MotionLink
+              key={item.href}
               href={item.href}
               className={styles.desktopMenuLink}
               variants={{
@@ -165,7 +173,7 @@ export function DesktopMenu({ scrolled }: DesktopMenuProps): JSX.Element {
             >
               <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
               {item.label}
-            </motion.a>
+            </MotionLink>
           ))}
         </motion.nav>
 

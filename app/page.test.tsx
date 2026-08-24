@@ -17,6 +17,18 @@ vi.stubGlobal(
     disconnect() {}
   },
 );
+// The team preview and the closing conversion block reveal on `whileInView`.
+vi.stubGlobal(
+  "IntersectionObserver",
+  class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+    takeRecords() {
+      return [];
+    }
+  },
+);
 
 afterEach(() => {
   vi.clearAllMocks();

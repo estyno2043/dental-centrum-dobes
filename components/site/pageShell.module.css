@@ -1,0 +1,48 @@
+.page {
+  min-height: 100svh;
+
+  /* Clears the fixed header, which is 104px of band plus breathing room. */
+  padding: clamp(140px, 16vh, 190px) clamp(20px, 5vw, 64px)
+    clamp(72px, 10vw, 132px);
+  background: #f7f4ee;
+  color: var(--ink);
+}
+
+.intro {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.eyebrow {
+  display: inline-flex;
+  gap: 12px;
+  align-items: center;
+  color: var(--taupe-deep);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.eyebrowRule {
+  width: 28px;
+  height: 1.5px;
+  background: var(--taupe-deep);
+}
+
+.title {
+  max-width: 18ch;
+  margin-top: 20px;
+  font-size: clamp(32px, 6vw, 62px);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.04;
+}
+
+.lead {
+  max-width: 52ch;
+  margin-top: 20px;
+  color: rgb(28 28 31 / 68%);
+  font-size: clamp(15px, 1.7vw, 18px);
+  line-height: 1.65;
+}

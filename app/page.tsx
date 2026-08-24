@@ -1,9 +1,12 @@
+import { ConversionBlock } from "@/components/conversion/ConversionBlock";
 import { ExperienceBand } from "@/components/home/ExperienceBand";
+import { Footer } from "@/components/site/Footer";
 import { Hero } from "@/components/hero/Hero";
 import { ClinicStory } from "@/components/home/ClinicStory";
 import { DriftScene } from "@/components/drift/DriftScene";
 import { PatientsSection } from "@/components/patients/PatientsSection";
 import { SiteHeader } from "@/components/hero/SiteHeader";
+import { TeamPreview } from "@/components/team/TeamPreview";
 import styles from "@/components/home/home.module.css";
 
 export default function HomePage() {
@@ -27,6 +30,14 @@ export default function HomePage() {
       </div>
       <PatientsSection />
       <DriftScene />
+      {/*
+        Four faces and a way through to the whole roster — the full eleven,
+        with their own scroll-driven colour, are `/tim`'s job. The page has
+        already asked a lot by this point.
+      */}
+      <TeamPreview />
+      <ConversionBlock />
+      <Footer />
     </>
   );
 }
