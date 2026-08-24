@@ -42,7 +42,7 @@ describe("patient problem route", () => {
   it("turns a controlled selection into a clear conversion path", async () => {
     await renderPage("stolicky", { problem: "bite-pain" });
 
-    expect(screen.queryByText("Demo obsahu")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Demo\s+obsahu/i)).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Problémy a riešenia" })).toHaveAttribute(
       "href",
       "/problemy",

@@ -5,31 +5,24 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Patient-problem engine implementation in progress; localhost approval required before main
+- Status: Patient-problem engine implementation complete on feature branch; localhost approval required before main
 - Owner: Codex
 - Branch: `codex/patient-problem-engine`
 - Task: Execute the approved patient-problem engine plan inline: shorten the
   jaw scroll story, replace crossing callouts with a stable anatomical map and
-  problem rail/sheet, add `/problemy`, and upgrade `/problemy/[zona]`. Worktree
+  problem rail/sheet, add `/problemy`, and upgrade `/problemy/[zona]`. Work is
+  implemented and verified; current gate is user review at `localhost:3000`.
+  Worktree
   starts at current `origin/main` (`4e4185e`). Remote
   `claude/tim-page@026cf3a` was inspected; its jaw edit and unapproved
   `/sluzby` work remain excluded. No subagents are used.
 
 ## File Reservations
 
-- Codex reserves `COLLAB.md`, `components/home/clinicStoryMotion.ts`,
-  `components/home/clinicStoryMotion.test.ts`, `components/home/ClinicStory.tsx`,
-  `components/home/ClinicStory.test.tsx`, `components/home/clinicStory.module.css`,
-  `components/home/jaw/JawZoneOverlay.tsx`,
-  `components/home/jaw/JawZoneOverlay.test.tsx`,
-  `components/home/jaw/jawExperience.module.css`,
-  `components/home/jaw/jawContent.ts`, `components/home/jaw/jawContent.test.ts`,
-  `components/home/jaw/JawAppointmentForm.tsx`,
-  `components/home/jaw/JawAppointmentForm.test.tsx`, all files under
-  `components/problems/`, `app/problemy/page.tsx`, `app/problemy/page.test.tsx`,
-  all files under `app/problemy/[zona]/`, and `app/problemy/problemy.module.css`.
-  Codex does not reserve or edit the home hero, team, contact, price, footer,
-  navigation shell, or `/sluzby` files.
+- Patient-problem engine released its file reservations after implementation
+  and verification. Until localhost approval, edits to its jaw, problem-route,
+  or booking-form files must start from `codex/patient-problem-engine` or wait
+  for its integration; do not recreate the feature from stale `main`.
 
 - The desktop hover menu released all of its files. `components/hero/DesktopMenu.tsx`,
   `DesktopMenu.test.tsx`, `SiteHeader.tsx`, `heroContent.ts`, and
@@ -649,6 +642,39 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   boundaries, jaw composition, team recovery commits, file ownership,
   verification, and publication order. Baseline on current `origin/main` is
   135 tests passing. No application or media file changed.
+
+- 2026-08-24 — Codex completed the patient-problem engine on
+  `codex/patient-problem-engine`, based on `origin/main@4e4185e`. The gallery
+  now completes its pan and seventh-photo fullscreen handoff before the faster
+  jaw story begins. Jaw playback keeps a contained 16:9 composition, delays
+  copy and controls until their intended phases, uses a short “Zóny bolesti”
+  progress cue, and hands off to seven accessible hit regions with a stable
+  desktop problem rail or mobile bottom sheet. The previous crossing callouts
+  and early direct-entry buttons are gone. Mobile jaw art is enlarged while
+  preserving mapped hit targets and zero page overflow. A hydration-safe media
+  query removes the server/client mode mismatch found during browser review.
+
+  Patient-language content is centralized in `jawContent.ts`. `/problemy`
+  provides six clear routes, including the high-value missing-tooth entry and
+  the “Neviem / bolí to celé” escape route. Every `/problemy/[zona]` route now
+  contains patient choices, service direction, a visible orientation-only
+  disclaimer, the confirmed 100 € entry-exam price, phone fallback, and an
+  accessible Netlify booking form. No diagnosis is claimed and no unconfirmed
+  treatment price is displayed. The remote Claude jaw rewrite and unapproved
+  `/sluzby` work remain excluded.
+
+  Fresh verification on the branch: 19 test files / 142 tests passed, lint,
+  TypeScript, Next.js production build, `jaw:validate`, `git diff --check`, and
+  credential scans passed. `npm audit --omit=dev` reports zero vulnerabilities
+  after audited transitive dependency updates. Jaw validator confirms 72
+  desktop frames at 1280×720 / 1,456,028 bytes and 60 mobile frames at
+  720×1280 / 756,620 bytes, with exact endpoints. Browser review covered
+  1920×1080, 1440×900, 390×844, and 375×812: no horizontal overflow or console
+  errors; desktop hover and mobile sheet align with their zones. Remaining
+  deployment-only check: verify Netlify form capture and production analytics
+  after publication. Clinical wording and privacy/legal links still require
+  clinic-owner review before public launch. No merge to `main` is authorized
+  until user approves the localhost result.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
