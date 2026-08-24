@@ -616,17 +616,30 @@
  * on `.desktopMenuRoot` makes it the containing block), not by a
  * second copy of the top offset.
  */
+/*
+ * The same tint as the tour button beside it — `rgb(20 20 23 / 22%)` — so the
+ * two read as one piece of glass rather than a light control next to a solid
+ * card.
+ *
+ * The blur is the part that does the work. At 22% the panel is barely a tint,
+ * and it is only legible because everything behind it is diffused first; the
+ * button next to it can get away with 3px because it holds four words, a panel
+ * of links cannot. `saturate` above 1 puts back the colour the blur drains,
+ * which is what keeps it looking like glass instead of fog.
+ */
 .desktopMenuPanel {
   position: absolute;
   top: calc(100% + 12px);
   right: 0;
-  width: 260px;
-  padding: 18px 10px 14px;
-  border: 1px solid rgb(174 155 126 / 32%);
-  border-radius: 14px;
-  background: rgb(28 28 31 / 96%);
-  backdrop-filter: blur(16px);
-  box-shadow: 0 24px 60px rgb(0 0 0 / 30%);
+  width: 268px;
+  padding: 16px 10px 14px;
+  border: 1px solid rgb(250 249 246 / 22%);
+  border-radius: 18px;
+  background: rgb(20 20 23 / 22%);
+  backdrop-filter: blur(26px) saturate(1.35);
+  box-shadow:
+    0 26px 64px rgb(0 0 0 / 26%),
+    inset 0 1px 0 rgb(255 255 255 / 14%);
 }
 
 .desktopMenuLinks {
@@ -634,40 +647,88 @@
   flex-direction: column;
 }
 
+/*
+ * A row rather than a label: the number, the name, and the arrow that arrives
+ * to say where it goes. `isolation` keeps the sweeping fill behind the text
+ * without a z-index that would climb over the panel's own edge.
+ */
 .desktopMenuLink {
-  display: flex;
+  position: relative;
+  display: grid;
   align-items: baseline;
-  gap: 10px;
-  padding: 9px 10px;
-  border-radius: 8px;
-  color: rgb(250 249 246 / 88%);
+  padding: 10px 12px;
+  overflow: hidden;
+  border-radius: 11px;
+
+  /* Full porcelain, not 88%. The panel behind it is a 22% tint, so the type
+     has nothing to spare over a bright frame of the hero video. */
+  color: var(--porcelain);
+  column-gap: 11px;
   font-size: 19px;
   font-weight: 560;
+  grid-template-columns: auto 1fr auto;
+  isolation: isolate;
   letter-spacing: -0.01em;
   text-decoration: none;
-  transition:
-    color 0.2s var(--ease),
-    background 0.2s var(--ease);
+  transition: color 0.28s var(--ease);
+}
+
+/* Fills from the left, the way the site's buttons do. */
+.desktopMenuLink::before {
+  position: absolute;
+  z-index: -1;
+  background: rgb(174 155 126 / 20%);
+  content: "";
+  inset: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.36s var(--ease);
 }
 
 .desktopMenuLink:hover,
 .desktopMenuLink:focus-visible {
-  background: rgb(174 155 126 / 14%);
   color: var(--porcelain);
 }
 
-.desktopMenuLink > span {
-  flex: none;
+.desktopMenuLink:hover::before,
+.desktopMenuLink:focus-visible::before {
+  transform: scaleX(1);
+}
+
+.desktopMenuLink:focus-visible {
+  outline: 2px solid var(--porcelain);
+  outline-offset: 2px;
+}
+
+/* Idle it is absent, not parked: an arrow on every row is decoration. */
+.desktopMenuArrow {
   color: var(--taupe);
+  font-size: 15px;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition:
+    opacity 0.3s var(--ease),
+    transform 0.36s var(--ease);
+}
+
+.desktopMenuLink:hover .desktopMenuArrow,
+.desktopMenuLink:focus-visible .desktopMenuArrow {
+  opacity: 1;
+  transform: none;
+}
+
+.desktopMenuIndex {
+  color: rgb(174 155 126 / 85%);
   font-size: 9.5px;
+  font-variant-numeric: tabular-nums;
   font-weight: 700;
   letter-spacing: 0.1em;
 }
 
 .desktopMenuFooter {
   margin-top: 14px;
-  padding: 14px 10px 0;
-  border-top: 1px solid rgb(255 255 255 / 10%);
+  padding: 14px 12px 2px;
+  border-top: 1px solid rgb(250 249 246 / 16%);
 }
 
 .visuallyHidden {

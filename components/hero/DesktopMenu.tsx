@@ -163,8 +163,14 @@ export function DesktopMenu({ scrolled }: DesktopMenuProps): JSX.Element {
               }}
               transition={{ duration: prefersReducedMotion ? 0 : 0.42, ease: premiumEase }}
             >
-              <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-              {item.label}
+              <span aria-hidden="true" className={styles.desktopMenuIndex}>
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <span>{item.label}</span>
+              {/* Says where the row goes; the label already says what it is. */}
+              <span aria-hidden="true" className={styles.desktopMenuArrow}>
+                →
+              </span>
             </motion.a>
           ))}
         </motion.nav>
