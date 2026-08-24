@@ -343,6 +343,20 @@ the title — `Dipl. DH.` suggests a dental hygienist and `MUDr.`/`MDDr.` a
 dentist, but which of them lead, and what each specialises in, is not something
 to guess on a clinic's behalf.
 
+2026-08-18: the user supplied the seven missing roles — Dobeš "Hlava kliniky,
+zubár"; Dobešová, Kunová and Novotňáková "Zubár"; Vaňková "Dentálna
+hygienička, hlava sociálnych sietí"; Petschuchová "Zdravotná sestra"; Voľný
+"Recepcia, manažment". Two of them cut against the degrees: Petschuchová
+carries `Dipl. DH.` and is a nurse, Vaňková is the hygienist. That is the
+clinic's own answer and it overrides the titles — which is exactly why these
+were never guessed. Vaňková and Petschuchová also swapped places in the grid
+at the user's request, so the hygienist takes the left column. Every entry in
+`components/team/teamContent.ts` now carries a role; none was inferred.
+
+Open question for the user: the roles were given in the masculine ("Zubár")
+for women. Left verbatim rather than feminised, since these are real people's
+stated titles.
+
 2026-08-17: cross-checked against the team page of the clinic's previous site,
 `bratislavazubar.sk/nas-team`. It carries the same eleven names in the same
 order and states a role for the same four nurses and nobody else, so the seven
