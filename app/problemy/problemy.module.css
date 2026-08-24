@@ -198,24 +198,159 @@
 }
 
 .page {
-  display: grid;
   min-height: 100dvh;
-  max-width: 48rem;
-  align-content: center;
-  gap: 1rem;
-  margin: 0 auto;
-  padding: clamp(2rem, 7vw, 6rem) clamp(1rem, 5vw, 3rem);
+  padding: clamp(4rem, 9vw, 8rem) clamp(1rem, 5vw, 5rem);
   color: #fffaf4;
+  background:
+    radial-gradient(circle at 18% 8%, rgba(174, 155, 126, 0.2), transparent 28rem),
+    linear-gradient(155deg, #1b1b1e 0%, #242125 56%, #171719 100%);
+}
+
+.detailShell {
+  width: min(100%, 88rem);
+  margin-inline: auto;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  margin-bottom: clamp(2rem, 5vw, 4.5rem);
+  color: rgba(255, 250, 244, 0.58);
+  font-size: 0.84rem;
+  gap: 0.65rem;
+}
+
+.breadcrumb a {
+  color: #f8dfad;
+  text-underline-offset: 0.25em;
+}
+
+.breadcrumb a:focus-visible,
+.choiceLink:focus-visible,
+.phoneAction:focus-visible {
+  outline: 2px solid #f8dfad;
+  outline-offset: 4px;
+}
+
+.detailHero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.55fr);
+  align-items: end;
+  padding-bottom: clamp(2.5rem, 6vw, 5rem);
+  border-bottom: 1px solid rgba(220, 191, 137, 0.24);
+  gap: 1rem clamp(2rem, 8vw, 8rem);
+}
+
+.detailHero .marker {
+  grid-column: 1 / -1;
 }
 
 .page h1,
+.page h2,
 .page p {
   margin: 0;
 }
 
 .page h1 {
-  font-size: clamp(2.5rem, 7vw, 5.5rem);
+  max-width: 9ch;
+  font-size: clamp(3.5rem, 8vw, 8rem);
+  font-weight: 600;
   letter-spacing: -0.055em;
+  line-height: 0.9;
+}
+
+.selectedProblem,
+.detailLead {
+  max-width: 34rem;
+  color: rgba(255, 250, 244, 0.72);
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+  line-height: 1.5;
+}
+
+.selectedProblem::before {
+  display: block;
+  margin-bottom: 0.6rem;
+  color: #dcbf89;
+  font-size: 0.69rem;
+  font-weight: 750;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  content: "VYBRANÝ PROBLÉM";
+}
+
+.choiceSection {
+  padding-block: clamp(2rem, 5vw, 4.5rem);
+}
+
+.choiceSection h2,
+.detailCard h2,
+.bookingIntro h2 {
+  font-size: clamp(1.7rem, 3.2vw, 3rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.choiceList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 1.5rem;
+  border-top: 1px solid rgba(220, 191, 137, 0.22);
+  border-left: 1px solid rgba(220, 191, 137, 0.22);
+}
+
+.choiceLink {
+  display: flex;
+  min-height: 6.5rem;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 1.2rem;
+  border-right: 1px solid rgba(220, 191, 137, 0.22);
+  border-bottom: 1px solid rgba(220, 191, 137, 0.22);
+  color: #fffaf4;
+  gap: 1rem;
+  text-decoration: none;
+  transition: background 220ms var(--ease), color 220ms var(--ease);
+}
+
+.choiceLink:hover,
+.choiceLink[aria-current="page"] {
+  background: #dcbf89;
+  color: #201b19;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid rgba(220, 191, 137, 0.24);
+  border-left: 1px solid rgba(220, 191, 137, 0.24);
+}
+
+.detailCard {
+  min-height: 26rem;
+  padding: clamp(1.4rem, 4vw, 3rem);
+  border-right: 1px solid rgba(220, 191, 137, 0.24);
+  border-bottom: 1px solid rgba(220, 191, 137, 0.24);
+}
+
+.detailCard h2 {
+  margin-top: 0.8rem;
+}
+
+.destinationList,
+.factList {
+  display: grid;
+  margin: clamp(2.5rem, 7vw, 6rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.destinationList li,
+.factList li {
+  padding-block: 0.85rem;
+  border-bottom: 1px solid rgba(220, 191, 137, 0.18);
+  color: rgba(255, 250, 244, 0.76);
+  line-height: 1.45;
 }
 
 .marker {
@@ -229,11 +364,45 @@
 .disclaimer {
   max-width: 38rem;
   color: rgba(255, 250, 244, 0.78);
+  line-height: 1.5;
 }
 
 .price {
+  margin-top: 1.5rem !important;
   color: #f8dfad;
   font-weight: 700;
+}
+
+.page > .detailShell > .disclaimer {
+  padding-block: clamp(1.5rem, 4vw, 3rem);
+}
+
+.bookingSection {
+  display: grid;
+  grid-template-columns: minmax(18rem, 0.7fr) minmax(0, 1.3fr);
+  align-items: start;
+  padding-top: clamp(2rem, 5vw, 4rem);
+  border-top: 1px solid rgba(220, 191, 137, 0.24);
+  gap: clamp(2rem, 6vw, 6rem);
+}
+
+.bookingIntro {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.bookingIntro > p:not(.marker) {
+  max-width: 28rem;
+  color: rgba(255, 250, 244, 0.68);
+  line-height: 1.5;
+}
+
+.phoneAction {
+  width: fit-content;
+  color: #f8dfad;
+  font-size: clamp(1.25rem, 2vw, 1.65rem);
+  font-weight: 750;
+  text-underline-offset: 0.3em;
 }
 
 .appointmentForm {
@@ -378,6 +547,37 @@
 
   .hubActions {
     width: 100%;
+  }
+
+  .page {
+    padding: 3.5rem 1rem;
+  }
+
+  .detailHero,
+  .detailGrid,
+  .bookingSection {
+    grid-template-columns: 1fr;
+  }
+
+  .detailHero h1 {
+    font-size: clamp(3.2rem, 18vw, 5.25rem);
+  }
+
+  .choiceList {
+    grid-template-columns: 1fr;
+  }
+
+  .choiceLink {
+    min-height: 4.75rem;
+  }
+
+  .detailCard {
+    min-height: auto;
+  }
+
+  .destinationList,
+  .factList {
+    margin-top: 2rem;
   }
 
   .fieldGrid {

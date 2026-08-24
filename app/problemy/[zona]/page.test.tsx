@@ -1,24 +1,31 @@
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { JAW_DISCLAIMER } from "@/components/home/jaw/jawContent";
 
 const { notFound } = vi.hoisted(() => ({ notFound: vi.fn() }));
 
 vi.mock("next/navigation", () => ({ notFound }));
 
-import ProblemPage, { generateStaticParams } from "./page";
+import ProblemPage, {
+  generateMetadata,
+  generateStaticParams,
+} from "./page";
 
 type Search = Record<string, string | string[] | undefined>;
 
-async function renderPage(zona: string, searchParams: Search = {}) {
-  render(
-    await ProblemPage({
-      params: Promise.resolve({ zona }),
-      searchParams: Promise.resolve(searchParams),
-    }),
-  );
+async function page(zona: string, searchParams: Search = {}) {
+  return ProblemPage({
+    params: Promise.resolve({ zona }),
+    searchParams: Promise.resolve(searchParams),
+  });
 }
 
-describe("jaw problem route", () => {
+async function renderPage(zona: string, searchParams: Search = {}) {
+  render(await page(zona, searchParams));
+}
+
+describe("patient problem route", () => {
   beforeEach(() => notFound.mockClear());
 
   it("prerenders only the six approved zone routes", () => {
@@ -32,48 +39,70 @@ describe("jaw problem route", () => {
     ]);
   });
 
-  it("shows only a validated patient-language problem selection", async () => {
-    await renderPage("stolicky", { problem: "pulsing" });
+  it("turns a controlled selection into a clear conversion path", async () => {
+    await renderPage("stolicky", { problem: "bite-pain" });
 
-    expect(screen.getByText("Pulzujúca bolesť")).toBeVisible();
+    expect(screen.queryByText("Demo obsahu")).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Problémy a riešenia" })).toHaveAttribute(
+      "href",
+      "/problemy",
+    );
+    expect(screen.getByRole("heading", { level: 1, name: "Stoličky" })).toBeVisible();
+    expect(screen.getByTestId("selected-problem")).toHaveTextContent("Bolí ma pri hryzení");
+    expect(screen.getByRole("heading", { level: 2, name: "Čo môže nasledovať" })).toBeVisible();
+    expect(screen.getByText("Endodoncia pod mikroskopom, korunka, extrakcia")).toBeVisible();
+    expect(screen.getByRole("heading", { level: 2, name: "Ako začneme" })).toBeVisible();
+    expect(screen.getByText(JAW_DISCLAIMER)).toBeVisible();
+    expect(screen.getByTestId("jaw-appointment-form")).toBeVisible();
+    expect(screen.getByRole("link", { name: "0918 800 002" })).toHaveAttribute(
+      "href",
+      "tel:+421918800002",
+    );
   });
 
-  it("does not make a selected-problem claim for invalid, repeated, or inherited query data", async () => {
-    await renderPage("stolicky", { problem: "not-a-problem" });
-    expect(screen.queryByTestId("selected-problem")).not.toBeInTheDocument();
+  it("renders controlled patient choices and marks only the selected one", async () => {
+    await renderPage("stolicky", { problem: "pulsing" });
+    const choices = screen.getByRole("region", { name: "Čo cítite?" });
 
-    const repeated = await ProblemPage({
-      params: Promise.resolve({ zona: "stolicky" }),
-      searchParams: Promise.resolve({ problem: ["pulsing", "cracked"] }),
-    });
-    const inherited = await ProblemPage({
-      params: Promise.resolve({ zona: "stolicky" }),
-      searchParams: Promise.resolve(Object.create({ problem: "pulsing" }) as Search),
-    });
+    expect(within(choices).getAllByRole("link")).toHaveLength(3);
+    expect(within(choices).getByRole("link", { name: "Pulzujúca bolesť" }))
+      .toHaveAttribute("aria-current", "page");
+    expect(within(choices).getByRole("link", { name: "Prasknutý zub" }))
+      .toHaveAttribute("href", "/problemy/stolicky?problem=cracked");
+  });
 
-    const { unmount } = render(repeated);
-    expect(screen.queryByTestId("selected-problem")).not.toBeInTheDocument();
-    unmount();
-    render(inherited);
-    expect(screen.queryByTestId("selected-problem")).not.toBeInTheDocument();
+  it("rejects unknown, repeated, inherited, and array problem values from page and form", async () => {
+    const cases: Search[] = [
+      { problem: "not-a-problem" },
+      { problem: ["pulsing", "cracked"] },
+      Object.create({ problem: "pulsing" }) as Search,
+    ];
+
+    for (const search of cases) {
+      render(await page("stolicky", search));
+      expect(screen.queryByTestId("selected-problem")).not.toBeInTheDocument();
+      const form = screen.getByTestId("jaw-appointment-form");
+      expect(form.querySelector('input[name="problem"]')).toHaveValue("");
+      cleanup();
+    }
+  });
+
+  it("does not render an empty choice list for the unsure route", async () => {
+    await renderPage("neviem");
+
+    expect(screen.queryByRole("heading", { level: 2, name: "Čo cítite?" })).not.toBeInTheDocument();
+    expect(screen.getByText("Začneme vstupným vyšetrením.")).toBeVisible();
   });
 
   it("uses normal not-found handling for an unknown zone", async () => {
-    await ProblemPage({
-      params: Promise.resolve({ zona: "neexistuje" }),
-      searchParams: Promise.resolve({}),
-    });
-
+    await page("neexistuje");
     expect(notFound).toHaveBeenCalledTimes(1);
   });
 
-  it("keeps required demo content and exact entry examination label on valid pages", async () => {
-    await renderPage("dasna");
-
-    expect(screen.getByText("Demo obsahu")).toBeVisible();
-    expect(
-      screen.getByText("Orientačná pomôcka. Presnú príčinu určí až vyšetrenie."),
-    ).toBeVisible();
-    expect(screen.getByText("Vstupné vyšetrenie — 100 EUR")).toBeVisible();
+  it("generates controlled metadata without leaking unknown slugs", async () => {
+    await expect(generateMetadata({ params: Promise.resolve({ zona: "dasna" }) }))
+      .resolves.toMatchObject({ title: "Ďasná — Dental Centrum Dobeš" });
+    await expect(generateMetadata({ params: Promise.resolve({ zona: "invalid" }) }))
+      .resolves.toMatchObject({ title: "Problémy a riešenia — Dental Centrum Dobeš" });
   });
 });

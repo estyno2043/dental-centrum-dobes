@@ -38,7 +38,7 @@ describe("JawAppointmentForm", () => {
     expect(form).toHaveAttribute("action", "/");
     expect(values.get("zone")).toBe("molar");
     expect(values.get("problem")).toBe("pulsing");
-    expect(values.get("examination")).toBe("Vstupné vyšetrenie — 100 EUR");
+    expect(values.get("examination")).toBe("Vstupné vyšetrenie — 100 €");
     expect(values.get("bot-field")).toBe("");
     expect(honeypot.type).toBe("text");
     expect(honeypot).not.toHaveAttribute("type", "hidden");
