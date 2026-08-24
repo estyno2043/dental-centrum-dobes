@@ -5,31 +5,31 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Flagship completion design and three implementation plans complete — awaiting execution
+- Status: Patient-problem engine implementation in progress; localhost approval required before main
 - Owner: Codex
-- Branch: `codex/flagship-completion-design`
-- Task: Plan one coordinated release made of two isolated workstreams:
-  Codex owns the patient-problem engine and jaw-map refinement; Claude owns the
-  team, trust, contact, price, navigation, closing CTA, and footer shell. The
-  design is at
-  `docs/superpowers/specs/2026-08-24-flagship-completion-release-design.md`.
-  User approved the written version and confirmed that the later unreviewed
-  Claude Služby work stays outside this release. The task-level plans are now:
-  `docs/superpowers/plans/2026-08-24-patient-problem-engine.md`,
-  `docs/superpowers/plans/2026-08-24-trust-conversion-shell.md`, and
-  `docs/superpowers/plans/2026-08-24-flagship-completion-integration.md`.
-  Execution remains inline only; the user prohibited subagents.
+- Branch: `codex/patient-problem-engine`
+- Task: Execute the approved patient-problem engine plan inline: shorten the
+  jaw scroll story, replace crossing callouts with a stable anatomical map and
+  problem rail/sheet, add `/problemy`, and upgrade `/problemy/[zona]`. Worktree
+  starts at current `origin/main` (`4e4185e`). Remote
+  `claude/tim-page@026cf3a` was inspected; its jaw edit and unapproved
+  `/sluzby` work remain excluded. No subagents are used.
 
 ## File Reservations
 
-- Codex reserves only `COLLAB.md` and
-  `docs/superpowers/specs/2026-08-24-flagship-completion-release-design.md`,
-  plus the three plan files
-  `docs/superpowers/plans/2026-08-24-patient-problem-engine.md`,
-  `docs/superpowers/plans/2026-08-24-trust-conversion-shell.md`, and
-  `docs/superpowers/plans/2026-08-24-flagship-completion-integration.md` for
-  the current planning pass. No application or media file is reserved or
-  changed during planning.
+- Codex reserves `COLLAB.md`, `components/home/clinicStoryMotion.ts`,
+  `components/home/clinicStoryMotion.test.ts`, `components/home/ClinicStory.tsx`,
+  `components/home/ClinicStory.test.tsx`, `components/home/clinicStory.module.css`,
+  `components/home/jaw/JawZoneOverlay.tsx`,
+  `components/home/jaw/JawZoneOverlay.test.tsx`,
+  `components/home/jaw/jawExperience.module.css`,
+  `components/home/jaw/jawContent.ts`, `components/home/jaw/jawContent.test.ts`,
+  `components/home/jaw/JawAppointmentForm.tsx`,
+  `components/home/jaw/JawAppointmentForm.test.tsx`, all files under
+  `components/problems/`, `app/problemy/page.tsx`, `app/problemy/page.test.tsx`,
+  all files under `app/problemy/[zona]/`, and `app/problemy/problemy.module.css`.
+  Codex does not reserve or edit the home hero, team, contact, price, footer,
+  navigation shell, or `/sluzby` files.
 
 - The desktop hover menu released all of its files. `components/hero/DesktopMenu.tsx`,
   `DesktopMenu.test.tsx`, `SiteHeader.tsx`, `heroContent.ts`, and
