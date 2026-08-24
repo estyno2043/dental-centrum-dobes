@@ -876,13 +876,19 @@
   margin-top: 30px;
 }
 
+/*
+ * The page's primary action, and the only one on the hero that leads anywhere.
+ * Heavier than the tour button in the corner on purpose: same family, louder
+ * voice.
+ */
 .packageButton {
   position: relative;
   display: inline-flex;
+  gap: 16px;
   align-items: center;
   justify-content: center;
+  padding: 20px 34px;
   overflow: hidden;
-  padding: 20px 36px;
   border: 1px solid rgb(255 255 255 / 35%);
   border-radius: 12px;
   background: rgb(28 28 31 / 82%);
@@ -890,10 +896,54 @@
   color: #fff;
   font-size: 12.5px;
   font-weight: 600;
+  isolation: isolate;
   letter-spacing: 0.22em;
   text-decoration: none;
   text-transform: uppercase;
-  transition: border-color 0.25s var(--ease);
+  transition:
+    border-color 0.35s var(--ease),
+    color 0.35s var(--ease);
+}
+
+/*
+ * The mark. Three strokes, one per part of the package — the examination, the
+ * intraoral images, the panoramic one. Closed they are a stack seen along its
+ * spine; on hover they splay like a hand of cards being spread.
+ *
+ * Upright, not stacked flat. Three horizontal lines is the hamburger, and the
+ * real menu sits a few centimetres away in the corner wearing exactly that —
+ * two identical marks meaning different things on one screen is worse than no
+ * mark at all.
+ */
+.packageMark {
+  display: grid;
+  height: 14px;
+  flex: none;
+  gap: 3px;
+  grid-auto-flow: column;
+}
+
+.packageMark > span {
+  width: 1.5px;
+  height: 100%;
+  border-radius: 1px;
+  background: currentcolor;
+  transform-origin: bottom center;
+  transition: transform 0.46s var(--ease);
+}
+
+.packageButton:hover .packageMark > span:first-child,
+.packageButton:focus-visible .packageMark > span:first-child {
+  transform: translateX(-2px) rotate(-16deg);
+}
+
+.packageButton:hover .packageMark > span:last-child,
+.packageButton:focus-visible .packageMark > span:last-child {
+  transform: translateX(2px) rotate(16deg);
+}
+
+.packageLabel {
+  display: block;
 }
 
 .packageButton::before {
@@ -908,28 +958,40 @@
     inset 0.25s var(--ease);
 }
 
+/*
+ * The fill. `scaleX` rather than `width`: the same sweep, but handed to the
+ * compositor instead of relaying the button on every frame.
+ */
 .packageButton::after {
   position: absolute;
   z-index: -1;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  background: var(--taupe-deep);
+  background: var(--taupe);
   content: "";
-  transition: width 0.35s var(--ease);
+  inset: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s var(--ease);
 }
 
-.packageButton:hover {
-  border-color: rgb(255 255 255 / 70%);
+.packageButton:hover,
+.packageButton:focus-visible {
+  border-color: var(--taupe);
+  color: var(--ink);
 }
 
-.packageButton:hover::before {
-  border-color: rgb(255 255 255 / 35%);
+.packageButton:hover::before,
+.packageButton:focus-visible::before {
+  border-color: rgb(28 28 31 / 22%);
 }
 
-.packageButton:hover::after {
-  width: 100%;
+.packageButton:hover::after,
+.packageButton:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.packageButton:focus-visible {
+  outline: 2px solid var(--porcelain);
+  outline-offset: 3px;
 }
 
 .phoneButton {
@@ -1247,6 +1309,7 @@
   .packageButton,
   .packageButton::before,
   .packageButton::after,
+  .packageMark > span,
   .phoneNumber,
   .variant,
   .scrollCue,

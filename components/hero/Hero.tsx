@@ -109,7 +109,20 @@ export function Hero(): JSX.Element {
               against the clinic's own price list.
             */}
             <Link className={styles.packageButton} href="/sluzby/vstupna-prehliadka">
-              Vstupný balík pre nových pacientov
+              {/*
+                Three lines, because the package has three parts — the
+                examination, the intraoral images and the panoramic one. Closed
+                they are a stack; on hover they fan out, which is the only
+                thing the mark is for.
+              */}
+              <span aria-hidden="true" className={styles.packageMark}>
+                <span />
+                <span />
+                <span />
+              </span>
+              <span className={styles.packageLabel}>
+                Vstupný balík pre nových pacientov
+              </span>
             </Link>
             <a className={styles.phoneButton} href="tel:+421918800002">
               <span className={styles.phoneLabel}>Objednajte sa</span>

@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { act, render, screen } from "@testing-library/react";
 import { afterEach, expect, test, vi } from "vitest";
 import { Hero } from "./Hero";
@@ -172,4 +173,29 @@ test("uses the static poster while reduced motion is preferred", () => {
   expect(
     container.querySelector('img[src="/media/hero-poster.jpg"]'),
   ).toBeInTheDocument();
+});
+
+/*
+ * The package mark is three upright strokes, not three stacked lines. Three
+ * horizontal lines is the hamburger, and the real menu sits in the corner
+ * wearing exactly that — two identical marks meaning different things on one
+ * screen is worse than no mark at all.
+ */
+test("keeps the package mark from becoming a hamburger", () => {
+  const css = readFileSync("components/hero/hero.module.css", "utf8");
+  const rule = css.match(/\.packageMark > span \{[^}]*\}/)?.[0] ?? "";
+
+  expect(rule).toMatch(/width:\s*1\.5px/);
+  expect(rule).toMatch(/height:\s*100%/);
+  expect(css).toMatch(/\.packageMark \{[^}]*grid-auto-flow:\s*column/);
+});
+
+/* And the mark says nothing out loud — the link's own words do that. */
+test("keeps the package button's name to its label", () => {
+  render(<Hero />);
+
+  const button = screen.getByRole("link", {
+    name: "Vstupný balík pre nových pacientov",
+  });
+  expect(button).toHaveAttribute("href", "/sluzby/vstupna-prehliadka");
 });
