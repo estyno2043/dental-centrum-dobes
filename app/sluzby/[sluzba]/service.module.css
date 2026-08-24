@@ -1,17 +1,28 @@
-/* Placeholder styling for the service pages, pending their real content. */
+/*
+ * A service page. Light and plain: the catalogue is where the photography
+ * does the persuading, and by the time someone is here they are reading.
+ */
 
 .page {
   min-height: 100dvh;
+  padding-bottom: clamp(70px, 10vh, 130px);
   background: var(--porcelain);
   color: var(--charcoal);
 }
 
-.body {
+.page > * {
+  max-width: 68rem;
+  margin-inline: auto;
+  padding-inline: clamp(20px, 5vw, 88px);
+}
+
+/* ---------------------------------------------------------------- intro --- */
+
+.intro {
   display: grid;
-  max-width: 62rem;
-  margin: 0 auto;
-  padding: clamp(140px, 18vh, 230px) clamp(20px, 5vw, 88px) clamp(60px, 10vh, 120px);
-  gap: clamp(16px, 2vw, 26px);
+  padding-top: clamp(140px, 18vh, 220px);
+  padding-bottom: clamp(40px, 6vw, 72px);
+  gap: clamp(16px, 2vw, 24px);
 }
 
 .eyebrow {
@@ -35,9 +46,9 @@
 }
 
 .headline {
-  max-width: 16em;
+  max-width: 15em;
   margin: 0;
-  font-size: clamp(2.1rem, 5.6vw, 4rem);
+  font-size: clamp(2.1rem, 5.4vw, 3.9rem);
   font-weight: 600;
   letter-spacing: -0.035em;
   line-height: 1.05;
@@ -45,11 +56,11 @@
 }
 
 .lead {
-  max-width: 56ch;
+  max-width: 54ch;
   margin: 0;
-  color: rgb(38 38 42 / 68%);
-  font-size: clamp(1rem, 1.35vw, 1.15rem);
-  line-height: 1.62;
+  color: rgb(38 38 42 / 70%);
+  font-size: clamp(1.02rem, 1.45vw, 1.22rem);
+  line-height: 1.6;
 }
 
 .pending {
@@ -59,4 +70,194 @@
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
+}
+
+/* The four hard facts, on a rule so they read as a strip rather than a list. */
+.facts {
+  display: grid;
+  margin: clamp(10px, 1.4vw, 18px) 0 0;
+  padding-top: clamp(18px, 2vw, 26px);
+  border-top: 1px solid rgb(138 115 88 / 26%);
+  gap: clamp(16px, 2.4vw, 34px);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+}
+
+.facts dt {
+  color: var(--taupe-deep);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.facts dd {
+  margin: 5px 0 0;
+  font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* --------------------------------------------------------------- blocks --- */
+
+.block {
+  padding-top: clamp(44px, 6vw, 84px);
+}
+
+.blockHeading {
+  margin: 0 0 clamp(22px, 3vw, 38px);
+  font-size: clamp(1.4rem, 2.6vw, 2.15rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+/*
+ * The benefits. Two columns of short entries rather than one long list — the
+ * point of the page is that the prehliadka covers a lot, and a column of
+ * eight paragraphs reads as a wall rather than as a lot.
+ */
+.benefits,
+.steps {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  gap: clamp(24px, 3.2vw, 44px) clamp(24px, 4vw, 64px);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr));
+  list-style: none;
+}
+
+.benefits > li,
+.steps > li {
+  display: grid;
+  gap: 7px;
+  align-content: start;
+  padding-top: 14px;
+  border-top: 1px solid rgb(138 115 88 / 26%);
+}
+
+.benefitIndex,
+.stepIndex {
+  color: rgb(138 115 88 / 70%);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+}
+
+.benefitTitle {
+  margin: 0;
+  font-size: clamp(1rem, 1.35vw, 1.12rem);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+.benefitBody {
+  margin: 0;
+  color: rgb(38 38 42 / 68%);
+  font-size: clamp(0.9rem, 1.05vw, 0.98rem);
+  line-height: 1.55;
+}
+
+/* --------------------------------------------------------------- bundle --- */
+
+/*
+ * The one block that changes ground. It is the page's offer, and the whole
+ * reason the button at the top of the site points here.
+ */
+.bundle {
+  max-width: none;
+  margin-top: clamp(48px, 6vw, 88px);
+  padding-block: clamp(44px, 6vw, 80px);
+  padding-inline: 0;
+  background: #f0ece3;
+}
+
+.bundleInner {
+  max-width: 68rem;
+  margin-inline: auto;
+  padding-inline: clamp(20px, 5vw, 88px);
+}
+
+.bundleIntro {
+  max-width: 52ch;
+  margin: 0 0 clamp(20px, 2.6vw, 32px);
+  color: rgb(38 38 42 / 68%);
+  font-size: clamp(0.95rem, 1.15vw, 1.05rem);
+  line-height: 1.6;
+}
+
+.bundleList {
+  display: grid;
+  max-width: 40rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bundleList > li {
+  display: flex;
+  gap: 18px;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: clamp(12px, 1.5vw, 17px) 0;
+  border-bottom: 1px solid rgb(138 115 88 / 26%);
+  font-size: clamp(0.95rem, 1.15vw, 1.05rem);
+}
+
+.bundlePrice {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.bundleTotal {
+  border-bottom: 0 !important;
+  font-size: clamp(1.1rem, 1.7vw, 1.4rem) !important;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.bundleNote {
+  max-width: 52ch;
+  margin: clamp(16px, 2vw, 24px) 0 0;
+  padding-left: 14px;
+  border-left: 2px solid var(--taupe);
+  color: rgb(38 38 42 / 62%);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+/* ----------------------------------------------------------------- case --- */
+
+.case {
+  max-width: 44rem;
+  margin: 0;
+}
+
+.caseNote {
+  margin-top: 12px;
+  color: rgb(38 38 42 / 55%);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.closing {
+  max-width: 34ch;
+  margin: clamp(48px, 6vw, 84px) auto 0;
+  font-size: clamp(1.2rem, 2.2vw, 1.75rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.28;
+  text-wrap: balance;
+}
+
+/* -------------------------------------------------------------- booking --- */
+
+.booking {
+  margin-top: clamp(52px, 7vw, 96px);
+  padding-top: clamp(38px, 5vw, 62px);
+  border-top: 1px solid rgb(138 115 88 / 26%);
 }

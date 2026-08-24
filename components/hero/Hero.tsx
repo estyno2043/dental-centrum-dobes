@@ -1,8 +1,8 @@
 "use client";
 
-/* eslint-disable jsx-a11y/anchor-is-valid -- The approved hero uses placeholder anchors until the corresponding sections exist. */
 /* eslint-disable @next/next/no-img-element -- Preserve the approved logo markup and extracted asset without an image-service rewrite. */
 
+import Link from "next/link";
 import { useState, type JSX } from "react";
 import { motion } from "motion/react";
 import { RotatingHeadline } from "./RotatingHeadline";
@@ -103,9 +103,14 @@ export function Hero(): JSX.Element {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.62, delay: 0.4, ease: premiumEase }}
           >
-            <a className={styles.packageButton} href="#">
+            {/*
+              The site's first call to action, and now it has somewhere to go:
+              the entry examination page carries the package it names, itemised
+              against the clinic's own price list.
+            */}
+            <Link className={styles.packageButton} href="/sluzby/vstupna-prehliadka">
               Vstupný balík pre nových pacientov
-            </a>
+            </Link>
             <a className={styles.phoneButton} href="tel:+421918800002">
               <span className={styles.phoneLabel}>Objednajte sa</span>
               <span className={styles.phoneNumber}>0918 800 002</span>

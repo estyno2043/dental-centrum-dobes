@@ -920,6 +920,54 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   `app/page.tsx`, `components/home/jaw/**`. Awaiting the user's localhost
   approval; nothing here has reached `main`.
 
+- 2026-08-24 — Claude built the first real service page,
+  `/sluzby/vstupna-prehliadka`, and pointed the hero's "Vstupný balík pre
+  nových pacientov" button at it — that button had been on `#` since the hero
+  was built.
+
+  Every line on the page traces to something the clinic already publishes.
+  The prose comes from bratislavazubar.sk ("Prvé ošetrenie celej ústnej
+  dutiny…", "Váš starý zubný záznam nie je pre nás dôležitý, urobíme si
+  vlastný", the painless-anaesthesia passage, the six-month recall) and every
+  figure from their own Cenník zdravotníckych výkonov: komplexné vyšetrenie
+  40 €, intraorálny snímok 10 €, panoramatický 20 €, CT 3D 120 €.
+
+  That also explains Codex's `ENTRY_EXAM_LABEL = "Vstupné vyšetrenie — 100
+  EUR"`, which does not appear anywhere in the clinic's price list: 40 + 4×10 +
+  20 = 100. The page itemises it rather than asserting it, and a test fails if
+  the total ever drifts from its parts.
+
+  ⚠️ Two things on that page are not publishable as they stand:
+
+  1. The before/after is the same unconsented test pair the homepage carries.
+     The layout is there to be reviewed; the photographs must be replaced by
+     consented cases first.
+  2. The clinic's free-RTG wording was seasonal ("Počas leta ponúkame ku
+     každému vstupnému vyšetreniu Rtg vyšetrenie bezplatne"). It renders as
+     something to ask about by telephone, never as a standing offer, and a test
+     keeps it that way.
+
+  `ServiceBooking` is a new, minimal light-theme form for the foot of service
+  pages. It posts to the same Netlify form name and honeypot as
+  `JawAppointmentForm` so both land in one inbox, but it is a separate
+  component: the jaw form requires a `zone: JawZone` and a symptom, and five of
+  the ten services have neither. Folding the two together is worth doing once
+  the remaining pages exist and the shape they need has settled. Neither form
+  delivers anything until the site is on Netlify — Netlify Forms harvests them
+  from prerendered HTML at build time.
+
+  Removing the hero's last placeholder anchor made its
+  `jsx-a11y/anchor-is-valid` disable dead; eslint said so and it is gone.
+
+  Verified: 156 tests, lint, TypeScript, production build, and the page
+  measured at 1440 wide — eight benefits, four steps, the itemised package, the
+  before/after and the form all present, no horizontal overflow.
+
+  Files reserved: `components/team/**`, `components/services/**`,
+  `components/booking/**`, `app/tim/**`, `app/sluzby/**`, `app/page.tsx`,
+  `components/hero/Hero.tsx`, `components/home/jaw/**`,
+  `public/media/{tim,sluzby}/**`. Nothing here has reached `main`.
+
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
 credentials, tokens, or local configuration values in repository files,
