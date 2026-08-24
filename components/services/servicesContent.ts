@@ -71,6 +71,9 @@ export const featuredServices: readonly Service[] = [
     lead:
       "Implantáty Osstem plánované z 3D snímku, aby náhrada sadla tam, kde má, " +
       "a držala ako vlastný zub.",
+    // The clinic's own photograph of finished crowns, supplied 2026-08-24. It
+    // replaced a shot of the imaging room, which showed the equipment rather
+    // than anything the patient ends up with.
     image: "implantaty",
   },
   {
