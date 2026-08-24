@@ -119,7 +119,7 @@ const vstupnaPrehliadka: ServiceDetail = {
   extrasHeading: "Čo k tomu patrí",
   extras: [
     "3D CBCT, ak je diagnosticky potrebné",
-    "Bez bolesti — vrátane samotnej anestézie",
+    "Bez bolesti",
     "Vlastný zubný záznam, cudzí nepreberáme",
     "Ošetrujeme aj deti, od troch rokov",
     "Parkovanie zdarma priamo pri klinike",
