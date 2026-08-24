@@ -1,6 +1,9 @@
 /*
- * A service page. Light and plain: the catalogue is where the photography
- * does the persuading, and by the time someone is here they are reading.
+ * A service page.
+ *
+ * Short and plain. Someone reaches this page having decided to look into one
+ * thing; the job is to answer it and get out of the way, so the benefits are
+ * single lines and the photographs carry what prose would otherwise have to.
  */
 
 .page {
@@ -16,13 +19,21 @@
   padding-inline: clamp(20px, 5vw, 88px);
 }
 
+.page img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 3px;
+  object-fit: cover;
+}
+
 /* ---------------------------------------------------------------- intro --- */
 
 .intro {
   display: grid;
-  padding-top: clamp(140px, 18vh, 220px);
-  padding-bottom: clamp(40px, 6vw, 72px);
-  gap: clamp(16px, 2vw, 24px);
+  padding-top: clamp(130px, 17vh, 200px);
+  padding-bottom: clamp(28px, 4vw, 46px);
+  gap: clamp(14px, 1.8vw, 20px);
 }
 
 .eyebrow {
@@ -46,7 +57,7 @@
 }
 
 .headline {
-  max-width: 15em;
+  max-width: 14em;
   margin: 0;
   font-size: clamp(2.1rem, 5.4vw, 3.9rem);
   font-weight: 600;
@@ -56,15 +67,14 @@
 }
 
 .lead {
-  max-width: 54ch;
+  max-width: 46ch;
   margin: 0;
   color: rgb(38 38 42 / 70%);
-  font-size: clamp(1.02rem, 1.45vw, 1.22rem);
-  line-height: 1.6;
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+  line-height: 1.55;
 }
 
 .pending {
-  margin: 0;
   color: var(--taupe-deep);
   font-size: 11px;
   font-weight: 600;
@@ -72,14 +82,31 @@
   text-transform: uppercase;
 }
 
+/* --------------------------------------------------------------- images --- */
+
+.hero {
+  padding-bottom: clamp(26px, 3.4vw, 42px);
+}
+
+.gallery {
+  display: grid;
+  padding-top: clamp(30px, 4vw, 52px);
+  gap: clamp(10px, 1.4vw, 18px);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+}
+
+.gallery figure {
+  margin: 0;
+}
+
 /* The four hard facts, on a rule so they read as a strip rather than a list. */
 .facts {
   display: grid;
-  margin: clamp(10px, 1.4vw, 18px) 0 0;
+  margin: 0;
   padding-top: clamp(18px, 2vw, 26px);
   border-top: 1px solid rgb(138 115 88 / 26%);
   gap: clamp(16px, 2.4vw, 34px);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr));
 }
 
 .facts dt {
@@ -92,7 +119,7 @@
 
 .facts dd {
   margin: 5px 0 0;
-  font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+  font-size: clamp(1.05rem, 1.6vw, 1.3rem);
   font-weight: 600;
   letter-spacing: -0.02em;
 }
@@ -100,12 +127,12 @@
 /* --------------------------------------------------------------- blocks --- */
 
 .block {
-  padding-top: clamp(44px, 6vw, 84px);
+  padding-top: clamp(44px, 6vw, 80px);
 }
 
 .blockHeading {
-  margin: 0 0 clamp(22px, 3vw, 38px);
-  font-size: clamp(1.4rem, 2.6vw, 2.15rem);
+  margin: 0 0 clamp(18px, 2.4vw, 30px);
+  font-size: clamp(1.35rem, 2.4vw, 2rem);
   font-weight: 600;
   letter-spacing: -0.03em;
   line-height: 1.12;
@@ -113,31 +140,61 @@
 }
 
 /*
- * The benefits. Two columns of short entries rather than one long list — the
- * point of the page is that the prehliadka covers a lot, and a column of
- * eight paragraphs reads as a wall rather than as a lot.
+ * One line each, two columns. Twelve short lines read as a list of what you
+ * get; twelve short paragraphs read as a wall, which is the same information
+ * arranged to be skipped.
  */
-.benefits,
-.steps {
+.benefits {
   display: grid;
   margin: 0;
   padding: 0;
-  gap: clamp(24px, 3.2vw, 44px) clamp(24px, 4vw, 64px);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr));
+  gap: clamp(11px, 1.3vw, 15px) clamp(24px, 4vw, 60px);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
   list-style: none;
 }
 
-.benefits > li,
-.steps > li {
+.benefits > li {
   display: grid;
-  gap: 7px;
-  align-content: start;
-  padding-top: 14px;
-  border-top: 1px solid rgb(138 115 88 / 26%);
+  gap: 12px;
+  align-items: start;
+  grid-template-columns: auto 1fr;
+  color: rgb(38 38 42 / 82%);
+  font-size: clamp(0.95rem, 1.15vw, 1.05rem);
+  line-height: 1.45;
 }
 
-.benefitIndex,
-.stepIndex {
+/* A small ring rather than a checkmark: nothing here is being ticked off. */
+.tick {
+  width: 7px;
+  height: 7px;
+  margin-top: 0.52em;
+  border: 1.5px solid var(--taupe);
+  border-radius: 50%;
+}
+
+.steps {
+  display: grid;
+  max-width: 44rem;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.steps > li {
+  display: grid;
+  gap: 16px;
+  align-items: baseline;
+  padding: clamp(13px, 1.6vw, 18px) 0;
+  border-bottom: 1px solid rgb(138 115 88 / 22%);
+  counter-increment: step;
+  font-size: clamp(0.95rem, 1.15vw, 1.05rem);
+  grid-template-columns: auto 1fr;
+}
+
+.steps > li::before {
+  content: counter(step, decimal-leading-zero);
   color: rgb(138 115 88 / 70%);
   font-size: 10.5px;
   font-variant-numeric: tabular-nums;
@@ -145,32 +202,17 @@
   letter-spacing: 0.12em;
 }
 
-.benefitTitle {
-  margin: 0;
-  font-size: clamp(1rem, 1.35vw, 1.12rem);
-  font-weight: 600;
-  letter-spacing: -0.015em;
-  line-height: 1.25;
-  text-wrap: balance;
-}
-
-.benefitBody {
-  margin: 0;
-  color: rgb(38 38 42 / 68%);
-  font-size: clamp(0.9rem, 1.05vw, 0.98rem);
-  line-height: 1.55;
+.steps > li:first-child {
+  border-top: 1px solid rgb(138 115 88 / 22%);
 }
 
 /* --------------------------------------------------------------- bundle --- */
 
-/*
- * The one block that changes ground. It is the page's offer, and the whole
- * reason the button at the top of the site points here.
- */
+/* The one block that changes ground — it is what the hero's button points at. */
 .bundle {
   max-width: none;
-  margin-top: clamp(48px, 6vw, 88px);
-  padding-block: clamp(44px, 6vw, 80px);
+  margin-top: clamp(46px, 6vw, 84px);
+  padding-block: clamp(40px, 5.5vw, 72px);
   padding-inline: 0;
   background: #f0ece3;
 }
@@ -181,17 +223,9 @@
   padding-inline: clamp(20px, 5vw, 88px);
 }
 
-.bundleIntro {
-  max-width: 52ch;
-  margin: 0 0 clamp(20px, 2.6vw, 32px);
-  color: rgb(38 38 42 / 68%);
-  font-size: clamp(0.95rem, 1.15vw, 1.05rem);
-  line-height: 1.6;
-}
-
 .bundleList {
   display: grid;
-  max-width: 40rem;
+  max-width: 38rem;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -202,7 +236,7 @@
   gap: 18px;
   align-items: baseline;
   justify-content: space-between;
-  padding: clamp(12px, 1.5vw, 17px) 0;
+  padding: clamp(11px, 1.4vw, 16px) 0;
   border-bottom: 1px solid rgb(138 115 88 / 26%);
   font-size: clamp(0.95rem, 1.15vw, 1.05rem);
 }
@@ -221,19 +255,19 @@
 }
 
 .bundleNote {
-  max-width: 52ch;
-  margin: clamp(16px, 2vw, 24px) 0 0;
+  max-width: 46ch;
+  margin: clamp(14px, 1.8vw, 20px) 0 0;
   padding-left: 14px;
   border-left: 2px solid var(--taupe);
   color: rgb(38 38 42 / 62%);
-  font-size: 0.88rem;
-  line-height: 1.55;
+  font-size: 0.86rem;
+  line-height: 1.5;
 }
 
 /* ----------------------------------------------------------------- case --- */
 
 .case {
-  max-width: 44rem;
+  max-width: 42rem;
   margin: 0;
 }
 
@@ -244,20 +278,10 @@
   line-height: 1.5;
 }
 
-.closing {
-  max-width: 34ch;
-  margin: clamp(48px, 6vw, 84px) auto 0;
-  font-size: clamp(1.2rem, 2.2vw, 1.75rem);
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  line-height: 1.28;
-  text-wrap: balance;
-}
-
 /* -------------------------------------------------------------- booking --- */
 
 .booking {
-  margin-top: clamp(52px, 7vw, 96px);
-  padding-top: clamp(38px, 5vw, 62px);
+  margin-top: clamp(50px, 7vw, 90px);
+  padding-top: clamp(36px, 5vw, 58px);
   border-top: 1px solid rgb(138 115 88 / 26%);
 }
