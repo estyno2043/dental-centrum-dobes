@@ -1011,6 +1011,70 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   redirects from `/problemy/*` onto them together with repointing the jaw's
   buttons, so the site is never in a state where they aim at nothing.
 
+- 2026-08-25 — Claude merged `claude/tim-page` into `main` (21 commits) after
+  the user approved it on localhost.
+
+  Patient cases, all six rewritten against their own photographs. The featured
+  one had claimed implants and a bridge; both need a gap, and there is no
+  missing tooth anywhere in its "before". Every `problem` is now read off the
+  images. Treatments, visit counts and spans are estimates the user asked for,
+  reasoned from what the pictures show plus the standard protocol, with the
+  reasoning written beside each case and the whole set marked PROVISIONAL.
+
+  Google reviews. The hero's `4,5 ★` is now a button that raises a docked bar
+  carrying the clinic's fifteen real reviews. A bar and not a dialog: the page
+  underneath keeps scrolling, so it closes on the X and Escape but *not* on an
+  outside click, because "outside" is the page still being read.
+
+  Also: a tooth that fills from the roots up on the package button; all six
+  cases behind one row of dots on `/sluzby/vstupna-prehliadka`, not keyed on
+  the case so the divider survives a switch; the jaw card dismissed by
+  clicking away from it; and the jaw's spinner replaced with a falling chevron
+  and the word "Scrollujte".
+
+  What this cost to learn:
+
+  - The jaw's cue ring never loaded anything. It appears while the jaw opens,
+    which only scrolling drives — so a spinner sat on the one gesture that
+    advances the scene and told readers to wait for it.
+  - Google's Places API returns at most five reviews and chooses them itself.
+    No widget or integration can show more, which is why the fifteen here are
+    stored as content rather than fetched.
+  - `transform-box: fill-box` is what makes `transform-origin: bottom` mean an
+    SVG element's own box. Without it the animation still runs, from the wrong
+    place, and nothing fails.
+  - jsdom implements neither arrow-key stepping on `<input type="range">` nor
+    `Element.scrollTo`. Drive the range with a change event; rewind with
+    `scrollTop`.
+  - React state read synchronously after `.click()` in a browser probe shows
+    the *old* render. Await a tick or the feature looks broken when it is not.
+
+  Verified on the merged tree before pushing: 201 tests, lint, TypeScript, and
+  a production build of all 20 pages.
+
+  ⚠️ Blocked on the clinic, and now sitting in `main`:
+
+  1. Written consent for all six patient cases — six identifiable faces, on
+     the homepage and on `/sluzby/vstupna-prehliadka`. Nothing is live yet;
+     this must be settled before Netlify is connected.
+  2. The visit counts, spans and treatments on those six are estimates, not
+     the clinic's record. A patient looking at their own photograph should
+     find their own treatment described.
+  3. The reviews bar has no Google profile link and no review count — both
+     render only when supplied rather than guessed. The `4,5` still has no
+     recorded source.
+  4. The 80 € entry-package price and the free-RTG offer.
+  5. Nine of the ten service pages are still name, one line and a form.
+
+  ⚠️ Two things could not be verified in this environment and need the user's
+  eyes on localhost: the jaw section never mounts at all in the preview pane,
+  so the new scroll cue is covered only by tests; and `/sluzby/[sluzba]`
+  screenshots come back blank, so the case gallery's proportions are unjudged.
+
+  No files reserved. Next: the remaining service pages one at a time, and the
+  redirects from `/problemy/*` onto them together with repointing the jaw's
+  buttons, so the site is never in a state where they aim at nothing.
+
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
 credentials, tokens, or local configuration values in repository files,
