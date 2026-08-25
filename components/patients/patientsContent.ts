@@ -47,16 +47,30 @@ export const patientsIntro = {
  * for the reason given above them.
  */
 
-/** The case shown large at the top of the section. */
+/**
+ * The case shown large at the top of the section.
+ *
+ * Rewritten on 2026-08-25 against the photographs, which the previous text
+ * contradicted: it claimed implants and a bridge, and both of those need a
+ * gap. There is no missing tooth anywhere in the "before" — the two arches are
+ * complete, worn and discoloured, and in the "after" both are restored to one
+ * shade and one shape.
+ *
+ * ⚠️ `Protetika` is a reading of that evidence, not a fact from the clinic:
+ * the uniform shape, shade and gloss across both arches is prosthetic work,
+ * but a photograph cannot say whether it was crowns or veneers. Confirm it.
+ *
+ * Visits and duration are simply absent. Nothing in a photograph indicates six
+ * appointments or four months, and the previous numbers were written before
+ * any photography existed. They are two values from the clinic away from
+ * being here.
+ */
 export const featuredCase: PatientCase = {
-  id: "celkova-rekonstrukcia",
-  treatments: ["Protetika", "Implantáty"],
-  problem: "Opotrebovaný chrup a nedoliečené zuby po rokoch odkladania.",
-  facts: [
-    { label: "Návštev", value: "6" },
-    { label: "Trvanie", value: "4 mesiace" },
-    { label: "Riešenie", value: "Korunky a mostík" },
-  ],
+  id: "obnova-oboch-oblukov",
+  treatments: ["Protetika"],
+  problem:
+    "Rokmi opotrebované a stmavnuté zuby, s prednými výrazne tmavšími než ostatné.",
+  facts: [{ label: "Riešenie", value: "Obnova oboch oblúkov" }],
   before: "/media/pacient-03-pred.jpg",
   after: "/media/pacient-03-po.jpg",
 };
