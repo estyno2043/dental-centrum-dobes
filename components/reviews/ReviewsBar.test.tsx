@@ -38,17 +38,44 @@ describe("ReviewsBar", () => {
     ).toBeInTheDocument();
   });
 
-  it("switches reviews from the dots", async () => {
+  it("walks the reviews with the arrows and wraps at both ends", async () => {
     const user = userEvent.setup();
     renderBar();
-    const second = reviews[1]!;
+    const next = screen.getByRole("button", { name: "Ďalšia recenzia" });
+    const previous = screen.getByRole("button", { name: "Predchádzajúca recenzia" });
 
-    await user.click(screen.getByRole("button", { name: /Recenzia 2 z/ }));
+    await user.click(next);
+    expect(screen.getByText(reviews[1]!.text)).toBeInTheDocument();
 
-    expect(screen.getByText(second.text)).toBeInTheDocument();
+    await user.click(previous);
+    await user.click(previous);
+    expect(screen.getByText(reviews.at(-1)!.text)).toBeInTheDocument();
+  });
+
+  /*
+   * The Local Guide line is what Google prints, stored whole rather than
+   * rebuilt from counts — Slovak plurals and the thousands separator included.
+   */
+  it("prints each reviewer's Google line exactly as given", () => {
+    renderBar();
     expect(
-      screen.getByRole("button", { name: /Recenzia 2 z/ }),
-    ).toHaveAttribute("aria-current", "true");
+      screen.getByText("Miestny sprievodca · 24 recenzií · 41 fotiek"),
+    ).toBeInTheDocument();
+  });
+
+  /*
+   * The one rule that cannot be relaxed: these are real people's words. A
+   * fixture that trims or tidies them is the bug this catches.
+   */
+  it("carries every review verbatim, mistakes included", () => {
+    const solovic = reviews.find((review) => review.id === "marek-solovic")!;
+    expect(solovic.text).toContain("laxného prístupu , potom");
+    expect(solovic.text.endsWith("viac")).toBe(true);
+
+    const jokl = reviews.find((review) => review.id === "lubos-jokl")!;
+    expect(jokl.text).toContain("parkovanie.Priatelsky");
+
+    expect(reviews.every((review) => review.text.trim() === review.text)).toBe(true);
   });
 
   it("closes from the button and from Escape", async () => {
@@ -75,15 +102,12 @@ describe("ReviewsBar", () => {
     expect(onClose).not.toHaveBeenCalled();
   });
 
-  /*
-   * Guards the one thing that must never ship. Every seeded review says so in
-   * its own text; when the clinic's real ones land, this test is deleted in
-   * the same commit that removes the last placeholder.
-   */
-  it("still holds only placeholder copy", () => {
+  /* `localGuide` drives the badge, so it has to agree with the printed line. */
+  it("badges exactly the reviewers whose Google line says Local Guide", () => {
     for (const review of reviews) {
-      expect(review.text).toContain("SEM PRÍDE SKUTOČNÁ GOOGLE RECENZIA");
-      expect(review.author).toBe("Meno Priezvisko");
+      expect(review.localGuide).toBe(
+        review.meta.startsWith("Miestny sprievodca"),
+      );
     }
   });
 });

@@ -81,35 +81,77 @@
   margin: 0;
 }
 
-/*
- * Three lines, then it scrolls. A review is someone else's writing and gets
- * quoted whole — the alternative is trimming a real person's sentence to fit
- * a layout, which is the one thing this must not do.
- */
-.quoteText {
-  max-height: 4.6em;
-  margin: 0;
-  overflow-y: auto;
-  color: rgb(250 249 246 / 92%);
-  font-size: clamp(0.88rem, 1.25vw, 1rem);
-  line-height: 1.55;
-  overscroll-behavior: contain;
-  text-wrap: pretty;
-}
-
-.byline {
+.head {
   display: flex;
   flex-wrap: wrap;
   gap: 4px 12px;
-  align-items: baseline;
-  margin-top: 7px;
+  align-items: center;
+  margin-bottom: 7px;
+}
+
+/*
+ * The initial, in Google's own fallback idiom. The colour comes from the name
+ * so it is stable per reviewer; a colour that changed between visits would
+ * read as a different person.
+ */
+.avatar {
+  position: relative;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1;
+  place-items: center;
+}
+
+/*
+ * The Local Guide badge, where Google shows one: a small amber disc with a
+ * star, tucked into the bottom-right of the avatar. The ring is the avatar's
+ * own background colour showing through, which is what separates the badge
+ * from the initial behind it at this size.
+ */
+.guideBadge {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  display: block;
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgb(20 20 23);
+  border-radius: 50%;
+  background: rgb(20 20 23);
+}
+
+.guideBadge svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.who {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1px;
 }
 
 .author {
   color: var(--porcelain);
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-style: normal;
   font-weight: 600;
+  line-height: 1.25;
+}
+
+/* The line Google prints under the name, kept whole and never re-assembled. */
+.meta {
+  color: rgb(250 249 246 / 52%);
+  font-size: 0.71rem;
+  line-height: 1.3;
 }
 
 .stars {
@@ -129,6 +171,26 @@
   font-size: 0.74rem;
 }
 
+/*
+ * Three lines, then it scrolls. A review is someone else's writing and gets
+ * quoted whole — the alternative is trimming a real person's sentence to fit
+ * a layout, which is the one thing this must not do.
+ */
+.quoteText {
+  max-height: 4.6em;
+  margin: 0;
+  overflow-y: auto;
+  color: rgb(250 249 246 / 92%);
+  font-size: clamp(0.86rem, 1.2vw, 0.96rem);
+  line-height: 1.55;
+  overscroll-behavior: contain;
+  text-wrap: pretty;
+}
+
+.quoteText p {
+  margin: 0;
+}
+
 /* ----------------------------------------------------------------- side --- */
 
 .side {
@@ -137,46 +199,55 @@
   align-items: center;
 }
 
-.dots {
+/*
+ * Arrows and a count, not fifteen dots. A dot per review turns the row into
+ * fifteen four-pixel decisions and still does not say where you are; two
+ * arrows and "4 / 15" answer that outright and stay one size at any length.
+ */
+.pager {
   display: flex;
   gap: 2px;
   align-items: center;
 }
 
-/* Same idiom as the case gallery: 6px dot, 24px button, bar for the current. */
-.dot {
+.pagerButton {
   display: grid;
-  padding: 9px 5px;
+  width: 30px;
+  height: 30px;
   border: 0;
-  border-radius: 999px;
+  border-radius: 50%;
   background: none;
+  color: rgb(250 249 246 / 70%);
   cursor: pointer;
   place-items: center;
-}
-
-.dot span {
-  display: block;
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: rgb(250 249 246 / 30%);
   transition:
-    width 0.45s var(--ease),
-    background-color 0.45s var(--ease);
+    background-color 0.3s var(--ease),
+    color 0.3s var(--ease);
 }
 
-.dot:hover span {
-  background: rgb(250 249 246 / 60%);
+.pagerButton:hover,
+.pagerButton:focus-visible {
+  background: rgb(250 249 246 / 10%);
+  color: var(--porcelain);
 }
 
-.dot[aria-current="true"] span {
-  width: 24px;
-  background: var(--taupe);
-}
-
-.dot:focus-visible {
+.pagerButton:focus-visible {
   outline: 2px solid var(--taupe);
   outline-offset: 1px;
+}
+
+.counter {
+  min-width: 46px;
+  color: rgb(250 249 246 / 50%);
+  font-size: 0.76rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.counter strong {
+  color: var(--porcelain);
+  font-weight: 600;
 }
 
 .profileLink {
@@ -255,7 +326,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .bar,
-  .dot span,
+  .pagerButton,
   .close {
     transition: none;
   }
