@@ -1,0 +1,125 @@
+/*
+ * The case gallery: one comparison frame, the case's own facts, and a row of
+ * dots. Sits on the pale service pages, so everything here is dark-on-cream.
+ */
+
+.gallery {
+  display: block;
+}
+
+.meta {
+  margin-top: clamp(16px, 2vw, 22px);
+}
+
+.treatments {
+  margin: 0 0 6px;
+  color: var(--taupe-deep);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.problem {
+  margin: 0;
+  color: rgb(28 28 31 / 88%);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/*
+ * Label above value, the same way the hero's trust strip reads, so a number
+ * carries its meaning without a table's worth of rules around it.
+ */
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px clamp(20px, 3vw, 34px);
+  margin: clamp(14px, 1.8vw, 18px) 0 0;
+}
+
+.facts dt {
+  color: rgb(38 38 42 / 52%);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.facts dd {
+  margin: 3px 0 0;
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* ----------------------------------------------------------------- dots --- */
+
+.dots {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  justify-content: center;
+  margin-top: clamp(20px, 2.6vw, 30px);
+}
+
+/*
+ * The dot you see is 6px; the button around it is 24px tall. Padding rather
+ * than a bigger dot, so the row stays as quiet as it looks while still being
+ * something a thumb can hit.
+ */
+.dot {
+  display: grid;
+  padding: 9px 5px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  cursor: pointer;
+  place-items: center;
+}
+
+.dot span {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgb(138 115 88 / 32%);
+  transition:
+    width 0.45s var(--ease),
+    background-color 0.45s var(--ease);
+}
+
+.dot:hover span {
+  background: rgb(138 115 88 / 62%);
+}
+
+/*
+ * The current case stretches its dot into a short bar instead of colouring it
+ * in. A filled dot among unfilled ones has to be compared to be read; a
+ * different shape is legible at a glance, and it also survives being looked at
+ * by someone who cannot separate the two tones.
+ */
+.dot[aria-current="true"] span {
+  width: 24px;
+  background: var(--taupe-deep);
+}
+
+.dot:focus-visible {
+  outline: 2px solid var(--taupe-deep);
+  outline-offset: 1px;
+}
+
+.visuallyHidden {
+  position: absolute;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot span {
+    transition: none;
+  }
+}

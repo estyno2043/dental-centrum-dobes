@@ -4,8 +4,11 @@ import type { JSX } from "react";
 
 import { ServiceBooking } from "@/components/booking/ServiceBooking";
 import { SiteHeader } from "@/components/hero/SiteHeader";
-import { BeforeAfter } from "@/components/patients/BeforeAfter";
-import { featuredCase } from "@/components/patients/patientsContent";
+import { CaseGallery } from "@/components/patients/CaseGallery";
+import {
+  featuredCase,
+  patientCases,
+} from "@/components/patients/patientsContent";
 import {
   getServiceDetail,
   type ServicePhoto,
@@ -244,17 +247,18 @@ export default async function ServicePage({
             </section>
 
             {/*
-              ⚠️ NOT FOR PUBLICATION. The same unconsented test pair the
-              homepage carries: written consent is outstanding and the case text
-              describes nobody real. The layout is here to be judged; the
-              photographs must be replaced by consented cases first.
+              ⚠️ NOT FOR PUBLICATION. Every pair here is an identifiable face
+              and written consent is outstanding on all six; the treatments and
+              numbers beside them are estimates read off the photographs, not
+              the clinic's record. See the header of `patientsContent.ts`. The
+              layout is here to be judged — the cases are not cleared.
             */}
             <section className={styles.block} aria-labelledby="result-heading">
               <h2 className={styles.blockHeading} id="result-heading">
                 Kam to vedie
               </h2>
               <figure className={styles.case}>
-                <BeforeAfter patientCase={featuredCase} />
+                <CaseGallery cases={[featuredCase, ...patientCases]} />
                 <figcaption className={styles.caseNote}>
                   Fotografie zverejňujeme iba s písomným súhlasom pacienta.
                 </figcaption>
