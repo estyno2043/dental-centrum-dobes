@@ -448,9 +448,15 @@ export function JawZoneOverlay({
             viewBox={`0 0 ${MASTER_WIDTH} ${MASTER_HEIGHT}`}
           >
             <defs>
+              {/*
+                Porcelain into the brand's taupe. It used to run peach into
+                dusty pink — a warm wash over pink gums, which is nearly
+                invisible and, where it did show, looked like a photo filter
+                rather than a highlight.
+              */}
               <linearGradient id="jaw-zone-fill" x1="0" x2="1" y1="0" y2="1">
-                <stop offset="0" stopColor="#efd8a3" />
-                <stop offset="1" stopColor="#d68f89" />
+                <stop offset="0" stopColor="#faf9f6" />
+                <stop offset="1" stopColor="#ae9b7e" />
               </linearGradient>
             </defs>
             {SURFACES.map((surface) => (

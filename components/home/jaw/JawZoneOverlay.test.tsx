@@ -386,12 +386,43 @@ describe("JawZoneOverlay pain map", () => {
     expect(cssText).toMatch(/@keyframes card-unfold/);
   });
 
-  /* The old bespoke gold is gone from the last thing wearing it. */
-  it("dresses the card in the brand's taupe", () => {
-    const card = cssText.match(/\.zoneCard \{[^}]*\}/)?.[0] ?? "";
+  /*
+   * The jaw was drawn in a bespoke amber that appears nowhere else on the
+   * site — leaders, anchors, the pulse, the masks, the card, the buttons. All
+   * of it is the brand's own palette now, and the taupe is spent on the two
+   * things that mean something rather than on every edge.
+   */
+  it("keeps the whole jaw out of the old amber", () => {
+    const amber = [
+      "#dfbd80", "#f0cf91", "#fff2ca", "#efd8a3", "#d68f89",
+      "239 208 150", "255 226 169", "248 218 160",
+      "238, 195, 133", "232, 178, 137", "247, 218, 160",
+    ];
+    for (const value of amber) {
+      expect(cssText).not.toContain(value);
+    }
 
-    expect(card).toMatch(/border:\s*1px solid rgb\(174 155 126/);
-    expect(cssText).not.toMatch(/#dfbd80/);
+    // A neutral hairline around the card; the taupe reserved for the accents.
+    const card = cssText.match(/\.zoneCard \{[^}]*\}/)?.[0] ?? "";
+    expect(card).toMatch(/border:\s*1px solid rgb\(250 249 246/);
+    expect(cssText).toMatch(/\.cardKicker \{[^}]*color:\s*var\(--taupe\)/);
+    expect(cssText).toMatch(
+      /\.zoneMarker\[data-active="true"\] \.zoneLeader \{[^}]*stroke:\s*var\(--taupe\)/,
+    );
+  });
+
+  /*
+   * Hollow at rest, filled when live. A solid dot on all four zones is four
+   * things shouting at once; filling one ring is what says "this one".
+   */
+  it("leaves the anchors hollow until their zone is live", () => {
+    const anchor = cssText.match(/\.zoneAnchor \{[^}]*\}/)?.[0] ?? "";
+
+    expect(anchor).toMatch(/stroke:\s*var\(--porcelain\)/);
+    expect(anchor).not.toMatch(/fill:\s*var\(--taupe\)/);
+    expect(cssText).toMatch(
+      /\.zoneMarker\[data-active="true"\] \.zoneAnchor \{[^}]*fill:\s*var\(--taupe\)/,
+    );
   });
 
   it("keeps one centered 16:9 artboard and pop-motion contracts", () => {
