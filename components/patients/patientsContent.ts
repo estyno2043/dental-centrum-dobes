@@ -56,21 +56,36 @@ export const patientsIntro = {
  * complete, worn and discoloured, and in the "after" both are restored to one
  * shade and one shape.
  *
- * ⚠️ `Protetika` is a reading of that evidence, not a fact from the clinic:
- * the uniform shape, shade and gloss across both arches is prosthetic work,
- * but a photograph cannot say whether it was crowns or veneers. Confirm it.
+ * ⚠️ PROVISIONAL — the clinic must confirm every value here before this page
+ * goes live. Only `problem` is read off the photographs. The rest is a
+ * professional estimate the user asked for on 2026-08-25, reasoned as:
  *
- * Visits and duration are simply absent. Nothing in a photograph indicates six
- * appointments or four months, and the previous numbers were written before
- * any photography existed. They are two values from the clinic away from
- * being here.
+ *   Crowns, not veneers. The "before" shows worn incisal edges and central
+ *   incisors distinctly darker than their neighbours — the signature of a
+ *   non-vital or heavily restored tooth. Veneers need sound enamel and do not
+ *   mask a dark core; crowns cover both problems, and the opacity and full
+ *   coverage in the "after" read as crowns.
+ *
+ *   Seven visits over three months. Standard full-arch ceramic protocol:
+ *   examination with radiographs and a plan, endodontic work on the dark
+ *   teeth, preparation and temporaries for each arch in turn, a try-in,
+ *   seating, and a review. Lab turnaround between stages is what makes the
+ *   span months rather than weeks; two arches put it at the upper end.
+ *
+ * A patient looking at their own photograph should find their own treatment
+ * described. These numbers are typical, not theirs, so they need a yes from
+ * the clinic — the same yes the consent line below already waits on.
  */
 export const featuredCase: PatientCase = {
   id: "obnova-oboch-oblukov",
   treatments: ["Protetika"],
   problem:
     "Rokmi opotrebované a stmavnuté zuby, s prednými výrazne tmavšími než ostatné.",
-  facts: [{ label: "Riešenie", value: "Obnova oboch oblúkov" }],
+  facts: [
+    { label: "Návštev", value: "7" },
+    { label: "Trvanie", value: "3 mesiace" },
+    { label: "Riešenie", value: "Keramické korunky" },
+  ],
   before: "/media/pacient-03-pred.jpg",
   after: "/media/pacient-03-po.jpg",
 };
