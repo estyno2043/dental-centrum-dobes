@@ -86,7 +86,9 @@ export default async function ServicePage({
 
   return (
     <>
-      <SiteHeader />
+      {/* The page knows it is quiet, so the header need not wait for a
+          measurement to find out — see `SiteHeader`. */}
+      <SiteHeader initialMode="quiet" />
       <main className={styles.page} data-header-mode="quiet">
         {/*
           The service's own photograph, filling the page behind everything.

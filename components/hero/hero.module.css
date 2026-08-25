@@ -349,6 +349,35 @@
   height: 25px;
 }
 
+/*
+ * The way back, wearing the menu trigger's shell — same size, same corner, so
+ * it reads as the one control changing its job rather than as a different
+ * button that has appeared. Its own width would have been dead anyway:
+ * `.desktopMenuTrigger` sets one later in this file at equal specificity.
+ */
+.backTrigger {
+  gap: 2px;
+}
+
+.backArrow {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  transition: transform 0.34s var(--ease);
+}
+
+.backArrow svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Leans the way it is going. */
+.backTrigger:hover .backArrow,
+.backTrigger:focus-visible .backArrow {
+  transform: translateX(-3px);
+}
+
 .mobileMenuDivider {
   width: 1px;
   height: 26px;
@@ -620,7 +649,36 @@
 }
 
 .desktopMenuTrigger:hover .mobileMenuDivider,
-.desktopMenuTrigger:focus-visible .mobileMenuDivider {
+.desktopMenuTrigger:focus-visible /*
+ * The way back, wearing the menu trigger's shell — same size, same corner, so
+ * it reads as the one control changing its job rather than as a different
+ * button that has appeared. Its own width would have been dead anyway:
+ * `.desktopMenuTrigger` sets one later in this file at equal specificity.
+ */
+.backTrigger {
+  gap: 2px;
+}
+
+.backArrow {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  transition: transform 0.34s var(--ease);
+}
+
+.backArrow svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Leans the way it is going. */
+.backTrigger:hover .backArrow,
+.backTrigger:focus-visible .backArrow {
+  transform: translateX(-3px);
+}
+
+.mobileMenuDivider {
   background: rgb(28 28 31 / 30%);
 }
 
