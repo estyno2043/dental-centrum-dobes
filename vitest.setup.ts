@@ -23,4 +23,21 @@ vi.mock("next/navigation", async (importOriginal) => {
   };
 });
 
+/*
+ * jsdom implements no `ResizeObserver`, and components that re-measure their
+ * own layout need one to exist rather than to work — the callback never has to
+ * fire for a test, the constructor only has to not throw. Here rather than in
+ * each test file, for the same reason as the router stub above.
+ */
+if (!("ResizeObserver" in globalThis)) {
+  vi.stubGlobal(
+    "ResizeObserver",
+    class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    },
+  );
+}
+
 afterEach(cleanup);

@@ -61,6 +61,10 @@ export function TeamSection({
     const clamp = (value: number) => Math.min(1, Math.max(0, value));
 
     const cards = Array.from(section.querySelectorAll<HTMLElement>("li"));
+    /** Each card's centre within the section, measured outside the scroll handler. */
+    const centres = new Array<number>(cards.length).fill(0);
+    /** The last `--focus` written per card, so an unchanged value is not rewritten. */
+    const written = new Array<number>(cards.length).fill(Number.NaN);
 
     const update = () => {
       const rect = section.getBoundingClientRect();
@@ -103,24 +107,66 @@ export function TeamSection({
       const middle = window.innerHeight / 2;
       const hold = window.innerHeight * HOLD;
       const fade = window.innerHeight * FADE;
-      for (const card of cards) {
-        const distance = Math.abs(
-          rect.top + card.offsetTop + card.offsetHeight / 2 - middle,
+      for (let index = 0; index < cards.length; index += 1) {
+        const value = clamp(
+          (hold + fade - Math.abs(rect.top + centres[index] - middle)) / fade,
         );
-        card.style.setProperty(
-          "--focus",
-          String(clamp((hold + fade - distance) / fade)),
-        );
+
+        /*
+         * Written only when it actually changes. Most of the eleven are far
+         * outside the band on any given frame and already sit at 0, and a
+         * custom property written with the value it already holds still
+         * invalidates style for that element.
+         */
+        if (value !== written[index]) {
+          written[index] = value;
+          cards[index].style.setProperty("--focus", String(value));
+        }
       }
     };
 
+    /*
+     * The cards' own offsets are read here and not in `update`.
+     *
+     * `offsetTop` and `offsetHeight` force layout, and reading them inside the
+     * scroll handler meant eleven forced layouts per card per frame — more
+     * expensive than anything the frame then painted. They only change when
+     * the section is laid out again, so a resize recomputes them and scrolling
+     * reads nothing but the section's own rect.
+     */
+    const measure = () => {
+      for (let index = 0; index < cards.length; index += 1) {
+        centres[index] = cards[index].offsetTop + cards[index].offsetHeight / 2;
+      }
+    };
+
+    measure();
     update();
+
+    /*
+     * Re-measured whenever the section is laid out again, not only on a window
+     * resize.
+     *
+     * The offsets are not final on mount — the portraits and the web font both
+     * settle afterwards, and measuring once before that left row partners with
+     * different centres, so the two halves of a row lit separately instead of
+     * together. Watching the section catches every one of those reflows.
+     *
+     * Safe against feedback: the handler writes only custom properties that
+     * drive `transform` and `opacity`, neither of which changes layout, so it
+     * cannot retrigger itself.
+     */
+    const observer = new ResizeObserver(() => {
+      measure();
+      update();
+    });
+    observer.observe(section);
+
     window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
 
     return () => {
+      observer.disconnect();
       window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
     };
   }, []);
 

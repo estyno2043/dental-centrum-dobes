@@ -249,8 +249,15 @@
    * object and not only in its colours — which is the difference between a
    * photograph turning colour and a photograph coming forward.
    */
-  box-shadow: 0 calc(var(--lit) * 22px) calc(var(--lit) * 48px)
-    rgb(38 38 42 / calc(var(--lit) * 20%));
+  /*
+   * Static offset and blur radius, with only the alpha driven by `--lit`.
+   * Animating the blur radius made the browser re-blur the shadow on every
+   * scroll frame; holding the geometry still lets it blur once and cache the
+   * result, and the shadow now fades in at full size rather than growing. The
+   * rise it used to carry is already in the `translateY` below.
+   */
+  box-shadow: 0 22px 48px rgb(38 38 42 / calc(var(--lit) * 20%));
+  opacity: calc(0.74 + var(--lit) * 0.26);
   transform: translateY(calc(var(--lit) * -8px));
 }
 
@@ -271,20 +278,33 @@
  * No transition on any of it: `--focus` changes every scroll frame, and a
  * transition on top of that only makes the colour lag behind the light.
  */
-.portrait {
+.portraitHeld,
+.portraitLit {
   --lit: max(var(--focus), var(--hover));
 
   display: block;
   width: 100%;
   height: auto;
   aspect-ratio: 4 / 5;
-  filter: grayscale(calc(1 - var(--lit)))
-    brightness(calc(0.97 + var(--lit) * 0.09))
-    contrast(calc(0.96 + var(--lit) * 0.08))
-    saturate(calc(0.9 + var(--lit) * 0.22));
   object-fit: cover;
-  opacity: calc(0.74 + var(--lit) * 0.26);
   transform: scale(calc(1.004 + var(--lit) * 0.026));
+}
+
+/* The held-back state, painted once: grey, a little flat, and never changing. */
+.portraitHeld {
+  filter: grayscale(1) brightness(0.97) contrast(0.96) saturate(0.9);
+}
+
+/*
+ * The lit state, stacked exactly over it and revealed by `--lit` alone. Its
+ * own filter is constant, so the only per-frame work is compositing one
+ * already-painted layer over another.
+ */
+.portraitLit {
+  position: absolute;
+  inset: 0;
+  filter: brightness(1.06) contrast(1.04) saturate(1.12);
+  opacity: var(--lit);
 }
 
 .member:hover,
@@ -399,14 +419,21 @@
    * light to travel through, so holding the portraits back would take
    * something away rather than add anything.
    */
-  .portrait {
+  .portraitHeld,
+  .portraitLit {
     filter: none;
-    opacity: 1;
     transform: none;
+  }
+
+  /* The lit layer covers the held-back one outright, so the pair reads as
+     one plain photograph. */
+  .portraitLit {
+    opacity: 1;
   }
 
   .frame {
     box-shadow: none;
+    opacity: 1;
     transform: none;
   }
 
@@ -432,8 +459,15 @@
     grid-template-columns: 1fr;
   }
 
+  /*
+   * Nothing in this section transforms on a phone — the drift here, the lift
+   * on `.frame` and the scale on the portraits are all `none` below — so the
+   * promotion those declarations asked for buys six permanent compositor
+   * layers and accelerates nothing.
+   */
   .member:nth-child(odd) {
     transform: none;
+    will-change: auto;
   }
 
   /*
@@ -447,7 +481,8 @@
     transform: none;
   }
 
-  .portrait {
+  .portraitHeld,
+  .portraitLit {
     transform: none;
   }
 }

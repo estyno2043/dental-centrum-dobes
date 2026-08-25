@@ -128,7 +128,12 @@
   border: 1px solid rgb(206 177 127 / 72%);
   box-shadow: 0 0 30px rgb(206 177 127 / 8%);
   pointer-events: none;
-  will-change: inset, opacity;
+
+  /*
+   * `opacity` only. `inset` is a layout property — the compositor cannot take
+   * it over, so naming it here bought a permanent layer and no acceleration.
+   */
+  will-change: opacity;
 }
 
 @media (max-width: 767px) {

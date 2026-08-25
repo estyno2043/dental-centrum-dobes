@@ -505,3 +505,28 @@
     grid-column: 2 / -1;
   }
 }
+
+/*
+ * Touch has no hover, so every `:hover` rule above is unreachable on a phone —
+ * `any-hover: none` is true there, and `:focus-visible` is a keyboard state,
+ * not a tap. Without this the primary way into the service pages gives no
+ * feedback at all when tapped.
+ *
+ * A press, not a hover replayed: a short inward scale on the surface actually
+ * being touched. `transform` only, so it composites, and short enough to
+ * finish inside the tap rather than trailing the navigation.
+ */
+@media (any-hover: none) {
+  .cardLink,
+  .row {
+    transition: transform 0.12s var(--ease);
+  }
+
+  .cardLink:active {
+    transform: scale(0.985);
+  }
+
+  .row:active {
+    transform: scale(0.99);
+  }
+}

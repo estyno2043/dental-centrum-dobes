@@ -5,11 +5,13 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Desktop hover menu published to `main` — no active task
-- Owner: —
-- Branch: —
-- Task: none in progress. See the dated log entry below for the desktop hover
-  menu's final state.
+- Status: Mobile motion pass 1 of 3 done; awaiting localhost approval
+- Owner: Claude
+- Branch: `claude/motion-compositor-pass`
+- Base: `e424bd1` (`origin/main`)
+- Task: move the team section's scroll-driven motion off paint and layout and
+  onto the compositor, without changing what it looks like, and give touch a
+  pressed state where hover was the only feedback.
 
 ## File Reservations
 
