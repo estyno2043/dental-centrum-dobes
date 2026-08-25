@@ -38,4 +38,3 @@ export function GoogleMark({ title }: { title?: string }): JSX.Element {
     </svg>
   );
 }
-
