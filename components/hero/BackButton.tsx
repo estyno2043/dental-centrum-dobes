@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, type JSX } from "react";
 import { IconArrowNarrowLeft } from "@tabler/icons-react";
 
+import { useServiceExit } from "../services/useServiceExit";
 import styles from "./hero.module.css";
 
 /** Where the header last saw the reader, so "back" knows if it has anywhere to go. */
@@ -28,6 +29,12 @@ type BackButtonProps = Readonly<{
  */
 export function BackButton({ ground, scrolled }: BackButtonProps): JSX.Element {
   const router = useRouter();
+  /*
+   * The photograph shrinking back into the card it grew from — the opening
+   * morph run backwards. It plays over the navigation rather than before it,
+   * so the catalogue is already rendering behind the picture as it closes.
+   */
+  const playExit = useServiceExit();
 
   const goBack = useCallback(() => {
     let cameFromUs = false;
@@ -38,9 +45,11 @@ export function BackButton({ ground, scrolled }: BackButtonProps): JSX.Element {
       cameFromUs = false;
     }
 
+    playExit();
+
     if (cameFromUs) router.back();
     else router.push("/");
-  }, [router]);
+  }, [playExit, router]);
 
   return (
     <div
