@@ -5,6 +5,7 @@
 import Link from "next/link";
 import { useState, type JSX } from "react";
 import { motion } from "motion/react";
+import { ReviewsBar } from "@/components/reviews/ReviewsBar";
 import { RotatingHeadline } from "./RotatingHeadline";
 import {
   headlineVariants,
@@ -59,6 +60,8 @@ export function Hero(): JSX.Element {
     () => globalThis.matchMedia?.(wideViewportQuery).matches ?? false,
   );
   const sources = isWideViewport ? wideSources : narrowSources;
+
+  const [reviewsOpen, setReviewsOpen] = useState(false);
 
   return (
     <>
@@ -168,22 +171,50 @@ export function Hero(): JSX.Element {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.62, delay: 0.54, ease: premiumEase }}
           >
-            {trustItems.map((item) => (
-              <div className={styles.trustItem} key={item.label}>
-                <span className={styles.trustValue}>
-                  {item.value}
-                  {"accent" in item ? (
-                    <i className={styles.trustAccent}>{item.accent}</i>
-                  ) : null}
-                </span>
-                <span className={styles.trustLabel}>{item.label}</span>
-              </div>
-            ))}
+            {trustItems.map((item) => {
+              const body = (
+                <>
+                  <span className={styles.trustValue}>
+                    {item.value}
+                    {"accent" in item ? (
+                      <i className={styles.trustAccent}>{item.accent}</i>
+                    ) : null}
+                  </span>
+                  <span className={styles.trustLabel}>{item.label}</span>
+                </>
+              );
+
+              /*
+                Only the Google rating is interactive, and it becomes a real
+                button rather than a clickable div — the rest of the strip is
+                four facts and should keep reading as four facts.
+              */
+              return "reviews" in item ? (
+                <button
+                  aria-expanded={reviewsOpen}
+                  className={`${styles.trustItem} ${styles.trustTrigger}`}
+                  key={item.label}
+                  onClick={() => setReviewsOpen((current) => !current)}
+                  type="button"
+                >
+                  {body}
+                  <span className={styles.trustHint} aria-hidden="true">
+                    Čítať recenzie
+                  </span>
+                </button>
+              ) : (
+                <div className={styles.trustItem} key={item.label}>
+                  {body}
+                </div>
+              );
+            })}
           </motion.div>
         </div>
 
         <div className={styles.scrollCue}>scrollujte</div>
       </header>
+
+      <ReviewsBar onClose={() => setReviewsOpen(false)} open={reviewsOpen} />
     </>
   );
 }

@@ -13,8 +13,13 @@ export const navigationItems = [
   { label: "Kontakt", href: "#" },
 ] as const;
 
+/*
+ * `reviews: true` marks the one item that does something when clicked — it
+ * raises the reviews bar. Kept here rather than matched on the label in the
+ * component, so renaming the label cannot silently unhook the button.
+ */
 export const trustItems = [
-  { value: "4,5", accent: "★", label: "Google hodnotenie" },
+  { value: "4,5", accent: "★", label: "Google hodnotenie", reviews: true },
   { value: "do 19:00", label: "otvorené Po–Št" },
   { value: "Zdarma", label: "parkovanie pre pacientov" },
   { value: "od 3 r.", label: "ošetrujeme aj deti" },

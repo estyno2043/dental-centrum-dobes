@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { act, render, screen } from "@testing-library/react";
+import { act, render, screen, within } from "@testing-library/react";
 import { afterEach, expect, test, vi } from "vitest";
 import { Hero } from "./Hero";
 import { SiteHeader } from "./SiteHeader";
@@ -82,8 +82,11 @@ test("renders the approved hero copy and patient contact details", () => {
     "href",
     "tel:+421918800002",
   );
-  expect(screen.getByText("4,5")).toBeInTheDocument();
-  expect(screen.getByText("Google hodnotenie")).toBeInTheDocument();
+  // Scoped to the trust strip: the rating also appears inside the reviews bar,
+  // and this assertion is about the hero's own copy.
+  const rating = screen.getByRole("button", { name: /Google hodnotenie/ });
+  expect(within(rating).getByText("4,5")).toBeInTheDocument();
+  expect(within(rating).getByText("Google hodnotenie")).toBeInTheDocument();
   expect(screen.getByText("parkovanie pre pacientov")).toBeInTheDocument();
   expect(screen.getByText("ošetrujeme aj deti")).toBeInTheDocument();
 

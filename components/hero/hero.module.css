@@ -1477,3 +1477,62 @@
     transform: none;
   }
 }
+
+/*
+ * The Google rating is the one fact in the strip you can act on, so it has to
+ * look like it without turning the row into a row of buttons. It keeps the
+ * exact type of its four neighbours and gains only an underline on the label
+ * and a line of small print that arrives on hover.
+ */
+.trustTrigger {
+  position: relative;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.trustTrigger .trustLabel {
+  text-decoration: underline;
+  text-decoration-color: rgb(255 255 255 / 28%);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.3s var(--ease);
+}
+
+.trustTrigger:hover .trustLabel,
+.trustTrigger:focus-visible .trustLabel {
+  text-decoration-color: var(--taupe);
+}
+
+/*
+ * Sits under the item without taking part in the layout, so revealing it
+ * cannot nudge the other three facts sideways.
+ */
+.trustHint {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  color: var(--taupe);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  opacity: 0;
+  text-transform: uppercase;
+  transition: opacity 0.3s var(--ease);
+  white-space: nowrap;
+}
+
+.trustTrigger:hover .trustHint,
+.trustTrigger:focus-visible .trustHint {
+  opacity: 1;
+}
+
+.trustTrigger:focus-visible {
+  outline: 2px solid var(--taupe);
+  outline-offset: 6px;
+  border-radius: 4px;
+}

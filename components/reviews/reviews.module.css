@@ -1,0 +1,262 @@
+/*
+ * The reviews bar. Docked to the bottom of the viewport, dark like the hero it
+ * is summoned from, and glassy so the page keeps showing through — it is
+ * something laid over the site, not a new floor to it.
+ */
+
+.bar {
+  position: fixed;
+  z-index: 60;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-top: 1px solid rgb(174 155 126 / 40%);
+  background: rgb(20 20 23 / 88%);
+  backdrop-filter: blur(14px) saturate(1.2);
+  color: var(--porcelain);
+  transform: translateY(100%);
+  transition: transform 0.6s var(--ease);
+}
+
+.bar[data-open="true"] {
+  transform: translateY(0);
+}
+
+.inner {
+  display: grid;
+  gap: clamp(14px, 2vw, 30px);
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: clamp(16px, 2vw, 22px) clamp(20px, 4vw, 64px);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+/* ---------------------------------------------------------------- brand --- */
+
+.brand {
+  display: flex;
+  gap: 11px;
+  align-items: center;
+}
+
+.mark {
+  display: block;
+  width: 26px;
+  height: 26px;
+  flex: none;
+}
+
+.mark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.15;
+}
+
+.summary strong {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.summaryLabel {
+  color: rgb(250 249 246 / 55%);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------- quote --- */
+
+.quote {
+  min-width: 0;
+  margin: 0;
+}
+
+/*
+ * Three lines, then it scrolls. A review is someone else's writing and gets
+ * quoted whole — the alternative is trimming a real person's sentence to fit
+ * a layout, which is the one thing this must not do.
+ */
+.quoteText {
+  max-height: 4.6em;
+  margin: 0;
+  overflow-y: auto;
+  color: rgb(250 249 246 / 92%);
+  font-size: clamp(0.88rem, 1.25vw, 1rem);
+  line-height: 1.55;
+  overscroll-behavior: contain;
+  text-wrap: pretty;
+}
+
+.byline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  align-items: baseline;
+  margin-top: 7px;
+}
+
+.author {
+  color: var(--porcelain);
+  font-size: 0.82rem;
+  font-style: normal;
+  font-weight: 600;
+}
+
+.stars {
+  color: #fbbc05;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+}
+
+/* The stars that were not given: same glyph, so the row keeps its width. */
+.stars i {
+  color: rgb(250 249 246 / 22%);
+  font-style: normal;
+}
+
+.date {
+  color: rgb(250 249 246 / 48%);
+  font-size: 0.74rem;
+}
+
+/* ----------------------------------------------------------------- side --- */
+
+.side {
+  display: flex;
+  gap: clamp(10px, 1.4vw, 20px);
+  align-items: center;
+}
+
+.dots {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+/* Same idiom as the case gallery: 6px dot, 24px button, bar for the current. */
+.dot {
+  display: grid;
+  padding: 9px 5px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  cursor: pointer;
+  place-items: center;
+}
+
+.dot span {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgb(250 249 246 / 30%);
+  transition:
+    width 0.45s var(--ease),
+    background-color 0.45s var(--ease);
+}
+
+.dot:hover span {
+  background: rgb(250 249 246 / 60%);
+}
+
+.dot[aria-current="true"] span {
+  width: 24px;
+  background: var(--taupe);
+}
+
+.dot:focus-visible {
+  outline: 2px solid var(--taupe);
+  outline-offset: 1px;
+}
+
+.profileLink {
+  color: rgb(250 249 246 / 70%);
+  font-size: 0.76rem;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+
+.profileLink:hover,
+.profileLink:focus-visible {
+  color: var(--porcelain);
+  text-decoration: underline;
+}
+
+.close {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border: 1px solid rgb(250 249 246 / 22%);
+  border-radius: 50%;
+  background: none;
+  color: rgb(250 249 246 / 78%);
+  cursor: pointer;
+  place-items: center;
+  transition:
+    border-color 0.3s var(--ease),
+    background-color 0.3s var(--ease),
+    color 0.3s var(--ease);
+}
+
+.close:hover,
+.close:focus-visible {
+  border-color: var(--taupe);
+  background: rgb(174 155 126 / 16%);
+  color: var(--porcelain);
+}
+
+.close:focus-visible {
+  outline: 2px solid var(--taupe);
+  outline-offset: 2px;
+}
+
+.visuallyHidden {
+  position: absolute;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/*
+ * Narrow: the brand block and the controls share the top row and the quote
+ * takes the full width underneath, so the text never gets squeezed into a
+ * column too thin to read.
+ */
+@media (max-width: 720px) {
+  .inner {
+    gap: 12px;
+    grid-template-columns: auto 1fr;
+  }
+
+  .quote {
+    order: 3;
+    grid-column: 1 / -1;
+  }
+
+  .side {
+    justify-content: flex-end;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar,
+  .dot span,
+  .close {
+    transition: none;
+  }
+}
