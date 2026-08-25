@@ -132,7 +132,11 @@ test("shows contained jaw with transient pain-zone loading cue", () => {
   setProgress(545);
   expect(screen.getByTestId("jaw-viewport")).toBeInTheDocument();
   expect(screen.getByText("Zóny bolesti")).toBeVisible();
-  expect(screen.getByTestId("jaw-loading-ring")).toBeInTheDocument();
+  // A scroll prompt, not a spinner: a turning ring told readers to wait, and
+  // waiting is the one thing that leaves this scene where it started.
+  expect(screen.getByText("Scrollujte")).toBeVisible();
+  expect(screen.getByTestId("jaw-scroll-hint")).toBeInTheDocument();
+  expect(screen.queryByTestId("jaw-loading-ring")).not.toBeInTheDocument();
   expect(screen.queryByRole("heading", { name: "Kde vás to trápi?" })).not.toBeInTheDocument();
   expect(screen.queryByRole("link", { name: "Chýba mi zub" })).not.toBeInTheDocument();
 });
@@ -159,7 +163,10 @@ test("uses contained rounded scene and gradient dissolve into next section", () 
   expect(cssText).toMatch(/\.jawViewport[\s\S]*border-radius:\s*clamp\(/);
   expect(cssText).toMatch(/\.jawViewport[\s\S]*width:\s*min\(/);
   expect(cssText).toMatch(/\.exitGradient[\s\S]*linear-gradient/);
-  expect(cssText).toMatch(/@keyframes\s+jaw-loading-spin/);
+  // The cue falls and fades rather than turning: a ring that goes round
+  // forever reads as "loading", which is the opposite of what to do here.
+  expect(cssText).toMatch(/@keyframes\s+jaw-scroll-drift/);
+  expect(cssText).not.toMatch(/@keyframes\s+jaw-loading-spin/);
   expect(cssText).toMatch(/\.jawMedia\s*\{[^}]*inset:\s*0\.1px;/);
 });
 
