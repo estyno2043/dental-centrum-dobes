@@ -4,7 +4,9 @@
 /* eslint-disable @next/next/no-img-element -- Preserve the approved logo markup and extracted asset without an image-service rewrite. */
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState, type JSX } from "react";
+import { BackButton, PREVIOUS_KEY } from "./BackButton";
 import { DesktopMenu } from "./DesktopMenu";
 import { MobileMenu } from "./MobileMenu";
 import styles from "./hero.module.css";
@@ -22,9 +24,43 @@ import styles from "./hero.module.css";
 /** Roughly the header's own height — the band it actually covers. */
 const HEADER_BAND = 104;
 
-export function SiteHeader(): JSX.Element {
+type SiteHeaderProps = Readonly<{
+  /**
+   * What the page knows about itself before anything has been measured.
+   *
+   * The mode is normally read off the section under the header, which cannot
+   * happen until after the first paint — and on a page that is `quiet` from
+   * top to bottom that means one frame of the wrong header. A page that knows
+   * says so.
+   */
+  initialMode?: "none" | "light" | "minimal" | "quiet";
+}>;
+
+export function SiteHeader({
+  initialMode = "none",
+}: SiteHeaderProps = {}): JSX.Element {
+  const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [mode, setMode] = useState<"none" | "light" | "minimal">("none");
+  const [mode, setMode] = useState<"none" | "light" | "minimal" | "quiet">(
+    initialMode,
+  );
+
+  /*
+   * Remembers the page the reader was on before this one, so the back control
+   * knows whether it has anywhere of ours to return to. Written on every route
+   * change; read only by `BackButton`.
+   */
+  useEffect(() => {
+    try {
+      const current = window.sessionStorage.getItem("dobes:current-path");
+      if (current && current !== pathname) {
+        window.sessionStorage.setItem(PREVIOUS_KEY, current);
+      }
+      window.sessionStorage.setItem("dobes:current-path", pathname ?? "/");
+    } catch {
+      // Storage can be refused; the back control then falls back to home.
+    }
+  }, [pathname]);
   const [onHero, setOnHero] = useState(true);
 
   /*
@@ -37,6 +73,8 @@ export function SiteHeader(): JSX.Element {
    *            white type would otherwise be unreadable
    *   minimal  no bar and no links — the logo and the tour button alone, the
    *            way the hero carries them
+   *   quiet    the mark on its own. For pages that carry their own call to
+   *            action, where a second one in the corner competes with it
    *
    * Deliberately not an IntersectionObserver, which would express this more
    * directly: measuring the rect in the scroll handler is a few lines more,
@@ -54,7 +92,11 @@ export function SiteHeader(): JSX.Element {
         return rect.top < HEADER_BAND && rect.bottom > 0;
       });
       const declared = covering?.getAttribute("data-header-mode");
-      setMode(declared === "light" || declared === "minimal" ? declared : "none");
+      setMode(
+        declared === "light" || declared === "minimal" || declared === "quiet"
+          ? declared
+          : "none",
+      );
 
       /*
        * Measured against scroll position rather than the hero's own rect: the
@@ -83,7 +125,8 @@ export function SiteHeader(): JSX.Element {
           styles.navigation,
           isScrolled ? styles.scrolled : "",
           mode === "light" ? styles.onLight : "",
-          mode === "minimal" ? styles.onMinimal : "",
+          mode === "minimal" || mode === "quiet" ? styles.onMinimal : "",
+          mode === "quiet" ? styles.onQuiet : "",
           onHero ? styles.onHero : "",
         ]
           .filter(Boolean)
@@ -111,7 +154,23 @@ export function SiteHeader(): JSX.Element {
           <MobileMenu />
         </div>
       </nav>
-      <DesktopMenu scrolled={isScrolled} />
+      {/*
+        On a service page the menu gives way to the way back. Those pages are
+        somewhere the reader arrived *from* something, and returning them to
+        the exact spot they left is worth more than a list of four links they
+        have already seen.
+      */}
+      {mode === "quiet" ? (
+        <BackButton
+          ground={mode === "quiet" ? "light" : "dark"}
+          scrolled={isScrolled}
+        />
+      ) : (
+        <DesktopMenu
+          ground={mode === "none" && onHero ? "dark" : "light"}
+          scrolled={isScrolled}
+        />
+      )}
     </>
   );
 }

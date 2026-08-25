@@ -36,6 +36,14 @@ export type ServicePhoto = {
 export type ServicePackageItem = {
   readonly label: string;
   readonly price: string;
+  /** Struck through and given away. The `price` stays, as what it is worth. */
+  readonly free?: boolean;
+};
+
+export type ServiceInclusion = {
+  readonly title: string;
+  /** One short line. If it needs two, it is not one inclusion. */
+  readonly note: string;
 };
 
 export type ServiceDetail = {
@@ -45,13 +53,23 @@ export type ServiceDetail = {
   readonly hero: ServicePhoto;
   readonly facts: readonly ServiceFact[];
   readonly benefitsHeading: string;
-  /** One line each. If a benefit needs a paragraph, it is two benefits. */
-  readonly benefits: readonly string[];
+  /**
+   * What the price actually buys — the deliverables, and only those. A dozen
+   * mixed-together lines read as a wall and hide the four things that matter.
+   */
+  readonly benefits: readonly ServiceInclusion[];
+  readonly extrasHeading: string;
+  /** Conditions and conveniences. Not what is being bought. */
+  readonly extras: readonly string[];
   readonly gallery: readonly ServicePhoto[];
   readonly bundle?: {
     readonly heading: string;
     readonly items: readonly ServicePackageItem[];
+    /** What the parts add up to before anything is given away. */
+    readonly listTotal: string;
+    /** What is actually charged. */
     readonly total: string;
+    readonly saving: string;
     /** Rendered as a question to ask, never as a standing offer. */
     readonly unconfirmed?: string;
   };
@@ -80,15 +98,29 @@ const vstupnaPrehliadka: ServiceDetail = {
 
   benefitsHeading: "Čo to zahŕňa",
   benefits: [
-    "Prezrieme celú ústnu dutinu, nie iba zub, ktorý bolí",
-    "Kontrola ďasien, jazyka, čeľustných kĺbov a sliznice",
-    "Vlastný zubný záznam — cudzí nepreberáme",
-    "RTG odhalí kazy medzi zubami a pod starými výplňami",
-    "Panoramatický snímok celého chrupu",
-    "CT 3D vtedy, keď z neho niečo vyplýva",
-    "Bez bolesti — vrátane samotnej anestézie",
-    "Klasickú injekciu u nás uvidíte len ojedinele",
-    "Povieme vám, čo je súrne a čo pokojne počká",
+    {
+      title: "Komplexné vyšetrenie celej ústnej dutiny",
+      note: "Ďasná, jazyk, čeľustné kĺby aj sliznica — nie iba zub, ktorý bolí.",
+    },
+    {
+      title: "4× intraorálny RTG snímok",
+      note: "Kazy medzi zubami a pod starými výplňami, kam oko nedovidí.",
+    },
+    {
+      title: "Panoramatický snímok celého chrupu",
+      note: "Jeden záber na celý chrup aj okolozubné štruktúry.",
+    },
+    {
+      title: "Plán ošetrenia",
+      note: "Povieme vám, čo je súrne a čo pokojne počká. Rozhodnutie je vaše.",
+    },
+  ],
+
+  extrasHeading: "Čo k tomu patrí",
+  extras: [
+    "3D CBCT, ak je diagnosticky potrebné",
+    "Bez bolesti",
+    "Vlastný zubný záznam, cudzí nepreberáme",
     "Ošetrujeme aj deti, od troch rokov",
     "Parkovanie zdarma priamo pri klinike",
     "Ďalšia prehliadka o šesť mesiacov",
@@ -100,17 +132,25 @@ const vstupnaPrehliadka: ServiceDetail = {
     { src: "vstupna-03", alt: "Lupové okuliare pripravené na vyšetrenie", width: 900 },
   ],
 
+  /*
+   * ⚠️ PROVISIONAL. The three item prices are the clinic's own published
+   * figures. Giving the panoramic away is not — it is a marketing decision
+   * asked for on 2026-08-24, and it echoes an offer the clinic has run before
+   * ("Počas leta ponúkame ku každému vstupnému vyšetreniu Rtg vyšetrenie
+   * bezplatne"). The clinic has to agree the 80 € before this page is
+   * published: a headline price on a clinic's website is a commitment, not a
+   * draft.
+   */
   bundle: {
     heading: "Vstupný balík",
     items: [
       { label: "Komplexné stomatologické vyšetrenie", price: "40 €" },
       { label: "4× intraorálny RTG snímok", price: "40 €" },
-      { label: "Panoramatický snímok", price: "20 €" },
+      { label: "Panoramatický snímok", price: "20 €", free: true },
     ],
-    total: "100 €",
-    unconfirmed:
-      "RTG snímky sme k vstupnému vyšetreniu ponúkali zdarma. Overte si " +
-      "telefonicky, či ponuka práve platí.",
+    listTotal: "100 €",
+    total: "80 €",
+    saving: "Ušetríte 20 €",
   },
 
   stepsHeading: "Ako to prebieha",

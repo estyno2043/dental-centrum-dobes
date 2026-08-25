@@ -205,6 +205,7 @@ export function JawZoneOverlay({
   visible,
 }: JawZoneOverlayProps) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLElement>(null);
   const triggerRefs = useRef<Partial<Record<InteractiveZoneId, HTMLButtonElement>>>({});
   const activeTriggerRef = useRef<InteractiveZoneId | null>(null);
   const skipRestoredFocusRef = useRef(false);
@@ -273,6 +274,68 @@ export function JawZoneOverlay({
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [close, state.pinned]);
 
+  /*
+   * Clicking away closes the card — the gesture everyone already tries first,
+   * ahead of the close button and well ahead of Escape.
+   *
+   * `pointerdown` rather than `click`, so it goes as the gesture starts rather
+   * than a beat later when the finger lifts. Two things count as inside: the
+   * card, and the zone buttons. The buttons have to be excluded or clicking
+   * one while another zone is open would close and reopen the card inside a
+   * single gesture, which reads as a flicker rather than as a switch. Empty
+   * space inside the overlay is deliberately *not* excluded — clicking beside
+   * the jaw is exactly the "somewhere else" this is for.
+   *
+   * Focus is not restored here, unlike Escape. Escape is a request to go back
+   * to where you were; a click elsewhere already says where you want to be,
+   * and pulling focus back to the jaw would take it away again.
+   *
+   * Only while pinned. An unpinned card is a hover preview and already leaves
+   * when the pointer does.
+   */
+  useEffect(() => {
+    if (!state.pinned) return;
+
+    const onPointerDown = (event: PointerEvent) => {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (cardRef.current?.contains(target)) return;
+      if (
+        Object.values(triggerRefs.current).some((trigger) =>
+          trigger?.contains(target),
+        )
+      ) {
+        return;
+      }
+      close(false);
+    };
+
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [close, state.pinned]);
+
+  /*
+   * The card unfolds from the spot on the jaw it belongs to, not from its own
+   * corner. The anchor's position is measured against the card's own box and
+   * handed over as `transform-origin`, which may sit well outside that box —
+   * that is the point: the panel swings out of the tooth rather than appearing
+   * beside it.
+   */
+  useEffect(() => {
+    const card = cardRef.current;
+    const zone = visibleState.openZone;
+    if (!card || !zone) return;
+
+    const anchor = document.querySelector(`[data-testid="jaw-anchor-${zone}"]`);
+    if (!anchor) return;
+
+    const from = anchor.getBoundingClientRect();
+    const box = card.getBoundingClientRect();
+    card.style.transformOrigin = `${from.left + from.width / 2 - box.left}px ${
+      from.top + from.height / 2 - box.top
+    }px`;
+  }, [visibleState.openZone, visibleState.mode]);
+
   const open = useCallback((zoneId: InteractiveZoneId, pin: boolean) => {
     if (!enabled) return;
     activeTriggerRef.current = zoneId;
@@ -282,6 +345,29 @@ export function JawZoneOverlay({
       pinned: pin || current.pinned,
     }));
   }, [enabled]);
+
+  /*
+   * The card holds itself in space against the pointer: a few degrees of tilt,
+   * written as two custom properties. Cheap enough to run on every move — two
+   * property writes and a composited rotation — and it is what turns the panel
+   * from a picture of a card into something occupying room in front of the jaw.
+   */
+  const tiltToPointer = useCallback((event: ReactPointerEvent<HTMLElement>) => {
+    const card = cardRef.current;
+    if (!card) return;
+    const rect = card.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+    card.style.setProperty("--tilt-y", `${(x * 7).toFixed(2)}deg`);
+    card.style.setProperty("--tilt-x", `${(-y * 5).toFixed(2)}deg`);
+  }, []);
+
+  const releaseTilt = useCallback(() => {
+    const card = cardRef.current;
+    if (!card) return;
+    card.style.setProperty("--tilt-x", "0deg");
+    card.style.setProperty("--tilt-y", "0deg");
+  }, []);
 
   const closeUnpinned = useCallback((event: ReactPointerEvent<HTMLElement>) => {
     const related = event.relatedTarget;
@@ -324,8 +410,12 @@ export function JawZoneOverlay({
        * it.
        */
       data-side={visibleState.openZone === "premolar" ? "right" : "left"}
-      onPointerEnter={() => undefined}
-      onPointerLeave={closeUnpinned}
+      onPointerLeave={(event) => {
+        releaseTilt();
+        closeUnpinned(event);
+      }}
+      onPointerMove={tiltToPointer}
+      ref={cardRef}
       role={visibleState.mode === "mobile" ? "dialog" : "region"}
     >
       <div className={styles.cardTop}>
@@ -360,7 +450,16 @@ export function JawZoneOverlay({
                 });
               }}
             >
-              {problem.patientLabel}
+              <span className={styles.problemLabel}>{problem.patientLabel}</span>
+              {/*
+                Where the row goes. Deliberately the whole list rather than the
+                first of it: the same symptom leads to more than one treatment
+                and only an examination decides which, so naming one would be a
+                diagnosis the page is not entitled to make.
+              */}
+              <span className={styles.problemDestination}>
+                <span>{problem.destination}</span>
+              </span>
             </a>
           </li>
         ))}
@@ -389,9 +488,15 @@ export function JawZoneOverlay({
             viewBox={`0 0 ${MASTER_WIDTH} ${MASTER_HEIGHT}`}
           >
             <defs>
+              {/*
+                Porcelain into the brand's taupe. It used to run peach into
+                dusty pink — a warm wash over pink gums, which is nearly
+                invisible and, where it did show, looked like a photo filter
+                rather than a highlight.
+              */}
               <linearGradient id="jaw-zone-fill" x1="0" x2="1" y1="0" y2="1">
-                <stop offset="0" stopColor="#efd8a3" />
-                <stop offset="1" stopColor="#d68f89" />
+                <stop offset="0" stopColor="#faf9f6" />
+                <stop offset="1" stopColor="#ae9b7e" />
               </linearGradient>
             </defs>
             {SURFACES.map((surface) => (

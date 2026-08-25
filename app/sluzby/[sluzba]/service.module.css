@@ -198,11 +198,63 @@
 }
 
 /*
- * One line each, two columns. Twelve short lines read as a list of what you
- * get; twelve short paragraphs read as a wall, which is the same information
- * arranged to be skipped.
+ * The four things the price buys, each given room. Twelve lines in two columns
+ * was the same information arranged so it would be skipped — and it buried the
+ * four that matter among the parking and the opening hours.
  */
-.benefits {
+.inclusions {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  gap: clamp(20px, 2.6vw, 30px);
+  list-style: none;
+}
+
+.inclusions > li {
+  display: grid;
+  align-items: baseline;
+  padding-top: clamp(14px, 1.7vw, 19px);
+  border-top: 1px solid rgb(138 115 88 / 30%);
+  column-gap: clamp(14px, 2vw, 26px);
+  grid-template-columns: auto minmax(0, 15rem) minmax(0, 1fr);
+  row-gap: 5px;
+}
+
+.inclusionIndex {
+  color: var(--taupe-deep);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.inclusionTitle {
+  margin: 0;
+  font-size: clamp(1.02rem, 1.5vw, 1.22rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.24;
+  text-wrap: balance;
+}
+
+.inclusionNote {
+  margin: 0;
+  color: rgb(38 38 42 / 66%);
+  font-size: clamp(0.88rem, 1.05vw, 0.97rem);
+  line-height: 1.5;
+}
+
+/* And below them, quieter, the things that come with it rather than in it. */
+.extrasHeading {
+  margin: clamp(36px, 5vw, 58px) 0 clamp(14px, 1.8vw, 20px);
+  color: var(--taupe-deep);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.extras {
   display: grid;
   margin: 0;
   padding: 0;
@@ -211,13 +263,13 @@
   list-style: none;
 }
 
-.benefits > li {
+.extras > li {
   display: grid;
   gap: 12px;
   align-items: start;
   grid-template-columns: auto 1fr;
-  color: rgb(38 38 42 / 86%);
-  font-size: clamp(0.95rem, 1.15vw, 1.05rem);
+  color: rgb(38 38 42 / 74%);
+  font-size: clamp(0.9rem, 1.1vw, 1rem);
   line-height: 1.45;
 }
 
@@ -307,16 +359,61 @@
 }
 
 .bundlePrice {
+  display: inline-flex;
+  gap: 10px;
   flex: none;
+  align-items: baseline;
   font-variant-numeric: tabular-nums;
   font-weight: 600;
 }
 
+/* The struck price is the whole point of the free one: it says what it is worth. */
+.bundleFree s,
+.bundleWas {
+  color: rgb(250 249 246 / 42%);
+  font-weight: 500;
+  text-decoration-thickness: 1px;
+}
+
+.freeTag {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--taupe);
+  color: var(--ink);
+  font-size: 9.5px;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.bundleFree > span:first-child {
+  color: var(--porcelain);
+}
+
+.bundleSaving {
+  display: inline-block;
+  margin: clamp(16px, 2vw, 22px) 0 0;
+  padding: 8px 16px;
+  border: 1px solid rgb(174 155 126 / 45%);
+  border-radius: 999px;
+  color: var(--taupe);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
 .bundleTotal {
   border-bottom: 0 !important;
-  font-size: clamp(1.1rem, 1.7vw, 1.4rem) !important;
+  padding-top: clamp(16px, 2vw, 22px) !important;
+  font-size: clamp(1.25rem, 2.1vw, 1.75rem) !important;
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+}
+
+.bundleTotal .bundleWas {
+  font-size: 0.62em;
 }
 
 .bundleNote {

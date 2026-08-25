@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, expect, test, vi } from "vitest";
@@ -8,7 +9,7 @@ afterEach(() => {
 });
 
 test("renders a closed trigger with a distinct accessible name from the mobile menu", () => {
-  render(<DesktopMenu scrolled={false} />);
+  render(<DesktopMenu ground="dark" scrolled={false} />);
 
   const trigger = screen.getByRole("button", { name: "Otvoriť navigáciu" });
   expect(trigger).toBeInTheDocument();
@@ -17,7 +18,7 @@ test("renders a closed trigger with a distinct accessible name from the mobile m
 
 test("clicking the trigger opens the panel and makes its links reachable", async () => {
   const user = userEvent.setup();
-  render(<DesktopMenu scrolled={false} />);
+  render(<DesktopMenu ground="dark" scrolled={false} />);
 
   const trigger = screen.getByRole("button", { name: "Otvoriť navigáciu" });
   await user.click(trigger);
@@ -38,7 +39,7 @@ test("clicking the trigger opens the panel and makes its links reachable", async
 
 test("Escape closes the panel and returns focus to the trigger", async () => {
   const user = userEvent.setup();
-  render(<DesktopMenu scrolled={false} />);
+  render(<DesktopMenu ground="dark" scrolled={false} />);
 
   const trigger = screen.getByRole("button", { name: "Otvoriť navigáciu" });
   await user.click(trigger);
@@ -52,7 +53,7 @@ test("Escape closes the panel and returns focus to the trigger", async () => {
 
 test("opens on hover after a short delay and closes after leaving", () => {
   vi.useFakeTimers();
-  render(<DesktopMenu scrolled={false} />);
+  render(<DesktopMenu ground="dark" scrolled={false} />);
 
   const trigger = screen.getByRole("button", { name: "Otvoriť navigáciu" });
   fireEvent.mouseEnter(trigger.parentElement as Element);
@@ -74,7 +75,7 @@ test("opens on hover after a short delay and closes after leaving", () => {
 
 test("re-entering before the close delay elapses cancels the close", () => {
   vi.useFakeTimers();
-  render(<DesktopMenu scrolled={false} />);
+  render(<DesktopMenu ground="dark" scrolled={false} />);
 
   const trigger = screen.getByRole("button", { name: "Otvoriť navigáciu" });
   const root = trigger.parentElement as Element;
@@ -95,7 +96,7 @@ test("keyboard focus opens the panel; focus leaving the root closes it", async (
   const user = userEvent.setup();
   render(
     <div>
-      <DesktopMenu scrolled={false} />
+      <DesktopMenu ground="dark" scrolled={false} />
       <button type="button">Elsewhere</button>
     </div>,
   );
@@ -124,7 +125,7 @@ test("keyboard focus still opens the panel after an open/close click sequence", 
   render(
     <div>
       <button type="button">Before</button>
-      <DesktopMenu scrolled={false} />
+      <DesktopMenu ground="dark" scrolled={false} />
     </div>,
   );
 
@@ -137,4 +138,33 @@ test("keyboard focus still opens the panel after an open/close click sequence", 
 
   expect(trigger).toHaveFocus();
   expect(trigger).toHaveAttribute("aria-expanded", "true");
+});
+
+/*
+ * The panel's glass is a dark tint. Over the hero that is right — the video
+ * behind it is dark — but over a pale section the same tint becomes a light
+ * wash and takes the porcelain type with it, which is exactly how it was
+ * reported: the letters disappeared.
+ */
+test("weighs its glass by what it is standing on", () => {
+  const css = readFileSync("components/hero/hero.module.css", "utf8");
+
+  expect(css).toMatch(
+    /\.desktopMenuRoot\[data-ground="light"\] \.desktopMenuPanel \{[^}]*background:\s*rgb\(18 17 16 \/ 82%\)/,
+  );
+});
+
+/*
+ * A service page opens on its own offer and ends on a booking form. A second
+ * call to action floating in the corner competes with both, so `quiet` is
+ * `minimal` with the tour button withdrawn.
+ */
+test("withdraws the tour button in quiet mode", () => {
+  const css = readFileSync("components/hero/hero.module.css", "utf8");
+  const header = readFileSync("components/hero/SiteHeader.tsx", "utf8");
+
+  expect(css).toMatch(
+    /\.navigation\.onQuiet \.navigationButton \{[^}]*visibility:\s*hidden/,
+  );
+  expect(header).toContain('declared === "quiet"');
 });

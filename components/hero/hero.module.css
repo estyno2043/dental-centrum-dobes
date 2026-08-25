@@ -115,6 +115,19 @@
   background: var(--taupe-deep);
 }
 
+/*
+ * `quiet` is `minimal` with the tour button withdrawn. A service page opens on
+ * its own offer and ends on a booking form; a second call to action floating
+ * in the corner competes with both.
+ */
+.navigation.onQuiet .navigationButton {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.35s var(--ease),
+    visibility 0.35s var(--ease);
+}
+
 .navigation.onMinimal .tourRing::after {
   background: var(--taupe-deep);
 }
@@ -334,6 +347,78 @@
 .mobileMenuTooth svg {
   width: 25px;
   height: 25px;
+}
+
+/*
+ * The way back: a disc, and nothing else in it.
+ *
+ * It stands where the menu trigger stands, but it does not borrow that shell.
+ * The menu's rounded rectangle holds two marks and a word because it does two
+ * things; this does one, and a circle with a single stroke in it says so
+ * without a label. Solid rather than the site's usual glass — the service
+ * pages are pale, and a translucent control on a pale ground is a suggestion
+ * where this needs to be an offer.
+ */
+.backTrigger {
+  display: grid;
+  width: 54px;
+  height: 54px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--ink);
+  box-shadow: 0 10px 30px rgb(20 18 16 / 26%);
+  color: var(--porcelain);
+  cursor: pointer;
+  place-items: center;
+  transition:
+    background 0.34s var(--ease),
+    color 0.34s var(--ease),
+    transform 0.34s var(--ease);
+}
+
+.backArrow {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  transition: transform 0.34s var(--ease);
+}
+
+.backArrow svg {
+  width: 100%;
+  height: 100%;
+}
+
+.backTrigger:hover,
+.backTrigger:focus-visible {
+  background: var(--taupe);
+  color: var(--ink);
+}
+
+/* Leans the way it is going. */
+.backTrigger:hover .backArrow,
+.backTrigger:focus-visible .backArrow {
+  transform: translateX(-4px);
+}
+
+.backTrigger:active {
+  transform: scale(0.94);
+}
+
+.backTrigger:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+
+/* Off-screen, and out of the accessibility tree's way — but still read. */
+.backWord {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .mobileMenuDivider {
@@ -607,7 +692,36 @@
 }
 
 .desktopMenuTrigger:hover .mobileMenuDivider,
-.desktopMenuTrigger:focus-visible .mobileMenuDivider {
+.desktopMenuTrigger:focus-visible /*
+ * The way back, wearing the menu trigger's shell — same size, same corner, so
+ * it reads as the one control changing its job rather than as a different
+ * button that has appeared. Its own width would have been dead anyway:
+ * `.desktopMenuTrigger` sets one later in this file at equal specificity.
+ */
+.backTrigger {
+  gap: 2px;
+}
+
+.backArrow {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  transition: transform 0.34s var(--ease);
+}
+
+.backArrow svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Leans the way it is going. */
+.backTrigger:hover .backArrow,
+.backTrigger:focus-visible .backArrow {
+  transform: translateX(-3px);
+}
+
+.mobileMenuDivider {
   background: rgb(28 28 31 / 30%);
 }
 
@@ -638,9 +752,22 @@
   border-radius: 18px;
   background: rgb(20 20 23 / 22%);
   backdrop-filter: blur(10px) saturate(1.25);
+  transition: background 0.35s var(--ease);
   box-shadow:
     0 26px 64px rgb(0 0 0 / 26%),
     inset 0 1px 0 rgb(255 255 255 / 14%);
+}
+
+/*
+ * Over a pale section the same dark tint becomes a light wash and the white
+ * type goes with it. Only the hero is dark; everything below it is pale, so
+ * the panel weighs more everywhere else and the glass reads as smoked rather
+ * than clear. Still translucent — the shapes behind it stay visible — just
+ * dark enough that porcelain type has something to sit on.
+ */
+.desktopMenuRoot[data-ground="light"] .desktopMenuPanel {
+  border-color: rgb(250 249 246 / 16%);
+  background: rgb(18 17 16 / 82%);
 }
 
 .desktopMenuLinks {
@@ -850,60 +977,176 @@
   margin-top: 30px;
 }
 
+/*
+ * The page's primary action, in the same language as the tour button in the
+ * corner: a barely-there pill, a hairline in the brand taupe, uppercase
+ * micro-type, and a fill that sweeps in from the left. The difference between
+ * them is size and nothing else — this is the loudest member of the family,
+ * not a different one.
+ */
 .packageButton {
   position: relative;
   display: inline-flex;
+  gap: 13px;
   align-items: center;
   justify-content: center;
+  padding: 19px 34px;
   overflow: hidden;
-  padding: 20px 36px;
-  border: 1px solid rgb(255 255 255 / 35%);
-  border-radius: 12px;
-  background: rgb(28 28 31 / 82%);
-  backdrop-filter: blur(4px);
+  border: 1px solid rgb(174 155 126 / 85%);
+  border-radius: 999px;
+  background: rgb(20 20 23 / 22%);
+  backdrop-filter: blur(3px);
   color: #fff;
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.22em;
+  isolation: isolate;
+  letter-spacing: 0.18em;
   text-decoration: none;
   text-transform: uppercase;
-  transition: border-color 0.25s var(--ease);
-}
-
-.packageButton::before {
-  position: absolute;
-  inset: 4px;
-  border: 1px solid rgb(174 155 126 / 0%);
-  border-radius: 8px;
-  content: "";
-  pointer-events: none;
   transition:
-    border-color 0.25s var(--ease),
-    inset 0.25s var(--ease);
+    border-color 0.35s var(--ease),
+    color 0.35s var(--ease);
 }
 
+/*
+ * The mark, and what makes it this button's rather than the tour's. There a
+ * dot travels around a ring, because a tour is something you walk. Here it is
+ * a tooth, because that is what is on the other end of the link — and reaching
+ * for the button fills it in.
+ *
+ * Two copies of one path. The lower one is solid enamel and clipped; the upper
+ * one is the hairline that stays visible at rest, drawn on top so the outline
+ * survives the fill rather than being swallowed by it.
+ */
+.packageTooth {
+  display: block;
+  width: 17px;
+  height: 17px;
+  flex: none;
+}
+
+.packageTooth svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/*
+ * The clip that does the filling: a full-bounds rect held flat against its own
+ * bottom edge, released to full height on hover. The enamel rises from the
+ * roots to the crown instead of fading in everywhere at once, which is the
+ * difference between a tooth filling and an icon changing state.
+ *
+ * `transform-box: fill-box` is the line that is easy to drop and hard to
+ * debug. Without it `bottom` means the bottom of the SVG viewport's coordinate
+ * origin rather than of this rect, and the fill arrives from the wrong place.
+ */
+.toothClip {
+  transform: scaleY(0);
+  transform-box: fill-box;
+  transform-origin: bottom;
+  transition: transform 0.55s var(--ease);
+}
+
+.toothBody {
+  fill: var(--porcelain);
+  stroke: none;
+}
+
+.toothOutline {
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+
+/*
+ * A tenth of a second behind the pill's own sweep, so the two read as cause
+ * and effect rather than as one event — the button fills, then the tooth does.
+ * Only on the way in: leaving drains it immediately, because a delay on the
+ * way out feels like lag rather than choreography.
+ */
+.packageButton:hover .toothClip,
+.packageButton:focus-visible .toothClip {
+  transform: scaleY(1);
+  transition-delay: 0.1s;
+}
+
+/* The fill, sweeping from the left exactly as the tour button's does. */
 .packageButton::after {
   position: absolute;
   z-index: -1;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  background: var(--taupe-deep);
+  background: var(--taupe);
   content: "";
-  transition: width 0.35s var(--ease);
+  inset: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s var(--ease);
 }
 
-.packageButton:hover {
-  border-color: rgb(255 255 255 / 70%);
+.packageButton:hover,
+.packageButton:focus-visible {
+  border-color: var(--taupe);
+  color: var(--ink);
 }
 
-.packageButton:hover::before {
-  border-color: rgb(255 255 255 / 35%);
+.packageButton:hover::after,
+.packageButton:focus-visible::after {
+  transform: scaleX(1);
 }
 
-.packageButton:hover::after {
-  width: 100%;
+.packageButton:focus-visible {
+  outline: 2px solid var(--porcelain);
+  outline-offset: 3px;
+}
+
+.packageLabel {
+  display: block;
+}
+
+/*
+ * The fill grows out of the pointer.
+ *
+ * Every other button here wipes from its left edge, which is right for a row
+ * of them but says nothing on the one action the hero is built around. This
+ * one opens from wherever the cursor crossed the edge and closes back towards
+ * wherever it leaves, so the button feels met rather than triggered. Keyboard
+ * focus has no such point and gets the centre, which is the same gesture
+ * without a direction.
+ *
+ * 220% of the button's width: the circle has to reach the far corner from any
+ * starting point, and the longest that can be is the full diagonal.
+ */
+.packageButton::after {
+  position: absolute;
+  z-index: -1;
+  top: var(--y, 50%);
+  left: var(--x, 50%);
+  width: 220%;
+  margin: -110% 0 0 -110%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--taupe);
+  content: "";
+  transform: scale(0);
+  transition: transform 0.52s var(--ease);
+}
+
+.packageButton:hover,
+.packageButton:focus-visible {
+  border-color: var(--taupe);
+  color: var(--ink);
+}
+
+.packageButton:hover::after,
+.packageButton:focus-visible::after {
+  transform: scale(1);
+}
+
+.packageButton:focus-visible {
+  outline: 2px solid var(--porcelain);
+  outline-offset: 3px;
 }
 
 .phoneButton {
@@ -1219,8 +1462,8 @@
   .navigationButton::before,
   .tourRing::after,
   .packageButton,
-  .packageButton::before,
   .packageButton::after,
+  .toothClip,
   .phoneNumber,
   .variant,
   .scrollCue,
@@ -1233,4 +1476,63 @@
     opacity: 1;
     transform: none;
   }
+}
+
+/*
+ * The Google rating is the one fact in the strip you can act on, so it has to
+ * look like it without turning the row into a row of buttons. It keeps the
+ * exact type of its four neighbours and gains only an underline on the label
+ * and a line of small print that arrives on hover.
+ */
+.trustTrigger {
+  position: relative;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.trustTrigger .trustLabel {
+  text-decoration: underline;
+  text-decoration-color: rgb(255 255 255 / 28%);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.3s var(--ease);
+}
+
+.trustTrigger:hover .trustLabel,
+.trustTrigger:focus-visible .trustLabel {
+  text-decoration-color: var(--taupe);
+}
+
+/*
+ * Sits under the item without taking part in the layout, so revealing it
+ * cannot nudge the other three facts sideways.
+ */
+.trustHint {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  color: var(--taupe);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  opacity: 0;
+  text-transform: uppercase;
+  transition: opacity 0.3s var(--ease);
+  white-space: nowrap;
+}
+
+.trustTrigger:hover .trustHint,
+.trustTrigger:focus-visible .trustHint {
+  opacity: 1;
+}
+
+.trustTrigger:focus-visible {
+  outline: 2px solid var(--taupe);
+  outline-offset: 6px;
+  border-radius: 4px;
 }

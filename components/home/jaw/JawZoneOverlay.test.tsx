@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { readFileSync } from "node:fs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -119,7 +119,7 @@ describe("JawZoneOverlay pain map", () => {
 
     fireEvent.pointerEnter(molar);
     expect(screen.getByRole("region", { name: "Stoličky" })).toBeVisible();
-    expect(screen.getByRole("link", { name: "Bolí ma pri hryzení" })).toBeVisible();
+    expect(screen.getByRole("link", { name: /^Bolí ma pri hryzení/ })).toBeVisible();
     fireEvent.pointerLeave(molar);
     expect(screen.queryByRole("region", { name: "Stoličky" })).not.toBeInTheDocument();
 
@@ -141,7 +141,7 @@ describe("JawZoneOverlay pain map", () => {
       event: "jaw_zone_click",
       jaw_zone: "molar",
     });
-    expect(screen.getByRole("link", { name: "Pulzujúca bolesť" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /^Pulzujúca bolesť/ })).toHaveAttribute(
       "href",
       "/problemy/stolicky?problem=pulsing",
     );
@@ -200,6 +200,49 @@ describe("JawZoneOverlay pain map", () => {
 
     expect(screen.queryByRole("region", { name: "Predné zuby" })).not.toBeInTheDocument();
     expect(front).toHaveFocus();
+  });
+
+  /*
+   * The gesture everyone tries first. Focus is deliberately not restored:
+   * Escape asks to go back where you were, a click elsewhere already says
+   * where you want to be.
+   */
+  it("closes the pinned card when the pointer goes down outside it", async () => {
+    const user = userEvent.setup();
+    renderOverlay();
+    const front = screen.getByTestId("jaw-zone-button-front");
+    await user.click(front);
+    expect(screen.getByRole("region", { name: "Predné zuby" })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("heading", { name: "Kde vás to trápi?" }));
+
+    expect(screen.queryByRole("region", { name: "Predné zuby" })).not.toBeInTheDocument();
+    expect(front).not.toHaveFocus();
+  });
+
+  it("keeps the card open when the click lands inside it", async () => {
+    const user = userEvent.setup();
+    renderOverlay();
+    await user.click(screen.getByTestId("jaw-zone-button-front"));
+
+    const card = screen.getByRole("region", { name: "Predné zuby" });
+    await user.click(within(card).getByRole("heading", { name: "Predné zuby" }));
+
+    expect(screen.getByRole("region", { name: "Predné zuby" })).toBeInTheDocument();
+  });
+
+  /*
+   * Another zone's button is not "outside". Were it, the card would close and
+   * reopen inside one gesture and read as a flicker rather than a switch.
+   */
+  it("switches zones rather than closing when another trigger is clicked", async () => {
+    const user = userEvent.setup();
+    renderOverlay();
+    await user.click(screen.getByTestId("jaw-zone-button-front"));
+    await user.click(screen.getByTestId("jaw-zone-button-molar"));
+
+    expect(screen.queryByRole("region", { name: "Predné zuby" })).not.toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "Stoličky" })).toBeInTheDocument();
   });
 
   it("closes immediately and focuses safe root when presentation reverses", async () => {
@@ -347,6 +390,82 @@ describe("JawZoneOverlay pain map", () => {
     expect(cssText).toMatch(/\.zoneCard\s*\{[^}]*\btop:\s*5[0-9]%/);
     expect(cssText).not.toMatch(/\.zoneCard\s*\{[^}]*\btop:\s*auto/);
     expect(cssText).toMatch(/\.zoneCard\s*\{[^}]*overflow-y:\s*auto/);
+  });
+
+  /*
+   * A symptom is not a diagnosis. The same one leads to more than one
+   * treatment and only an examination decides which, so the row names the
+   * whole list rather than picking the likeliest — and it goes inside the
+   * link, where a screen reader hears it without having to hover anything.
+   */
+  it("tells each row where it leads, in full", () => {
+    renderOverlay();
+    fireEvent.pointerEnter(screen.getByTestId("jaw-zone-button-molar"));
+
+    const row = screen.getByRole("link", { name: /^Bolí ma pri hryzení/ });
+    expect(row.textContent).toContain("Endodoncia pod mikroskopom");
+    expect(row.textContent).toContain("extrakcia");
+  });
+
+  /*
+   * The card stands in a room. Perspective belongs to whatever contains the
+   * transformed element, so it lives on the overlay — a card cannot give
+   * itself any — and one shared value keeps the unfold and the tilt looking at
+   * the same horizon.
+   */
+  it("gives the card depth from the overlay, not from itself", () => {
+    expect(cssText).toMatch(/\.zoneOverlay \{[^}]*perspective:\s*1400px/);
+    expect(cssText).toMatch(/\.zoneCard \{[^}]*transform-style:\s*preserve-3d/);
+    expect(cssText).toMatch(/\.cardTop \{[^}]*translateZ/);
+    expect(cssText).toMatch(/\.problemList \{[^}]*translateZ/);
+  });
+
+  /* And it is hinged to the tooth, not to its own corner. */
+  it("unfolds from an origin the script measures off the anchor", () => {
+    const source = readFileSync("components/home/jaw/JawZoneOverlay.tsx", "utf8");
+
+    expect(source).toMatch(/jaw-anchor-\$\{zone\}/);
+    expect(source).toContain("transformOrigin");
+    expect(cssText).toMatch(/@keyframes card-unfold/);
+  });
+
+  /*
+   * The jaw was drawn in a bespoke amber that appears nowhere else on the
+   * site — leaders, anchors, the pulse, the masks, the card, the buttons. All
+   * of it is the brand's own palette now, and the taupe is spent on the two
+   * things that mean something rather than on every edge.
+   */
+  it("keeps the whole jaw out of the old amber", () => {
+    const amber = [
+      "#dfbd80", "#f0cf91", "#fff2ca", "#efd8a3", "#d68f89",
+      "239 208 150", "255 226 169", "248 218 160",
+      "238, 195, 133", "232, 178, 137", "247, 218, 160",
+    ];
+    for (const value of amber) {
+      expect(cssText).not.toContain(value);
+    }
+
+    // A neutral hairline around the card; the taupe reserved for the accents.
+    const card = cssText.match(/\.zoneCard \{[^}]*\}/)?.[0] ?? "";
+    expect(card).toMatch(/border:\s*1px solid rgb\(250 249 246/);
+    expect(cssText).toMatch(/\.cardKicker \{[^}]*color:\s*var\(--taupe\)/);
+    expect(cssText).toMatch(
+      /\.zoneMarker\[data-active="true"\] \.zoneLeader \{[^}]*stroke:\s*var\(--taupe\)/,
+    );
+  });
+
+  /*
+   * Hollow at rest, filled when live. A solid dot on all four zones is four
+   * things shouting at once; filling one ring is what says "this one".
+   */
+  it("leaves the anchors hollow until their zone is live", () => {
+    const anchor = cssText.match(/\.zoneAnchor \{[^}]*\}/)?.[0] ?? "";
+
+    expect(anchor).toMatch(/stroke:\s*var\(--porcelain\)/);
+    expect(anchor).not.toMatch(/fill:\s*var\(--taupe\)/);
+    expect(cssText).toMatch(
+      /\.zoneMarker\[data-active="true"\] \.zoneAnchor \{[^}]*fill:\s*var\(--taupe\)/,
+    );
   });
 
   it("keeps one centered 16:9 artboard and pop-motion contracts", () => {

@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import { getServiceDetail } from "./serviceDetail";
 import { allServices } from "./servicesContent";
 
+const euros = (value: string) => Number(value.replace(/[^\d]/g, ""));
+
 describe("service detail", () => {
   it("only describes services that exist in the catalogue", () => {
     for (const service of allServices) {
@@ -13,34 +15,45 @@ describe("service detail", () => {
   });
 
   /*
-   * Every price on this page is the clinic's own published figure, and the
-   * bundle is the sum of its parts. A total that has drifted from its items is
-   * worse than no total — it is a wrong price on a clinic's website.
+   * Three numbers have to agree, and a page that gets this wrong is not
+   * showing a typo — it is quoting a clinic's price incorrectly. The parts add
+   * up to what is struck through, the parts that are charged add up to what is
+   * charged, and the difference is what the page claims you save.
    */
-  it("adds the entry package up to the total it prints", () => {
-    const detail = getServiceDetail("vstupna-prehliadka");
-    expect(detail?.bundle).toBeDefined();
+  it("makes the package's three totals agree", () => {
+    const bundle = getServiceDetail("vstupna-prehliadka")?.bundle;
+    expect(bundle).toBeDefined();
 
-    const euros = (value: string) => Number(value.replace(/[^\d]/g, ""));
-    const sum = detail!.bundle!.items.reduce(
-      (total, item) => total + euros(item.price),
-      0,
-    );
+    const everything = bundle!.items.reduce((sum, i) => sum + euros(i.price), 0);
+    const charged = bundle!.items
+      .filter((i) => !i.free)
+      .reduce((sum, i) => sum + euros(i.price), 0);
 
-    expect(sum).toBe(euros(detail!.bundle!.total));
+    expect(everything).toBe(euros(bundle!.listTotal));
+    expect(charged).toBe(euros(bundle!.total));
+    expect(everything - charged).toBe(euros(bundle!.saving));
+  });
+
+  /* Something has to be given away, or the struck-through total is theatre. */
+  it("actually gives one of the items away", () => {
+    const bundle = getServiceDetail("vstupna-prehliadka")?.bundle;
+
+    expect(bundle!.items.some((item) => item.free)).toBe(true);
+    expect(euros(bundle!.total)).toBeLessThan(euros(bundle!.listTotal));
   });
 
   /*
-   * The clinic's free-X-ray wording was seasonal. It may render as something
-   * to ask about, never as a standing offer, until someone confirms it still
-   * runs.
+   * The four inclusions are what the price buys. Conveniences — parking,
+   * opening hours, the six-month recall — belong under them, not among them:
+   * mixed together they hid the things that matter.
    */
-  it("keeps the seasonal offer marked unconfirmed", () => {
-    const bundle = getServiceDetail("vstupna-prehliadka")?.bundle;
+  it("keeps the deliverables apart from the conveniences", () => {
+    const detail = getServiceDetail("vstupna-prehliadka");
 
-    expect(bundle?.unconfirmed).toMatch(/overte|opýtajte|zavolajte/i);
-    for (const item of bundle?.items ?? []) {
-      expect(item.label).not.toMatch(/zdarma|bezplatne/i);
-    }
+    expect(detail!.benefits.length).toBeLessThanOrEqual(5);
+    expect(detail!.extras.length).toBeGreaterThan(0);
+
+    const inclusions = detail!.benefits.map((b) => b.title).join(" ");
+    expect(inclusions).not.toMatch(/parkovan|otvorené|deti/i);
   });
 });

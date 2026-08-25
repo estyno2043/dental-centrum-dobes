@@ -39,6 +39,15 @@
   position: absolute;
   z-index: 2;
   outline: none;
+
+  /*
+   * The vanishing point everything 3D in here shares. Put on the overlay
+   * rather than the card, because a card cannot give itself perspective — the
+   * property belongs to whatever contains the transformed element, and one
+   * shared value keeps the card's unfold and its tilt looking at the same
+   * horizon rather than at two.
+   */
+  perspective: 1400px;
   pointer-events: none;
   inset: 0;
   color: #fffaf4;
@@ -105,7 +114,7 @@
 
 .zoneMask {
   fill: url("#jaw-zone-fill");
-  stroke: rgba(247, 218, 160, 0.4);
+  stroke: rgb(250 249 246 / 34%);
   stroke-width: 2;
   opacity: 0;
   pointer-events: none;
@@ -127,8 +136,8 @@
 }
 
 .zoneMaskSelected {
-  opacity: 0.42 !important;
-  filter: drop-shadow(0 0 20px rgba(238, 195, 133, 0.62));
+  opacity: 0.4 !important;
+  filter: drop-shadow(0 0 22px rgb(174 155 126 / 60%));
 }
 
 .zoneMarker {
@@ -151,13 +160,18 @@
  * units, so the draw-in and the travelling pulse below are written once as
  * percentages rather than measured per path.
  */
+/*
+ * Porcelain rather than the amber it was drawn in. A gold hairline over a
+ * photograph reads as the decoration of a decade ago; a near-white one reads
+ * as an instrument pointing at something, which is what it is.
+ */
 .zoneLeader {
   fill: none;
-  stroke: rgb(239 208 150 / 62%);
+  stroke: rgb(250 249 246 / 46%);
   stroke-dasharray: 100;
   stroke-dashoffset: 0;
   stroke-linecap: round;
-  stroke-width: 2;
+  stroke-width: 1.5;
   transition:
     stroke 260ms ease-out,
     stroke-width 260ms ease-out;
@@ -177,7 +191,7 @@
  */
 .zonePulse {
   fill: none;
-  stroke: #fff2ca;
+  stroke: var(--porcelain);
   stroke-dasharray: 14 100;
   stroke-dashoffset: 114;
   stroke-linecap: round;
@@ -190,13 +204,20 @@
   animation: zone-pulse-run 1.15s linear infinite;
 }
 
+/*
+ * Hollow at rest, filled when live. A solid dot on every zone is four things
+ * shouting at once; a ring waits, and filling it is what says "this one".
+ */
 .zoneAnchor {
-  fill: #f0cf91;
-  stroke: rgb(47 37 31 / 75%);
-  stroke-width: 4;
+  fill: rgb(20 18 16 / 55%);
+  stroke: var(--porcelain);
+  stroke-width: 2;
   transform-box: fill-box;
   transform-origin: center;
-  transition: fill 240ms ease-out, transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition:
+    fill 240ms ease-out,
+    stroke 240ms ease-out,
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /*
@@ -205,7 +226,7 @@
  */
 .zoneHalo {
   fill: none;
-  stroke: rgb(255 226 169 / 80%);
+  stroke: rgb(250 249 246 / 72%);
   stroke-width: 2;
   opacity: 0;
   transform-box: fill-box;
@@ -217,14 +238,15 @@
 }
 
 .zoneMarker[data-active="true"] .zoneLeader {
-  stroke: rgb(255 226 169 / 95%);
-  stroke-width: 3;
+  stroke: var(--taupe);
+  stroke-width: 2.5;
 }
 
 .zoneMarker[data-active="true"] .zoneAnchor {
-  fill: #fff2ca;
-  filter: drop-shadow(0 0 12px rgb(248 218 160 / 90%));
-  transform: scale(1.25);
+  fill: var(--taupe);
+  stroke: var(--porcelain);
+  filter: drop-shadow(0 0 14px rgb(174 155 126 / 85%));
+  transform: scale(1.3);
 }
 
 /* ------------------------------------------------------- zone buttons --- */
@@ -267,7 +289,7 @@
   align-items: center;
   padding: 0.72em 1.15em;
   overflow: hidden;
-  border: 1px solid rgb(239 208 150 / 44%);
+  border: 1px solid rgb(250 249 246 / 34%);
   border-radius: 999px;
   background: rgb(24 20 18 / 62%);
   backdrop-filter: blur(10px);
@@ -319,7 +341,7 @@
 .zoneButton::before {
   position: absolute;
   z-index: -1;
-  background: linear-gradient(120deg, #efd8a3, #e8bd8a);
+  background: var(--taupe);
   content: "";
   inset: 0;
   transform: scale(0);
@@ -360,7 +382,7 @@
 .zoneButton[data-origin="right"][data-active="true"] { translate: 4px 0; }
 
 .zoneButton:focus-visible {
-  outline: 2px solid #fff2ca;
+  outline: 2px solid var(--porcelain);
   outline-offset: 3px;
 }
 
@@ -410,9 +432,9 @@
   max-width: calc(100% - 2rem);
   min-height: 44px;
   padding: 0.3rem 0.4rem 0.3rem 1rem;
-  border: 1px solid rgb(174 155 126 / 38%);
+  border: 1px solid rgb(250 249 246 / 22%);
   border-radius: 999px;
-  background: rgb(24 21 19 / 62%);
+  background: rgb(20 18 16 / 58%);
   box-shadow: 0 0.75rem 2.5rem rgb(22 17 14 / 26%);
   backdrop-filter: blur(16px);
   color: rgb(250 249 246 / 62%);
@@ -517,15 +539,66 @@
   bottom: clamp(2.5rem, 8dvh, 5rem);
   left: clamp(1rem, 4vw, 4rem);
   overflow-y: auto;
-  width: min(21rem, 32vw);
-  padding: 1.3rem;
-  border: 1px solid rgba(226, 194, 137, 0.58);
-  border-radius: 1.25rem;
-  background: rgba(28, 24, 22, 0.9);
-  box-shadow: 0 1.4rem 4rem rgba(0, 0, 0, 0.34);
-  backdrop-filter: blur(20px);
+  width: min(21.5rem, 33vw);
+  padding: 1.4rem;
+
+  /*
+   * The brand's taupe. This card was the last thing on the site still wearing
+   * the bespoke gold the jaw controls used to be drawn in.
+   */
+  /*
+   * A neutral hairline, not a taupe one. A warm border around a warm panel is
+   * the frame of a decade ago; the taupe is better spent on the two things
+   * that mean something — the kicker and the row a reader is on.
+   */
+  border: 1px solid rgb(250 249 246 / 15%);
+  border-radius: 1.5rem;
+
+  /*
+   * Lit from the top, as a surface standing in a room is. A flat fill reads as
+   * a rectangle of colour whichever way the card is tilted.
+   */
+  background:
+    linear-gradient(
+      to bottom,
+      rgb(38 34 31 / 86%) 0%,
+      rgb(20 18 16 / 88%) 100%
+    );
+  box-shadow:
+    0 1.8rem 5rem rgb(0 0 0 / 42%),
+    inset 0 1px 0 rgb(255 255 255 / 12%);
+  backdrop-filter: blur(22px) saturate(1.25);
   pointer-events: auto;
-  animation: card-pop 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  /* Its children stand on their own planes; see `.cardTop` and `.problemList`. */
+  transform-style: preserve-3d;
+  transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transition: transform 260ms var(--ease);
+  animation: card-unfold 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/*
+ * The tilt. Held on the card itself and composed after the unfold has run, so
+ * the two never fight over `transform`: the animation finishes and leaves this
+ * declaration in charge.
+ */
+.zoneCard[data-side] {
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+}
+
+/*
+ * Depth, not decoration. The heading floats a little in front of the panel and
+ * the rows sit just behind it, so tilting the card moves them against each
+ * other — which is the whole difference between a picture of a card and
+ * something standing in front of the jaw.
+ */
+.cardTop {
+  transform: translateZ(26px);
+}
+
+.problemList {
+  transform: translateZ(12px);
 }
 
 /*
@@ -537,6 +610,9 @@
 .zoneCard[data-side="right"] {
   right: clamp(1rem, 4vw, 4rem);
   left: auto;
+
+  /* Hinged on the other side, so it opens away from its own control. */
+  --unfold-from: 18deg;
 }
 
 .cardTop {
@@ -554,10 +630,10 @@
 
 .cardKicker {
   position: absolute;
-  top: 0.8rem;
-  left: 1.3rem;
+  top: 0.85rem;
+  left: 1.4rem;
   margin: 0;
-  color: #dfbd80;
+  color: var(--taupe);
   font-size: 0.65rem;
   font-weight: 800;
   letter-spacing: 0.15em;
@@ -577,21 +653,58 @@
  * chevron that arrives from the left, and the row lights along its whole width
  * rather than only changing the colour of its text.
  */
+/*
+ * A row that opens. The label is always there; the destination unfolds beneath
+ * it on hover, using a grid track that grows from `0fr` — the only way to
+ * animate to a height nobody has measured.
+ */
 .problemList a {
   position: relative;
+  display: grid;
+  min-height: 44px;
+  padding: 0.6rem 0.65rem 0.6rem 0;
+  border-bottom: 1px solid rgb(250 249 246 / 12%);
+  border-radius: 10px;
+  color: rgb(250 249 246 / 90%);
+  grid-template-rows: auto 0fr;
+  text-decoration: none;
+  transition:
+    background 0.34s var(--ease),
+    color 0.34s var(--ease),
+    grid-template-rows 0.4s var(--ease),
+    padding-left 0.34s var(--ease);
+}
+
+.problemLabel {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 44px;
-  padding: 0.55rem 0.65rem 0.55rem 0;
-  border-bottom: 1px solid rgb(174 155 126 / 22%);
-  border-radius: 4px;
-  color: rgb(250 249 246 / 88%);
-  text-decoration: none;
-  transition:
-    background 0.3s var(--ease),
-    color 0.3s var(--ease),
-    padding-left 0.3s var(--ease);
+  gap: 0.6rem;
+}
+
+.problemDestination {
+  overflow: hidden;
+  color: var(--taupe);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  opacity: 0;
+  transition: opacity 0.34s var(--ease);
+}
+
+.problemDestination > span {
+  display: block;
+  padding-top: 0.35rem;
+}
+
+.problemList a:hover,
+.problemList a:focus-visible {
+  grid-template-rows: auto 1fr;
+}
+
+.problemList a:hover .problemDestination,
+.problemList a:focus-visible .problemDestination {
+  opacity: 1;
 }
 
 /* The last row's rule would otherwise hang over the card's own bottom edge. */
@@ -599,7 +712,7 @@
   border-bottom: 0;
 }
 
-.problemList a::after {
+.problemLabel::after {
   color: var(--taupe);
   content: "→";
   opacity: 0;
@@ -612,18 +725,18 @@
 .problemList a:hover,
 .problemList a:focus-visible {
   padding-left: 0.65rem;
-  background: rgb(174 155 126 / 14%);
+  background: rgb(174 155 126 / 16%);
   color: var(--porcelain);
 }
 
-.problemList a:hover::after,
-.problemList a:focus-visible::after {
+.problemList a:hover .problemLabel::after,
+.problemList a:focus-visible .problemLabel::after {
   opacity: 1;
   transform: translateX(0);
 }
 
 .problemList a:focus-visible {
-  outline: 2px solid var(--taupe);
+  outline: 2px solid var(--porcelain);
   outline-offset: 2px;
 }
 
@@ -640,7 +753,7 @@
   flex: none;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgb(174 155 126 / 52%);
+  border: 1px solid rgb(250 249 246 / 24%);
   border-radius: 999px;
   background: transparent;
   color: var(--porcelain);
@@ -697,7 +810,7 @@
 
   42% {
     opacity: 0.3;
-    filter: drop-shadow(0 0 24px rgba(232, 178, 137, 0.58));
+    filter: drop-shadow(0 0 24px rgb(174 155 126 / 58%));
     transform: scale(1.015);
   }
 }
@@ -806,17 +919,23 @@
   }
 }
 
-/* Rises into place. It is anchored to the bottom now, so there is no centring
-   offset for the keyframes to preserve. */
-@keyframes card-pop {
+/*
+ * Unfolds out of the jaw.
+ *
+ * `transform-origin` is written from script — it is the anchor on the tooth,
+ * measured against this card's own box, and usually well outside it. Swinging
+ * about a point that far away is what makes the panel look hinged to the
+ * anatomy instead of dropped beside it.
+ */
+@keyframes card-unfold {
   from {
     opacity: 0;
-    transform: translateY(14px) scale(0.96);
+    transform: rotateY(var(--unfold-from, -18deg)) rotateX(7deg) scale(0.965);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
   }
 }
 
@@ -950,6 +1069,32 @@
   .zoneLeader {
     stroke-dashoffset: 0;
     animation: none;
+  }
+
+  /*
+   * Flat, still, and open. With motion reduced the card does not tilt or
+   * unfold, and every destination is simply printed — a reader who cannot
+   * trigger a hover reveal should not be the only one who never learns where
+   * a row goes.
+   */
+  .zoneCard {
+    transform: none;
+    transition: none;
+    animation: none;
+  }
+
+  .cardTop,
+  .problemList {
+    transform: none;
+  }
+
+  .problemList a {
+    grid-template-rows: auto 1fr;
+    transition: none;
+  }
+
+  .problemDestination {
+    opacity: 1;
   }
 
   /* Both exist only to move. */

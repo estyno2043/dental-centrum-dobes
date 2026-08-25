@@ -389,9 +389,25 @@ export function ClinicStory(): JSX.Element {
               />
             </div>
             {renderMotion.state.cueOpacity > 0.01 ? (
+              /*
+                A scroll prompt, not a spinner.
+
+                It used to wear a rotating ring, which is the universal sign
+                for "wait, something is loading" — so readers waited, and the
+                one thing that actually advances the scene is scrolling. The
+                chevron drifts downward instead: the same corner of the screen,
+                the opposite instruction.
+              */
               <div className={styles.jawCue} aria-live="polite">
-                <span aria-hidden="true" className={styles.loadingRing} data-testid="jaw-loading-ring" />
-                <span>Zóny bolesti</span>
+                <span aria-hidden="true" className={styles.scrollHint} data-testid="jaw-scroll-hint">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M6 9.5 12 15.5 18 9.5" />
+                  </svg>
+                </span>
+                <span className={styles.cueText}>
+                  <strong>Scrollujte</strong>
+                  <span>Zóny bolesti</span>
+                </span>
               </div>
             ) : null}
           </div>

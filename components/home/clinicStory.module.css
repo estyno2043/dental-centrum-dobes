@@ -201,10 +201,15 @@
   inset: 0;
 }
 
+/*
+ * Sits at the foot of the scene rather than across the middle of it. A prompt
+ * to scroll belongs where scrolling goes, and over the centre it also covered
+ * the teeth it was talking about.
+ */
 .jawCue {
   position: absolute;
   z-index: 8;
-  top: 50%;
+  bottom: clamp(22px, 5vh, 52px);
   left: 50%;
   display: inline-flex;
   min-height: 48px;
@@ -222,16 +227,56 @@
   letter-spacing: 0.08em;
   opacity: var(--cue-opacity);
   text-transform: uppercase;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
 }
 
-.loadingRing {
-  width: 18px;
-  height: 18px;
-  border: 2px solid rgb(239 208 150 / 28%);
-  border-top-color: #efcf96;
-  border-radius: 50%;
-  animation: jaw-loading-spin 760ms linear infinite;
+/*
+ * The chevron that replaced the spinner. It falls and fades rather than going
+ * round: a ring that turns forever says "wait", and waiting is the one thing
+ * that leaves this scene exactly where it started.
+ */
+.scrollHint {
+  display: block;
+  width: 17px;
+  height: 17px;
+  flex: none;
+}
+
+.scrollHint svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  animation: jaw-scroll-drift 1.7s var(--ease) infinite;
+  fill: none;
+  stroke: #efcf96;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.cueText {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.2;
+  text-align: left;
+}
+
+.cueText strong {
+  font-weight: 700;
+}
+
+/*
+ * The destination, under the instruction and quieter than it. Naming the zones
+ * was all the old pill did; on its own it says what is coming without ever
+ * saying how to get there.
+ */
+.cueText > span {
+  color: rgb(250 249 246 / 62%);
+  font-size: 0.78em;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: none;
 }
 
 .exitGradient {
@@ -248,9 +293,19 @@
   inset: 0;
 }
 
-@keyframes jaw-loading-spin {
-  to {
-    transform: rotate(360deg);
+@keyframes jaw-scroll-drift {
+  0% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  35% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(6px);
   }
 }
 
@@ -338,7 +393,6 @@
   }
 
   .jawCue {
-    top: 50%;
     white-space: nowrap;
   }
 
@@ -410,7 +464,7 @@
     transition: none;
   }
 
-  .loadingRing {
+  .scrollHint svg {
     animation: none;
   }
 }

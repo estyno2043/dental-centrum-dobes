@@ -10,7 +10,8 @@ import {
   MORPH_EASING,
   MORPH_MS,
   SETTLE_MS,
-} from "./serviceTransition";
+  rememberMorph,
+} from "./serviceMorph";
 
 /**
  * Opens a service page by growing its photograph out of the card that was
@@ -59,6 +60,22 @@ export function useServiceTransition() {
       event.preventDefault();
 
       const from = frame.getBoundingClientRect();
+
+      /*
+       * Written down before we leave, because the way back cannot measure it:
+       * the catalogue is not on screen when the reader presses back. The
+       * rectangle is in viewport coordinates, which survive the return trip
+       * because the router restores the scroll position.
+       */
+      rememberMorph({
+        src: source.currentSrc || source.src,
+        left: from.left,
+        top: from.top,
+        width: from.width,
+        height: from.height,
+        radius: getComputedStyle(event.currentTarget).borderRadius,
+        viewport: [window.innerWidth, window.innerHeight],
+      });
 
       /*
        * The rounding comes off the card, not off the frame. The frame is the

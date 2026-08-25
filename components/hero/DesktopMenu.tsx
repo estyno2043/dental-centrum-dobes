@@ -19,9 +19,15 @@ const premiumEase = [0.22, 1, 0.36, 1] as const;
 
 type DesktopMenuProps = Readonly<{
   scrolled: boolean;
+  /**
+   * What the panel will be standing on when it opens. Its glass is a dark
+   * tint, which over a pale section turns into a light wash and takes the
+   * white type with it — so on light ground it has to weigh more.
+   */
+  ground: "dark" | "light";
 }>;
 
-export function DesktopMenu({ scrolled }: DesktopMenuProps): JSX.Element {
+export function DesktopMenu({ ground, scrolled }: DesktopMenuProps): JSX.Element {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -92,6 +98,7 @@ export function DesktopMenu({ scrolled }: DesktopMenuProps): JSX.Element {
       className={[styles.desktopMenuRoot, scrolled ? styles.scrolled : ""]
         .filter(Boolean)
         .join(" ")}
+      data-ground={ground}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onFocus={handleFocus}
