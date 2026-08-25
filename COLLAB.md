@@ -5,13 +5,12 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Mobile motion pass 1 of 3 done; awaiting localhost approval
-- Owner: Claude
-- Branch: `claude/motion-compositor-pass`
-- Base: `e424bd1` (`origin/main`)
-- Task: move the team section's scroll-driven motion off paint and layout and
-  onto the compositor, without changing what it looks like, and give touch a
-  pressed state where hover was the only feedback.
+- Status: Mobile motion pass 1 of 3 published to `main`; passes 2 and 3 open
+- Owner: —
+- Branch: —
+- Task: none in progress. The user merged pass one to `main` in order to review
+  it on a phone through Netlify rather than on localhost, so its visual check
+  is still outstanding — see the note at the end of its log entry below.
 
 ## File Reservations
 
