@@ -33,18 +33,23 @@ export const patientsIntro = {
 } as const;
 
 /**
- * ⚠️ NONE of these may be published yet.
+ * ⚠️ NONE of these may be published yet, for two separate reasons.
  *
- * Six pairs are now wired up and every one of them shows an identifiable
- * face. Before/after photographs of identifiable patients are health data;
- * publishing them without documented written consent is not a design decision
- * to make on anyone's behalf.
+ * Consent. All six pairs show an identifiable face. Before/after photographs
+ * of identifiable patients are health data; publishing them without documented
+ * written consent is not a design decision to make on anyone's behalf.
  *
- * The first three are also test material in a second way: which pair sits on
- * which case is arbitrary, and the treatments, visit counts and durations were
- * written before any photography arrived — they do not describe these
- * patients. The three added on 2026-08-25 carry no treatments or facts at all,
- * for the reason given above them.
+ * Accuracy. On 2026-08-25 every case was rewritten against its own
+ * photographs, because the original text predated the photography and
+ * described nobody. `problem` is now read off the images and is safe. Every
+ * `treatments` and `facts` value, however, is a PROVISIONAL estimate the user
+ * asked for — reasoned from what the pictures show plus the standard protocol
+ * for that kind of work, and written out case by case below so the clinic can
+ * check the reasoning rather than just the number.
+ *
+ * A patient looking at their own photograph should find their own treatment
+ * described. Typical numbers are not theirs. The clinic confirms both things
+ * in one pass, or this section does not go live.
  */
 
 /**
@@ -91,70 +96,132 @@ export const featuredCase: PatientCase = {
 };
 
 export const patientCases: readonly PatientCase[] = [
+  /*
+   * pacient-02 — worn incisal edges rebuilt.
+   *
+   * "Before" shows the biting edges of both centrals gone translucent grey and
+   * notched, with brown stain along the gum margins. In "after" the edges are
+   * solid, level and slightly longer.
+   *
+   * Composite rather than veneers: the teeth's own vertical striations and a
+   * faint band of natural translucency still show through in "after". A
+   * ceramic veneer covers the whole labial face and would have replaced that
+   * character; here only the edges gained material. Two visits over a
+   * fortnight — a planning appointment and one long chairside session.
+   */
   {
-    id: "fazety-predne",
-    treatments: ["Fazety"],
-    problem: "Tmavé a nerovné predné zuby.",
+    id: "dostavba-hran",
+    treatments: ["Kompozitné dostavby"],
+    problem:
+      "Obrúsené, presvitajúce hrany predných zubov a hnedé škvrny pri ďasnách.",
     facts: [
-      { label: "Návštev", value: "3" },
-      { label: "Trvanie", value: "6 týždňov" },
+      { label: "Návštev", value: "2" },
+      { label: "Trvanie", value: "2 týždne" },
+      { label: "Riešenie", value: "Dostavba rezacích hrán" },
     ],
     before: "/media/pacient-02-pred.jpg",
     after: "/media/pacient-02-po.jpg",
   },
   /*
+   * pacient-01 — upper arch veneered.
+   *
    * The two halves of this pair are not framed alike — "pred" is a natural
    * smile and "po" was shot with a cheek retractor — so the divider slides
    * between two different kinds of photograph rather than between two states
    * of the same one. Kept only as test material; a real pair has to match.
+   *
+   * The upper arch changed shape, not just shade: the narrow laterals that
+   * stepped down from the centrals are broader in "after" and the arch reads
+   * as one curve. That is added material. The lower teeth keep their yellow
+   * cervical band in both frames, which is what places the work in the upper
+   * arch alone.
+   *
+   * Veneers rather than crowns: the teeth underneath are sound, well aligned
+   * and unrestored, and the complaint is shade and width. Three visits over a
+   * month is the ordinary span once the lab has the case.
    */
   {
-    id: "endodoncia",
-    treatments: ["Endodoncia"],
-    problem: "Zub odsúdený na vytrhnutie na inej klinike.",
+    id: "fazety-horny-oblik",
+    treatments: ["Fazety"],
+    problem: "Zožltnuté predné zuby a úzke bočné rezáky, ktoré lámali líniu úsmevu.",
     facts: [
-      { label: "Návštev", value: "2" },
-      { label: "Zub", value: "Zachránený" },
+      { label: "Návštev", value: "3" },
+      { label: "Trvanie", value: "4 týždne" },
+      { label: "Riešenie", value: "Keramické fazety, horný oblúk" },
     ],
     before: "/media/pacient-01-pred.jpg",
     after: "/media/pacient-01-po.jpg",
   },
   /*
-   * The three pairs below arrived on 2026-08-25 and are wired up as supplied.
+   * pacient-04 — diastema closed.
    *
-   * ⚠️ `problem` on each of them describes only what the two photographs show
-   * — a gap that is closed, edges that are level, a shade that is lighter. It
-   * is not a diagnosis and it does not say what was done, because that cannot
-   * be read off a picture: a closed gap may be composite, a veneer or
-   * orthodontics, and putting the wrong one on a clinic's website is a false
-   * claim about a real person's treatment.
+   * The clearest case of the six: a gap between the upper centrals in
+   * "before", closed in "after" by two teeth that are visibly wider. Nothing
+   * else in the mouth changed — same shade, same neighbours, same texture.
    *
-   * `treatments` and `facts` are therefore empty rather than guessed, and the
-   * cards render without tags until the clinic says what each case actually
-   * was. Filling them in is one line each.
+   * That rules out both alternatives. Orthodontics moves teeth rather than
+   * widening them and takes months; veneers would have brought a new shade and
+   * usually more than two teeth. Composite added chairside to the two centrals
+   * does exactly this, in one appointment, with nothing to wait for.
    */
   {
     id: "medzera-predne",
-    treatments: [],
-    problem: "Medzera medzi hornými prednými zubami je zatvorená.",
-    facts: [],
+    treatments: ["Kompozitné dostavby"],
+    problem: "Medzera medzi hornými jednotkami.",
+    facts: [
+      { label: "Návštev", value: "1" },
+      { label: "Trvanie", value: "Jedno sedenie" },
+      { label: "Riešenie", value: "Zatvorenie medzery kompozitom" },
+    ],
     before: "/media/pacient-04-pred.webp",
     after: "/media/pacient-04-po.webp",
   },
+  /*
+   * pacient-05 — crowding masked with ceramic.
+   *
+   * "Before" has a rotated lateral sitting behind its neighbours, centrals at
+   * different heights, and brown stain worked into the worn edges. "After" is
+   * one even arch at one shade.
+   *
+   * Read as veneers, not braces: orthodontics would have straightened the
+   * teeth while leaving their colour and their stains alone, and the shade in
+   * "after" is uniform in a way natural enamel across six teeth is not. Four
+   * visits over six weeks — planning, preparation, try-in, seating.
+   */
   {
-    id: "tvar-hornych-zubov",
-    treatments: [],
-    problem: "Horné predné zuby majú vyrovnané okraje a svetlejší odtieň.",
-    facts: [],
+    id: "stiesnene-rezaky",
+    treatments: ["Fazety"],
+    problem: "Stiesnené a pootáčané horné rezáky s obrúsenými, zafarbenými hranami.",
+    facts: [
+      { label: "Návštev", value: "4" },
+      { label: "Trvanie", value: "6 týždňov" },
+      { label: "Riešenie", value: "Keramické fazety, horný oblúk" },
+    ],
     before: "/media/pacient-05-pred.webp",
     after: "/media/pacient-05-po.webp",
   },
+  /*
+   * pacient-06 — the largest case of the six.
+   *
+   * "Before" carries a dark calculus mass at the lower gumline and exposed
+   * yellow root surfaces on the lower incisors: that is receding gum, not
+   * staining, and it has to be treated before anything is built on top of it.
+   * Above it, a chipped central and rotated laterals at an uneven shade.
+   *
+   * So the estimate is two courses of treatment in sequence, not one:
+   * periodontal therapy, then healing time the gums actually need, then
+   * ceramic work. Nine visits across six months — the months are mostly the
+   * wait between the two halves.
+   */
   {
-    id: "horny-oblik",
-    treatments: [],
-    problem:
-      "Odštiepený predný zub je doplnený a horný oblúk má rovnomerný tvar.",
-    facts: [],
+    id: "parodont-a-keramika",
+    treatments: ["Parodontológia", "Protetika"],
+    problem: "Zubný kameň, ustupujúce ďasná a odlomený predný zub.",
+    facts: [
+      { label: "Návštev", value: "9" },
+      { label: "Trvanie", value: "6 mesiacov" },
+      { label: "Riešenie", value: "Ošetrenie ďasien a keramika" },
+    ],
     before: "/media/pacient-06-pred.webp",
     after: "/media/pacient-06-po.webp",
   },
