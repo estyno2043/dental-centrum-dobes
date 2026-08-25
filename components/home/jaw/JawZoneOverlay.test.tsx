@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { readFileSync } from "node:fs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -200,6 +200,49 @@ describe("JawZoneOverlay pain map", () => {
 
     expect(screen.queryByRole("region", { name: "Predné zuby" })).not.toBeInTheDocument();
     expect(front).toHaveFocus();
+  });
+
+  /*
+   * The gesture everyone tries first. Focus is deliberately not restored:
+   * Escape asks to go back where you were, a click elsewhere already says
+   * where you want to be.
+   */
+  it("closes the pinned card when the pointer goes down outside it", async () => {
+    const user = userEvent.setup();
+    renderOverlay();
+    const front = screen.getByTestId("jaw-zone-button-front");
+    await user.click(front);
+    expect(screen.getByRole("region", { name: "Predné zuby" })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("heading", { name: "Kde vás to trápi?" }));
+
+    expect(screen.queryByRole("region", { name: "Predné zuby" })).not.toBeInTheDocument();
+    expect(front).not.toHaveFocus();
+  });
+
+  it("keeps the card open when the click lands inside it", async () => {
+    const user = userEvent.setup();
+    renderOverlay();
+    await user.click(screen.getByTestId("jaw-zone-button-front"));
+
+    const card = screen.getByRole("region", { name: "Predné zuby" });
+    await user.click(within(card).getByRole("heading", { name: "Predné zuby" }));
+
+    expect(screen.getByRole("region", { name: "Predné zuby" })).toBeInTheDocument();
+  });
+
+  /*
+   * Another zone's button is not "outside". Were it, the card would close and
+   * reopen inside one gesture and read as a flicker rather than a switch.
+   */
+  it("switches zones rather than closing when another trigger is clicked", async () => {
+    const user = userEvent.setup();
+    renderOverlay();
+    await user.click(screen.getByTestId("jaw-zone-button-front"));
+    await user.click(screen.getByTestId("jaw-zone-button-molar"));
+
+    expect(screen.queryByRole("region", { name: "Predné zuby" })).not.toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "Stoličky" })).toBeInTheDocument();
   });
 
   it("closes immediately and focuses safe root when presentation reverses", async () => {

@@ -275,6 +275,46 @@ export function JawZoneOverlay({
   }, [close, state.pinned]);
 
   /*
+   * Clicking away closes the card — the gesture everyone already tries first,
+   * ahead of the close button and well ahead of Escape.
+   *
+   * `pointerdown` rather than `click`, so it goes as the gesture starts rather
+   * than a beat later when the finger lifts. Two things count as inside: the
+   * card, and the zone buttons. The buttons have to be excluded or clicking
+   * one while another zone is open would close and reopen the card inside a
+   * single gesture, which reads as a flicker rather than as a switch. Empty
+   * space inside the overlay is deliberately *not* excluded — clicking beside
+   * the jaw is exactly the "somewhere else" this is for.
+   *
+   * Focus is not restored here, unlike Escape. Escape is a request to go back
+   * to where you were; a click elsewhere already says where you want to be,
+   * and pulling focus back to the jaw would take it away again.
+   *
+   * Only while pinned. An unpinned card is a hover preview and already leaves
+   * when the pointer does.
+   */
+  useEffect(() => {
+    if (!state.pinned) return;
+
+    const onPointerDown = (event: PointerEvent) => {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (cardRef.current?.contains(target)) return;
+      if (
+        Object.values(triggerRefs.current).some((trigger) =>
+          trigger?.contains(target),
+        )
+      ) {
+        return;
+      }
+      close(false);
+    };
+
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [close, state.pinned]);
+
+  /*
    * The card unfolds from the spot on the jaw it belongs to, not from its own
    * corner. The anchor's position is measured against the card's own box and
    * handed over as `transform-origin`, which may sit well outside that box —
