@@ -62,14 +62,33 @@ test("survives storage being unavailable", async () => {
 });
 
 /*
- * It wears the menu trigger's shell so it lands in the same corner at the same
- * size — the one control changing its job, not a second button appearing.
+ * It stands where the menu stands — same corner, in the menu's own positioning
+ * root — but it does not borrow the trigger's shell. That rectangle holds two
+ * marks and a word because it does two things; this does one.
  */
-test("takes the menu trigger's place rather than sitting beside it", () => {
+test("takes the menu's place in the corner", () => {
   const header = readFileSync("components/hero/SiteHeader.tsx", "utf8");
   const source = readFileSync("components/hero/BackButton.tsx", "utf8");
+  const css = readFileSync("components/hero/hero.module.css", "utf8");
 
-  expect(source).toContain("styles.desktopMenuTrigger");
   expect(source).toContain("styles.desktopMenuRoot");
+  expect(source).not.toContain("styles.desktopMenuTrigger");
   expect(header).toMatch(/mode === "quiet" \? \(\s*<BackButton/);
+
+  const disc = css.match(/\.backTrigger \{[^}]*\}/)?.[0] ?? "";
+  expect(disc).toMatch(/border-radius:\s*50%/);
+  expect(disc).toMatch(/width:\s*54px/);
+});
+
+/*
+ * A disc with one stroke in it and no visible word, so the word has to reach
+ * assistive technology some other way — or the control announces itself as
+ * nothing at all.
+ */
+test("says what it is without printing it", () => {
+  render(<BackButton ground="light" scrolled={false} />);
+
+  const button = screen.getByRole("button", { name: "Späť" });
+  expect(button.querySelector("svg")).toBeInTheDocument();
+  expect(button.querySelector("[aria-hidden='true']")).toBeInTheDocument();
 });

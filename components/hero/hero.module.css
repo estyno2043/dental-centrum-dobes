@@ -350,13 +350,31 @@
 }
 
 /*
- * The way back, wearing the menu trigger's shell — same size, same corner, so
- * it reads as the one control changing its job rather than as a different
- * button that has appeared. Its own width would have been dead anyway:
- * `.desktopMenuTrigger` sets one later in this file at equal specificity.
+ * The way back: a disc, and nothing else in it.
+ *
+ * It stands where the menu trigger stands, but it does not borrow that shell.
+ * The menu's rounded rectangle holds two marks and a word because it does two
+ * things; this does one, and a circle with a single stroke in it says so
+ * without a label. Solid rather than the site's usual glass — the service
+ * pages are pale, and a translucent control on a pale ground is a suggestion
+ * where this needs to be an offer.
  */
 .backTrigger {
-  gap: 2px;
+  display: grid;
+  width: 54px;
+  height: 54px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--ink);
+  box-shadow: 0 10px 30px rgb(20 18 16 / 26%);
+  color: var(--porcelain);
+  cursor: pointer;
+  place-items: center;
+  transition:
+    background 0.34s var(--ease),
+    color 0.34s var(--ease),
+    transform 0.34s var(--ease);
 }
 
 .backArrow {
@@ -372,10 +390,35 @@
   height: 100%;
 }
 
+.backTrigger:hover,
+.backTrigger:focus-visible {
+  background: var(--taupe);
+  color: var(--ink);
+}
+
 /* Leans the way it is going. */
 .backTrigger:hover .backArrow,
 .backTrigger:focus-visible .backArrow {
-  transform: translateX(-3px);
+  transform: translateX(-4px);
+}
+
+.backTrigger:active {
+  transform: scale(0.94);
+}
+
+.backTrigger:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+
+/* Off-screen, and out of the accessibility tree's way — but still read. */
+.backWord {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .mobileMenuDivider {

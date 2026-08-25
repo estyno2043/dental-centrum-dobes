@@ -50,16 +50,17 @@ export function BackButton({ ground, scrolled }: BackButtonProps): JSX.Element {
       data-ground={ground}
     >
       <button
-        className={[styles.desktopMenuTrigger, styles.backTrigger].join(" ")}
+        aria-label="Späť"
+        className={styles.backTrigger}
         onClick={goBack}
         type="button"
       >
         <span aria-hidden="true" className={styles.backArrow}>
-          <IconArrowNarrowLeft stroke={1.7} />
+          <IconArrowNarrowLeft stroke={1.5} />
         </span>
-        <span className={styles.mobileMenuAction}>
-          <span>Späť</span>
-        </span>
+        {/* The mark carries the meaning to anyone who can see it; the word
+            carries it to everyone else. */}
+        <span className={styles.backWord}>Späť</span>
       </button>
     </div>
   );
