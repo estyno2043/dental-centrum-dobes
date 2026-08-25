@@ -33,11 +33,18 @@ export const patientsIntro = {
 } as const;
 
 /**
- * ⚠️ The three wired photo pairs are **test material**. Which pair sits on
- * which case is arbitrary — the treatments, visit counts and durations below
- * were written before any photography arrived and do not describe these
- * patients. Every one of them has to be replaced with the real case and its
- * documented consent before this section is published.
+ * ⚠️ NONE of these may be published yet.
+ *
+ * Six pairs are now wired up and every one of them shows an identifiable
+ * face. Before/after photographs of identifiable patients are health data;
+ * publishing them without documented written consent is not a design decision
+ * to make on anyone's behalf.
+ *
+ * The first three are also test material in a second way: which pair sits on
+ * which case is arbitrary, and the treatments, visit counts and durations were
+ * written before any photography arrived — they do not describe these
+ * patients. The three added on 2026-08-25 carry no treatments or facts at all,
+ * for the reason given above them.
  */
 
 /** The case shown large at the top of the section. */
@@ -83,23 +90,44 @@ export const patientCases: readonly PatientCase[] = [
     before: "/media/pacient-01-pred.jpg",
     after: "/media/pacient-01-po.jpg",
   },
+  /*
+   * The three pairs below arrived on 2026-08-25 and are wired up as supplied.
+   *
+   * ⚠️ `problem` on each of them describes only what the two photographs show
+   * — a gap that is closed, edges that are level, a shade that is lighter. It
+   * is not a diagnosis and it does not say what was done, because that cannot
+   * be read off a picture: a closed gap may be composite, a veneer or
+   * orthodontics, and putting the wrong one on a clinic's website is a false
+   * claim about a real person's treatment.
+   *
+   * `treatments` and `facts` are therefore empty rather than guessed, and the
+   * cards render without tags until the clinic says what each case actually
+   * was. Filling them in is one line each.
+   */
   {
-    id: "implantat",
-    treatments: ["Implantát", "Korunka"],
-    problem: "Chýbajúci zub po úraze.",
-    facts: [
-      { label: "Návštev", value: "4" },
-      { label: "Trvanie", value: "5 mesiacov" },
-    ],
+    id: "medzera-predne",
+    treatments: [],
+    problem: "Medzera medzi hornými prednými zubami je zatvorená.",
+    facts: [],
+    before: "/media/pacient-04-pred.webp",
+    after: "/media/pacient-04-po.webp",
   },
   {
-    id: "hygiena",
-    treatments: ["Dentálna hygiena"],
-    problem: "Zafarbenia a zubný kameň po rokoch bez hygieny.",
-    facts: [
-      { label: "Návštev", value: "1" },
-      { label: "Trvanie", value: "60 minút" },
-    ],
+    id: "tvar-hornych-zubov",
+    treatments: [],
+    problem: "Horné predné zuby majú vyrovnané okraje a svetlejší odtieň.",
+    facts: [],
+    before: "/media/pacient-05-pred.webp",
+    after: "/media/pacient-05-po.webp",
+  },
+  {
+    id: "horny-oblik",
+    treatments: [],
+    problem:
+      "Odštiepený predný zub je doplnený a horný oblúk má rovnomerný tvar.",
+    facts: [],
+    before: "/media/pacient-06-pred.webp",
+    after: "/media/pacient-06-po.webp",
   },
 ] as const;
 
