@@ -119,7 +119,7 @@ describe("JawZoneOverlay pain map", () => {
 
     fireEvent.pointerEnter(molar);
     expect(screen.getByRole("region", { name: "Stoličky" })).toBeVisible();
-    expect(screen.getByRole("link", { name: "Bolí ma pri hryzení" })).toBeVisible();
+    expect(screen.getByRole("link", { name: /^Bolí ma pri hryzení/ })).toBeVisible();
     fireEvent.pointerLeave(molar);
     expect(screen.queryByRole("region", { name: "Stoličky" })).not.toBeInTheDocument();
 
@@ -141,7 +141,7 @@ describe("JawZoneOverlay pain map", () => {
       event: "jaw_zone_click",
       jaw_zone: "molar",
     });
-    expect(screen.getByRole("link", { name: "Pulzujúca bolesť" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /^Pulzujúca bolesť/ })).toHaveAttribute(
       "href",
       "/problemy/stolicky?problem=pulsing",
     );
@@ -347,6 +347,51 @@ describe("JawZoneOverlay pain map", () => {
     expect(cssText).toMatch(/\.zoneCard\s*\{[^}]*\btop:\s*5[0-9]%/);
     expect(cssText).not.toMatch(/\.zoneCard\s*\{[^}]*\btop:\s*auto/);
     expect(cssText).toMatch(/\.zoneCard\s*\{[^}]*overflow-y:\s*auto/);
+  });
+
+  /*
+   * A symptom is not a diagnosis. The same one leads to more than one
+   * treatment and only an examination decides which, so the row names the
+   * whole list rather than picking the likeliest — and it goes inside the
+   * link, where a screen reader hears it without having to hover anything.
+   */
+  it("tells each row where it leads, in full", () => {
+    renderOverlay();
+    fireEvent.pointerEnter(screen.getByTestId("jaw-zone-button-molar"));
+
+    const row = screen.getByRole("link", { name: /^Bolí ma pri hryzení/ });
+    expect(row.textContent).toContain("Endodoncia pod mikroskopom");
+    expect(row.textContent).toContain("extrakcia");
+  });
+
+  /*
+   * The card stands in a room. Perspective belongs to whatever contains the
+   * transformed element, so it lives on the overlay — a card cannot give
+   * itself any — and one shared value keeps the unfold and the tilt looking at
+   * the same horizon.
+   */
+  it("gives the card depth from the overlay, not from itself", () => {
+    expect(cssText).toMatch(/\.zoneOverlay \{[^}]*perspective:\s*1400px/);
+    expect(cssText).toMatch(/\.zoneCard \{[^}]*transform-style:\s*preserve-3d/);
+    expect(cssText).toMatch(/\.cardTop \{[^}]*translateZ/);
+    expect(cssText).toMatch(/\.problemList \{[^}]*translateZ/);
+  });
+
+  /* And it is hinged to the tooth, not to its own corner. */
+  it("unfolds from an origin the script measures off the anchor", () => {
+    const source = readFileSync("components/home/jaw/JawZoneOverlay.tsx", "utf8");
+
+    expect(source).toMatch(/jaw-anchor-\$\{zone\}/);
+    expect(source).toContain("transformOrigin");
+    expect(cssText).toMatch(/@keyframes card-unfold/);
+  });
+
+  /* The old bespoke gold is gone from the last thing wearing it. */
+  it("dresses the card in the brand's taupe", () => {
+    const card = cssText.match(/\.zoneCard \{[^}]*\}/)?.[0] ?? "";
+
+    expect(card).toMatch(/border:\s*1px solid rgb\(174 155 126/);
+    expect(cssText).not.toMatch(/#dfbd80/);
   });
 
   it("keeps one centered 16:9 artboard and pop-motion contracts", () => {

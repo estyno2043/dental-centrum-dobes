@@ -205,6 +205,7 @@ export function JawZoneOverlay({
   visible,
 }: JawZoneOverlayProps) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLElement>(null);
   const triggerRefs = useRef<Partial<Record<InteractiveZoneId, HTMLButtonElement>>>({});
   const activeTriggerRef = useRef<InteractiveZoneId | null>(null);
   const skipRestoredFocusRef = useRef(false);
@@ -273,6 +274,28 @@ export function JawZoneOverlay({
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [close, state.pinned]);
 
+  /*
+   * The card unfolds from the spot on the jaw it belongs to, not from its own
+   * corner. The anchor's position is measured against the card's own box and
+   * handed over as `transform-origin`, which may sit well outside that box —
+   * that is the point: the panel swings out of the tooth rather than appearing
+   * beside it.
+   */
+  useEffect(() => {
+    const card = cardRef.current;
+    const zone = visibleState.openZone;
+    if (!card || !zone) return;
+
+    const anchor = document.querySelector(`[data-testid="jaw-anchor-${zone}"]`);
+    if (!anchor) return;
+
+    const from = anchor.getBoundingClientRect();
+    const box = card.getBoundingClientRect();
+    card.style.transformOrigin = `${from.left + from.width / 2 - box.left}px ${
+      from.top + from.height / 2 - box.top
+    }px`;
+  }, [visibleState.openZone, visibleState.mode]);
+
   const open = useCallback((zoneId: InteractiveZoneId, pin: boolean) => {
     if (!enabled) return;
     activeTriggerRef.current = zoneId;
@@ -282,6 +305,29 @@ export function JawZoneOverlay({
       pinned: pin || current.pinned,
     }));
   }, [enabled]);
+
+  /*
+   * The card holds itself in space against the pointer: a few degrees of tilt,
+   * written as two custom properties. Cheap enough to run on every move — two
+   * property writes and a composited rotation — and it is what turns the panel
+   * from a picture of a card into something occupying room in front of the jaw.
+   */
+  const tiltToPointer = useCallback((event: ReactPointerEvent<HTMLElement>) => {
+    const card = cardRef.current;
+    if (!card) return;
+    const rect = card.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+    card.style.setProperty("--tilt-y", `${(x * 7).toFixed(2)}deg`);
+    card.style.setProperty("--tilt-x", `${(-y * 5).toFixed(2)}deg`);
+  }, []);
+
+  const releaseTilt = useCallback(() => {
+    const card = cardRef.current;
+    if (!card) return;
+    card.style.setProperty("--tilt-x", "0deg");
+    card.style.setProperty("--tilt-y", "0deg");
+  }, []);
 
   const closeUnpinned = useCallback((event: ReactPointerEvent<HTMLElement>) => {
     const related = event.relatedTarget;
@@ -324,8 +370,12 @@ export function JawZoneOverlay({
        * it.
        */
       data-side={visibleState.openZone === "premolar" ? "right" : "left"}
-      onPointerEnter={() => undefined}
-      onPointerLeave={closeUnpinned}
+      onPointerLeave={(event) => {
+        releaseTilt();
+        closeUnpinned(event);
+      }}
+      onPointerMove={tiltToPointer}
+      ref={cardRef}
       role={visibleState.mode === "mobile" ? "dialog" : "region"}
     >
       <div className={styles.cardTop}>
@@ -360,7 +410,16 @@ export function JawZoneOverlay({
                 });
               }}
             >
-              {problem.patientLabel}
+              <span className={styles.problemLabel}>{problem.patientLabel}</span>
+              {/*
+                Where the row goes. Deliberately the whole list rather than the
+                first of it: the same symptom leads to more than one treatment
+                and only an examination decides which, so naming one would be a
+                diagnosis the page is not entitled to make.
+              */}
+              <span className={styles.problemDestination}>
+                <span>{problem.destination}</span>
+              </span>
             </a>
           </li>
         ))}
