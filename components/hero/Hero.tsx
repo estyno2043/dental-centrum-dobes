@@ -17,6 +17,22 @@ const reducedMotionQuery = "(prefers-reduced-motion: reduce)";
 const wideViewportQuery = "(min-width: 768px)";
 const premiumEase = [0.22, 1, 0.36, 1] as const;
 
+/*
+ * The tooth on the package button, drawn once and worn twice — filled
+ * underneath, outlined on top. Tabler's `dental` path (MIT), taken as data
+ * rather than as a component because the icon components render a stroked
+ * `<svg>` of their own and this needs two layers inside one.
+ */
+const TOOTH_OUTLINE =
+  "M12 5.5c-1.074 -.586 -2.583 -1.5 -4 -1.5c-2.1 0 -4 1.247 -4 5c0 4.899 " +
+  "1.056 8.41 2.671 10.537c.573 .756 1.97 .521 2.567 -.236c.398 -.505 .819 " +
+  "-1.439 1.262 -2.801c.292 -.771 .892 -1.504 1.5 -1.5c.602 0 1.21 .737 1.5 " +
+  "1.5c.443 1.362 .864 2.295 1.262 2.8c.597 .759 2 .993 2.567 .237c1.615 " +
+  "-2.127 2.671 -5.637 2.671 -10.537c0 -3.74 -1.908 -5 -4 -5c-1.423 0 -2.92 " +
+  ".911 -4 1.5";
+/** The groove across the crown. Outline only — it is a line, not an edge. */
+const TOOTH_GROOVE = "M12 5.5l3 1.5";
+
 /**
  * Phones get the 720p encode: it is a third of the desktop file, and the
  * difference is invisible at that size. WebM leads because VP9 is meaningfully
@@ -110,15 +126,30 @@ export function Hero(): JSX.Element {
             */}
             <Link className={styles.packageButton} href="/sluzby/vstupna-prehliadka">
               {/*
-                The same ring the tour button wears, doing a different thing.
-                There it is a dot travelling around — a tour is something you
-                walk. Here the ring is drawn as three arcs, one per part of the
-                package, and hovering closes them into a single unbroken circle:
-                three things that turn out to be one.
+                The mark, in the same place the tour button keeps its ring and
+                doing the job that button cannot: it says what is on the other
+                end of the link. At rest it is a hairline tooth. Reach for the
+                button and the enamel fills in from the roots up, arriving just
+                behind the pill's own sweep.
               */}
-              <span aria-hidden="true" className={styles.packageRing}>
-                <svg viewBox="0 0 20 20">
-                  <circle cx="10" cy="10" r="7.5" />
+              <span aria-hidden="true" className={styles.packageTooth}>
+                <svg viewBox="0 0 24 24">
+                  <clipPath id="package-tooth-fill">
+                    <rect
+                      className={styles.toothClip}
+                      height="24"
+                      width="24"
+                      x="0"
+                      y="0"
+                    />
+                  </clipPath>
+                  <path
+                    className={styles.toothBody}
+                    clipPath="url(#package-tooth-fill)"
+                    d={TOOTH_OUTLINE}
+                  />
+                  <path className={styles.toothOutline} d={TOOTH_OUTLINE} />
+                  <path className={styles.toothOutline} d={TOOTH_GROOVE} />
                 </svg>
               </span>
               <span className={styles.packageLabel}>

@@ -210,18 +210,35 @@ test("wears the same idiom as the tour button", () => {
 });
 
 /*
- * The ring is drawn as three arcs and closes into one on hover. The numbers
- * are the circle's own: at r=7.5 the circumference is 47.12, so three arcs of
- * 11.7 and three gaps of 4 go exactly once around. Change the radius without
- * changing these and the arcs stop being three.
+ * The mark fills rather than fades. The clip is pinned to its own bottom edge
+ * and scales up, so the enamel rises from the roots to the crown.
+ *
+ * `transform-box: fill-box` is the line worth guarding. Drop it and
+ * `transform-origin: bottom` starts meaning the bottom of the SVG's own
+ * coordinate space instead of the rect's, which still animates — just from the
+ * wrong place — so nothing fails except the effect.
  */
-test("draws the package ring as three arcs that close into one", () => {
+test("fills the package tooth from its roots up on hover", () => {
   const css = readFileSync("components/hero/hero.module.css", "utf8");
 
-  expect(css).toMatch(/\.packageRing circle \{[^}]*stroke-dasharray:\s*11\.7 4/);
-  expect(css).toMatch(/stroke-dasharray:\s*47\.2 0/);
+  const clip = css.match(/^\.toothClip \{[^}]*\}/m)?.[0] ?? "";
+  expect(clip).toMatch(/transform:\s*scaleY\(0\)/);
+  expect(clip).toMatch(/transform-box:\s*fill-box/);
+  expect(clip).toMatch(/transform-origin:\s*bottom/);
 
-  const arcs = 3;
-  const circumference = 2 * Math.PI * 7.5;
-  expect(arcs * 11.7 + arcs * 4).toBeCloseTo(circumference, 0);
+  expect(css).toMatch(
+    /\.packageButton:hover \.toothClip,[\s\S]*?transform:\s*scaleY\(1\)/,
+  );
+});
+
+/*
+ * The outline has to be drawn after the fill, or the fill covers it and the
+ * tooth loses its edge at exactly the moment it gains its colour.
+ */
+test("draws the tooth outline over its fill", () => {
+  const tsx = readFileSync("components/hero/Hero.tsx", "utf8");
+
+  expect(tsx.indexOf("styles.toothBody")).toBeLessThan(
+    tsx.indexOf("styles.toothOutline"),
+  );
 });
