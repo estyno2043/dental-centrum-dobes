@@ -5,11 +5,11 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Netlify Forms runtime-v5 build fix verified; publication in progress
-- Owner: Codex
-- Branch: `codex/netlify-forms-fix`
-- Task: Commit the verified migration, push the feature branch, fast-forward
-  `main`, and mirror the same commit to `develop` as requested.
+- Status: Netlify Forms runtime-v5 build fix published
+- Owner: —
+- Branch: —
+- Task: none in progress. Commit `1397786` is present on pushed `main` and
+  `develop`; GitHub exposes no Netlify deployment or check run for the commit.
 
 ## File Reservations
 
@@ -1092,9 +1092,10 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   5.15.13 in offline production context, `git diff --check`, and credential
   scan all passed. Generated `.netlify/` output was moved outside the worktree
   after verification; it is ignored and reproducible. No visual UI changed.
-  Files released. Next: publish the verified commit to `main`, mirror
-  `develop`, then inspect the linked Netlify deployment status if GitHub exposes
-  one.
+  Commit `1397786` was pushed to the feature branch and fast-forwarded onto
+  both `main` and `develop`. Files released. GitHub reports no check run,
+  deployment record, or Netlify URL for that commit, so only the complete local
+  Netlify production build is currently observable from this repository.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
