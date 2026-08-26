@@ -32,3 +32,30 @@ body {
   color: #fff;
   font-family: "Hanken Grotesk", sans-serif;
 }
+
+/*
+ * Lenis's own rules, written out rather than imported from the package so they
+ * stay visible next to the comment that explains them.
+ *
+ * The third one is the one that matters. Native smooth scrolling and Lenis's
+ * per-frame `scrollTo` are two things steering the same value; leave both on
+ * and every anchor jump fights the rAF loop. `.lenis` is only on the root
+ * while Lenis is actually running, so under `prefers-reduced-motion` — where
+ * it never starts — none of this applies and the browser scrolls natively.
+ */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}

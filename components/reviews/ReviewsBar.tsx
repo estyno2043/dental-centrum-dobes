@@ -171,7 +171,12 @@ export function ReviewsBar({
               </span>
               <span className={styles.date}>{active.date}</span>
             </figcaption>
-            <blockquote className={styles.quoteText} ref={textRef}>
+            {/* A long review scrolls in place; the eased wheel must not take it. */}
+            <blockquote
+              className={styles.quoteText}
+              data-lenis-prevent
+              ref={textRef}
+            >
               <p>{active.text}</p>
             </blockquote>
           </figure>

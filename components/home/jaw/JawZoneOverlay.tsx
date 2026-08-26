@@ -404,6 +404,8 @@ export function JawZoneOverlay({
     <section
       aria-label={activeZone.label}
       className={classNames(styles.zoneCard, visibleState.mode === "mobile" && styles.zonePanel)}
+      /* Its own scroll. Without this the eased wheel steals it from the card. */
+      data-lenis-prevent
       /*
        * Away from the active zone's own button. Only the premolar control sits
        * out to the left; the card's default side would sit straight on top of
