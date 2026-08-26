@@ -132,6 +132,8 @@ export function TeamSection({
      */
     <section
       aria-labelledby="team-heading"
+      /* The menu travels here; see `scrollToSection`. */
+      id="tim"
       className={styles.section}
       data-header-mode="light"
       ref={sectionRef}

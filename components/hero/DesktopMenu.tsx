@@ -10,6 +10,10 @@ import {
 } from "react";
 import { IconDental, IconMenuDeep } from "@tabler/icons-react";
 import { motion, useReducedMotion } from "motion/react";
+import {
+  scrollToSection,
+  sectionIdFromHref,
+} from "@/components/scroll/scrollToSection";
 import { navigationItems } from "./heroContent";
 import styles from "./hero.module.css";
 
@@ -164,6 +168,18 @@ export function DesktopMenu({ ground, scrolled }: DesktopMenuProps): JSX.Element
               key={item.label}
               href={item.href}
               className={styles.desktopMenuLink}
+              onClick={(event) => {
+                /*
+                  Eased travel when this page has the section; otherwise the
+                  browser navigates as usual. `scrollToSection` reports which
+                  of the two happened rather than guessing here.
+                */
+                const id = sectionIdFromHref(item.href);
+                if (id && scrollToSection(id)) {
+                  event.preventDefault();
+                  setOpen(false);
+                }
+              }}
               variants={{
                 hidden: { opacity: 0, x: prefersReducedMotion ? 0 : 16 },
                 visible: { opacity: 1, x: 0 },

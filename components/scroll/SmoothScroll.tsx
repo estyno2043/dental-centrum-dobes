@@ -3,6 +3,8 @@
 import { useEffect } from "react";
 import Lenis from "lenis";
 
+import { SCROLL_REQUEST, type ScrollRequest } from "./scrollToSection";
+
 /**
  * Eased scrolling, site-wide.
  *
@@ -66,8 +68,35 @@ export function SmoothScroll() {
     const onChange = () => (query.matches ? stop() : start());
     query.addEventListener("change", onChange);
 
+    /*
+     * The menu's travel requests land here, because this is the only place
+     * that holds the instance. Cancelling the event is how the menu learns it
+     * was taken; leaving it alone lets the browser jump as usual, which is
+     * what should happen when there is no eased scrolling to do.
+     *
+     * The journey is timed by its own length. A fixed duration gets both ends
+     * wrong — a short hop feels sluggish and the full-page haul feels hurried
+     * — so scaling by distance keeps the pace even instead. The homepage is
+     * some twenty thousand pixels tall, which is why the ceiling matters.
+     */
+    const onRequest = (event: Event) => {
+      if (!lenis) return;
+      const target = document.getElementById(
+        (event as ScrollRequest).detail.id,
+      );
+      if (!target) return;
+
+      event.preventDefault();
+      const distance = Math.abs(target.getBoundingClientRect().top);
+      lenis.scrollTo(target, {
+        duration: Math.min(2.4, Math.max(0.85, distance / 2400)),
+      });
+    };
+    window.addEventListener(SCROLL_REQUEST, onRequest);
+
     return () => {
       query.removeEventListener("change", onChange);
+      window.removeEventListener(SCROLL_REQUEST, onRequest);
       stop();
     };
   }, []);

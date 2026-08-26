@@ -10,6 +10,10 @@ import {
 } from "@tabler/icons-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useState, type JSX } from "react";
+import {
+  scrollToSection,
+  sectionIdFromHref,
+} from "@/components/scroll/scrollToSection";
 import { navigationItems } from "./heroContent";
 import styles from "./hero.module.css";
 
@@ -125,7 +129,22 @@ export function MobileMenu(): JSX.Element {
                         }}
                       >
                         <Dialog.Close asChild>
-                          <a className={styles.mobileMenuLink} href={item.href}>
+                          <a
+                            className={styles.mobileMenuLink}
+                            href={item.href}
+                            onClick={(event) => {
+                              const id = sectionIdFromHref(item.href);
+                              if (!id || !document.getElementById(id)) return;
+                              event.preventDefault();
+                              /*
+                                Deferred by a beat. `Dialog.Close` wraps this
+                                link, and Radix holds the body's scroll locked
+                                until the dialog has finished closing —
+                                scrolling into that lock goes nowhere.
+                              */
+                              setTimeout(() => scrollToSection(id), 140);
+                            }}
+                          >
                             <span aria-hidden="true">
                               {String(index + 1).padStart(2, "0")}
                             </span>

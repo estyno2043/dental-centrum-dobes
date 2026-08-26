@@ -69,6 +69,8 @@ export function ServicesSection(): JSX.Element {
      */
     <section
       aria-labelledby="services-heading"
+      /* The menu travels here; see `scrollToSection`. */
+      id="sluzby"
       className={styles.section}
       data-header-mode="light"
       ref={sectionRef}

@@ -5,11 +5,19 @@ export const headlineVariants = [
   "Dental Centrum Dobeš.",
 ] as const;
 
+/*
+ * Written as `/#id` rather than `#id` so one href covers both cases: from a
+ * service page the browser navigates home and lands on the section, and from
+ * the homepage the menu intercepts it and eases the whole way down instead.
+ *
+ * `/tim` still exists as a page and is still built — it is simply no longer
+ * where the menu points, because the section reads better in the run of the
+ * homepage than as a stop of its own.
+ */
 export const navigationItems = [
-  { label: "Služby", href: "#" },
+  { label: "Služby", href: "/#sluzby" },
   { label: "Cenník", href: "#" },
-  // The one destination that exists. Everything else stays a placeholder.
-  { label: "Tím", href: "/tim" },
+  { label: "Tím", href: "/#tim" },
   { label: "Kontakt", href: "#" },
 ] as const;
 
