@@ -5,16 +5,17 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Mobile motion pass 1 of 3 published to `main`; passes 2 and 3 open
-- Owner: —
-- Branch: —
-- Task: none in progress. The user merged pass one to `main` in order to review
-  it on a phone through Netlify rather than on localhost, so its visual check
-  is still outstanding — see the note at the end of its log entry below.
+- Status: Netlify Forms runtime-v5 build fix verified; publication in progress
+- Owner: Codex
+- Branch: `codex/netlify-forms-fix`
+- Task: Commit the verified migration, push the feature branch, fast-forward
+  `main`, and mirror the same commit to `develop` as requested.
 
 ## File Reservations
 
-- No active write reservations.
+- No active write reservations. The Netlify Forms runtime-v5 migration released
+  `app/layout.tsx`, `public/__forms.html`, both booking forms, their tests, and
+  `COLLAB.md` after full verification.
 
 - The desktop hover menu released all of its files. `components/hero/DesktopMenu.tsx`,
   `DesktopMenu.test.tsx`, `SiteHeader.tsx`, `heroContent.ts`, and
@@ -1075,6 +1076,25 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   No files reserved. Next: the remaining service pages one at a time, and the
   redirects from `/problemy/*` onto them together with repointing the jaw's
   buttons, so the site is never in a state where they aim at nothing.
+
+- 2026-08-26 — Codex fixed the Netlify Forms build failure introduced by Next
+  Runtime v5. The runtime intentionally rejects `data-netlify` forms that exist
+  only in App Router React output because that output is not deploy-time static
+  HTML. `public/__forms.html` now owns the complete `jaw-appointment` detection
+  schema, including the service field, while `JawAppointmentForm` and
+  `ServiceBooking` post URL-encoded submissions to `/__forms.html`. The hidden
+  detector was removed from `app/layout.tsx` and the live forms no longer carry
+  misleading deploy-time detection attributes.
+
+  The failure was reproduced with the installed Netlify Next adapter before
+  the change. Verification after the change: 204 tests, lint, TypeScript,
+  production Next.js 16.3.0 build, Netlify Build 36.4.2 with Next Runtime
+  5.15.13 in offline production context, `git diff --check`, and credential
+  scan all passed. Generated `.netlify/` output was moved outside the worktree
+  after verification; it is ignored and reproducible. No visual UI changed.
+  Files released. Next: publish the verified commit to `main`, mirror
+  `develop`, then inspect the linked Netlify deployment status if GitHub exposes
+  one.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,

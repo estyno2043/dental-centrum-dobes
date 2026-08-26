@@ -32,24 +32,6 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <form
-          aria-hidden="true"
-          data-netlify="true"
-          data-netlify-honeypot="bot-field"
-          hidden
-          method="POST"
-          name="jaw-appointment"
-        >
-          <input name="form-name" type="hidden" value="jaw-appointment" />
-          <input name="bot-field" type="hidden" />
-          <input name="name" type="hidden" />
-          <input name="phone" type="hidden" />
-          <input name="email" type="hidden" />
-          <input name="zone" type="hidden" />
-          <input name="problem" type="hidden" />
-          <input name="examination" type="hidden" />
-          <input name="consent" type="hidden" />
-        </form>
         {children}
       </body>
     </html>

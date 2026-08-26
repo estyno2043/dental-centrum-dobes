@@ -35,7 +35,8 @@ describe("JawAppointmentForm", () => {
     const values = new FormData(form);
     const honeypot = form.elements.namedItem("bot-field") as HTMLInputElement;
 
-    expect(form).toHaveAttribute("action", "/");
+    expect(form).toHaveAttribute("action", "/__forms.html");
+    expect(form).not.toHaveAttribute("data-netlify");
     expect(values.get("zone")).toBe("molar");
     expect(values.get("problem")).toBe("pulsing");
     expect(values.get("examination")).toBe("Vstupné vyšetrenie — 100 EUR");
@@ -53,7 +54,7 @@ describe("JawAppointmentForm", () => {
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
     const [url, init] = fetchMock.mock.calls[0];
-    expect(url).toBe("/");
+    expect(url).toBe("/__forms.html");
     expect(init).toMatchObject({
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
