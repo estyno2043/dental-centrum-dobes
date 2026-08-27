@@ -11,10 +11,11 @@
   --exit: 0;
   --jaw-opacity: 0;
   --travel: 0px;
-  --handoff-left: 0px;
-  --handoff-top: 0px;
-  --handoff-width: 0px;
-  --handoff-height: 0px;
+  --snap-shift: 0px;
+  --handoff-x: 0px;
+  --handoff-y: 0px;
+  --handoff-scale-x: 1;
+  --handoff-scale-y: 1;
   --handoff-blur: 0;
 
   position: relative;
@@ -86,6 +87,13 @@
   line-height: 1.12;
 }
 
+.trackViewport {
+  width: 100%;
+  min-width: 0;
+  align-self: center;
+  overflow: visible;
+}
+
 .track {
   --frame-h: clamp(300px, 66dvh, 660px);
 
@@ -94,7 +102,6 @@
   height: var(--frame-h);
   max-height: 100%;
   align-items: center;
-  align-self: center;
   padding: 0 clamp(24px, 5vw, 96px);
   gap: clamp(10px, 1.4vw, 20px);
   list-style: none;
@@ -144,18 +151,27 @@
 
 .handoffPhoto {
   position: absolute;
-  top: var(--handoff-top);
-  left: var(--handoff-left);
   display: block;
-  width: var(--handoff-width);
-  height: var(--handoff-height);
+  width: 100%;
+  height: 100%;
   border-radius: calc(4px * (1 - var(--detail)));
-  filter: blur(calc(var(--handoff-blur) * 12px));
+  filter: blur(calc(var(--handoff-blur) * 8px));
+  inset: 0;
   object-fit: cover;
   opacity: min(1, calc(var(--detail) * 12));
-  transform: scale(calc(1 + var(--handoff-blur) * 0.025));
+  transform:
+    translate3d(
+      calc(var(--handoff-x) * (1 - var(--detail))),
+      calc(var(--handoff-y) * (1 - var(--detail))),
+      0
+    )
+    scale(
+      calc(var(--handoff-scale-x) + (1 - var(--handoff-scale-x)) * var(--detail)),
+      calc(var(--handoff-scale-y) + (1 - var(--handoff-scale-y)) * var(--detail))
+    )
+    scale(calc(1 + var(--handoff-blur) * 0.025));
   transform-origin: center;
-  will-change: top, left, width, height, filter, transform;
+  will-change: transform;
 }
 
 .jawLayer {
@@ -357,21 +373,35 @@
     font-size: clamp(1.65rem, 8vw, 2.35rem);
   }
 
-  .track {
-    --frame-h: 56dvh;
-
-    width: 100%;
+  .trackViewport {
     overflow-x: auto;
-    padding: 0 9vw;
     scroll-behavior: auto;
     scroll-snap-type: x mandatory;
-    transform: none;
     overscroll-behavior-x: contain;
     scrollbar-width: none;
   }
 
-  .track::-webkit-scrollbar {
+  .trackViewport::-webkit-scrollbar {
     display: none;
+  }
+
+  .track {
+    --frame-h: 56dvh;
+
+    width: max-content;
+    padding: 0 9vw;
+    transform: translate3d(var(--snap-shift), 0, 0);
+  }
+
+  .section[data-snap-active="true"] .trackViewport {
+    overflow-x: hidden;
+    scroll-snap-type: none;
+    touch-action: pan-y;
+  }
+
+  .handoffPhoto {
+    filter: none;
+    will-change: auto;
   }
 
   .frame {
@@ -430,10 +460,13 @@
 }
 
 .reduced .track {
-  width: 100%;
+  width: max-content;
+  transform: none;
+}
+
+.reduced .trackViewport {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  transform: none;
 }
 
 .reduced .frame {

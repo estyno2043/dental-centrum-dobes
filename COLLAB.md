@@ -5,13 +5,17 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Netlify Forms runtime-v5 build fix published
+- Status: Mobile ClinicStory performance fix ready for phone review
 - Owner: —
-- Branch: —
-- Task: none in progress. Commit `1397786` is present on pushed `main` and
-  `develop`; GitHub exposes no Netlify deployment or check run for the commit.
+- Branch: `codex/mobile-clinicstory-performance`
+- Task: feature branch is verified and ready to push. Await localhost and
+  real-phone approval before any merge or push to `main`.
 
 ## File Reservations
+
+- Mobile ClinicStory performance work released `components/home/ClinicStory.tsx`,
+  `components/home/ClinicStory.test.tsx`, `components/home/clinicStory.module.css`,
+  and `COLLAB.md`. `components/team/**` was not changed.
 
 - No active write reservations. The Netlify Forms runtime-v5 migration released
   `app/layout.tsx`, `public/__forms.html`, both booking forms, their tests, and
@@ -1096,6 +1100,27 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   both `main` and `develop`. Files released. GitHub reports no check run,
   deployment record, or Netlify URL for that commit, so only the complete local
   Netlify production build is currently observable from this repository.
+
+- 2026-08-27 — Codex completed the mobile ClinicStory performance pass on
+  `codex/mobile-clinicstory-performance`. The gallery no longer writes
+  `scrollLeft` while native momentum is active; the seventh-photo snap moves
+  the inner track with a composited transform and preserves the captured native
+  scroll position. Geometry is batched and cached behind `ResizeObserver`,
+  continuous story progress no longer re-renders the jaw subtree, coarse mobile
+  scroll samples are critically damped, and the photograph handoff is FLIP
+  transform-only. Mobile drops the full-screen blur; desktop blur is capped at
+  8px. `components/team/**` was not changed.
+
+  Before/after probes: layout reads per scroll event `6 → 0`, programmatic
+  scroll writes `1 → 0`, jaw subtree renders for three continuous samples
+  `3 → 0`, and meaningful `will-change` elements at 390px `20 → 19`.
+  Browser checks at 390×844 and 1440×900 found zero horizontal page overflow,
+  sticky `top: 0` through active phases, preserved mobile `scrollLeft`, centered
+  seventh frame at snap completion, and zero console errors. Verification:
+  210 tests, lint, TypeScript, production build of 20 routes, jaw-sequence
+  metadata validation, `git diff --check`, and changed-file credential scan.
+  Files released. Next: real iOS/Android touch-inertia and frame-rate review on
+  `http://localhost:3000/`; do not merge or push to `main` before approval.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
