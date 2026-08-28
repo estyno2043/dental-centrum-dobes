@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { readFileSync } from "node:fs";
 import { afterEach, expect, test, vi } from "vitest";
 import { ClinicStory } from "./ClinicStory";
@@ -40,6 +41,7 @@ const cssText = readFileSync("components/home/clinicStory.module.css", "utf8");
 let resizeCallbacks: ResizeObserverCallback[] = [];
 
 afterEach(() => {
+  ScrollTrigger.killAll();
   resizeCallbacks = [];
   jawSequenceMetrics.renders = 0;
   vi.useRealTimers();
@@ -75,6 +77,15 @@ function stubMatchMedia(reduced: boolean, wide = true) {
 
 function triggerResizeObservers() {
   for (const callback of resizeCallbacks) callback([], {} as ResizeObserver);
+  ScrollTrigger.refresh();
+}
+
+function setStoryProgress(section: HTMLElement, progressVh: number, storyEnd: number) {
+  const trigger = ScrollTrigger.getAll().find((candidate) => candidate.trigger === section);
+  if (!trigger?.animation) throw new Error("ClinicStory ScrollTrigger was not created");
+  act(() => {
+    trigger.animation!.progress(progressVh / storyEnd);
+  });
 }
 
 function installDesktopGeometry() {
@@ -124,7 +135,7 @@ function installDesktopGeometry() {
     setProgress(nextProgressVh: number) {
       progressVh = nextProgressVh;
       scrollY = nextProgressVh * 10;
-      act(() => window.dispatchEvent(new Event("scroll")));
+      setStoryProgress(section, nextProgressVh, 1030);
     },
   };
 }
@@ -212,7 +223,7 @@ function installMobilePerformanceGeometry() {
     setProgress(nextProgressVh: number) {
       progressVh = nextProgressVh;
       scrollY = nextProgressVh * 8.44;
-      act(() => window.dispatchEvent(new Event("scroll")));
+      setStoryProgress(section, nextProgressVh, 780);
     },
   };
 }
@@ -319,37 +330,21 @@ test("does not rerender jaw subtree for every mobile scroll sample", () => {
   expect(jawSequenceMetrics.renders).toBe(0);
 });
 
-test("interpolates coarse mobile scroll targets across animation frames", () => {
+test("moves mobile gallery through GSAP-owned compositor transform", () => {
   stubMatchMedia(false, false);
-  const callbacks: FrameRequestCallback[] = [];
-  let nextId = 0;
-  let now = performance.now();
-  vi.stubGlobal(
-    "requestAnimationFrame",
-    vi.fn((callback: FrameRequestCallback) => {
-      callbacks.push(callback);
-      nextId += 1;
-      return nextId;
-    }),
-  );
-  vi.stubGlobal("cancelAnimationFrame", vi.fn());
   render(<ClinicStory />);
   const section = screen.getByTestId("clinic-story");
+  const track = screen.getByRole("list");
   const { setProgress } = installMobilePerformanceGeometry();
 
-  setProgress(130);
-  expect(section.style.getPropertyValue("--snap")).toBe("0");
+  setProgress(120);
 
-  for (let frame = 0; frame < 12; frame += 1) {
-    const callback = callbacks.shift();
-    expect(callback).toBeDefined();
-    now += 1000 / 60;
-    act(() => callback!(now));
-  }
-
-  const interpolatedSnap = Number(section.style.getPropertyValue("--snap"));
-  expect(interpolatedSnap).toBeGreaterThan(0);
-  expect(interpolatedSnap).toBeLessThan(1);
+  expect(section.style.getPropertyValue("--pan")).toBe("0.5");
+  expect(track.style.transform).toContain("translate3d(-962.5px");
+  expect(screen.getByTestId("clinic-track-viewport")).toHaveAttribute(
+    "data-native-swipe",
+    "false",
+  );
 });
 
 test("keeps jaw UI behind smoothed mobile story motion", () => {
@@ -370,11 +365,12 @@ test("moves handoff with compositor-only FLIP and drops mobile blur", () => {
   expect(cssText).not.toMatch(/will-change:\s*top,\s*left,\s*width,\s*height/);
   expect(cssText).toMatch(/\.trackViewport\s*\{[\s\S]*?overflow:\s*visible;/);
   expect(cssText).toMatch(
-    /\.section\[data-snap-active="true"\] \.trackViewport\s*\{[\s\S]*?overflow-x:\s*hidden;/,
+    /@media \(max-width: 767px\)[\s\S]*?\.trackViewport\s*\{[\s\S]*?overflow:\s*hidden;[\s\S]*?touch-action:\s*pan-y;/,
   );
-  expect(cssText).not.toMatch(
-    /\.section\[data-snap-active="true"\] \.trackViewport\s*\{[\s\S]*?overflow-x:\s*clip;/,
+  expect(cssText).toMatch(
+    /\.reduced \.trackViewport\s*\{[\s\S]*?overflow-x:\s*auto;[\s\S]*?scroll-snap-type:\s*x mandatory;/,
   );
+  expect(cssText).not.toContain("data-snap-active");
   expect(cssText).toMatch(/@media \(max-width: 767px\)[\s\S]*?\.handoffPhoto\s*\{[\s\S]*?filter:\s*none;/);
 });
 

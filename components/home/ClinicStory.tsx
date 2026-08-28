@@ -8,18 +8,18 @@ import {
   type CSSProperties,
   type JSX,
 } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import { useMediaQuery } from "../hero/useMediaQuery";
 import {
   DESKTOP_STORY_SCROLL_VH,
-  MOBILE_PHASES,
   MOBILE_STORY_SCROLL_VH,
   mapClinicStoryMotion,
-  stepCriticallyDamped,
   type ClinicStoryPhase,
   type ClinicStoryProfile,
   type ClinicStoryMotionState,
-  type DampedMotionState,
 } from "./clinicStoryMotion";
 import { JawFrameSequence } from "./jaw/JawFrameSequence";
 import { JAW_DISCLAIMER, JAW_ZONES } from "./jaw/jawContent";
@@ -35,6 +35,9 @@ const reducedMotionQuery = "(prefers-reduced-motion: reduce)";
 const wideViewportQuery = "(min-width: 768px)";
 const analyticsConsent = false;
 const REVEAL_TOTAL_MS = 720;
+const MOBILE_SCRUB_SECONDS = 0.18;
+
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const detailFrame = (() => {
   const frame = photoFrames.find((candidate) => candidate.id === "detail");
@@ -44,7 +47,6 @@ const detailFrame = (() => {
 
 type RenderMotion = Readonly<{
   state: ClinicStoryMotionState;
-  snap: number;
 }>;
 
 type RenderFlags = Readonly<{
@@ -62,15 +64,10 @@ type StoryLayout = Readonly<{
   finalLeft: number;
   finalTop: number;
   finalWidth: number;
-  sectionTop: number;
   trackTravel: number;
   viewportHeight: number;
   viewportWidth: number;
 }>;
-
-function clamp01(value: number): number {
-  return Math.min(1, Math.max(0, value));
-}
 
 function getProfile(isWideViewport: boolean): ClinicStoryProfile {
   return isWideViewport ? "desktop" : "mobile";
@@ -91,13 +88,6 @@ function mapRenderMotion(
       exactEndDrawn,
       revealComplete,
     }),
-    snap:
-      profile === "mobile"
-        ? clamp01(
-            (progressVh - MOBILE_PHASES.galleryEnd) /
-              (MOBILE_PHASES.snapEnd - MOBILE_PHASES.galleryEnd),
-          )
-        : 1,
   };
 }
 
@@ -127,8 +117,6 @@ function sameRenderFlags(left: RenderFlags, right: RenderFlags): boolean {
 
 export function ClinicStory(): JSX.Element {
   const sectionRef = useRef<HTMLElement>(null);
-  const introRef = useRef<HTMLElement>(null);
-  const trackViewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLUListElement>(null);
   const finalFrameRef = useRef<HTMLLIElement>(null);
   const targetProgressRef = useRef(0);
@@ -179,47 +167,28 @@ export function ClinicStory(): JSX.Element {
     };
   }, [exactEndDrawn, prefersReducedMotion, renderFlags.zonesVisible, sequenceFailed]);
 
-  useEffect(() => {
+  useGSAP(() => {
     const section = sectionRef.current;
-    const intro = introRef.current;
-    const trackViewport = trackViewportRef.current;
     const track = trackRef.current;
     const finalFrame = finalFrameRef.current;
-    if (!section || !intro || !trackViewport || !track || !finalFrame) return;
+    if (!section || !track || !finalFrame) return;
 
     const currentManifest = jawSequenceManifests[profile as JawSequenceProfile];
-    let disposed = false;
-    let rafId: number | undefined;
-    let lastTime = performance.now();
-    let sequenceDamped: DampedMotionState = { value: 0, velocity: 0 };
-    let storyDamped: DampedMotionState = { value: 0, velocity: 0 };
-    let targetStoryProgress = 0;
-    let targetSequenceProgress = 0;
-    let targetSnap = 0;
-    let mobileSnapStart: number | undefined;
-    let mobileScrollLeft = 0;
-    let pageVisible = document.visibilityState !== "hidden";
     const storyEnd = profile === "mobile" ? MOBILE_STORY_SCROLL_VH : DESKTOP_STORY_SCROLL_VH;
+    const playhead = { progressVh: 0 };
     let layout: StoryLayout = {
       finalHeight: 1,
       finalLeft: 0,
       finalTop: 0,
       finalWidth: 1,
-      sectionTop: 0,
       trackTravel: 0,
       viewportHeight: Math.max(1, window.innerHeight),
       viewportWidth: Math.max(1, window.innerWidth),
     };
 
     const applyVisualMotion = (motion: RenderMotion) => {
-      const snapStart = mobileSnapStart ?? mobileScrollLeft;
-      const baseFinalLeft =
-        profile === "mobile"
-          ? layout.finalLeft - snapStart
-          : layout.finalLeft - layout.trackTravel;
-      const centeredFinalLeft = (layout.viewportWidth - layout.finalWidth) / 2;
-      const snapShift = profile === "mobile" ? centeredFinalLeft - baseFinalLeft : 0;
-      const currentFinalLeft = baseFinalLeft + snapShift * motion.snap;
+      const trackX = -layout.trackTravel * motion.state.pan;
+      const currentFinalLeft = layout.finalLeft + trackX;
       const handoffX =
         currentFinalLeft + layout.finalWidth / 2 - layout.viewportWidth / 2;
       const handoffY =
@@ -227,8 +196,6 @@ export function ClinicStory(): JSX.Element {
 
       section.style.setProperty("--grow", String(motion.state.grow));
       section.style.setProperty("--pan", String(motion.state.pan));
-      section.style.setProperty("--snap", String(motion.snap));
-      section.style.setProperty("--snap-shift", `${snapShift * motion.snap}px`);
       section.style.setProperty("--detail", String(motion.state.detail));
       section.style.setProperty("--handoff", String(motion.state.handoff));
       section.style.setProperty("--sequence-progress", String(motion.state.sequenceProgress));
@@ -251,10 +218,7 @@ export function ClinicStory(): JSX.Element {
         String(layout.finalHeight / layout.viewportHeight),
       );
       section.style.setProperty("--handoff-blur", String(motion.state.handoff));
-      section.dataset.snapActive = String(profile === "mobile" && motion.snap > 0);
-      if (profile === "mobile" && motion.snap === 0 && targetSnap === 0) {
-        mobileSnapStart = undefined;
-      }
+      gsap.set(track, { force3D: true, x: trackX });
     };
 
     const updateRenderFlags = (motion: RenderMotion) => {
@@ -271,162 +235,80 @@ export function ClinicStory(): JSX.Element {
     };
 
     const measure = () => {
-      /* All layout reads stay together and run only on resize/content settle. */
-      const sectionRect = section.getBoundingClientRect();
+      /* All layout reads stay together. ScrollTrigger runs this only on refresh. */
       const viewportWidth = Math.max(1, window.innerWidth);
       const viewportHeight = Math.max(1, window.innerHeight);
-      const trackWidth = track.scrollWidth;
       const finalLeft = finalFrame.offsetLeft;
       const finalWidth = Math.max(1, finalFrame.offsetWidth);
       const finalTop = track.offsetTop;
       const finalHeight = Math.max(1, track.offsetHeight);
-      const nextMobileScrollLeft = trackViewport.scrollLeft;
+      const centeredFinalLeft = (viewportWidth - finalWidth) / 2;
 
       layout = {
         finalHeight,
         finalLeft,
         finalTop,
         finalWidth,
-        sectionTop: window.scrollY + sectionRect.top,
-        trackTravel: Math.max(0, trackWidth - viewportWidth),
+        trackTravel: Math.max(0, finalLeft - centeredFinalLeft),
         viewportHeight,
         viewportWidth,
       };
-      if (mobileSnapStart === undefined) mobileScrollLeft = nextMobileScrollLeft;
 
       /* Writes happen only after every measurement above has completed. */
       section.style.setProperty("--travel", `${layout.trackTravel}px`);
     };
 
-    const readTarget = (settleImmediately = false) => {
-      const currentProgress =
-        Math.max(0, window.scrollY - layout.sectionTop) /
-        Math.max(1, layout.viewportHeight / 100);
-      const raw = mapRenderMotion(
-        currentProgress,
+    const sync = () => {
+      const motion = mapRenderMotion(
+        playhead.progressVh,
         profile,
         currentManifest.frameCount,
         false,
         false,
       );
       const previousTarget = targetProgressRef.current;
-      const nextTarget = raw.state.sequenceProgress;
+      const nextTarget = motion.state.sequenceProgress;
 
       targetProgressRef.current = nextTarget;
-      targetStoryProgress = clamp01(currentProgress / storyEnd);
-      targetSequenceProgress = nextTarget;
-      targetSnap = raw.snap;
       const nextDirection: -1 | 0 | 1 =
         nextTarget > previousTarget ? 1 : nextTarget < previousTarget ? -1 : 0;
       setDirection((current) => (current === nextDirection ? current : nextDirection));
-
-      if (profile === "mobile") {
-        if (raw.snap > 0 && mobileSnapStart === undefined) {
-          mobileSnapStart = mobileScrollLeft;
-        }
-      }
-
-      if (settleImmediately || prefersReducedMotion || profile === "desktop") {
-        storyDamped = { value: targetStoryProgress, velocity: 0 };
-        applyVisualMotion(raw);
-        updateRenderFlags(raw);
-      }
-
-      if (settleImmediately || prefersReducedMotion) {
-        sequenceDamped = { value: targetSequenceProgress, velocity: 0 };
-        const nextFrame =
-          1 + Math.round(targetSequenceProgress * (currentManifest.frameCount - 1));
-        setTargetFrame((current) => (current === nextFrame ? current : nextFrame));
-      } else if (pageVisible && rafId === undefined) {
-        lastTime = performance.now();
-        rafId = window.requestAnimationFrame(tick);
-      }
-    };
-
-    const tick = (now: number) => {
-      rafId = undefined;
-      if (disposed || !pageVisible || prefersReducedMotion) return;
-      const deltaSeconds = Math.max(0, (now - lastTime) / 1000);
-      lastTime = now;
-      if (profile === "mobile") {
-        storyDamped = stepCriticallyDamped(
-          storyDamped,
-          targetStoryProgress,
-          deltaSeconds,
-          0.12,
-        );
-        const visualMotion = mapRenderMotion(
-          storyDamped.value * storyEnd,
-          profile,
-          currentManifest.frameCount,
-          false,
-          false,
-        );
-        applyVisualMotion(visualMotion);
-        updateRenderFlags(visualMotion);
-      }
-
-      sequenceDamped = stepCriticallyDamped(
-        sequenceDamped,
-        targetSequenceProgress,
-        deltaSeconds,
-        0.18,
-      );
       const nextFrame =
-        1 + Math.round(sequenceDamped.value * (currentManifest.frameCount - 1));
+        1 + Math.round(nextTarget * (currentManifest.frameCount - 1));
       setTargetFrame((current) => (current === nextFrame ? current : nextFrame));
-
-      if (
-        (profile === "mobile" &&
-          (Math.abs(storyDamped.value - targetStoryProgress) > 0.00005 ||
-            Math.abs(storyDamped.velocity) > 0.001)) ||
-        Math.abs(sequenceDamped.value - targetSequenceProgress) > 0.00005 ||
-        Math.abs(sequenceDamped.velocity) > 0.001
-      ) {
-        rafId = window.requestAnimationFrame(tick);
-      }
+      applyVisualMotion(motion);
+      updateRenderFlags(motion);
     };
-
-    const onTrackScroll = () => {
-      if (mobileSnapStart === undefined) mobileScrollLeft = trackViewport.scrollLeft;
-    };
-    const onDocumentScroll = () => readTarget(false);
-    const onResize = () => {
-      measure();
-      readTarget(true);
-    };
-
-    const onVisibilityChange = () => {
-      pageVisible = document.visibilityState !== "hidden";
-      if (pageVisible) readTarget(true);
-    };
-
-    const resizeObserver = new ResizeObserver(() => {
-      measure();
-      readTarget(true);
-    });
-    resizeObserver.observe(section);
-    resizeObserver.observe(intro);
-    resizeObserver.observe(trackViewport);
-    resizeObserver.observe(track);
 
     measure();
-    readTarget(true);
-    window.addEventListener("scroll", onDocumentScroll, { passive: true });
-    window.addEventListener("resize", onResize);
-    trackViewport.addEventListener("scroll", onTrackScroll, { passive: true });
-    document.addEventListener("visibilitychange", onVisibilityChange);
+    sync();
 
-    return () => {
-      disposed = true;
-      if (rafId !== undefined) window.cancelAnimationFrame(rafId);
-      resizeObserver.disconnect();
-      window.removeEventListener("scroll", onDocumentScroll);
-      window.removeEventListener("resize", onResize);
-      trackViewport.removeEventListener("scroll", onTrackScroll);
-      document.removeEventListener("visibilitychange", onVisibilityChange);
-    };
-  }, [prefersReducedMotion, profile]);
+    if (prefersReducedMotion) return;
+
+    const timeline = gsap.timeline({ paused: true, onUpdate: sync });
+    timeline.to(playhead, {
+      duration: storyEnd,
+      ease: "none",
+      progressVh: storyEnd,
+    });
+
+    ScrollTrigger.create({
+      animation: timeline,
+      end: "bottom top",
+      invalidateOnRefresh: true,
+      onRefresh: () => {
+        measure();
+        sync();
+      },
+      scrub: profile === "mobile" ? MOBILE_SCRUB_SECONDS : true,
+      start: "top top",
+      trigger: section,
+    });
+  }, {
+    dependencies: [prefersReducedMotion, profile],
+    revertOnUpdate: true,
+    scope: sectionRef,
+  });
 
   const jawVisible = renderFlags.jawVisible || sequenceFailed || prefersReducedMotion;
   const failureZoneReady = sequenceFailed && renderFlags.zonesVisible;
@@ -458,7 +340,7 @@ export function ClinicStory(): JSX.Element {
     >
       <div className={styles.pin} data-testid="clinic-story-pin">
         <div className={styles.galleryLayer}>
-          <header className={styles.intro} ref={introRef}>
+          <header className={styles.intro}>
             <p className={styles.eyebrow}>
               <span className={styles.eyebrowRule} aria-hidden="true" />
               {photoStripIntro.eyebrow}
@@ -470,9 +352,8 @@ export function ClinicStory(): JSX.Element {
 
           <div
             className={styles.trackViewport}
-            data-native-swipe="true"
+            data-native-swipe={prefersReducedMotion ? "true" : "false"}
             data-testid="clinic-track-viewport"
-            ref={trackViewportRef}
           >
             <ul className={styles.track} ref={trackRef}>
               {photoFrames.map((frame) => (

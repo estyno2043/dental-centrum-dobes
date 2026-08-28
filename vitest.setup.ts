@@ -2,6 +2,28 @@ import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
 import { afterEach, vi } from "vitest";
 
+if (typeof window.matchMedia !== "function") {
+  Object.defineProperty(window, "matchMedia", {
+    configurable: true,
+    value: vi.fn((query: string) => ({
+      addEventListener: vi.fn(),
+      addListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+      matches: false,
+      media: query,
+      onchange: null,
+      removeEventListener: vi.fn(),
+      removeListener: vi.fn(),
+    })),
+  });
+}
+
+Object.defineProperty(window, "scrollTo", {
+  configurable: true,
+  value: vi.fn(),
+  writable: true,
+});
+
 /*
  * The app router has no context outside a running Next app, and `useRouter`
  * throws rather than degrading. Anything that renders the homepage reaches it

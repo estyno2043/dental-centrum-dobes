@@ -1,7 +1,6 @@
 .section {
   --grow: 0;
   --pan: 0;
-  --snap: 0;
   --detail: 0;
   --handoff: 0;
   --sequence-progress: 0;
@@ -11,7 +10,6 @@
   --exit: 0;
   --jaw-opacity: 0;
   --travel: 0px;
-  --snap-shift: 0px;
   --handoff-x: 0px;
   --handoff-y: 0px;
   --handoff-scale-x: 1;
@@ -105,7 +103,6 @@
   padding: 0 clamp(24px, 5vw, 96px);
   gap: clamp(10px, 1.4vw, 20px);
   list-style: none;
-  transform: translate3d(calc(var(--pan) * var(--travel) * -1), 0, 0);
   will-change: transform;
 }
 
@@ -374,11 +371,10 @@
   }
 
   .trackViewport {
-    overflow-x: auto;
-    scroll-behavior: auto;
-    scroll-snap-type: x mandatory;
+    overflow: hidden;
     overscroll-behavior-x: contain;
     scrollbar-width: none;
+    touch-action: pan-y;
   }
 
   .trackViewport::-webkit-scrollbar {
@@ -390,13 +386,6 @@
 
     width: max-content;
     padding: 0 9vw;
-    transform: translate3d(var(--snap-shift), 0, 0);
-  }
-
-  .section[data-snap-active="true"] .trackViewport {
-    overflow-x: hidden;
-    scroll-snap-type: none;
-    touch-action: pan-y;
   }
 
   .handoffPhoto {
@@ -407,7 +396,6 @@
   .frame {
     width: min(calc(var(--ratio) * var(--frame-h)), 82vw);
     height: 100%;
-    scroll-snap-align: center;
   }
 
   .scrim {
@@ -467,6 +455,7 @@
 .reduced .trackViewport {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
+  touch-action: pan-x pan-y;
 }
 
 .reduced .frame {

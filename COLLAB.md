@@ -5,13 +5,32 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Mobile ClinicStory performance fix ready for phone review
+- Status: GSAP mobile gallery path fix approved for publication
 - Owner: —
 - Branch: `codex/mobile-clinicstory-performance`
-- Task: feature branch is verified and ready to push. Await localhost and
-  real-phone approval before any merge or push to `main`.
+- Task: replace the direct mobile frame-1-to-frame-7 snap with one GSAP
+  ScrollTrigger timeline that visibly traverses all seven gallery frames,
+  preserves the gallery-to-jaw handoff, and keeps native document scrolling.
+  User approved publication to `main` after localhost review.
+  Local verification: 215 tests, lint, TypeScript, production build,
+  jaw-sequence validation, `git diff --check`, and changed-file credential scan
+  pass. Headless Chrome checks at 390×844, 375×812, and 1440×900 show the
+  complete progressive gallery path, centered detail endpoint, sticky `top: 0`,
+  zero horizontal page overflow, no console errors, no Next error overlay, and
+  no long tasks in a 120-frame mobile scroll run (p95 9.2 ms). One pre-existing
+  production audit advisory remains in transitive `nanoid@3.3.17`; unrelated to
+  GSAP and not auto-updated in this visual branch.
 
 ## File Reservations
+
+- GSAP mobile gallery repair released `package.json`, `package-lock.json`,
+  `components/home/ClinicStory.tsx`, `components/home/ClinicStory.test.tsx`,
+  `components/home/clinicStoryMotion.ts`,
+  `components/home/clinicStoryMotion.test.ts`,
+  `components/home/clinicStory.module.css`,
+  `vitest.setup.ts`,
+  `docs/superpowers/plans/2026-08-28-mobile-clinicstory-gsap.md`, and
+  `COLLAB.md` after approval and full verification.
 
 - Mobile ClinicStory performance work released `components/home/ClinicStory.tsx`,
   `components/home/ClinicStory.test.tsx`, `components/home/clinicStory.module.css`,
