@@ -1,0 +1,347 @@
+/*
+ * Dentálna hygiena GBT.
+ *
+ * Shares the service pages' pale ground and type, and diverges in structure:
+ * two panels where the entry examination has a column of cards, an alternating
+ * ladder where it has a numbered list, and chips where it has prose.
+ */
+
+.sectionHeading {
+  margin: 0 0 clamp(16px, 2.2vw, 26px);
+  font-size: clamp(1.3rem, 2.4vw, 1.95rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+/* ------------------------------------------------------------ compare --- */
+
+.compare {
+  padding-top: clamp(44px, 6vw, 80px);
+}
+
+.compareGrid {
+  display: grid;
+  gap: clamp(14px, 2vw, 22px);
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.compareCard {
+  padding: clamp(20px, 2.8vw, 32px);
+  border-radius: 18px;
+}
+
+/* The old way sits back: hairline on the page's own ground, no fill. */
+.compareCard[data-side="classic"] {
+  border: 1px solid rgb(138 115 88 / 26%);
+}
+
+/* The new way comes forward. One filled panel, so the eye knows where to go. */
+.compareCard[data-side="gbt"] {
+  border: 1px solid transparent;
+  background: var(--ink);
+  color: var(--porcelain);
+}
+
+.compareCard h3 {
+  margin: 0 0 14px;
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.compareCard ul {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  gap: 11px;
+  list-style: none;
+}
+
+.compareCard li {
+  display: grid;
+  gap: 10px;
+  align-items: start;
+  font-size: 0.88rem;
+  grid-template-columns: 15px 1fr;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.compareCard li svg {
+  margin-top: 3px;
+}
+
+.compareCard[data-side="classic"] li {
+  color: rgb(38 38 42 / 68%);
+}
+
+.compareCard[data-side="classic"] li svg {
+  color: rgb(38 38 42 / 40%);
+}
+
+.compareCard[data-side="gbt"] li {
+  color: rgb(250 249 246 / 88%);
+}
+
+.compareCard[data-side="gbt"] li svg {
+  color: var(--taupe);
+}
+
+/* ----------------------------------------------------------- protocol --- */
+
+.protocol {
+  padding-top: clamp(52px, 7vw, 96px);
+}
+
+.protocolLead {
+  max-width: 32rem;
+  margin: -8px 0 clamp(26px, 3.5vw, 42px);
+  color: rgb(38 38 42 / 68%);
+  font-size: 0.94rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.steps {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+/*
+ * A ladder, not cards. Each step is a row of two columns — the mark on the
+ * left, the words on the right — and a rule between them, so eight steps read
+ * as one sequence rather than eight separate things.
+ */
+.step {
+  display: grid;
+  gap: clamp(12px, 2.5vw, 34px);
+  padding: clamp(18px, 2.4vw, 26px) 0;
+  border-top: 1px solid rgb(138 115 88 / 22%);
+  grid-template-columns: minmax(7.5rem, 10rem) 1fr;
+}
+
+.step:last-child {
+  border-bottom: 1px solid rgb(138 115 88 / 22%);
+}
+
+.stepMark {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stepNumber {
+  color: var(--taupe-deep);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.stepName {
+  color: var(--ink);
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.stepBody h3 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.stepBody p {
+  max-width: 36rem;
+  margin: 0;
+  color: rgb(38 38 42 / 72%);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/*
+ * The conditional step is set back rather than hidden: the protocol has eight
+ * steps whoever is reading, and one of them may not apply to them.
+ */
+.step[data-optional="true"] .stepNumber,
+.step[data-optional="true"] .stepName {
+  color: rgb(38 38 42 / 52%);
+}
+
+.optionalNote {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  align-items: baseline;
+  max-width: 36rem;
+  margin-top: 10px !important;
+  padding: 10px 14px;
+  border-left: 2px solid var(--taupe);
+  border-radius: 0 8px 8px 0;
+  background: rgb(174 155 126 / 13%);
+  font-size: 0.84rem !important;
+}
+
+.optionalTag {
+  color: var(--taupe-deep);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Two shapes, unequal weights — a grid of matching boxes is the thing this
+   page is trying not to be. */
+.protocolPhotos {
+  display: grid;
+  gap: clamp(14px, 2vw, 22px);
+  margin-top: clamp(28px, 4vw, 44px);
+  grid-template-columns: 1.55fr 1fr;
+  align-items: start;
+}
+
+/* ------------------------------------------------------------- suited --- */
+
+.suited {
+  padding-top: clamp(52px, 7vw, 96px);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
+  gap: 9px;
+  list-style: none;
+}
+
+.chip {
+  padding: 9px 17px;
+  border: 1px solid rgb(138 115 88 / 34%);
+  border-radius: 999px;
+  color: rgb(28 28 31 / 85%);
+  font-size: 0.85rem;
+}
+
+/* ---------------------------------------------------------- practical --- */
+
+.practical {
+  display: grid;
+  gap: clamp(26px, 4vw, 52px);
+  padding-top: clamp(52px, 7vw, 96px);
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+}
+
+.intervals {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 0 14px;
+  gap: 22px 40px;
+}
+
+.intervals dt {
+  color: rgb(38 38 42 / 55%);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.intervals dd {
+  margin: 4px 0 0;
+  color: var(--ink);
+  font-size: clamp(1rem, 1.7vw, 1.2rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.recallNote {
+  max-width: 26rem;
+  margin: 0;
+  color: rgb(38 38 42 / 68%);
+  font-size: 0.86rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.pricesHeading {
+  margin: 0 0 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.priceRows {
+  margin: 0 0 14px;
+}
+
+.priceRow {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  padding: 8px 0;
+}
+
+.priceRow + .priceRow {
+  border-top: 1px solid rgb(138 115 88 / 16%);
+}
+
+.priceRow dt {
+  color: rgb(28 28 31 / 82%);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+/* The same leader the price list uses, so the two pages agree. */
+.priceRow::after {
+  flex: 1;
+  min-width: 14px;
+  order: 1;
+  border-bottom: 1px dotted rgb(138 115 88 / 45%);
+  content: "";
+  transform: translateY(-3px);
+}
+
+.priceRow dd {
+  order: 2;
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pricesNote {
+  margin: 0;
+  color: rgb(38 38 42 / 62%);
+  font-size: 0.8rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+@media (max-width: 760px) {
+  .compareGrid,
+  .protocolPhotos,
+  .practical {
+    grid-template-columns: 1fr;
+  }
+
+  .step {
+    gap: 4px;
+    grid-template-columns: 1fr;
+  }
+
+  .stepMark {
+    flex-direction: row;
+    gap: 10px;
+    align-items: baseline;
+  }
+}

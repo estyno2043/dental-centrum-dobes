@@ -4,6 +4,7 @@ import type { JSX } from "react";
 
 import { ServiceBooking } from "@/components/booking/ServiceBooking";
 import { SiteHeader } from "@/components/hero/SiteHeader";
+import { HygieneBody } from "@/components/services/hygiene/HygieneBody";
 import { CaseGallery } from "@/components/patients/CaseGallery";
 import {
   featuredCase,
@@ -78,6 +79,23 @@ function Photo({
   );
 }
 
+/**
+ * Services whose page is its own shape rather than the shared one.
+ *
+ * The shell — backdrop, the morph out of the catalogue card, the back button,
+ * the booking form — stays common, so the pages read as a family. What differs
+ * is the middle, because the services differ: the entry examination is a
+ * package and reads as one, while dental hygiene is an eight-step protocol and
+ * that sequence *is* its page. Forcing both through one layout would have made
+ * the second a worse version of the first.
+ *
+ * A slug absent here falls back to the shared layout, so adding a bespoke page
+ * is one line and never a rewrite.
+ */
+const BESPOKE_BODIES: Readonly<Record<string, () => JSX.Element>> = {
+  "dentalna-hygiena": HygieneBody,
+};
+
 export default async function ServicePage({
   params,
 }: ServicePageProps): Promise<JSX.Element> {
@@ -86,6 +104,7 @@ export default async function ServicePage({
   if (!service) notFound();
 
   const detail = getServiceDetail(sluzba);
+  const BespokeBody = BESPOKE_BODIES[sluzba];
 
   return (
     <>
@@ -132,7 +151,9 @@ export default async function ServicePage({
           <p className={styles.lead}>{detail?.lead ?? service.lead}</p>
         </header>
 
-        {detail ? (
+        {BespokeBody ? (
+          <BespokeBody />
+        ) : detail ? (
           <>
             <dl className={styles.facts}>
               {detail.facts.map((fact) => (

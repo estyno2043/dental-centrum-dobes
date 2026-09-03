@@ -1,0 +1,37 @@
+/*
+ * Deliberately unfinished-looking. A placeholder styled to blend in is one
+ * that ships; a dashed outline on the page is a job nobody can forget.
+ */
+.frame {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(16px, 3vw, 28px);
+  border: 1px dashed rgb(138 115 88 / 55%);
+  border-radius: 14px;
+  margin: 0;
+  background: rgb(174 155 126 / 8%);
+  color: var(--taupe-deep);
+  text-align: center;
+}
+
+.brief {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-width: 22rem;
+  color: rgb(38 38 42 / 62%);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.tag {
+  color: var(--taupe-deep);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
