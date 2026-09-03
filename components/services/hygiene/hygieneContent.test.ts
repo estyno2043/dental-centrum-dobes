@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { priceGroups } from "@/components/pricing/pricingContent";
-import { hygienePrices, protocol, recall } from "./hygieneContent";
+import { pricing, protocol, recall } from "./hygieneContent";
 
 describe("hygiene content", () => {
   it("keeps the eight GBT steps in their published order", () => {
@@ -45,7 +45,7 @@ describe("hygiene content", () => {
       priceGroups.flatMap((group) => group.entries.map((e) => e.price)),
     );
 
-    for (const entry of hygienePrices) {
+    for (const entry of [...pricing.base, ...pricing.extras]) {
       expect(published.has(entry.price), `${entry.label}: ${entry.price}`).toBe(
         true,
       );
@@ -58,11 +58,28 @@ describe("hygiene content", () => {
    * headline total would be a number nobody at the clinic has agreed to.
    */
   it("states no total and no teased minimum", () => {
-    for (const entry of hygienePrices) {
+    const all = [...pricing.base, ...pricing.extras];
+
+    for (const entry of all) {
       expect(entry.price).not.toMatch(/^od\b/i);
     }
-    expect(hygienePrices.some((e) => /spolu|celkom|balík/i.test(e.label))).toBe(
-      false,
+    expect(all.some((e) => /spolu|celkom|balík/i.test(e.label))).toBe(false);
+  });
+
+  /*
+   * The split is the point: someone reading must be able to tell what they pay
+   * for the visit from what is only charged if they need it. A base list that
+   * quietly grew an add-on would put a number in front of them that most
+   * people will not be quoted.
+   */
+  it("keeps the visit's own price apart from what is added to it", () => {
+    expect(pricing.base).toHaveLength(2);
+    expect(pricing.base[0]?.price).toBe("90 – 100 €");
+    expect(pricing.extras.map((e) => e.label)).toContain(
+      "Air flow — za jedno zuboradie",
     );
+    for (const entry of pricing.base) {
+      expect(entry.label).not.toMatch(/air ?flow|fluorid|parodontolog/i);
+    }
   });
 });

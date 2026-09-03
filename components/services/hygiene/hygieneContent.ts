@@ -169,17 +169,57 @@ export const recall = {
 } as const;
 
 /**
- * Rows quoted verbatim from the clinic's price list, valid 1. 3. 2026.
+ * What a visit costs, split into what everybody pays and what is added on.
  *
- * ⚠️ Deliberately no total. The list bills these separately and does not say
- * which combination a hygiene appointment is; a "GBT od X €" would be a number
- * nobody at the clinic has agreed to.
+ * ⚠️ The split is a reading of the price list, not a quote from the clinic.
+ * The list bills these as separate rows and nowhere states which combination
+ * a hygiene appointment is; `base` is the row that is the cleaning itself and
+ * `extras` are the rows charged alongside it. Every figure is verbatim.
+ *
+ * `Air flow` sits in `extras` because the price list bills it separately and
+ * per arch — but GBT *is* an AIRFLOW protocol, so if it is in fact always part
+ * of the visit it belongs in `base` and the clinic should say so. That is the
+ * one line on this page most likely to be wrong.
  */
-export const hygienePrices: readonly { label: string; price: string }[] = [
-  { label: "Odstránenie zubného povlaku alebo kameňa", price: "90 – 100 €" },
-  { label: "Odstránenie povlaku alebo kameňa — dieťa", price: "75 €" },
-  { label: "Air flow — 1 zuboradie", price: "50 €" },
-  { label: "Inštruktáž a nácvik ústnej hygieny", price: "20 €" },
-  { label: "Fluoridácia lakom", price: "30 €" },
-  { label: "Komplexné parodontologické vyšetrenie", price: "50 €" },
-];
+export const pricing = {
+  baseHeading: "Za samotnú hygienu zaplatíte",
+  base: [
+    { label: "Odstránenie zubného povlaku alebo kameňa", price: "90 – 100 €" },
+    { label: "To isté pre dieťa", price: "75 €" },
+  ],
+  extrasHeading: "Účtuje sa navyše, ak je potrebné",
+  extras: [
+    { label: "Air flow — za jedno zuboradie", price: "50 €" },
+    { label: "Inštruktáž a nácvik ústnej hygieny", price: "20 €" },
+    { label: "Fluoridácia lakom", price: "30 €" },
+    { label: "Komplexné parodontologické vyšetrenie", price: "50 €" },
+  ],
+  note:
+    "Čo z toho budete potrebovať, vieme povedať až po prvom kroku — a cenu " +
+    "poviete vopred, nie po ošetrení.",
+} as const;
+
+/**
+ * The disclosing step, shown rather than described.
+ *
+ * The single most persuasive image the page can carry: the purple is the
+ * biofilm that was there the whole time and could not be seen. It is the
+ * argument of the whole protocol in one picture.
+ *
+ * ⚠️ Consent is outstanding, as it is for every patient photograph on this
+ * site. See the header of `patientsContent.ts`.
+ */
+export const disclosingCase = {
+  before: "/media/hygiena-gbt-pred.webp",
+  after: "/media/hygiena-gbt-po.webp",
+  caption:
+    "Krok 2 a krok 7. Fialové je povlak, ktorý tam bol celý čas — len ho " +
+    "nebolo vidieť. Posuňte deliacu čiaru.",
+} as const;
+
+/** The clinic's own AIRFLOW unit, for step 4. */
+export const airflowPhoto = {
+  src: "hygiena-airflow",
+  alt: "Prístroj EMS AIRFLOW Prophylaxis Master na ambulancii",
+  width: 900,
+} as const;

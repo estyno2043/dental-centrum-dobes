@@ -1,10 +1,12 @@
 import type { JSX } from "react";
 import { IconCheck, IconMinus } from "@tabler/icons-react";
 
-import { PhotoFrame } from "../PhotoFrame";
+import { BeforeAfter } from "@/components/patients/BeforeAfter";
 import {
+  airflowPhoto,
   comparison,
-  hygienePrices,
+  disclosingCase,
+  pricing,
   protocol,
   recall,
   suitedFor,
@@ -54,6 +56,7 @@ export function HygieneBody(): JSX.Element {
             </ul>
           </div>
           <div className={styles.compareCard} data-side="gbt">
+            <span className={styles.recommended}>Robíme takto</span>
             <h3>{comparison.gbt.title}</h3>
             <ul>
               {comparison.gbt.points.map((point) => (
@@ -111,18 +114,46 @@ export function HygieneBody(): JSX.Element {
         </ol>
 
         {/*
-          Two frames of different shapes, set into the run of the steps rather
-          than gathered into a grid at the end — the sequence is the story, and
-          pictures belong beside the moments they show.
+          The pictures sit in the run of the steps rather than gathered into a
+          grid at the end, because each belongs beside the moment it shows: the
+          disclosing agent at step 2, the machine at step 4.
         */}
         <div className={styles.protocolPhotos}>
-          <PhotoFrame
-            brief="Zafarbený povlak na predných zuboch, zblízka. Toto je krok 2 a je to najsilnejší obrázok celej stránky — pacient uvidí, čo mu doma uniká."
-            ratio="4 / 3"
-          />
-          <PhotoFrame
-            brief="AIRFLOW v ruke hygieničky počas ošetrenia, na výšku. Tvár pacienta nemusí byť v zábere."
-            ratio="3 / 4"
+          <figure className={styles.disclosing}>
+            {/*
+              The same slider the patient cases use. Reading "the biofilm is
+              invisible until it is dyed" is an argument; dragging the line
+              across it is proof, and it is the one image that carries the
+              whole protocol.
+            */}
+            <BeforeAfter
+              patientCase={{
+                id: "gbt-disclosing",
+                treatments: [],
+                problem: "Zafarbený povlak pred hygienou a chrup po nej",
+                facts: [],
+                before: disclosingCase.before,
+                after: disclosingCase.after,
+              }}
+            />
+            <figcaption className={styles.disclosingNote}>
+              {disclosingCase.caption}
+            </figcaption>
+          </figure>
+
+          {/* eslint-disable-next-line @next/next/no-img-element -- Pre-cropped clinic asset. */}
+          <img
+            alt={airflowPhoto.alt}
+            className={styles.airflow}
+            decoding="async"
+            height={1200}
+            sizes="(max-width: 760px) 100vw, 34vw"
+            src={`/media/sluzby/${airflowPhoto.src}.webp`}
+            srcSet={
+              `/media/sluzby/${airflowPhoto.src}-mobile.webp 450w, ` +
+              `/media/sluzby/${airflowPhoto.src}.webp 900w`
+            }
+            width={900}
           />
         </div>
       </section>
@@ -159,24 +190,34 @@ export function HygieneBody(): JSX.Element {
         </div>
 
         <div className={styles.prices}>
-          <h3 className={styles.pricesHeading}>Z cenníka</h3>
+          <h3 className={styles.pricesHeading}>{pricing.baseHeading}</h3>
           <dl className={styles.priceRows}>
-            {hygienePrices.map((entry) => (
+            {pricing.base.map((entry) => (
               <div className={styles.priceRow} key={entry.label}>
                 <dt>{entry.label}</dt>
                 <dd>{entry.price}</dd>
               </div>
             ))}
           </dl>
+
           {/*
-            No total. The price list bills these separately and does not say
-            which combination an appointment is; a "GBT od X €" would be a
-            number nobody at the clinic has agreed to.
+            Kept visibly apart from the base rather than run into one list. A
+            price list that mixes what everybody pays with what only some do is
+            how a reader arrives expecting one number and is quoted another.
           */}
-          <p className={styles.pricesNote}>
-            Čo presne budete potrebovať, povieme po prvom kroku — a cenu
-            poviete vopred, nie po ošetrení.
-          </p>
+          <h3 className={`${styles.pricesHeading} ${styles.extrasHeading}`}>
+            {pricing.extrasHeading}
+          </h3>
+          <dl className={styles.priceRows}>
+            {pricing.extras.map((entry) => (
+              <div className={styles.priceRow} key={entry.label}>
+                <dt>{entry.label}</dt>
+                <dd>{entry.price}</dd>
+              </div>
+            ))}
+          </dl>
+
+          <p className={styles.pricesNote}>{pricing.note}</p>
         </div>
       </section>
     </>

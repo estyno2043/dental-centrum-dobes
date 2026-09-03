@@ -37,11 +37,54 @@
   border: 1px solid rgb(138 115 88 / 26%);
 }
 
-/* The new way comes forward. One filled panel, so the eye knows where to go. */
+/*
+ * The new way comes forward, and in green rather than ink.
+ *
+ * Ink read as "the serious one" but not as "the better one" — on a page whose
+ * whole job is to say one of these is worth choosing, the panel has to carry
+ * that in its colour. Deep eucalyptus is the site's taupe family taken cool
+ * and saturated: positive without the traffic-light green that would make a
+ * clinic look like a checkout.
+ *
+ * Three things make it read as the finer object rather than just a filled box:
+ * a gradient that lifts towards the top-left, a hairline in the brand taupe,
+ * and a soft halo bled in from the corner the light comes from.
+ */
 .compareCard[data-side="gbt"] {
-  border: 1px solid transparent;
-  background: var(--ink);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgb(174 155 126 / 45%);
+  background:
+    radial-gradient(
+      120% 90% at 12% 0%,
+      rgb(94 148 124 / 34%),
+      transparent 62%
+    ),
+    linear-gradient(158deg, #2a5344 0%, #1d3b31 62%, #17322a 100%);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 10%) inset,
+    0 22px 44px -26px rgb(23 50 42 / 70%);
   color: var(--porcelain);
+}
+
+/*
+ * The badge. It is the one place on the page that says outright which of the
+ * two the clinic does, so it is set in the taupe the rest of the site uses for
+ * exactly that job.
+ */
+.recommended {
+  position: absolute;
+  top: clamp(20px, 2.8vw, 32px);
+  right: clamp(20px, 2.8vw, 32px);
+  padding: 5px 11px;
+  border: 1px solid rgb(174 155 126 / 55%);
+  border-radius: 999px;
+  background: rgb(174 155 126 / 18%);
+  color: var(--taupe);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 .compareCard h3 {
@@ -83,11 +126,26 @@
 }
 
 .compareCard[data-side="gbt"] li {
-  color: rgb(250 249 246 / 88%);
+  color: rgb(250 249 246 / 90%);
 }
 
+/*
+ * The ticks get their own disc. A bare check on a coloured ground reads as a
+ * list marker; a filled one reads as something confirmed, which is the whole
+ * difference this column is claiming.
+ */
 .compareCard[data-side="gbt"] li svg {
-  color: var(--taupe);
+  width: 20px;
+  height: 20px;
+  padding: 3px;
+  border-radius: 50%;
+  margin-top: 1px;
+  background: rgb(140 199 168 / 20%);
+  color: #9fd9bc;
+}
+
+.compareCard[data-side="gbt"] li {
+  grid-template-columns: 20px 1fr;
 }
 
 /* ----------------------------------------------------------- protocol --- */
@@ -344,4 +402,37 @@
     gap: 10px;
     align-items: baseline;
   }
+}
+
+/* ------------------------------------------------- protocol photographs --- */
+
+.disclosing {
+  margin: 0;
+}
+
+.disclosingNote {
+  margin-top: 10px;
+  color: rgb(38 38 42 / 62%);
+  font-size: 0.79rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/*
+ * The machine, cropped to the shape the layout reserves. `object-fit` rather
+ * than a fixed height so the tall column keeps pace with the slider beside it
+ * whatever the viewport does.
+ */
+.airflow {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: 30rem;
+  border-radius: 14px;
+  object-fit: cover;
+}
+
+/* The add-on heading needs air above it; the base list must not run into it. */
+.extrasHeading {
+  margin-top: clamp(20px, 2.6vw, 28px);
 }

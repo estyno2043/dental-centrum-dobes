@@ -35,15 +35,37 @@ describe("HygieneBody", () => {
   });
 
   /*
-   * Photography does not exist for this service yet. The frames hold the shape
-   * and say what to shoot; when the files land they replace these, and this
-   * test is deleted with the last one.
+   * The disclosing pair is the page's argument in one image: the purple is
+   * biofilm that was there all along and could not be seen. It is a slider
+   * rather than two stills because dragging the line across it is proof, and
+   * looking at two pictures side by side is only a claim.
    */
-  it("reserves the missing photographs with a brief", () => {
+  it("shows the disclosing step as a draggable comparison", () => {
     render(<HygieneBody />);
 
-    const frames = screen.getAllByText("Miesto pre fotku");
-    expect(frames).toHaveLength(2);
-    expect(screen.getByText(/Zafarbený povlak/)).toBeInTheDocument();
+    expect(screen.getByRole("slider")).toBeInTheDocument();
+    expect(screen.getByAltText(/^Pred ošetrením/)).toHaveAttribute(
+      "src",
+      "/media/hygiena-gbt-pred.webp",
+    );
+    expect(screen.getByAltText(/^Po ošetrení/)).toHaveAttribute(
+      "src",
+      "/media/hygiena-gbt-po.webp",
+    );
+  });
+
+  it("shows the clinic's own AIRFLOW unit beside the step it belongs to", () => {
+    render(<HygieneBody />);
+
+    const photo = screen.getByAltText(/EMS AIRFLOW/);
+    expect(photo).toHaveAttribute("src", "/media/sluzby/hygiena-airflow.webp");
+    expect(photo.getAttribute("srcSet")).toContain("hygiena-airflow-mobile.webp 450w");
+  });
+
+  /* Both frames are filled now; a leftover placeholder would be a bug. */
+  it("has no placeholders left", () => {
+    render(<HygieneBody />);
+
+    expect(screen.queryByText("Miesto pre fotku")).not.toBeInTheDocument();
   });
 });
