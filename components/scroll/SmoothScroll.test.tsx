@@ -17,10 +17,15 @@ vi.mock("lenis", () => ({
 
 import { SmoothScroll } from "./SmoothScroll";
 
-/** Minimal matchMedia stub that can flip and notify, like the real one. */
-function stubReducedMotion(reduce: boolean) {
+/**
+ * Minimal matchMedia stub that can flip and notify, like the real one.
+ *
+ * Answers both queries the component asks: the motion preference, which it
+ * watches, and the pointer, which it only samples.
+ */
+function stubMedia({ reduce = false, coarse = false } = {}) {
   const listeners = new Set<() => void>();
-  const query = {
+  const motion = {
     matches: reduce,
     addEventListener: (_: string, listener: () => void) => {
       listeners.add(listener);
@@ -29,13 +34,18 @@ function stubReducedMotion(reduce: boolean) {
       listeners.delete(listener);
     },
   };
+  const pointer = {
+    matches: coarse,
+    addEventListener: () => {},
+    removeEventListener: () => {},
+  };
   vi.stubGlobal(
     "matchMedia",
-    vi.fn(() => query),
+    vi.fn((q: string) => (q.includes("pointer") ? pointer : motion)),
   );
   return {
     set(next: boolean) {
-      query.matches = next;
+      motion.matches = next;
       for (const listener of listeners) listener();
     },
   };
@@ -52,7 +62,7 @@ describe("SmoothScroll", () => {
   });
 
   it("eases the wheel when motion is welcome", () => {
-    stubReducedMotion(false);
+    stubMedia();
     render(<SmoothScroll />);
 
     expect(construct).toHaveBeenCalledTimes(1);
@@ -65,14 +75,14 @@ describe("SmoothScroll", () => {
    * scrolling is the correct behaviour there, not a degraded one.
    */
   it("never starts when reduced motion is asked for", () => {
-    stubReducedMotion(true);
+    stubMedia({ reduce: true });
     render(<SmoothScroll />);
 
     expect(construct).not.toHaveBeenCalled();
   });
 
   it("stops and starts when the setting changes mid-session", () => {
-    const media = stubReducedMotion(false);
+    const media = stubMedia();
     render(<SmoothScroll />);
     expect(construct).toHaveBeenCalledTimes(1);
 
@@ -83,8 +93,20 @@ describe("SmoothScroll", () => {
     expect(construct).toHaveBeenCalledTimes(2);
   });
 
+  /*
+   * A phone gets nothing from this — `syncTouch` is off, so it eases nothing —
+   * while still spending a rAF loop every frame against the jaw sequence's
+   * canvas draws. It was reported as heavy stutter on a real device.
+   */
+  it("never starts on a touch device", () => {
+    stubMedia({ coarse: true });
+    render(<SmoothScroll />);
+
+    expect(construct).not.toHaveBeenCalled();
+  });
+
   it("tears down its loop on unmount", () => {
-    stubReducedMotion(false);
+    stubMedia();
     const { unmount } = render(<SmoothScroll />);
 
     unmount();

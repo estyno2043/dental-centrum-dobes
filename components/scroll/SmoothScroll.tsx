@@ -27,11 +27,31 @@ import { SCROLL_REQUEST, type ScrollRequest } from "./scrollToSection";
  * some of them motion that continues after the gesture stops is a cause of
  * nausea, not polish. Native scrolling is the correct behaviour there, not a
  * degraded one.
+ *
+ * ⚠️ Off on touch devices too, and that one is about frames rather than
+ * preference. `syncTouch` was already false, so on a phone this was easing
+ * nothing — but it still ran a rAF loop every frame, competing with the jaw
+ * sequence's canvas draws and GSAP's ticker for the budget of the one device
+ * that has none to spare. It was reported as heavy stutter on a real phone.
+ *
+ * There is a second reason, and it is the stronger one: ClinicStory's plan
+ * sets "native document scroll remains the only motion input; no wheel or
+ * touch interception" and "one animation system owns ClinicStory scroll
+ * progress" as constraints. Running Lenis over that section broke both. Phone
+ * scrolling has excellent platform inertia already; there was never anything
+ * here to add.
  */
 export function SmoothScroll() {
   useEffect(() => {
     const query = globalThis.matchMedia?.("(prefers-reduced-motion: reduce)");
     if (!query) return;
+
+    /*
+     * A coarse pointer means a finger. Checked once — a device does not grow a
+     * mouse mid-session, and unlike the motion preference there is nothing
+     * here worth re-evaluating.
+     */
+    if (globalThis.matchMedia?.("(pointer: coarse)").matches) return;
 
     let lenis: Lenis | null = null;
     let frame = 0;
@@ -41,12 +61,7 @@ export function SmoothScroll() {
       lenis = new Lenis({
         lerp: 0.12,
         wheelMultiplier: 1,
-        touchMultiplier: 1.6,
-        /*
-         * Touch is left alone. Phones and trackpads already have inertia of
-         * their own, tuned by the platform; adding a second easing on top is
-         * what makes a site feel like it is fighting your thumb.
-         */
+        // Touch never reaches here at all; see the note above the component.
         syncTouch: false,
       });
 
