@@ -45,6 +45,7 @@ afterEach(() => {
   resizeCallbacks = [];
   jawSequenceMetrics.renders = 0;
   vi.useRealTimers();
+  vi.restoreAllMocks();
   vi.unstubAllGlobals();
 });
 
@@ -228,7 +229,7 @@ function installMobilePerformanceGeometry() {
   };
 }
 
-test("keeps complete gallery and semantic detail handoff before jaw pixels", () => {
+test("keeps complete gallery and uses one detail visual through fullscreen handoff", () => {
   stubMatchMedia(false);
   const { container } = render(<ClinicStory />);
   const { section, setProgress } = installDesktopGeometry();
@@ -237,15 +238,33 @@ test("keeps complete gallery and semantic detail handoff before jaw pixels", () 
   expect(screen.getAllByTestId("clinic-frame").map((node) => node.dataset.frameId)).toEqual(
     photoFrames.map((frame) => frame.id),
   );
-  expect(screen.getByTestId("clinic-handoff")).toHaveAttribute("data-frame-id", "detail");
+  expect(container.querySelectorAll('[data-frame-id="detail"]')).toHaveLength(1);
+  expect(screen.queryByTestId("clinic-handoff")).not.toBeInTheDocument();
+  expect(
+    container.querySelector('[data-frame-id="detail"] source[media="(max-width: 767px)"]'),
+  ).toHaveAttribute("srcset", "/media/strip-07-detail-mobile.jpg");
   expect(section).toHaveAttribute("data-desktop-vh", "1030");
 
   setProgress(460);
   expect(section.style.getPropertyValue("--detail")).toBe("1");
   expect(section.style.getPropertyValue("--handoff")).toBe("0");
-  expect(container.querySelector('[data-jaw-sequence-state]')).not.toBeInTheDocument();
+  expect(container.querySelector('[data-jaw-sequence-state]')).toBeInTheDocument();
+  expect(screen.getByTestId("jaw-layer")).toHaveAttribute("data-visible", "false");
   expect(screen.queryByText("Zóny bolesti")).not.toBeInTheDocument();
   expect(screen.queryByRole("heading", { name: "Kde vás to trápi?" })).not.toBeInTheDocument();
+});
+
+test("expands the original mobile detail frame instead of revealing a replacement", () => {
+  stubMatchMedia(false, false);
+  render(<ClinicStory />);
+  const detail = screen.getAllByTestId("clinic-frame").at(-1)!;
+  const { setProgress } = installMobilePerformanceGeometry();
+
+  setProgress(300);
+
+  expect(detail.style.transform).toContain("translate3d(");
+  expect(detail.style.transform).toContain("scale(");
+  expect(screen.queryByTestId("clinic-handoff")).not.toBeInTheDocument();
 });
 
 test("shows contained jaw with transient pain-zone loading cue", () => {
@@ -280,12 +299,13 @@ test("teases zones before map labels then removes loading cue", () => {
   setProgress(730);
   expect(screen.getByRole("heading", { name: "Kde vás to trápi?" })).toBeVisible();
   expect(screen.getAllByTestId(/jaw-leader-/)).toHaveLength(4);
-  expect(screen.queryAllByRole("button", { name: /Predné|Črenové|Stoličky|Ďasná/ })).toHaveLength(0);
+  expect(screen.getAllByRole("button", { name: /Predné|Črenové|Stoličky|Ďasná/ })).toHaveLength(4);
 });
 
 test("uses contained rounded scene and gradient dissolve into next section", () => {
   expect(cssText).toMatch(/\.jawViewport[\s\S]*border-radius:\s*clamp\(/);
   expect(cssText).toMatch(/\.jawViewport[\s\S]*width:\s*min\(/);
+  expect(cssText).toMatch(/\.jawViewport\s*\{[^}]*overflow:\s*clip;/);
   expect(cssText).toMatch(/\.exitGradient[\s\S]*linear-gradient/);
   // The cue falls and fades rather than turning: a ring that goes round
   // forever reads as "loading", which is the opposite of what to do here.
@@ -320,24 +340,29 @@ test("does not rerender jaw subtree for every mobile scroll sample", () => {
   vi.stubGlobal("cancelAnimationFrame", vi.fn());
   render(<ClinicStory />);
   const { setProgress } = installMobilePerformanceGeometry();
-  setProgress(250);
+  setProgress(400);
   jawSequenceMetrics.renders = 0;
 
-  setProgress(251);
-  setProgress(252);
-  setProgress(253);
+  setProgress(410);
+  setProgress(420);
+  setProgress(430);
 
   expect(jawSequenceMetrics.renders).toBe(0);
 });
 
-test("moves mobile gallery through GSAP-owned compositor transform", () => {
+test("holds mobile gallery on frame one before moving it through GSAP transform", () => {
   stubMatchMedia(false, false);
   render(<ClinicStory />);
   const section = screen.getByTestId("clinic-story");
   const track = screen.getByRole("list");
   const { setProgress } = installMobilePerformanceGeometry();
 
-  setProgress(120);
+  setProgress(35.99);
+
+  expect(section.style.getPropertyValue("--pan")).toBe("0");
+  expect(track.style.transform).toContain("translate3d(0px");
+
+  setProgress(138);
 
   expect(section.style.getPropertyValue("--pan")).toBe("0.5");
   expect(track.style.transform).toContain("translate3d(-962.5px");
@@ -345,6 +370,54 @@ test("moves mobile gallery through GSAP-owned compositor transform", () => {
     "data-native-swipe",
     "false",
   );
+});
+
+test("keeps mobile sticky geometry stable when browser chrome changes only height", () => {
+  Object.defineProperty(window, "innerHeight", { configurable: true, value: 844 });
+  Object.defineProperty(window, "innerWidth", { configurable: true, value: 390 });
+  stubMatchMedia(false, false);
+  render(<ClinicStory />);
+  const section = screen.getByTestId("clinic-story");
+  const pin = screen.getByTestId("clinic-story-pin");
+
+  triggerResizeObservers();
+  expect(section.style.getPropertyValue("--story-height")).toBe("6583.2px");
+  expect(pin.style.getPropertyValue("--pin-height")).toBe("844px");
+
+  Object.defineProperty(window, "innerHeight", { configurable: true, value: 700 });
+  triggerResizeObservers();
+
+  expect(section.style.getPropertyValue("--story-height")).toBe("6583.2px");
+  expect(pin.style.getPropertyValue("--pin-height")).toBe("844px");
+});
+
+test("links mobile gallery directly to scroll and ignores browser-bar resizes", () => {
+  const configSpy = vi.spyOn(ScrollTrigger, "config");
+  stubMatchMedia(false, false);
+  render(<ClinicStory />);
+  const section = screen.getByTestId("clinic-story");
+  installMobilePerformanceGeometry();
+  const trigger = ScrollTrigger.getAll().find((candidate) => candidate.trigger === section);
+
+  expect(trigger?.vars.scrub).toBe(true);
+  expect(configSpy).toHaveBeenCalledWith({ ignoreMobileResize: true });
+});
+
+test("keeps mobile tooth zones clickable from reveal until story exit completes", () => {
+  stubMatchMedia(false, false);
+  render(<ClinicStory />);
+  const { setProgress } = installMobilePerformanceGeometry();
+
+  setProgress(571);
+  fireEvent.click(screen.getByTestId("jaw-exact-frame-signal"));
+  expect(screen.getAllByTestId(/jaw-zone-button-/)).toHaveLength(4);
+  expect(screen.getAllByTestId(/jaw-zone-button-/).every((button) => !button.hasAttribute("disabled"))).toBe(true);
+
+  setProgress(700);
+  expect(screen.getAllByTestId(/jaw-zone-button-/).every((button) => !button.hasAttribute("disabled"))).toBe(true);
+
+  setProgress(780);
+  expect(screen.getAllByTestId(/jaw-zone-button-/).every((button) => button.hasAttribute("disabled"))).toBe(true);
 });
 
 test("keeps jaw UI behind smoothed mobile story motion", () => {
@@ -356,22 +429,25 @@ test("keeps jaw UI behind smoothed mobile story motion", () => {
 
   setProgress(250);
 
-  expect(screen.queryByTestId("jaw-viewport")).not.toBeInTheDocument();
+  expect(screen.getByTestId("jaw-viewport")).toBeInTheDocument();
+  expect(screen.getByTestId("jaw-layer")).toHaveAttribute("data-visible", "false");
 });
 
-test("moves handoff with compositor-only FLIP and drops mobile blur", () => {
-  expect(cssText).not.toMatch(/--handoff-(?:left|top|width|height)/);
-  expect(cssText).toMatch(/\.handoffPhoto\s*\{[\s\S]*?inset:\s*0;[\s\S]*?transform:\s*translate3d\(/);
+test("keeps one compositor-owned detail visual and no large animated blur", () => {
+  expect(cssText).not.toMatch(/\.handoff(?:Picture|Photo)/);
   expect(cssText).not.toMatch(/will-change:\s*top,\s*left,\s*width,\s*height/);
   expect(cssText).toMatch(/\.trackViewport\s*\{[\s\S]*?overflow:\s*visible;/);
   expect(cssText).toMatch(
-    /@media \(max-width: 767px\)[\s\S]*?\.trackViewport\s*\{[\s\S]*?overflow:\s*hidden;[\s\S]*?touch-action:\s*pan-y;/,
+    /@media \(max-width: 767px\)[\s\S]*?\.trackViewport\s*\{[\s\S]*?overflow:\s*visible;[\s\S]*?touch-action:\s*pan-y;/,
   );
   expect(cssText).toMatch(
     /\.reduced \.trackViewport\s*\{[\s\S]*?overflow-x:\s*auto;[\s\S]*?scroll-snap-type:\s*x mandatory;/,
   );
   expect(cssText).not.toContain("data-snap-active");
-  expect(cssText).toMatch(/@media \(max-width: 767px\)[\s\S]*?\.handoffPhoto\s*\{[\s\S]*?filter:\s*none;/);
+  expect(cssText).not.toMatch(/filter:\s*blur\(calc\(var\(--handoff/);
+  expect(cssText).not.toMatch(
+    /@media \(max-width: 767px\)[\s\S]*?\.jawMedia\s*\{[^}]*transform:/,
+  );
 });
 
 test("renders static open map and six routes for reduced motion", () => {
@@ -401,6 +477,6 @@ test("keeps gallery geometry when sequence reports permanent failure", () => {
 
   fireEvent(window, new Event("jaw-sequence-permanent-failure"));
   expect(screen.getAllByTestId("clinic-frame")).toHaveLength(photoFrames.length);
-  expect(screen.getByTestId("clinic-handoff")).toHaveAttribute("data-frame-id", "detail");
+  expect(screen.queryByTestId("clinic-handoff")).not.toBeInTheDocument();
   expect(section).toHaveAttribute("data-desktop-vh", "1030");
 });

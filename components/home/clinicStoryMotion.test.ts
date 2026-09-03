@@ -75,6 +75,7 @@ describe("mapClinicStoryMotion gallery-first contract", () => {
       storyEnd: 1030,
     });
     expect(MOBILE_PHASES).toEqual({
+      galleryStart: 36,
       galleryEnd: 240,
       snapEnd: 300,
       detailDwellEnd: 340,
@@ -150,13 +151,17 @@ describe("mapClinicStoryMotion gallery-first contract", () => {
     expect(mapDesktop(1030).exit).toBe(1);
   });
 
-  test("gates interaction on map endpoint and reveal completion", () => {
-    const ready = { exactEndDrawn: true, revealComplete: true };
-    expect(mapDesktop(749.99, ready)).toMatchObject({ zonesVisible: true, interactive: false });
-    expect(mapDesktop(750, { exactEndDrawn: false, revealComplete: true }).interactive).toBe(false);
-    expect(mapDesktop(750, { exactEndDrawn: true, revealComplete: false }).interactive).toBe(false);
-    expect(mapDesktop(750, ready)).toMatchObject({ zonesVisible: true, interactive: true });
-    expect(mapDesktop(900, ready)).toMatchObject({ zonesVisible: true, interactive: false });
+  test("keeps revealed map interactive until the exit fully completes", () => {
+    expect(mapDesktop(710.01, { exactEndDrawn: false }).interactive).toBe(false);
+    expect(mapDesktop(710.01, { exactEndDrawn: true, revealComplete: false })).toMatchObject({
+      zonesVisible: true,
+      interactive: true,
+    });
+    expect(mapDesktop(965, { exactEndDrawn: true, revealComplete: false })).toMatchObject({
+      phase: "exit",
+      interactive: true,
+    });
+    expect(mapDesktop(1030, { exactEndDrawn: true, revealComplete: false }).interactive).toBe(false);
   });
 
   test("uses shorter desktop opening and one-based target frames", () => {
@@ -168,9 +173,10 @@ describe("mapClinicStoryMotion gallery-first contract", () => {
 
   test.each([
     [0, 0],
-    [60, 0.25],
-    [120, 0.5],
-    [180, 0.75],
+    [35.99, 0],
+    [87, 0.25],
+    [138, 0.5],
+    [189, 0.75],
     [240, 1],
   ])("moves mobile gallery progressively at %svh", (progressVh, expectedPan) => {
     expect(mapMobile(progressVh).pan).toBeCloseTo(expectedPan, 4);
@@ -180,7 +186,7 @@ describe("mapClinicStoryMotion gallery-first contract", () => {
     expect(mapMobile(239.99)).toMatchObject({
       phase: "gallery",
       detail: 0,
-      pan: expect.closeTo(239.99 / 240, 4),
+      pan: expect.closeTo((239.99 - 36) / (240 - 36), 4),
       sequenceProgress: 0,
     });
     expect(mapMobile(240)).toMatchObject({ phase: "detail", detail: 0, pan: 1 });
@@ -189,14 +195,19 @@ describe("mapClinicStoryMotion gallery-first contract", () => {
     expect(mapMobile(370)).toMatchObject({ phase: "opening", handoff: 1, sequenceProgress: 0 });
     expect(mapMobile(450)).toMatchObject({ phase: "opening", sequenceProgress: 0.5, targetFrame: 31 });
     expect(mapMobile(570)).toMatchObject({ phase: "map", teaseProgress: 1, mapReveal: 0 });
-    expect(mapMobile(610, { exactEndDrawn: true, revealComplete: true })).toMatchObject({
+    expect(mapMobile(570.01, { exactEndDrawn: true, revealComplete: false })).toMatchObject({
+      phase: "map",
+      interactive: true,
+    });
+    expect(mapMobile(610, { exactEndDrawn: true, revealComplete: false })).toMatchObject({
       phase: "interactive",
       interactive: true,
     });
-    expect(mapMobile(680, { exactEndDrawn: true, revealComplete: true })).toMatchObject({
+    expect(mapMobile(680, { exactEndDrawn: true, revealComplete: false })).toMatchObject({
       phase: "exit",
-      interactive: false,
+      interactive: true,
     });
+    expect(mapMobile(780, { exactEndDrawn: true, revealComplete: false }).interactive).toBe(false);
   });
 
   test("returns identical states during forward and reverse traversal", () => {
@@ -207,12 +218,12 @@ describe("mapClinicStoryMotion gallery-first contract", () => {
     }
   });
 
-  test("closes interaction immediately on raw reverse threshold crossing", () => {
-    const ready = { exactEndDrawn: true, revealComplete: true };
-    expect(mapDesktop(750, ready).interactive).toBe(true);
-    expect(mapDesktop(749.99, ready).interactive).toBe(false);
-    expect(mapMobile(610, ready).interactive).toBe(true);
-    expect(mapMobile(609.99, ready).interactive).toBe(false);
+  test("closes interaction immediately when reverse scroll leaves map reveal", () => {
+    const ready = { exactEndDrawn: true, revealComplete: false };
+    expect(mapDesktop(710.01, ready).interactive).toBe(true);
+    expect(mapDesktop(710, ready).interactive).toBe(false);
+    expect(mapMobile(570.01, ready).interactive).toBe(true);
+    expect(mapMobile(570, ready).interactive).toBe(false);
   });
 
   test("normalizes invalid frame counts and progress", () => {

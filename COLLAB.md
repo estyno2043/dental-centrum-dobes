@@ -5,23 +5,38 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: GSAP mobile gallery path fix approved for publication
-- Owner: —
-- Branch: `codex/mobile-clinicstory-performance`
-- Task: replace the direct mobile frame-1-to-frame-7 snap with one GSAP
-  ScrollTrigger timeline that visibly traverses all seven gallery frames,
-  preserves the gallery-to-jaw handoff, and keeps native document scrolling.
-  User approved publication to `main` after localhost review.
-  Local verification: 215 tests, lint, TypeScript, production build,
-  jaw-sequence validation, `git diff --check`, and changed-file credential scan
-  pass. Headless Chrome checks at 390×844, 375×812, and 1440×900 show the
-  complete progressive gallery path, centered detail endpoint, sticky `top: 0`,
-  zero horizontal page overflow, no console errors, no Next error overlay, and
-  no long tasks in a 120-frame mobile scroll run (p95 9.2 ms). One pre-existing
-  production audit advisory remains in transitive `nanoid@3.3.17`; unrelated to
-  GSAP and not auto-updated in this visual branch.
+- Status: Mobile ClinicStory repair complete and approved for publication
+- Owner: Codex
+- Branch: `codex/mobile-clinicstory-entry-fix`
+- Task: keep the already verified direct mobile scroll patch, then repair the
+  physical-device regressions in bounded stages: stable sticky geometry and an
+  entry dwell, one continuous photo-7 zoom with no duplicate handoff image,
+  jaw-frame loading without abort/refetch churn, and a non-overlapping mobile
+  tooth-zone panel. Each stage gets a failing regression test, focused checks,
+  and browser verification. Keep native document scrolling. No merge or push
+  to `main` before mobile localhost approval. Verification: 224 tests, lint,
+  TypeScript, production build, jaw media validation, `git diff --check`,
+  credential scan, and 390×844 browser interaction passed. Browser confirmed
+  no internal focus-scroll jump, no horizontal overflow, and clean console.
+  User approved localhost on 2026-09-03 and requested push to production
+  `main`; `develop` will fast-forward to the same commit.
 
 ## File Reservations
+
+- Codex releases `components/home/ClinicStory.tsx`,
+  `components/home/ClinicStory.test.tsx`,
+  `components/home/clinicStoryMotion.ts`,
+  `components/home/clinicStoryMotion.test.ts`,
+  `components/home/clinicStory.module.css`,
+  `components/home/jaw/JawFrameSequence.tsx`,
+  `components/home/jaw/JawFrameSequence.test.tsx`,
+  `components/home/jaw/jawSequenceLoader.ts`,
+  `components/home/jaw/jawSequenceLoader.test.ts`,
+  `components/home/jaw/JawZoneOverlay.tsx`,
+  `components/home/jaw/JawZoneOverlay.test.tsx`,
+  `components/home/jaw/jawExperience.module.css`, `app/page.test.tsx`, and
+  `COLLAB.md` after localhost approval and full verification of the mobile
+  physical-device repair.
 
 - GSAP mobile gallery repair released `package.json`, `package-lock.json`,
   `components/home/ClinicStory.tsx`, `components/home/ClinicStory.test.tsx`,
@@ -1140,6 +1155,17 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   metadata validation, `git diff --check`, and changed-file credential scan.
   Files released. Next: real iOS/Android touch-inertia and frame-rate review on
   `http://localhost:3000/`; do not merge or push to `main` before approval.
+
+- 2026-09-03 — User approved the follow-up mobile ClinicStory repair on
+  `codex/mobile-clinicstory-entry-fix` and requested production publication.
+  Gallery motion now waits for the section entry, photo 7 becomes the handoff
+  without a duplicate image, jaw frames preload through a bounded shared cache,
+  and the mobile pain-zone sheet cannot overlap its controls or focus-scroll
+  the clipped jaw viewport. Verification: 224 tests, lint, TypeScript,
+  production build, jaw media validation, `git diff --check`, credential scan,
+  and 390×844 browser interaction with clean console and zero page overflow.
+  Files released. Publication target: `main`; mirror `develop` to the same
+  commit.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,

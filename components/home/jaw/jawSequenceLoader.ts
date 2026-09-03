@@ -16,6 +16,13 @@ export type JawSequenceLoader = Readonly<{
   dispose: () => void;
 }>;
 
+export type BrowserJawFrameDecoder = ((
+  url: string,
+  signal: AbortSignal,
+) => Promise<DecodedJawFrame>) & Readonly<{
+  preload: () => Promise<void>;
+}>;
+
 type CacheEntry = {
   frame: DecodedJawFrame;
   usedAt: number;
@@ -284,18 +291,34 @@ export function createJawSequenceLoader(options: {
 
 export function createBrowserJawFrameDecoder(
   manifest: JawSequenceManifest,
-): (url: string, signal: AbortSignal) => Promise<DecodedJawFrame> {
+): BrowserJawFrameDecoder {
   const indexByUrl = new Map(manifest.frames.map((item) => [item.url, item.index]));
+  const blobByUrl = new Map<string, Promise<Blob>>();
 
-  return async (url, signal) => {
+  const fetchBlob = (url: string): Promise<Blob> => {
+    const cached = blobByUrl.get(url);
+    if (cached) return cached;
+
+    const request = fetch(url).then((response) => {
+      if (!response.ok) throw new Error(`jaw frame ${url} failed: ${response.status}`);
+      return response.blob();
+    });
+    blobByUrl.set(url, request);
+    void request.catch(() => {
+      if (blobByUrl.get(url) === request) blobByUrl.delete(url);
+    });
+    return request;
+  };
+
+  const decode: BrowserJawFrameDecoder = Object.assign(async (url: string, signal: AbortSignal) => {
     if (typeof window === "undefined") throw new Error("jaw frame decoding requires a browser");
     const index = indexByUrl.get(url);
     if (index === undefined) throw new Error(`jaw frame URL is absent from manifest: ${url}`);
     throwIfAborted(signal);
 
-    const response = await fetch(url, { signal });
-    if (!response.ok) throw new Error(`jaw frame ${url} failed: ${response.status}`);
-    const blob = await response.blob();
+    // Scroll direction changes cancel decoding, not network transfer. Keeping one
+    // shared Blob promise per URL prevents touch momentum from refetching frames.
+    const blob = await fetchBlob(url);
     throwIfAborted(signal);
 
     const bitmapDecoder = window.createImageBitmap;
@@ -333,5 +356,22 @@ export function createBrowserJawFrameDecoder(
       clearImage();
       throw error;
     }
-  };
+  }, {
+    async preload(): Promise<void> {
+      if (typeof window === "undefined") return;
+      const urls = manifest.frames.map((frame) => frame.url);
+      let cursor = 0;
+      const workerCount = Math.min(4, urls.length);
+      const worker = async () => {
+        while (cursor < urls.length) {
+          const url = urls[cursor];
+          cursor += 1;
+          await fetchBlob(url);
+        }
+      };
+      await Promise.all(Array.from({ length: workerCount }, worker));
+    },
+  });
+
+  return decode;
 }

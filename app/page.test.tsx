@@ -72,7 +72,11 @@ test("keeps gallery handoff and jaw inside the same sticky viewport", () => {
     name: "Miesto, kde sa nikto neponáhľa.",
   });
 
-  expect(within(clinicStory).getByTestId("clinic-handoff")).toBeInTheDocument();
+  expect(within(clinicStory).queryByTestId("clinic-handoff")).not.toBeInTheDocument();
+  expect(within(clinicStory).getAllByTestId("clinic-frame").at(-1)).toHaveAttribute(
+    "data-frame-id",
+    "detail",
+  );
   // JSDOM intentionally keeps <noscript> children inert, so this verifies
   // server fallback mount point while browser coverage verifies its copy.
   expect(within(clinicStory).getByTestId("jaw-noscript-fallback")).toBeInTheDocument();

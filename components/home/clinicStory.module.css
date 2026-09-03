@@ -10,11 +10,6 @@
   --exit: 0;
   --jaw-opacity: 0;
   --travel: 0px;
-  --handoff-x: 0px;
-  --handoff-y: 0px;
-  --handoff-scale-x: 1;
-  --handoff-scale-y: 1;
-  --handoff-blur: 0;
 
   position: relative;
   height: 1030vh;
@@ -48,8 +43,6 @@
   padding: clamp(64px, 8dvh, 96px) 0 clamp(42px, 5dvh, 64px);
   gap: clamp(24px, 3dvh, 42px);
   inset: 0;
-  opacity: calc(1 - var(--detail));
-  transition: opacity 120ms linear;
 }
 
 .intro {
@@ -124,6 +117,12 @@
   object-fit: cover;
 }
 
+.detailPicture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .placeholder {
   display: grid;
   width: 100%;
@@ -137,38 +136,6 @@
   font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-}
-
-.handoffPicture {
-  position: absolute;
-  z-index: 2;
-  pointer-events: none;
-  inset: 0;
-}
-
-.handoffPhoto {
-  position: absolute;
-  display: block;
-  width: 100%;
-  height: 100%;
-  border-radius: calc(4px * (1 - var(--detail)));
-  filter: blur(calc(var(--handoff-blur) * 8px));
-  inset: 0;
-  object-fit: cover;
-  opacity: min(1, calc(var(--detail) * 12));
-  transform:
-    translate3d(
-      calc(var(--handoff-x) * (1 - var(--detail))),
-      calc(var(--handoff-y) * (1 - var(--detail))),
-      0
-    )
-    scale(
-      calc(var(--handoff-scale-x) + (1 - var(--handoff-scale-x)) * var(--detail)),
-      calc(var(--handoff-scale-y) + (1 - var(--handoff-scale-y)) * var(--detail))
-    )
-    scale(calc(1 + var(--handoff-blur) * 0.025));
-  transform-origin: center;
-  will-change: transform;
 }
 
 .jawLayer {
@@ -186,7 +153,9 @@
 
 .jawViewport {
   position: absolute;
-  overflow: hidden;
+  /* `hidden` creates a scroll container: focusing a mobile zone then scrolls
+     every jaw layer upward. `clip` keeps rounded cropping without that jump. */
+  overflow: clip;
   top: 50%;
   left: 50%;
   width: min(calc(100% - clamp(2rem, 7vw, 7rem)), 1440px, calc(82dvh * 16 / 9));
@@ -352,8 +321,13 @@
 
 @media (max-width: 767px) {
   .section {
-    height: 780vh;
-    height: 780dvh;
+    height: 780svh;
+    height: var(--story-height, 780svh);
+  }
+
+  .pin {
+    height: 100svh;
+    height: var(--pin-height, 100svh);
   }
 
   .galleryLayer {
@@ -371,7 +345,7 @@
   }
 
   .trackViewport {
-    overflow: hidden;
+    overflow: visible;
     overscroll-behavior-x: contain;
     scrollbar-width: none;
     touch-action: pan-y;
@@ -386,11 +360,6 @@
 
     width: max-content;
     padding: 0 9vw;
-  }
-
-  .handoffPhoto {
-    filter: none;
-    will-change: auto;
   }
 
   .frame {
@@ -408,6 +377,10 @@
     width: min(calc(100% - 1rem), calc(92dvh * 9 / 16));
     border-radius: clamp(16px, 5vw, 26px);
     aspect-ratio: 9 / 16;
+  }
+
+  .jawMedia {
+    /* Keep UI fixed; only jaw pixels scale inside their own components. */
   }
 
   .jawCue {
@@ -463,10 +436,6 @@
   scroll-snap-align: center;
 }
 
-.reduced .handoffPicture {
-  display: none;
-}
-
 .reduced .jawLayer {
   position: relative;
   height: min(82dvh, 820px);
@@ -480,7 +449,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .galleryLayer,
-  .handoffPhoto,
   .jawLayer,
   .jawViewport {
     transition: none;

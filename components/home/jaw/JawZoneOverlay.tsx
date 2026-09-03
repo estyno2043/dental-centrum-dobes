@@ -224,6 +224,7 @@ export function JawZoneOverlay({
   const enabled = mapVisible && effectivePresentation === "interactive";
   const visibleState = enabled ? state : { ...state, openZone: null, pinned: false };
   const activeZone = visibleState.openZone ? ZONES[visibleState.openZone] : undefined;
+  const mobilePanelOpen = visibleState.mode === "mobile" && Boolean(activeZone);
 
   const focusTrigger = useCallback((zoneId: InteractiveZoneId | null) => {
     triggerRefs.current[zoneId ?? "front"]?.focus();
@@ -395,10 +396,11 @@ export function JawZoneOverlay({
       href={zone.route}
       key={zone.id}
       onClick={(event) => onDirectClick(zone, event)}
+      tabIndex={mobilePanelOpen ? -1 : 0}
     >
       {directLabel(zone)}
     </a>
-  )), [onDirectClick]);
+  )), [mobilePanelOpen, onDirectClick]);
 
   const card = enabled && activeZone ? (
     <section
@@ -471,6 +473,7 @@ export function JawZoneOverlay({
     <div
       className={classNames(styles.zoneOverlay, !enabled && styles.zoneOverlayDisabled)}
       data-presentation={artworkVisible ? effectivePresentation : "hidden"}
+      data-panel-open={mobilePanelOpen ? "true" : "false"}
       data-testid="jaw-zone-overlay"
       ref={rootRef}
       tabIndex={-1}
@@ -572,17 +575,21 @@ export function JawZoneOverlay({
             percentage of the box and a fraction of the viewBox are the same
             place.
           */}
-          <div className={styles.zoneButtons} data-testid="jaw-zone-buttons">
+          <div
+            aria-hidden={!enabled || mobilePanelOpen}
+            className={styles.zoneButtons}
+            data-testid="jaw-zone-buttons"
+          >
               {MARKERS.map((marker) => (
                 <button
                   aria-expanded={enabled ? visibleState.openZone === marker.zone : undefined}
-                  aria-hidden={!enabled}
+                  aria-hidden={!enabled || mobilePanelOpen}
                   className={styles.zoneButton}
                   data-active={visibleState.openZone === marker.zone}
                   data-origin={marker.origin}
                   data-testid={`jaw-zone-button-${marker.zone}`}
                   data-zone={marker.zone}
-                  disabled={!enabled}
+                  disabled={!enabled || mobilePanelOpen}
                   key={marker.zone}
                   onBlur={() => {
                     if (!state.pinned) setState((current) => ({ ...current, openZone: null }));
@@ -611,7 +618,7 @@ export function JawZoneOverlay({
                     "--y": `${(marker.label[1] / MASTER_HEIGHT) * 100}%`,
                     "--zone-index": marker.revealIndex,
                   } as CSSProperties}
-                  tabIndex={enabled ? 0 : -1}
+                  tabIndex={enabled && !mobilePanelOpen ? 0 : -1}
                   type="button"
                 >
                   <span aria-hidden="true" className={styles.zoneButtonMark} />
@@ -622,7 +629,11 @@ export function JawZoneOverlay({
         </div>
       ) : null}
       {enabled ? (
-        <div className={styles.assistanceBar} data-testid="jaw-assistance">
+        <div
+          aria-hidden={mobilePanelOpen}
+          className={styles.assistanceBar}
+          data-testid="jaw-assistance"
+        >
           <span>Nenašli ste miesto?</span>
           {directLinks}
         </div>
