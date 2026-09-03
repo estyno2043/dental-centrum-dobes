@@ -1,0 +1,524 @@
+/*
+ * The entry examination. The most commercial page on the site, and the one
+ * where restraint matters most — a page that shouts about a dentist reads as a
+ * page that needs to.
+ */
+
+.sectionHeading {
+  margin: 0 0 clamp(18px, 2.4vw, 28px);
+  font-size: clamp(1.3rem, 2.4vw, 1.95rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+/* ---------------------------------------------------------------- offer --- */
+
+.offer {
+  display: grid;
+  gap: clamp(18px, 2.5vw, 30px);
+  padding-top: clamp(30px, 4vw, 48px);
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  align-items: start;
+}
+
+/*
+ * The number comes before the argument. Somebody deciding whether this is
+ * worth a telephone call should not have to scroll to find out what it costs.
+ */
+.offerCard {
+  padding: clamp(24px, 3.2vw, 38px);
+  border: 1px solid rgb(174 155 126 / 45%);
+  border-radius: 20px;
+  background:
+    radial-gradient(120% 90% at 8% 0%, rgb(174 155 126 / 16%), transparent 60%),
+    rgb(255 255 255 / 62%);
+  box-shadow: 0 20px 46px -30px rgb(60 48 34 / 45%);
+}
+
+.offerHeading {
+  margin: 0 0 18px;
+  font-size: clamp(1.05rem, 1.9vw, 1.3rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.offerItems {
+  padding: 0;
+  margin: 0 0 18px;
+  list-style: none;
+}
+
+.offerItem {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 10px 0;
+  color: rgb(28 28 31 / 82%);
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.offerItem + .offerItem {
+  border-top: 1px solid rgb(138 115 88 / 18%);
+}
+
+.offerPrice {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/*
+ * The struck price stays visible beside the gift. "Zdarma" on its own is a
+ * word; "25 € zdarma" is the size of the thing being given away.
+ */
+.offerPrice[data-free="true"] s {
+  color: rgb(38 38 42 / 45%);
+  font-weight: 500;
+}
+
+.offerPrice em {
+  color: var(--taupe-deep);
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.offerTotal {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-top: 16px;
+  border-top: 2px solid rgb(138 115 88 / 35%);
+}
+
+.offerTotalLabel {
+  color: rgb(38 38 42 / 62%);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.offerTotalValue {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.offerTotalValue s {
+  color: rgb(38 38 42 / 42%);
+  font-size: 1rem;
+}
+
+.offerTotalValue strong {
+  font-size: clamp(1.7rem, 3.2vw, 2.4rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+}
+
+.offerSaving {
+  margin: 8px 0 0;
+  color: var(--taupe-deep);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.offerCaption {
+  margin: 4px 0 20px;
+  color: rgb(38 38 42 / 62%);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+/* Two ways to act. The telephone is not the smaller one — somebody who has
+   put a dentist off for years rings rather than fills in a form. */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.actionPrimary,
+.actionPhone {
+  display: inline-flex;
+  gap: 9px;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 26px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    background-color 0.3s var(--ease),
+    border-color 0.3s var(--ease),
+    color 0.3s var(--ease);
+}
+
+.actionPrimary {
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--porcelain);
+}
+
+.actionPrimary:hover,
+.actionPrimary:focus-visible {
+  border-color: var(--taupe-deep);
+  background: var(--taupe-deep);
+}
+
+.actionPhone {
+  border: 1px solid rgb(138 115 88 / 45%);
+  color: var(--ink);
+}
+
+.actionPhone:hover,
+.actionPhone:focus-visible {
+  border-color: var(--taupe-deep);
+  background: rgb(174 155 126 / 16%);
+}
+
+.reassurances {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.reassurances li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 0;
+}
+
+.reassurances li + li {
+  border-top: 1px solid rgb(138 115 88 / 20%);
+}
+
+.reassurances strong {
+  font-size: clamp(1rem, 1.7vw, 1.2rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.reassurances span {
+  color: rgb(38 38 42 / 60%);
+  font-size: 0.79rem;
+}
+
+/* ------------------------------------------------------------- includes --- */
+
+.includes {
+  padding-top: clamp(48px, 6.5vw, 88px);
+}
+
+.inclusions {
+  display: grid;
+  padding: 0;
+  margin: 0;
+  gap: clamp(14px, 2vw, 22px);
+  grid-template-columns: repeat(2, 1fr);
+  list-style: none;
+}
+
+.inclusions li {
+  display: grid;
+  gap: 12px;
+  padding: clamp(16px, 2vw, 22px);
+  border: 1px solid rgb(138 115 88 / 24%);
+  border-radius: 14px;
+  grid-template-columns: 16px 1fr;
+}
+
+.inclusions svg {
+  margin-top: 3px;
+  color: var(--taupe-deep);
+}
+
+.inclusions h3 {
+  margin: 0 0 4px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.inclusions p {
+  margin: 0;
+  color: rgb(38 38 42 / 70%);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/* ---------------------------------------------------------------- proof --- */
+
+.proof {
+  padding-top: clamp(48px, 6.5vw, 88px);
+}
+
+.proofHead {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.proofMark {
+  display: block;
+  width: 24px;
+  height: 24px;
+  flex: none;
+  margin-bottom: clamp(18px, 2.4vw, 28px);
+}
+
+.proofMark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.quotes {
+  display: grid;
+  padding: 0;
+  margin: 0;
+  gap: clamp(14px, 2vw, 20px);
+  grid-template-columns: repeat(3, 1fr);
+  list-style: none;
+}
+
+.quote {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: clamp(18px, 2.2vw, 24px);
+  border: 1px solid rgb(138 115 88 / 24%);
+  border-radius: 14px;
+  background: rgb(255 255 255 / 45%);
+}
+
+.stars {
+  color: #fbbc05;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+}
+
+.quote blockquote {
+  margin: 0;
+}
+
+/*
+ * Clamped rather than trimmed. The words stay whole in the markup — these are
+ * real people's reviews — and the card shows as many lines as it has room for.
+ */
+.quote p {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0;
+  -webkit-box-orient: vertical;
+  color: rgb(28 28 31 / 82%);
+  font-size: 0.85rem;
+  -webkit-line-clamp: 7;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.quote cite {
+  color: rgb(38 38 42 / 60%);
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------------ how --- */
+
+.how {
+  padding-top: clamp(48px, 6.5vw, 88px);
+}
+
+.howSteps {
+  display: grid;
+  padding: 0;
+  margin: 0;
+  gap: clamp(16px, 2.2vw, 26px);
+  grid-template-columns: repeat(4, 1fr);
+  list-style: none;
+}
+
+.howSteps li {
+  padding-top: 14px;
+  border-top: 2px solid rgb(138 115 88 / 32%);
+}
+
+.howNumber {
+  color: var(--taupe-deep);
+  font-size: 0.74rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.howSteps h3 {
+  margin: 6px 0 5px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.howSteps p {
+  margin: 0;
+  color: rgb(38 38 42 / 70%);
+  font-size: 0.83rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/* --------------------------------------------------------------- doubts --- */
+
+.doubts {
+  padding-top: clamp(48px, 6.5vw, 88px);
+}
+
+.doubtList {
+  margin: 0;
+}
+
+.doubt {
+  display: grid;
+  gap: clamp(10px, 2vw, 34px);
+  padding: clamp(16px, 2vw, 22px) 0;
+  border-top: 1px solid rgb(138 115 88 / 22%);
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+}
+
+.doubt:last-child {
+  border-bottom: 1px solid rgb(138 115 88 / 22%);
+}
+
+.doubt dt {
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.35;
+  text-wrap: pretty;
+}
+
+.doubt dd {
+  margin: 0;
+  color: rgb(38 38 42 / 72%);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* -------------------------------------------------------------- results --- */
+
+.results {
+  padding-top: clamp(48px, 6.5vw, 88px);
+}
+
+.case {
+  max-width: 42rem;
+  margin: 0;
+}
+
+.caseNote {
+  margin-top: 12px;
+  color: rgb(38 38 42 / 58%);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+/* ----------------------------------------------------------- sticky bar --- */
+
+/*
+ * Phones only. On a desktop the offer card and the form are both a flick away;
+ * on a phone this page is long enough that the only way to act is several
+ * screens from wherever the reader makes up their mind.
+ */
+.stickyBar {
+  position: fixed;
+  z-index: 40;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: none;
+  gap: 14px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  border-top: 1px solid rgb(174 155 126 / 40%);
+  background: rgb(20 20 23 / 92%);
+  backdrop-filter: blur(12px);
+}
+
+.stickyPrice {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  color: var(--porcelain);
+}
+
+.stickyPrice strong {
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.stickyPrice s {
+  color: rgb(250 249 246 / 50%);
+  font-size: 0.82rem;
+}
+
+.stickyAction {
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: var(--taupe);
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .offer,
+  .inclusions,
+  .quotes,
+  .howSteps,
+  .doubt {
+    grid-template-columns: 1fr;
+  }
+
+  .howSteps {
+    gap: 14px;
+  }
+}
+
+@media (max-width: 720px) {
+  .stickyBar {
+    display: flex;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .actionPrimary,
+  .actionPhone {
+    transition: none;
+  }
+}

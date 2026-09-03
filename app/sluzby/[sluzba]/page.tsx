@@ -4,6 +4,7 @@ import type { JSX } from "react";
 
 import { ServiceBooking } from "@/components/booking/ServiceBooking";
 import { SiteHeader } from "@/components/hero/SiteHeader";
+import { EntryBody } from "@/components/services/entry/EntryBody";
 import { HygieneBody } from "@/components/services/hygiene/HygieneBody";
 import { CaseGallery } from "@/components/patients/CaseGallery";
 import {
@@ -94,6 +95,7 @@ function Photo({
  */
 const BESPOKE_BODIES: Readonly<Record<string, () => JSX.Element>> = {
   "dentalna-hygiena": HygieneBody,
+  "vstupna-prehliadka": EntryBody,
 };
 
 export default async function ServicePage({
@@ -290,7 +292,12 @@ export default async function ServicePage({
           <p className={styles.pending}>Obsah tejto stránky pripravujeme.</p>
         )}
 
-        <aside className={styles.booking} aria-labelledby="booking-heading">
+        <aside
+          className={styles.booking}
+          aria-labelledby="booking-heading"
+          /* Both CTAs on the entry page point here. */
+          id="booking"
+        >
           <h2 className={styles.blockHeading} id="booking-heading">
             Objednať sa
           </h2>

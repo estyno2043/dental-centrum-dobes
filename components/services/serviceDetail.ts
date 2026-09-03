@@ -146,11 +146,11 @@ const vstupnaPrehliadka: ServiceDetail = {
     items: [
       { label: "Komplexné stomatologické vyšetrenie", price: "40 €" },
       { label: "4× intraorálny RTG snímok", price: "40 €" },
-      { label: "Panoramatický snímok", price: "20 €", free: true },
+      { label: "Panoramatický snímok", price: "25 €", free: true },
     ],
-    listTotal: "100 €",
+    listTotal: "105 €",
     total: "80 €",
-    saving: "Ušetríte 20 €",
+    saving: "Ušetríte 25 €",
   },
 
   stepsHeading: "Ako to prebieha",
