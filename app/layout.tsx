@@ -2,6 +2,7 @@
 
 import type { Metadata } from "next";
 
+import { ReviewsProvider } from "@/components/reviews/ReviewsProvider";
 import { SmoothScroll } from "@/components/scroll/SmoothScroll";
 import "./globals.css";
 
@@ -40,7 +41,12 @@ export default function RootLayout({
           `prefers-reduced-motion`.
         */}
         <SmoothScroll />
-        {children}
+        {/*
+          Holds the reviews bar for the whole site. `children` stays a Server
+          Component tree; only the provider and its triggers cross to the
+          client.
+        */}
+        <ReviewsProvider>{children}</ReviewsProvider>
       </body>
     </html>
   );

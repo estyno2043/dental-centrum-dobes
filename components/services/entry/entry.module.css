@@ -522,3 +522,78 @@
     transition: none;
   }
 }
+
+/*
+ * The rating opens the reviews bar. It keeps the exact type of the three facts
+ * beside it and gains only an underline and a line of small print on hover —
+ * the row is four facts and should keep reading as four facts, not as a row of
+ * buttons.
+ */
+.ratingTrigger {
+  position: relative;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.ratingTrigger strong {
+  font-size: clamp(1rem, 1.7vw, 1.2rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.ratingTrigger > span:not(.ratingHint) {
+  color: rgb(38 38 42 / 60%);
+  font-size: 0.79rem;
+  text-decoration: underline;
+  text-decoration-color: rgb(138 115 88 / 40%);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.3s var(--ease);
+}
+
+.ratingTrigger:hover > span:not(.ratingHint),
+.ratingTrigger:focus-visible > span:not(.ratingHint) {
+  text-decoration-color: var(--taupe-deep);
+}
+
+/* Absolute, so revealing it cannot nudge the three facts below. */
+.ratingHint {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 3px;
+  color: var(--taupe-deep);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  opacity: 0;
+  text-transform: uppercase;
+  transition: opacity 0.3s var(--ease);
+  white-space: nowrap;
+}
+
+.ratingTrigger:hover .ratingHint,
+.ratingTrigger:focus-visible .ratingHint {
+  opacity: 1;
+}
+
+.ratingTrigger:focus-visible {
+  outline: 2px solid var(--taupe-deep);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ratingTrigger > span,
+  .ratingHint {
+    transition: none;
+  }
+}

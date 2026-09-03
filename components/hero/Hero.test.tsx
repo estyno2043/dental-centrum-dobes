@@ -1,7 +1,19 @@
 import { readFileSync } from "node:fs";
 import { act, render, screen, within } from "@testing-library/react";
 import { afterEach, expect, test, vi } from "vitest";
+import { ReviewsProvider } from "@/components/reviews/ReviewsProvider";
 import { Hero } from "./Hero";
+
+/*
+ * The hero ships inside the reviews provider — that is what turns its rating
+ * into the button that raises the bar. Rendering it bare tests a composition
+ * the site never uses.
+ */
+const inProvider = (
+  <ReviewsProvider>
+    <Hero />
+  </ReviewsProvider>
+);
 import { SiteHeader } from "./SiteHeader";
 
 afterEach(() => {
@@ -72,7 +84,7 @@ function videoSources(container: HTMLElement): (string | null)[] {
 }
 
 test("renders the approved hero copy and patient contact details", () => {
-  const { container } = render(<Hero />);
+  const { container } = render(inProvider);
 
   expect(screen.getByRole("banner")).toBeInTheDocument();
   expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
@@ -115,7 +127,7 @@ test("serves the phone encode on narrow viewports", () => {
     "(min-width: 768px)": false,
   });
 
-  const { container } = render(<Hero />);
+  const { container } = render(inProvider);
 
   expect(videoSources(container)).toEqual(["/media/hero-720.mp4"]);
 });
@@ -126,7 +138,7 @@ test("serves the 1080p pair on wide viewports, WebM first", () => {
     "(min-width: 768px)": true,
   });
 
-  const { container } = render(<Hero />);
+  const { container } = render(inProvider);
 
   expect(videoSources(container)).toEqual([
     "/media/hero-1080.webm",
@@ -140,7 +152,7 @@ test("keeps the chosen encode when the viewport later crosses the breakpoint", (
     "(min-width: 768px)": false,
   });
 
-  const { container } = render(<Hero />);
+  const { container } = render(inProvider);
 
   expect(videoSources(container)).toEqual(["/media/hero-720.mp4"]);
 
@@ -156,7 +168,7 @@ test("uses the static poster while reduced motion is preferred", () => {
     "(min-width: 768px)": true,
   });
 
-  const { container } = render(<Hero />);
+  const { container } = render(inProvider);
 
   expect(container.querySelector("video")).not.toBeInTheDocument();
   expect(
@@ -181,7 +193,7 @@ test("uses the static poster while reduced motion is preferred", () => {
 
 /* And the mark says nothing out loud — the link's own words do that. */
 test("keeps the package button's name to its label", () => {
-  render(<Hero />);
+  render(inProvider);
 
   const button = screen.getByRole("link", {
     name: "Vstupný balík pre nových pacientov",

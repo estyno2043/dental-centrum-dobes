@@ -44,9 +44,19 @@ export const offer = {
   caption: "Panoramatický snímok k vstupnej prehliadke nedoplácate.",
 } as const;
 
-/** Read straight off the price list and the clinic's own published details. */
-export const reassurances: readonly { label: string; value: string }[] = [
-  { value: "4,5 ★", label: "hodnotenie na Google" },
+/**
+ * Read straight off the price list and the clinic's own published details.
+ *
+ * `reviews` marks the one row that does something when pressed — it raises the
+ * reviews bar, the same one the hero's rating opens. Flagged here rather than
+ * matched on the label, so rewording the label cannot silently unhook it.
+ */
+export const reassurances: readonly {
+  label: string;
+  value: string;
+  reviews?: true;
+}[] = [
+  { value: "4,5 ★", label: "hodnotenie na Google", reviews: true },
   { value: "od 3 rokov", label: "ošetrujeme aj deti" },
   { value: "Po–Št do 19:00", label: "otvorené aj po práci" },
   { value: "Zdarma", label: "parkovanie pri klinike" },

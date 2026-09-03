@@ -5,7 +5,7 @@
 import Link from "next/link";
 import { useState, type JSX } from "react";
 import { motion } from "motion/react";
-import { ReviewsBar } from "@/components/reviews/ReviewsBar";
+import { ReviewsTrigger } from "@/components/reviews/ReviewsTrigger";
 import { RotatingHeadline } from "./RotatingHeadline";
 import {
   headlineVariants,
@@ -60,8 +60,6 @@ export function Hero(): JSX.Element {
     () => globalThis.matchMedia?.(wideViewportQuery).matches ?? false,
   );
   const sources = isWideViewport ? wideSources : narrowSources;
-
-  const [reviewsOpen, setReviewsOpen] = useState(false);
 
   return (
     <>
@@ -190,18 +188,14 @@ export function Hero(): JSX.Element {
                 four facts and should keep reading as four facts.
               */
               return "reviews" in item ? (
-                <button
-                  aria-expanded={reviewsOpen}
+                <ReviewsTrigger
                   className={`${styles.trustItem} ${styles.trustTrigger}`}
+                  hint="Čítať recenzie"
+                  hintClassName={styles.trustHint}
                   key={item.label}
-                  onClick={() => setReviewsOpen((current) => !current)}
-                  type="button"
                 >
                   {body}
-                  <span className={styles.trustHint} aria-hidden="true">
-                    Čítať recenzie
-                  </span>
-                </button>
+                </ReviewsTrigger>
               ) : (
                 <div className={styles.trustItem} key={item.label}>
                   {body}
@@ -214,7 +208,6 @@ export function Hero(): JSX.Element {
         <div className={styles.scrollCue}>scrollujte</div>
       </header>
 
-      <ReviewsBar onClose={() => setReviewsOpen(false)} open={reviewsOpen} />
     </>
   );
 }

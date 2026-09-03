@@ -3,6 +3,7 @@ import type { JSX } from "react";
 import { IconCheck, IconPhone } from "@tabler/icons-react";
 
 import { GoogleMark } from "@/components/reviews/GoogleMark";
+import { ReviewsTrigger } from "@/components/reviews/ReviewsTrigger";
 import { reviews } from "@/components/reviews/reviewsContent";
 import { CaseGallery } from "@/components/patients/CaseGallery";
 import {
@@ -98,12 +99,36 @@ export function EntryBody(): JSX.Element {
         </div>
 
         <ul className={styles.reassurances}>
-          {reassurances.map((item) => (
-            <li key={item.label}>
-              <strong>{item.value}</strong>
-              <span>{item.label}</span>
-            </li>
-          ))}
+          {reassurances.map((item) => {
+            const body = (
+              <>
+                <strong>{item.value}</strong>
+                <span>{item.label}</span>
+              </>
+            );
+
+            /*
+              The rating opens the same bar the hero's does — it is the one
+              figure here somebody will want to check, and on a page asking
+              for a phone call, "prove it" should be one tap rather than a
+              trip to Google and back.
+            */
+            return (
+              <li key={item.label}>
+                {"reviews" in item ? (
+                  <ReviewsTrigger
+                    className={styles.ratingTrigger}
+                    hint="Čítať recenzie"
+                    hintClassName={styles.ratingHint}
+                  >
+                    {body}
+                  </ReviewsTrigger>
+                ) : (
+                  body
+                )}
+              </li>
+            );
+          })}
         </ul>
       </section>
 
