@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
 import { ReviewsBar } from "./ReviewsBar";
-import { reviews } from "./reviewsContent";
+import { googleProfileUrl, reviewSummary, reviews } from "./reviewsContent";
 
 function renderBar(open = true) {
   const onClose = vi.fn();
@@ -100,6 +100,25 @@ describe("ReviewsBar", () => {
     await user.click(document.body);
 
     expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it("shows the count and the way to check it", () => {
+    renderBar();
+
+    expect(screen.getByText(reviewSummary.countLabel)).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /Všetky na Google/ }),
+    ).toHaveAttribute("href", googleProfileUrl!);
+  });
+
+  /*
+   * Slovak puts `zo` before "štyridsiatich" and `z` before most other counts,
+   * so the phrase is stored whole. Assembling it from a numeral is how a page
+   * ends up saying "z 42" out loud.
+   */
+  it("keeps the count's wording out of string assembly", () => {
+    expect(reviewSummary.countLabel).toBe("zo 42 recenzií");
+    expect(reviewSummary.countLabel).toContain(String(reviewSummary.count));
   });
 
   /* `localGuide` drives the badge, so it has to agree with the printed line. */

@@ -144,9 +144,7 @@ export function ReviewsBar({
           <span className={styles.summary}>
             <strong>{reviewSummary.average}</strong>
             <span className={styles.summaryLabel}>
-              {reviewSummary.count === null
-                ? "Google hodnotenie"
-                : `z ${reviewSummary.count} recenzií`}
+{reviewSummary.countLabel}
             </span>
           </span>
         </div>

@@ -56,7 +56,7 @@ export const reassurances: readonly {
   value: string;
   reviews?: true;
 }[] = [
-  { value: "4,5 ★", label: "hodnotenie na Google", reviews: true },
+  { value: "4,5 ★", label: "zo 42 recenzií na Google", reviews: true },
   { value: "od 3 rokov", label: "ošetrujeme aj deti" },
   { value: "Po–Št do 19:00", label: "otvorené aj po práci" },
   { value: "Zdarma", label: "parkovanie pri klinike" },
@@ -111,6 +111,21 @@ export const objections: readonly Objection[] = [
     answer:
       "Áno, od troch rokov. Prvá návšteva býva krátka a hlavne o tom, aby si " +
       "dieťa na ambulanciu zvyklo.",
+  },
+  {
+    /*
+     * Supplied by the clinic on 2026-09-03. Stated plainly rather than dressed
+     * up: a month is the ordinary wait at a private practice, and somebody
+     * deciding whether to ring would rather know it than find out later.
+     */
+    question: "Ako rýchlo sa dostanem na termín?",
+    answer:
+      "Objednať sa môžete hneď. Termín vám vieme dať spravidla do mesiaca — " +
+      "ak sa niečo uvoľní skôr, ozveme sa.",
+  },
+  {
+    question: "Dá sa platiť kartou?",
+    answer: "Áno, kartou aj v hotovosti. Platí sa až po ošetrení.",
   },
   {
     question: "Mám staré snímky od iného zubára.",

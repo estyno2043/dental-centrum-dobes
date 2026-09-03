@@ -266,17 +266,29 @@ export const reviews: readonly Review[] = [
 ];
 
 /**
- * The headline rating.
+ * The headline rating, as the clinic states it (2026-09-03).
  *
- * ⚠️ `average` matches the hero's trust strip and carries the same open
- * question: nothing in the repository records where 4,5 came from or when.
- * `count` stays null until the clinic supplies it — a review count is
- * checkable in one click, so a guessed one is caught immediately.
+ * `countLabel` carries the whole phrase rather than just the number, because
+ * Slovak puts `zo` before "štyridsiatich" and `z` before most other counts —
+ * assembling it from a numeral is how a page ends up saying "z 42" out loud.
+ *
+ * ⚠️ `average` still has no recorded source; it predates this file. It matches
+ * the hero's trust strip, and both should be checked against the listing when
+ * the count next changes.
  */
 export const reviewSummary = {
   average: "4,5",
-  count: null as number | null,
+  count: 42,
+  countLabel: "zo 42 recenzií",
 } as const;
 
-/** ⚠️ The clinic's Google listing. Null until supplied; never guessed. */
-export const googleProfileUrl: string | null = null;
+/**
+ * The clinic's own Google listing, supplied 2026-09-03.
+ *
+ * A `share.google` link is Google's own share format and resolves to the
+ * listing. It is the reader's one way to check that any of this is real, so it
+ * is never guessed — before it existed the bar simply rendered without the
+ * link.
+ */
+export const googleProfileUrl: string | null =
+  "https://share.google/iWiOykdKvQOGmW1G2";
