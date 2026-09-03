@@ -1,0 +1,157 @@
+/*
+ * Picks up the tone the team section ends on and darkens from there, so the
+ * page closes on ink rather than fading out on the same pale it has held for
+ * three sections. It is the last thing read; it should feel like a full stop.
+ */
+
+.band {
+  padding: clamp(70px, 10vw, 130px) clamp(20px, 5vw, 64px)
+    clamp(80px, 11vw, 140px);
+  background: var(--ink);
+  color: var(--porcelain);
+}
+
+.inner {
+  max-width: 66rem;
+  margin: 0 auto;
+}
+
+.intro {
+  max-width: 36rem;
+  margin-bottom: clamp(38px, 5vw, 60px);
+}
+
+.eyebrow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 0 0 14px;
+  color: var(--taupe);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.eyebrowRule {
+  display: block;
+  width: 34px;
+  height: 1px;
+  background: var(--taupe);
+}
+
+.headline {
+  margin: 0 0 14px;
+  font-size: clamp(1.7rem, 3.6vw, 2.7rem);
+  font-weight: 600;
+  letter-spacing: -0.032em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.lead {
+  margin: 0;
+  color: rgb(250 249 246 / 66%);
+  font-size: clamp(0.94rem, 1.4vw, 1.05rem);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/*
+ * Four across on a wide screen, two on a tablet, one on a phone. Never three:
+ * a four-item list broken into 3 + 1 leaves an orphan that reads as an error.
+ */
+.prices {
+  display: grid;
+  padding: 0;
+  margin: 0 0 clamp(34px, 4.5vw, 52px);
+  gap: 1px;
+  background: rgb(250 249 246 / 14%);
+  grid-template-columns: repeat(4, 1fr);
+  list-style: none;
+}
+
+.price {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: clamp(20px, 2.6vw, 30px) clamp(16px, 2vw, 24px);
+  background: var(--ink);
+}
+
+.amount {
+  color: var(--porcelain);
+  font-size: clamp(1.45rem, 2.8vw, 2.05rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.label {
+  color: rgb(250 249 246 / 58%);
+  font-size: 0.79rem;
+  line-height: 1.4;
+  text-wrap: pretty;
+}
+
+/* The pill idiom the hero's buttons use, in the one place it closes the page. */
+.more {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  padding: 15px 26px;
+  border: 1px solid rgb(174 155 126 / 70%);
+  border-radius: 999px;
+  color: var(--porcelain);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    background-color 0.35s var(--ease),
+    border-color 0.35s var(--ease),
+    color 0.35s var(--ease);
+}
+
+.more svg {
+  transition: transform 0.35s var(--ease);
+}
+
+.more:hover,
+.more:focus-visible {
+  border-color: var(--taupe);
+  background: var(--taupe);
+  color: var(--ink);
+}
+
+.more:hover svg,
+.more:focus-visible svg {
+  transform: translateX(4px);
+}
+
+.more:focus-visible {
+  outline: 2px solid var(--porcelain);
+  outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .prices {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .prices {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .more,
+  .more svg {
+    transition: none;
+  }
+}

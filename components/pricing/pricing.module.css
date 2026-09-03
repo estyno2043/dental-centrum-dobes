@@ -1,0 +1,284 @@
+/*
+ * The price list. Cream ground, dark type — the same pale family as the
+ * service pages, because this is a reading page and not a scene.
+ */
+
+.page {
+  min-height: 100vh;
+  padding: clamp(96px, 12vw, 150px) clamp(20px, 5vw, 64px) clamp(70px, 9vw, 120px);
+  background: #f4f0e8;
+  color: var(--ink);
+}
+
+.inner {
+  max-width: 62rem;
+  margin: 0 auto;
+}
+
+.kicker {
+  margin: 0 0 10px;
+  color: var(--taupe-deep);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.headline {
+  margin: 0 0 12px;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.04;
+}
+
+.lead {
+  max-width: 34rem;
+  margin: 0 0 clamp(28px, 4vw, 44px);
+  color: rgb(38 38 42 / 72%);
+  font-size: clamp(0.95rem, 1.5vw, 1.08rem);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* ------------------------------------------------------------- controls --- */
+
+/*
+ * Sticky, because the search field is the whole point of the page and a list
+ * this long puts it off screen within one flick of the wheel.
+ */
+.controls {
+  position: sticky;
+  z-index: 5;
+  top: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 0;
+  margin-bottom: 4px;
+  background: linear-gradient(#f4f0e8 78%, rgb(244 240 232 / 0%));
+}
+
+.tabs {
+  display: flex;
+  gap: 3px;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgb(138 115 88 / 12%);
+}
+
+.tab {
+  padding: 8px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: rgb(38 38 42 / 62%);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition:
+    background-color 0.3s var(--ease),
+    color 0.3s var(--ease);
+}
+
+.tab[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--porcelain);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--taupe-deep);
+  outline-offset: 2px;
+}
+
+.search {
+  position: relative;
+  display: flex;
+  min-width: 15rem;
+  flex: 1;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 14px;
+  color: rgb(38 38 42 / 42%);
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 40px;
+  border: 1px solid rgb(138 115 88 / 30%);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 70%);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.92rem;
+}
+
+.searchInput::placeholder {
+  color: rgb(38 38 42 / 45%);
+}
+
+.searchInput:focus-visible {
+  border-color: var(--taupe-deep);
+  outline: 2px solid rgb(138 115 88 / 35%);
+  outline-offset: 1px;
+}
+
+/* The browser's own clear affordance, replaced by one that matches. */
+.searchInput::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.clear {
+  position: absolute;
+  right: 10px;
+  display: grid;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(138 115 88 / 16%);
+  color: rgb(38 38 42 / 70%);
+  cursor: pointer;
+  place-items: center;
+}
+
+.clear:hover {
+  background: rgb(138 115 88 / 28%);
+}
+
+.count {
+  margin: 0 0 clamp(20px, 3vw, 30px);
+  color: rgb(38 38 42 / 55%);
+  font-size: 0.8rem;
+}
+
+.empty {
+  padding: 40px 0;
+  color: rgb(38 38 42 / 70%);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.empty a {
+  color: var(--ink);
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
+
+/* --------------------------------------------------------------- groups --- */
+
+.groups {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(34px, 5vw, 54px);
+}
+
+.groupName {
+  margin: 0 0 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgb(138 115 88 / 28%);
+  font-size: clamp(1.05rem, 1.9vw, 1.3rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.rows {
+  margin: 0;
+}
+
+/*
+ * A dotted leader between name and price. It is the oldest solution to the
+ * oldest problem with a price list — at arm's length, on a phone, the eye
+ * loses which number belongs to which line — and it costs one pseudo-element.
+ */
+.row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 9px 0;
+}
+
+.row + .row {
+  border-top: 1px solid rgb(138 115 88 / 14%);
+}
+
+.row dt {
+  color: rgb(28 28 31 / 88%);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+/*
+ * `order` because a pseudo-element joins a flex row as its *last* item, which
+ * put the dots after the price rather than between it and the label.
+ */
+.row::after {
+  flex: 1;
+  min-width: 18px;
+  order: 1;
+  border-bottom: 1px dotted rgb(138 115 88 / 45%);
+  content: "";
+  transform: translateY(-3px);
+}
+
+.row dd {
+  order: 2;
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.92rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* No number in the source. Says so, rather than showing an invented one. */
+.row dd[data-missing="true"] {
+  color: rgb(38 38 42 / 52%);
+  font-weight: 500;
+}
+
+/* --------------------------------------------------------------- legend --- */
+
+.legend {
+  margin-top: clamp(44px, 6vw, 70px);
+  padding-top: clamp(22px, 3vw, 32px);
+  border-top: 1px solid rgb(138 115 88 / 28%);
+  color: rgb(38 38 42 / 62%);
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+.legend p + p {
+  margin-top: 8px;
+}
+
+.legend strong {
+  color: var(--ink);
+}
+
+.visuallyHidden {
+  position: absolute;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (max-width: 620px) {
+  .controls {
+    gap: 10px;
+  }
+
+  .search {
+    order: -1;
+    width: 100%;
+    flex-basis: 100%;
+  }
+}
