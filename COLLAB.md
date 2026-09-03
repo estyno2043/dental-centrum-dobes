@@ -5,15 +5,40 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: Desktop hover menu published to `main` — no active task
+- Status: GSAP mobile gallery path fix approved for publication
 - Owner: —
-- Branch: —
-- Task: none in progress. See the dated log entry below for the desktop hover
-  menu's final state.
+- Branch: `codex/mobile-clinicstory-performance`
+- Task: replace the direct mobile frame-1-to-frame-7 snap with one GSAP
+  ScrollTrigger timeline that visibly traverses all seven gallery frames,
+  preserves the gallery-to-jaw handoff, and keeps native document scrolling.
+  User approved publication to `main` after localhost review.
+  Local verification: 215 tests, lint, TypeScript, production build,
+  jaw-sequence validation, `git diff --check`, and changed-file credential scan
+  pass. Headless Chrome checks at 390×844, 375×812, and 1440×900 show the
+  complete progressive gallery path, centered detail endpoint, sticky `top: 0`,
+  zero horizontal page overflow, no console errors, no Next error overlay, and
+  no long tasks in a 120-frame mobile scroll run (p95 9.2 ms). One pre-existing
+  production audit advisory remains in transitive `nanoid@3.3.17`; unrelated to
+  GSAP and not auto-updated in this visual branch.
 
 ## File Reservations
 
-- No active write reservations.
+- GSAP mobile gallery repair released `package.json`, `package-lock.json`,
+  `components/home/ClinicStory.tsx`, `components/home/ClinicStory.test.tsx`,
+  `components/home/clinicStoryMotion.ts`,
+  `components/home/clinicStoryMotion.test.ts`,
+  `components/home/clinicStory.module.css`,
+  `vitest.setup.ts`,
+  `docs/superpowers/plans/2026-08-28-mobile-clinicstory-gsap.md`, and
+  `COLLAB.md` after approval and full verification.
+
+- Mobile ClinicStory performance work released `components/home/ClinicStory.tsx`,
+  `components/home/ClinicStory.test.tsx`, `components/home/clinicStory.module.css`,
+  and `COLLAB.md`. `components/team/**` was not changed.
+
+- No active write reservations. The Netlify Forms runtime-v5 migration released
+  `app/layout.tsx`, `public/__forms.html`, both booking forms, their tests, and
+  `COLLAB.md` after full verification.
 
 - The desktop hover menu released all of its files. `components/hero/DesktopMenu.tsx`,
   `DesktopMenu.test.tsx`, `SiteHeader.tsx`, `heroContent.ts`, and
@@ -1074,6 +1099,47 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   No files reserved. Next: the remaining service pages one at a time, and the
   redirects from `/problemy/*` onto them together with repointing the jaw's
   buttons, so the site is never in a state where they aim at nothing.
+
+- 2026-08-26 — Codex fixed the Netlify Forms build failure introduced by Next
+  Runtime v5. The runtime intentionally rejects `data-netlify` forms that exist
+  only in App Router React output because that output is not deploy-time static
+  HTML. `public/__forms.html` now owns the complete `jaw-appointment` detection
+  schema, including the service field, while `JawAppointmentForm` and
+  `ServiceBooking` post URL-encoded submissions to `/__forms.html`. The hidden
+  detector was removed from `app/layout.tsx` and the live forms no longer carry
+  misleading deploy-time detection attributes.
+
+  The failure was reproduced with the installed Netlify Next adapter before
+  the change. Verification after the change: 204 tests, lint, TypeScript,
+  production Next.js 16.3.0 build, Netlify Build 36.4.2 with Next Runtime
+  5.15.13 in offline production context, `git diff --check`, and credential
+  scan all passed. Generated `.netlify/` output was moved outside the worktree
+  after verification; it is ignored and reproducible. No visual UI changed.
+  Commit `1397786` was pushed to the feature branch and fast-forwarded onto
+  both `main` and `develop`. Files released. GitHub reports no check run,
+  deployment record, or Netlify URL for that commit, so only the complete local
+  Netlify production build is currently observable from this repository.
+
+- 2026-08-27 — Codex completed the mobile ClinicStory performance pass on
+  `codex/mobile-clinicstory-performance`. The gallery no longer writes
+  `scrollLeft` while native momentum is active; the seventh-photo snap moves
+  the inner track with a composited transform and preserves the captured native
+  scroll position. Geometry is batched and cached behind `ResizeObserver`,
+  continuous story progress no longer re-renders the jaw subtree, coarse mobile
+  scroll samples are critically damped, and the photograph handoff is FLIP
+  transform-only. Mobile drops the full-screen blur; desktop blur is capped at
+  8px. `components/team/**` was not changed.
+
+  Before/after probes: layout reads per scroll event `6 → 0`, programmatic
+  scroll writes `1 → 0`, jaw subtree renders for three continuous samples
+  `3 → 0`, and meaningful `will-change` elements at 390px `20 → 19`.
+  Browser checks at 390×844 and 1440×900 found zero horizontal page overflow,
+  sticky `top: 0` through active phases, preserved mobile `scrollLeft`, centered
+  seventh frame at snap completion, and zero console errors. Verification:
+  210 tests, lint, TypeScript, production build of 20 routes, jaw-sequence
+  metadata validation, `git diff --check`, and changed-file credential scan.
+  Files released. Next: real iOS/Android touch-inertia and frame-rate review on
+  `http://localhost:3000/`; do not merge or push to `main` before approval.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,

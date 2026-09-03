@@ -74,7 +74,7 @@ export function JawAppointmentForm({ zone, problem }: JawAppointmentFormProps) {
     });
 
     try {
-      const response = await fetch("/", {
+      const response = await fetch("/__forms.html", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body,
@@ -99,9 +99,7 @@ export function JawAppointmentForm({ zone, problem }: JawAppointmentFormProps) {
   return (
     <form
       className={styles.appointmentForm}
-      action="/"
-      data-netlify="true"
-      data-netlify-honeypot="bot-field"
+      action="/__forms.html"
       data-testid="jaw-appointment-form"
       method="POST"
       name="jaw-appointment"

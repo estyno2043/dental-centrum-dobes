@@ -3,23 +3,23 @@
 import {
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
   type CSSProperties,
   type JSX,
 } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import { useMediaQuery } from "../hero/useMediaQuery";
 import {
   DESKTOP_STORY_SCROLL_VH,
-  MOBILE_PHASES,
   MOBILE_STORY_SCROLL_VH,
   mapClinicStoryMotion,
-  stepCriticallyDamped,
+  type ClinicStoryPhase,
   type ClinicStoryProfile,
   type ClinicStoryMotionState,
-  type DampedMotionState,
 } from "./clinicStoryMotion";
 import { JawFrameSequence } from "./jaw/JawFrameSequence";
 import { JAW_DISCLAIMER, JAW_ZONES } from "./jaw/jawContent";
@@ -35,6 +35,9 @@ const reducedMotionQuery = "(prefers-reduced-motion: reduce)";
 const wideViewportQuery = "(min-width: 768px)";
 const analyticsConsent = false;
 const REVEAL_TOTAL_MS = 720;
+const MOBILE_SCRUB_SECONDS = 0.18;
+
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const detailFrame = (() => {
   const frame = photoFrames.find((candidate) => candidate.id === "detail");
@@ -44,12 +47,27 @@ const detailFrame = (() => {
 
 type RenderMotion = Readonly<{
   state: ClinicStoryMotionState;
-  snap: number;
 }>;
 
-function clamp01(value: number): number {
-  return Math.min(1, Math.max(0, value));
-}
+type RenderFlags = Readonly<{
+  cueVisible: boolean;
+  interactiveWindow: boolean;
+  jawVisible: boolean;
+  mapStarted: boolean;
+  phase: ClinicStoryPhase;
+  zoneVisible: boolean;
+  zonesVisible: boolean;
+}>;
+
+type StoryLayout = Readonly<{
+  finalHeight: number;
+  finalLeft: number;
+  finalTop: number;
+  finalWidth: number;
+  trackTravel: number;
+  viewportHeight: number;
+  viewportWidth: number;
+}>;
 
 function getProfile(isWideViewport: boolean): ClinicStoryProfile {
   return isWideViewport ? "desktop" : "mobile";
@@ -70,42 +88,31 @@ function mapRenderMotion(
       exactEndDrawn,
       revealComplete,
     }),
-    snap:
-      profile === "mobile"
-        ? clamp01(
-            (progressVh - MOBILE_PHASES.galleryEnd) /
-              (MOBILE_PHASES.snapEnd - MOBILE_PHASES.galleryEnd),
-          )
-        : 1,
   };
 }
 
-function storyScrollVh(section: HTMLElement): number {
-  return (
-    Math.max(0, -section.getBoundingClientRect().top) /
-    Math.max(1, window.innerHeight / 100)
-  );
+function renderFlagsFor(state: ClinicStoryMotionState): RenderFlags {
+  return {
+    cueVisible: state.cueOpacity > 0.01,
+    interactiveWindow: state.phase === "interactive",
+    jawVisible: state.handoff > 0 || state.sequenceProgress > 0,
+    mapStarted: state.mapReveal > 0,
+    phase: state.phase,
+    zoneVisible: state.teaseProgress > 0 || state.zonesVisible,
+    zonesVisible: state.zonesVisible,
+  };
 }
 
-function writeHandoffGeometry(
-  section: HTMLElement,
-  finalFrame: HTMLElement,
-  detail: number,
-  handoff: number,
-): void {
-  const rect = finalFrame.getBoundingClientRect();
-  const inverse = 1 - detail;
-  section.style.setProperty("--handoff-left", `${rect.left * inverse}px`);
-  section.style.setProperty("--handoff-top", `${rect.top * inverse}px`);
-  section.style.setProperty(
-    "--handoff-width",
-    `${rect.width + (window.innerWidth - rect.width) * detail}px`,
+function sameRenderFlags(left: RenderFlags, right: RenderFlags): boolean {
+  return (
+    left.cueVisible === right.cueVisible &&
+    left.interactiveWindow === right.interactiveWindow &&
+    left.jawVisible === right.jawVisible &&
+    left.mapStarted === right.mapStarted &&
+    left.phase === right.phase &&
+    left.zoneVisible === right.zoneVisible &&
+    left.zonesVisible === right.zonesVisible
   );
-  section.style.setProperty(
-    "--handoff-height",
-    `${rect.height + (window.innerHeight - rect.height) * detail}px`,
-  );
-  section.style.setProperty("--handoff-blur", String(handoff));
 }
 
 export function ClinicStory(): JSX.Element {
@@ -113,28 +120,20 @@ export function ClinicStory(): JSX.Element {
   const trackRef = useRef<HTMLUListElement>(null);
   const finalFrameRef = useRef<HTMLLIElement>(null);
   const targetProgressRef = useRef(0);
-  const directionRef = useRef<-1 | 0 | 1>(0);
   const rawZoneVisibleRef = useRef(false);
   const [sequenceFailed, setSequenceFailed] = useState(false);
   const [exactEndDrawn, setExactEndDrawn] = useState(false);
   const [revealComplete, setRevealComplete] = useState(false);
   const [targetFrame, setTargetFrame] = useState(1);
   const [direction, setDirection] = useState<-1 | 0 | 1>(0);
-  const [progressVh, setProgressVh] = useState(0);
   const prefersReducedMotion = useMediaQuery(reducedMotionQuery, true);
   const isWideViewport = useMediaQuery(wideViewportQuery, false);
   const profile = getProfile(isWideViewport);
   const manifest = jawSequenceManifests[profile as JawSequenceProfile];
-  const renderMotion = useMemo(
-    () =>
-      mapRenderMotion(
-        progressVh,
-        profile,
-        manifest.frameCount,
-        exactEndDrawn || sequenceFailed || prefersReducedMotion,
-        revealComplete || sequenceFailed || prefersReducedMotion,
-      ),
-    [exactEndDrawn, manifest.frameCount, prefersReducedMotion, profile, progressVh, revealComplete, sequenceFailed],
+  const [renderFlags, setRenderFlags] = useState<RenderFlags>(() =>
+    renderFlagsFor(
+      mapRenderMotion(0, profile, manifest.frameCount, false, false).state,
+    ),
   );
 
   const onPermanentFailure = useCallback(() => {
@@ -150,7 +149,7 @@ export function ClinicStory(): JSX.Element {
   );
 
   useEffect(() => {
-    if (prefersReducedMotion || sequenceFailed || !renderMotion.state.zonesVisible || !exactEndDrawn) {
+    if (prefersReducedMotion || sequenceFailed || !renderFlags.zonesVisible || !exactEndDrawn) {
       const reset = window.setTimeout(() => {
         setRevealComplete(prefersReducedMotion || sequenceFailed);
       }, 0);
@@ -166,139 +165,166 @@ export function ClinicStory(): JSX.Element {
       window.clearTimeout(begin);
       if (completion !== undefined) window.clearTimeout(completion);
     };
-  }, [exactEndDrawn, prefersReducedMotion, renderMotion.state.zonesVisible, sequenceFailed]);
+  }, [exactEndDrawn, prefersReducedMotion, renderFlags.zonesVisible, sequenceFailed]);
 
-  useEffect(() => {
+  useGSAP(() => {
     const section = sectionRef.current;
     const track = trackRef.current;
     const finalFrame = finalFrameRef.current;
     if (!section || !track || !finalFrame) return;
 
     const currentManifest = jawSequenceManifests[profile as JawSequenceProfile];
-    let disposed = false;
-    let rafId: number | undefined;
-    let lastTime = performance.now();
-    let damped: DampedMotionState = { value: 0, velocity: 0 };
-    let mobileSnapStart: number | undefined;
-    let pageVisible = document.visibilityState !== "hidden";
+    const storyEnd = profile === "mobile" ? MOBILE_STORY_SCROLL_VH : DESKTOP_STORY_SCROLL_VH;
+    const playhead = { progressVh: 0 };
+    let layout: StoryLayout = {
+      finalHeight: 1,
+      finalLeft: 0,
+      finalTop: 0,
+      finalWidth: 1,
+      trackTravel: 0,
+      viewportHeight: Math.max(1, window.innerHeight),
+      viewportWidth: Math.max(1, window.innerWidth),
+    };
 
-    const write = () => {
-      const currentProgress = storyScrollVh(section);
-      const raw = mapRenderMotion(
-        currentProgress,
+    const applyVisualMotion = (motion: RenderMotion) => {
+      const trackX = -layout.trackTravel * motion.state.pan;
+      const currentFinalLeft = layout.finalLeft + trackX;
+      const handoffX =
+        currentFinalLeft + layout.finalWidth / 2 - layout.viewportWidth / 2;
+      const handoffY =
+        layout.finalTop + layout.finalHeight / 2 - layout.viewportHeight / 2;
+
+      section.style.setProperty("--grow", String(motion.state.grow));
+      section.style.setProperty("--pan", String(motion.state.pan));
+      section.style.setProperty("--detail", String(motion.state.detail));
+      section.style.setProperty("--handoff", String(motion.state.handoff));
+      section.style.setProperty("--sequence-progress", String(motion.state.sequenceProgress));
+      section.style.setProperty("--cue-opacity", String(motion.state.cueOpacity));
+      section.style.setProperty("--tease", String(motion.state.teaseProgress));
+      section.style.setProperty("--map-reveal", String(motion.state.mapReveal));
+      section.style.setProperty("--exit", String(motion.state.exit));
+      section.style.setProperty(
+        "--jaw-opacity",
+        String(motion.state.handoff * (1 - motion.state.exit)),
+      );
+      section.style.setProperty("--handoff-x", `${handoffX}px`);
+      section.style.setProperty("--handoff-y", `${handoffY}px`);
+      section.style.setProperty(
+        "--handoff-scale-x",
+        String(layout.finalWidth / layout.viewportWidth),
+      );
+      section.style.setProperty(
+        "--handoff-scale-y",
+        String(layout.finalHeight / layout.viewportHeight),
+      );
+      section.style.setProperty("--handoff-blur", String(motion.state.handoff));
+      gsap.set(track, { force3D: true, x: trackX });
+    };
+
+    const updateRenderFlags = (motion: RenderMotion) => {
+      const nextFlags = renderFlagsFor(motion.state);
+      setRenderFlags((current) =>
+        sameRenderFlags(current, nextFlags) ? current : nextFlags,
+      );
+
+      if (!motion.state.zonesVisible && rawZoneVisibleRef.current) {
+        setExactEndDrawn(false);
+        setRevealComplete(false);
+      }
+      rawZoneVisibleRef.current = motion.state.zonesVisible;
+    };
+
+    const measure = () => {
+      /* All layout reads stay together. ScrollTrigger runs this only on refresh. */
+      const viewportWidth = Math.max(1, window.innerWidth);
+      const viewportHeight = Math.max(1, window.innerHeight);
+      const finalLeft = finalFrame.offsetLeft;
+      const finalWidth = Math.max(1, finalFrame.offsetWidth);
+      const finalTop = track.offsetTop;
+      const finalHeight = Math.max(1, track.offsetHeight);
+      const centeredFinalLeft = (viewportWidth - finalWidth) / 2;
+
+      layout = {
+        finalHeight,
+        finalLeft,
+        finalTop,
+        finalWidth,
+        trackTravel: Math.max(0, finalLeft - centeredFinalLeft),
+        viewportHeight,
+        viewportWidth,
+      };
+
+      /* Writes happen only after every measurement above has completed. */
+      section.style.setProperty("--travel", `${layout.trackTravel}px`);
+    };
+
+    const sync = () => {
+      const motion = mapRenderMotion(
+        playhead.progressVh,
         profile,
         currentManifest.frameCount,
         false,
         false,
       );
       const previousTarget = targetProgressRef.current;
-      const nextTarget = raw.state.sequenceProgress;
+      const nextTarget = motion.state.sequenceProgress;
 
       targetProgressRef.current = nextTarget;
       const nextDirection: -1 | 0 | 1 =
         nextTarget > previousTarget ? 1 : nextTarget < previousTarget ? -1 : 0;
-      directionRef.current = nextDirection;
-      setDirection(nextDirection);
-      setProgressVh(currentProgress);
-
-      section.style.setProperty("--grow", String(raw.state.grow));
-      section.style.setProperty("--pan", String(raw.state.pan));
-      section.style.setProperty("--snap", String(raw.snap));
-      section.style.setProperty("--detail", String(raw.state.detail));
-      section.style.setProperty("--handoff", String(raw.state.handoff));
-      section.style.setProperty("--sequence-progress", String(raw.state.sequenceProgress));
-      section.style.setProperty("--cue-opacity", String(raw.state.cueOpacity));
-      section.style.setProperty("--tease", String(raw.state.teaseProgress));
-      section.style.setProperty("--map-reveal", String(raw.state.mapReveal));
-      section.style.setProperty("--exit", String(raw.state.exit));
-      section.style.setProperty(
-        "--jaw-opacity",
-        String(raw.state.handoff * (1 - raw.state.exit)),
-      );
-      section.style.setProperty(
-        "--travel",
-        `${Math.max(0, track.scrollWidth - window.innerWidth)}px`,
-      );
-
-      if (profile === "mobile") {
-        if (raw.snap > 0 && mobileSnapStart === undefined) mobileSnapStart = track.scrollLeft;
-        if (raw.snap === 0) mobileSnapStart = undefined;
-        if (mobileSnapStart !== undefined) {
-          const targetScroll =
-            finalFrame.offsetLeft - (window.innerWidth - finalFrame.offsetWidth) / 2;
-          track.scrollLeft = mobileSnapStart + (targetScroll - mobileSnapStart) * raw.snap;
-        }
-      }
-
-      writeHandoffGeometry(section, finalFrame, raw.state.detail, raw.state.handoff);
-
-      if (!raw.state.zonesVisible && rawZoneVisibleRef.current) {
-        setExactEndDrawn(false);
-        setRevealComplete(false);
-      }
-      rawZoneVisibleRef.current = raw.state.zonesVisible;
-
-      if (!prefersReducedMotion && pageVisible && rafId === undefined) {
-        lastTime = performance.now();
-        rafId = window.requestAnimationFrame(tick);
-      }
-    };
-
-    const tick = (now: number) => {
-      rafId = undefined;
-      if (disposed || !pageVisible || prefersReducedMotion) return;
-      const deltaSeconds = Math.max(0, (now - lastTime) / 1000);
-      lastTime = now;
-      damped = stepCriticallyDamped(damped, targetProgressRef.current, deltaSeconds, 0.18);
+      setDirection((current) => (current === nextDirection ? current : nextDirection));
       const nextFrame =
-        1 + Math.round(damped.value * (currentManifest.frameCount - 1));
+        1 + Math.round(nextTarget * (currentManifest.frameCount - 1));
       setTargetFrame((current) => (current === nextFrame ? current : nextFrame));
-
-      if (
-        Math.abs(damped.value - targetProgressRef.current) > 0.00005 ||
-        Math.abs(damped.velocity) > 0.001
-      ) {
-        rafId = window.requestAnimationFrame(tick);
-      }
+      applyVisualMotion(motion);
+      updateRenderFlags(motion);
     };
 
-    const onVisibilityChange = () => {
-      pageVisible = document.visibilityState !== "hidden";
-      if (pageVisible) write();
-    };
+    measure();
+    sync();
 
-    write();
-    window.addEventListener("scroll", write, { passive: true });
-    window.addEventListener("resize", write);
-    document.addEventListener("visibilitychange", onVisibilityChange);
+    if (prefersReducedMotion) return;
 
-    return () => {
-      disposed = true;
-      if (rafId !== undefined) window.cancelAnimationFrame(rafId);
-      window.removeEventListener("scroll", write);
-      window.removeEventListener("resize", write);
-      document.removeEventListener("visibilitychange", onVisibilityChange);
-    };
-  }, [prefersReducedMotion, profile]);
+    const timeline = gsap.timeline({ paused: true, onUpdate: sync });
+    timeline.to(playhead, {
+      duration: storyEnd,
+      ease: "none",
+      progressVh: storyEnd,
+    });
 
-  const jawVisible =
-    renderMotion.state.handoff > 0 ||
-    renderMotion.state.sequenceProgress > 0 ||
-    sequenceFailed ||
-    prefersReducedMotion;
-  const failureZoneReady = sequenceFailed && renderMotion.state.zonesVisible;
+    ScrollTrigger.create({
+      animation: timeline,
+      end: "bottom top",
+      invalidateOnRefresh: true,
+      onRefresh: () => {
+        measure();
+        sync();
+      },
+      scrub: profile === "mobile" ? MOBILE_SCRUB_SECONDS : true,
+      start: "top top",
+      trigger: section,
+    });
+  }, {
+    dependencies: [prefersReducedMotion, profile],
+    revertOnUpdate: true,
+    scope: sectionRef,
+  });
+
+  const jawVisible = renderFlags.jawVisible || sequenceFailed || prefersReducedMotion;
+  const failureZoneReady = sequenceFailed && renderFlags.zonesVisible;
   const zoneVisible =
-    renderMotion.state.teaseProgress > 0 ||
-    renderMotion.state.zonesVisible ||
+    renderFlags.zoneVisible ||
     failureZoneReady ||
     prefersReducedMotion;
   const zoneInteractive =
-    renderMotion.state.interactive || failureZoneReady || prefersReducedMotion;
+    (renderFlags.interactiveWindow && exactEndDrawn && revealComplete) ||
+    failureZoneReady ||
+    prefersReducedMotion;
   const mapPresentation: JawMapPresentation = prefersReducedMotion || zoneInteractive
     ? "interactive"
-    : renderMotion.state.phase === "tease"
+    : renderFlags.phase === "tease"
       ? "tease"
-      : renderMotion.state.mapReveal > 0 || renderMotion.state.zonesVisible
+      : renderFlags.mapStarted || renderFlags.zonesVisible
         ? "reveal"
         : "hidden";
 
@@ -324,34 +350,40 @@ export function ClinicStory(): JSX.Element {
             </h2>
           </header>
 
-          <ul className={styles.track} ref={trackRef} data-native-swipe="true">
-            {photoFrames.map((frame) => (
-              <li
-                className={styles.frame}
-                data-frame-id={frame.id}
-                data-gallery-frame="true"
-                data-testid="clinic-frame"
-                key={frame.id}
-                ref={frame.id === detailFrame.id ? finalFrameRef : undefined}
-                style={{ "--ratio": frame.ratio } as CSSProperties}
-              >
-                {frame.src ? (
-                  // eslint-disable-next-line @next/next/no-img-element -- static pre-cropped clinic asset.
-                  <img
-                    alt={`${frame.label} — Dental Centrum Dobeš`}
-                    className={styles.photo}
-                    decoding="async"
-                    fetchPriority="low"
-                    src={frame.src}
-                  />
-                ) : (
-                  <div className={styles.placeholder}>
-                    <span className={styles.placeholderLabel}>{frame.label}</span>
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
+          <div
+            className={styles.trackViewport}
+            data-native-swipe={prefersReducedMotion ? "true" : "false"}
+            data-testid="clinic-track-viewport"
+          >
+            <ul className={styles.track} ref={trackRef}>
+              {photoFrames.map((frame) => (
+                <li
+                  className={styles.frame}
+                  data-frame-id={frame.id}
+                  data-gallery-frame="true"
+                  data-testid="clinic-frame"
+                  key={frame.id}
+                  ref={frame.id === detailFrame.id ? finalFrameRef : undefined}
+                  style={{ "--ratio": frame.ratio } as CSSProperties}
+                >
+                  {frame.src ? (
+                    // eslint-disable-next-line @next/next/no-img-element -- static pre-cropped clinic asset.
+                    <img
+                      alt={`${frame.label} — Dental Centrum Dobeš`}
+                      className={styles.photo}
+                      decoding="async"
+                      fetchPriority="low"
+                      src={frame.src}
+                    />
+                  ) : (
+                    <div className={styles.placeholder}>
+                      <span className={styles.placeholderLabel}>{frame.label}</span>
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
         <picture className={styles.handoffPicture} data-frame-id={detailFrame.id} data-testid="clinic-handoff">
@@ -388,7 +420,7 @@ export function ClinicStory(): JSX.Element {
                 visible={zoneVisible}
               />
             </div>
-            {renderMotion.state.cueOpacity > 0.01 ? (
+            {renderFlags.cueVisible ? (
               /*
                 A scroll prompt, not a spinner.
 

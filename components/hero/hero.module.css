@@ -1536,3 +1536,26 @@
   outline-offset: 6px;
   border-radius: 4px;
 }
+
+/*
+ * The mobile menu is only ever reached by touch, so its rows had no pressed
+ * state at all — the panel's own links were the one place a tap produced
+ * nothing before the page changed under it.
+ *
+ * Scoped to `any-hover: none` rather than to the breakpoint: the panel also
+ * opens on a small laptop window, where hover exists and the taupe fill
+ * already answers the pointer.
+ */
+@media (any-hover: none) {
+  .mobileMenuLink,
+  .mobileMenuTour,
+  .mobileMenuPhone {
+    transition: transform 0.12s var(--ease);
+  }
+
+  .mobileMenuLink:active,
+  .mobileMenuTour:active,
+  .mobileMenuPhone:active {
+    transform: scale(0.97);
+  }
+}

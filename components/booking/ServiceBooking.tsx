@@ -27,9 +27,9 @@ export type ServiceBookingProps = Readonly<{
  * neither. Folding them together is worth doing once the remaining service
  * pages exist and the shape they need is settled.
  *
- * ⚠️ Netlify Forms collects this at build time from the prerendered HTML, so
- * nothing arrives anywhere until the site is actually deployed to Netlify.
- * Locally the submission will fail, and that is expected.
+ * Netlify detects the shared schema from `public/__forms.html` at deploy time;
+ * this client form posts to that static target. Locally the submission will
+ * fail unless a compatible form endpoint is running, and that is expected.
  */
 export function ServiceBooking({ service }: ServiceBookingProps): JSX.Element {
   const [name, setName] = useState("");
@@ -63,7 +63,7 @@ export function ServiceBooking({ service }: ServiceBookingProps): JSX.Element {
     });
 
     try {
-      const response = await fetch("/", {
+      const response = await fetch("/__forms.html", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body,
@@ -86,10 +86,8 @@ export function ServiceBooking({ service }: ServiceBookingProps): JSX.Element {
 
   return (
     <form
-      action="/"
+      action="/__forms.html"
       className={styles.form}
-      data-netlify="true"
-      data-netlify-honeypot="bot-field"
       data-testid="service-booking-form"
       method="POST"
       name="jaw-appointment"

@@ -75,13 +75,13 @@ describe("mapClinicStoryMotion gallery-first contract", () => {
       storyEnd: 1030,
     });
     expect(MOBILE_PHASES).toEqual({
-      galleryEnd: 90,
-      snapEnd: 130,
-      detailDwellEnd: 170,
-      handoffEnd: 200,
-      openingEnd: 400,
-      teaseEnd: 455,
-      mapEnd: 510,
+      galleryEnd: 240,
+      snapEnd: 300,
+      detailDwellEnd: 340,
+      handoffEnd: 370,
+      openingEnd: 530,
+      teaseEnd: 570,
+      mapEnd: 610,
       interactiveEnd: 680,
       storyEnd: 780,
     });
@@ -166,14 +166,30 @@ describe("mapClinicStoryMotion gallery-first contract", () => {
     expect(DESKTOP_PHASES.openingEnd - DESKTOP_PHASES.handoffEnd).toBeLessThan(360);
   });
 
-  test("maps mobile snap, detail dwell, faster opening, map, and exit", () => {
-    expect(mapMobile(89.99)).toMatchObject({ phase: "gallery", detail: 0, sequenceProgress: 0 });
-    expect(mapMobile(110)).toMatchObject({ phase: "detail", detail: 0.5, sequenceProgress: 0 });
-    expect(mapMobile(169.99)).toMatchObject({ phase: "detail", detail: 1, handoff: 0 });
-    expect(mapMobile(200)).toMatchObject({ phase: "opening", handoff: 1, sequenceProgress: 0 });
-    expect(mapMobile(300)).toMatchObject({ phase: "opening", sequenceProgress: 0.5, targetFrame: 31 });
-    expect(mapMobile(455)).toMatchObject({ phase: "map", teaseProgress: 1, mapReveal: 0 });
-    expect(mapMobile(510, { exactEndDrawn: true, revealComplete: true })).toMatchObject({
+  test.each([
+    [0, 0],
+    [60, 0.25],
+    [120, 0.5],
+    [180, 0.75],
+    [240, 1],
+  ])("moves mobile gallery progressively at %svh", (progressVh, expectedPan) => {
+    expect(mapMobile(progressVh).pan).toBeCloseTo(expectedPan, 4);
+  });
+
+  test("finishes mobile gallery before detail dwell, opening, map, and exit", () => {
+    expect(mapMobile(239.99)).toMatchObject({
+      phase: "gallery",
+      detail: 0,
+      pan: expect.closeTo(239.99 / 240, 4),
+      sequenceProgress: 0,
+    });
+    expect(mapMobile(240)).toMatchObject({ phase: "detail", detail: 0, pan: 1 });
+    expect(mapMobile(270)).toMatchObject({ phase: "detail", detail: 0.5, pan: 1 });
+    expect(mapMobile(339.99)).toMatchObject({ phase: "detail", detail: 1, handoff: 0 });
+    expect(mapMobile(370)).toMatchObject({ phase: "opening", handoff: 1, sequenceProgress: 0 });
+    expect(mapMobile(450)).toMatchObject({ phase: "opening", sequenceProgress: 0.5, targetFrame: 31 });
+    expect(mapMobile(570)).toMatchObject({ phase: "map", teaseProgress: 1, mapReveal: 0 });
+    expect(mapMobile(610, { exactEndDrawn: true, revealComplete: true })).toMatchObject({
       phase: "interactive",
       interactive: true,
     });
@@ -195,8 +211,8 @@ describe("mapClinicStoryMotion gallery-first contract", () => {
     const ready = { exactEndDrawn: true, revealComplete: true };
     expect(mapDesktop(750, ready).interactive).toBe(true);
     expect(mapDesktop(749.99, ready).interactive).toBe(false);
-    expect(mapMobile(510, ready).interactive).toBe(true);
-    expect(mapMobile(509.99, ready).interactive).toBe(false);
+    expect(mapMobile(610, ready).interactive).toBe(true);
+    expect(mapMobile(609.99, ready).interactive).toBe(false);
   });
 
   test("normalizes invalid frame counts and progress", () => {
