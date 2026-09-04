@@ -12,10 +12,9 @@
  *     than quietly dropping it or implying everyone gets it.
  *   • The recall intervals are confirmed by the clinic as standard practice.
  *
- * ⚠️ Prices are the clinic's own published rows, quoted individually. There is
- * deliberately no "a GBT visit costs X": the price list bills the components
- * separately and nothing in it states which combination a hygiene appointment
- * actually is. Inventing that total would be inventing a price.
+   • The price is the clinic's, given on 2026-09-03: 100 € for the whole
+ *     protocol, 75 € for children, and nothing added. See `pricing`, which
+ *     records what this page got wrong before that answer arrived.
  */
 
 export type ProtocolStep = {
