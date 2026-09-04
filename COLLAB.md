@@ -5,6 +5,20 @@ update it before taking or handing off work.
 
 ## Current Task
 
+- Status: mobile viewport geometry fixed; awaiting mobile localhost approval
+- Owner: Claude
+- Branch: `claude/mobile-viewport-geometry`
+- Task: the pinned story mixed JS-frozen pixel heights with live `dvh`, so a
+  retracting iOS URL bar left the scene 135px short of the screen and left
+  every phase boundary calibrated to a viewport that no longer existed. The
+  pin is now `100lvh`, the layers inside compose in `100svh`, and no geometry
+  is written from JS. Dead per-sample style writes removed in a separate
+  commit. Verified: dead strip `135px → 0px`, pin tracks the viewport in both
+  browser-chrome states, 226 tests, lint, TypeScript, production build of 20
+  routes. Do not merge before the user approves it on a real handset.
+
+### Previously published
+
 - Status: Mobile ClinicStory repair complete and approved for publication
 - Owner: Codex
 - Branch: `codex/mobile-clinicstory-entry-fix`
@@ -1166,6 +1180,61 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   and 390×844 browser interaction with clean console and zero page overflow.
   Files released. Publication target: `main`; mirror `develop` to the same
   commit.
+
+- 2026-09-04 — Claude fixed the mobile viewport geometry behind the reported
+  gallery stutter and the jaw section "not fitting the screen", on
+  `claude/mobile-viewport-geometry`. Awaiting mobile localhost approval; not
+  merged.
+
+  The scene held three disagreeing notions of viewport height: pixels frozen
+  by JS at mount (`--pin-height`, `--story-height`, `--travel`), `svh`
+  fallbacks, and live `dvh`. iOS retracts the URL bar on the first scroll, so
+  the frozen pixels described a viewport that no longer existed while the
+  `dvh` layout kept moving underneath them.
+
+  Measured on the deployed build, mounting at 745 then growing to 880: all
+  three frozen values stayed put, leaving the pinned scene 135px shorter than
+  the screen — a dead strip the next section shows through — and every phase
+  boundary calibrated to a viewport that was gone. `measure()` refreshed only
+  when the *width* moved more than 40px, so a height change never recovered.
+  The pathological case is reachable: mounting while `window.innerHeight`
+  reads 0 collapses the whole section to 8px, permanently.
+
+  The pin is now `100lvh` — constant, and covers the tallest state — and the
+  layers inside compose in `100svh`, anchored to the top, so nothing hides
+  behind the bar and nothing reflows while it retracts. `--frame-h` and the
+  jaw viewport moved off `dvh` for the same reason. The zoom geometry reads
+  the gallery layer it composes in rather than the window, which removes the
+  frozen mount-time height rather than merely refreshing it. Freezing was the
+  right goal reached the wrong way; the geometry is stable by construction
+  now, so `ignoreMobileResize` still protects the scroll without the scene
+  going stale behind it. Codex's test that asserted the frozen pixels was
+  replaced by one asserting CSS ownership, with the reasoning recorded beside
+  it.
+
+  Separately, and in its own commit so the two can be judged apart: five of
+  eleven custom properties written per scroll sample had no consumer in any
+  stylesheet, each costing a subtree style invalidation for nothing, and
+  `borderRadius`/`zIndex` were written every sample to cross one threshold
+  each. Six properties remain, all consumed; the two thresholds are written
+  on change.
+
+  Verified: dead strip `135px → 0px`, pin height tracks the viewport in both
+  states, no JS-written geometry variables remain, dead custom properties
+  absent from the rendered section, 226 tests, lint, TypeScript, production
+  build of 20 routes.
+
+  ⚠️ Not established, and deliberately out of scope: whether the 1.0–1.5s
+  freezes during the jaw phase are frame decoding or simply the user not
+  scrolling. Frame-differencing the user's recording shows the gallery
+  repeatedly holding pixel-identical for ~100ms and then jumping three
+  samples' worth of travel at once, which is dropped frames; the layout cause
+  above is one contributor, but the on-device frame rate was not measured and
+  cannot be from this environment. Re-measure on a real handset after this
+  lands before opening the jaw preload question.
+
+  Files reserved: none remaining — `components/home/ClinicStory.tsx`,
+  `ClinicStory.test.tsx`, and `clinicStory.module.css` are released.
 
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
