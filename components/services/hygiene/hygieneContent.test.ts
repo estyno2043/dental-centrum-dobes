@@ -37,49 +37,39 @@ describe("hygiene content", () => {
   });
 
   /*
-   * The page quotes rows from the price list; it must not drift from it. Every
-   * figure shown here has to be a figure the clinic actually publishes.
+   * Corrected on the clinic's own answer: hygiene is 100 €, nothing added, and
+   * 75 € for children. The page used to show `90 – 100 €` with AIRFLOW listed
+   * beneath it as an extra — wrong in the direction that costs trust, since it
+   * implied a starting figure and a surcharge for the protocol's own step.
    */
+  it("states one price for the whole protocol, and one for children", () => {
+    expect(pricing.main.map((entry) => entry.price)).toEqual(["100 €", "75 €"]);
+    for (const entry of pricing.main) {
+      expect(entry.price).not.toMatch(/–|od\b/i);
+    }
+    expect(pricing.main[0]?.note).toMatch(/AIRFLOW/);
+  });
+
+  /*
+   * AIRFLOW is the protocol's fourth step. Listing it as something charged on
+   * top of the visit is the exact mistake this replaced.
+   */
+  it("never bills a step of the protocol as an addition", () => {
+    expect(pricing.partialHeading).toMatch(/nerobíme celú/i);
+    expect(pricing.partialNote).toMatch(/nie ako príplatok/i);
+    expect(pricing.main.some((e) => /air ?flow/i.test(e.label))).toBe(false);
+  });
+
+  /* Every figure still has to be one the clinic publishes. */
   it("quotes only prices that exist in the published list", () => {
     const published = new Set(
       priceGroups.flatMap((group) => group.entries.map((e) => e.price)),
     );
 
-    for (const entry of [...pricing.base, ...pricing.extras]) {
+    for (const entry of pricing.partial) {
       expect(published.has(entry.price), `${entry.label}: ${entry.price}`).toBe(
         true,
       );
-    }
-  });
-
-  /*
-   * The rule this page must not break. The list bills hygiene's parts
-   * separately and nowhere states which combination an appointment is, so a
-   * headline total would be a number nobody at the clinic has agreed to.
-   */
-  it("states no total and no teased minimum", () => {
-    const all = [...pricing.base, ...pricing.extras];
-
-    for (const entry of all) {
-      expect(entry.price).not.toMatch(/^od\b/i);
-    }
-    expect(all.some((e) => /spolu|celkom|balík/i.test(e.label))).toBe(false);
-  });
-
-  /*
-   * The split is the point: someone reading must be able to tell what they pay
-   * for the visit from what is only charged if they need it. A base list that
-   * quietly grew an add-on would put a number in front of them that most
-   * people will not be quoted.
-   */
-  it("keeps the visit's own price apart from what is added to it", () => {
-    expect(pricing.base).toHaveLength(2);
-    expect(pricing.base[0]?.price).toBe("90 – 100 €");
-    expect(pricing.extras.map((e) => e.label)).toContain(
-      "Air flow — za jedno zuboradie",
-    );
-    for (const entry of pricing.base) {
-      expect(entry.label).not.toMatch(/air ?flow|fluorid|parodontolog/i);
     }
   });
 });

@@ -190,34 +190,40 @@ export function HygieneBody(): JSX.Element {
         </div>
 
         <div className={styles.prices}>
-          <h3 className={styles.pricesHeading}>{pricing.baseHeading}</h3>
-          <dl className={styles.priceRows}>
-            {pricing.base.map((entry) => (
-              <div className={styles.priceRow} key={entry.label}>
-                <dt>{entry.label}</dt>
-                <dd>{entry.price}</dd>
-              </div>
-            ))}
-          </dl>
+          <h3 className={styles.pricesHeading}>{pricing.heading}</h3>
 
           {/*
-            Kept visibly apart from the base rather than run into one list. A
-            price list that mixes what everybody pays with what only some do is
-            how a reader arrives expecting one number and is quoted another.
+            One price, stated once. The earlier version showed a span with
+            AIRFLOW listed underneath as an add-on, which implied the headline
+            was a starting figure and that the protocol's own fourth step cost
+            extra. It is 100 €, and that covers the whole protocol.
+          */}
+          <ul className={styles.mainPrices}>
+            {pricing.main.map((entry) => (
+              <li key={entry.label}>
+                <span className={styles.mainPriceValue}>{entry.price}</span>
+                <span className={styles.mainPriceLabel}>{entry.label}</span>
+                <span className={styles.mainPriceNote}>{entry.note}</span>
+              </li>
+            ))}
+          </ul>
+
+          {/*
+            Alternatives, not additions — and the heading has to say so, because
+            a list of prices under a headline price reads as things added to it.
           */}
           <h3 className={`${styles.pricesHeading} ${styles.extrasHeading}`}>
-            {pricing.extrasHeading}
+            {pricing.partialHeading}
           </h3>
+          <p className={styles.partialNote}>{pricing.partialNote}</p>
           <dl className={styles.priceRows}>
-            {pricing.extras.map((entry) => (
+            {pricing.partial.map((entry) => (
               <div className={styles.priceRow} key={entry.label}>
                 <dt>{entry.label}</dt>
                 <dd>{entry.price}</dd>
               </div>
             ))}
           </dl>
-
-          <p className={styles.pricesNote}>{pricing.note}</p>
         </div>
       </section>
     </>

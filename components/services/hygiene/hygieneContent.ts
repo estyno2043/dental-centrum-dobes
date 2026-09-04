@@ -169,34 +169,51 @@ export const recall = {
 } as const;
 
 /**
- * What a visit costs, split into what everybody pays and what is added on.
+ * What it costs. One price.
  *
- * ⚠️ The split is a reading of the price list, not a quote from the clinic.
- * The list bills these as separate rows and nowhere states which combination
- * a hygiene appointment is; `base` is the row that is the cleaning itself and
- * `extras` are the rows charged alongside it. Every figure is verbatim.
+ * Corrected 2026-09-03 on the clinic's own answer, which reversed the earlier
+ * reading and settled the question flagged here before: *"Hygiena je 100 eur.
+ * Nič viac. Tie ostatné ceny sú, keď sa nerobí celá hygiena, ale len čiastkový
+ * zákrok. U detí sa účtuje za komplet hygienu 75.-"*
  *
- * `Air flow` sits in `extras` because the price list bills it separately and
- * per arch — but GBT *is* an AIRFLOW protocol, so if it is in fact always part
- * of the visit it belongs in `base` and the clinic should say so. That is the
- * one line on this page most likely to be wrong.
+ * The page previously showed `90 – 100 €` with AIRFLOW listed underneath as an
+ * add-on. Both were wrong, and wrong in the direction that costs trust: it
+ * implied the headline was a starting figure and that the protocol's own
+ * fourth step would be charged on top. AIRFLOW is not an extra — GBT *is* an
+ * AIRFLOW protocol, and the 100 € covers all of it.
+ *
+ * The `90 – 100 €` came from this project collapsing two billing codes in the
+ * price list into a span. That span is still in `/cennik`, still flagged there
+ * for the clinic to resolve — but it is not what a hygiene visit costs, and it
+ * has no business being the number on this page.
+ *
+ * `partial` are alternatives, not additions: what is charged when somebody has
+ * one procedure rather than the appointment. Framing them as add-ons is what
+ * made the earlier version misleading, so the heading says so outright.
  */
 export const pricing = {
-  baseHeading: "Za samotnú hygienu zaplatíte",
-  base: [
-    { label: "Odstránenie zubného povlaku alebo kameňa", price: "90 – 100 €" },
-    { label: "To isté pre dieťa", price: "75 €" },
+  heading: "Koľko to stojí",
+  main: [
+    {
+      label: "Kompletná dentálna hygiena",
+      price: "100 €",
+      note: "Celý protokol vrátane AIRFLOW. Nič sa k tomu nepripočítava.",
+    },
+    {
+      label: "Kompletná hygiena pre deti",
+      price: "75 €",
+      note: "Ten istý protokol, prispôsobený veku.",
+    },
   ],
-  extrasHeading: "Účtuje sa navyše, ak je potrebné",
-  extras: [
-    { label: "Air flow — za jedno zuboradie", price: "50 €" },
-    { label: "Inštruktáž a nácvik ústnej hygieny", price: "20 €" },
+  partialHeading: "Ak nerobíme celú hygienu",
+  partialNote:
+    "Tieto ceny platia pre samostatný úkon, nie ako príplatok k hygiene.",
+  partial: [
+    { label: "Air flow — jedno zuboradie", price: "50 €" },
+    { label: "Polishing — jedno zuboradie", price: "40 €" },
     { label: "Fluoridácia lakom", price: "30 €" },
-    { label: "Komplexné parodontologické vyšetrenie", price: "50 €" },
+    { label: "Inštruktáž a nácvik ústnej hygieny", price: "20 €" },
   ],
-  note:
-    "Čo z toho budete potrebovať, vieme povedať až po prvom kroku — a cenu " +
-    "poviete vopred, nie po ošetrení.",
 } as const;
 
 /**
