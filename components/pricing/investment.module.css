@@ -243,18 +243,21 @@
  * on screen together for the whole of the change.
  */
 /*
- * Back to the size it was — 27.5rem tall, the 22rem column at 4:5 — but stated
- * as a height so the pinned stage can always contain it. Switching to a third
- * of the viewport had shrunk the card by a fifth, which was the whole of it on
- * a page that exists to show the work.
+ * Larger than it has ever been once the title is gone — 32rem, against the
+ * 27.5rem it started at.
  *
- * It grows a little further across the hold, into the room the title gives up.
+ * The two numbers are what make that possible. While the title is on screen
+ * the card takes the smaller one, because a full-size card and a full-size
+ * title cannot both fit a short laptop and the stage overflowing is what
+ * brought the lurch back last time. As the title leaves, the card takes most
+ * of what it hands over — so the growth is not decoration, it is the section
+ * spending the room on the thing the reader came for.
  */
 .filmstrip {
   position: relative;
   overflow: hidden;
   height: calc(
-    clamp(17rem, 41vh, 27.5rem) + var(--intro) * clamp(1.5rem, 4vh, 3rem)
+    clamp(16rem, 36vh, 24rem) + var(--intro) * clamp(3rem, 12vh, 8rem)
   );
   border-radius: 18px;
   aspect-ratio: 4 / 5;
@@ -543,7 +546,7 @@
   /* Grows across the hold exactly as it does on a wide screen. */
   .filmstrip {
     height: calc(
-      clamp(15rem, 36vh, 22rem) + var(--intro) * clamp(1.5rem, 4vh, 3rem)
+      clamp(14rem, 32vh, 20rem) + var(--intro) * clamp(2.5rem, 10vh, 6rem)
     );
   }
 

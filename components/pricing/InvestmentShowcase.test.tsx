@@ -177,7 +177,13 @@ describe("InvestmentShowcase", () => {
      * screen, so its size is height-aware rather than width-only.
      */
     expect(flat).toContain("font-size: clamp(1.6rem, min(4.4vw, 4.4vh), 3.4rem)");
-    expect(flat).toContain("clamp(17rem, 41vh, 27.5rem)");
+    /*
+     * Two numbers, not one: the card takes the smaller while the title is on
+     * screen, because both at full size will not fit a short laptop — and most
+     * of what the title hands over as it leaves.
+     */
+    expect(flat).toContain("clamp(16rem, 36vh, 24rem)");
+    expect(flat).toContain("var(--intro) * clamp(3rem, 12vh, 8rem)");
   });
 
   /*
