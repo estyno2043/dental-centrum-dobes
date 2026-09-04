@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { TeamGrid } from "./TeamGrid";
-import { teamMembers } from "./teamContent";
+import { teamIntro, teamMembers } from "./teamContent";
 
 describe("TeamGrid", () => {
   it("renders every member of the roster", () => {
@@ -44,5 +44,34 @@ describe("TeamGrid", () => {
     expect([...printed].map((node) => node.textContent)).toEqual(
       withRole.map((member) => member.role),
     );
+  });
+});
+
+/*
+ * The intro counts the team off. A sentence that states numbers about a roster
+ * sitting three lines below it is one nobody re-reads when the roster changes
+ * — so the roster is what decides whether it is still true.
+ */
+describe("teamIntro", () => {
+  it("counts the same team the grid renders", () => {
+    const count = (pattern: RegExp) =>
+      teamMembers.filter((member) => pattern.test(member.role ?? "")).length;
+
+    // Case-insensitive: the head of the clinic is "Hlava kliniky, zubár",
+    // lowercase, and a capital-Z match quietly counted three doctors.
+    expect(count(/zubár/i)).toBe(4);
+    expect(count(/^Zdravotná sestra/)).toBe(5);
+    expect(count(/Dentálna hygienička/)).toBe(1);
+    expect(count(/Recepcia/)).toBe(1);
+    expect(teamMembers).toHaveLength(11);
+
+    expect(teamIntro.lead).toContain("Štyria lekári");
+    expect(teamIntro.lead).toContain("päť sestier");
+  });
+
+  /* The line it replaced was true of every dental practice that has ever
+     existed, which is what made it worth nothing. */
+  it("does not say the generic thing again", () => {
+    expect(teamIntro.lead).not.toMatch(/od prvého telefonátu|staráme sa o vás/i);
   });
 });

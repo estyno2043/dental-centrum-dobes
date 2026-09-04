@@ -28,12 +28,31 @@ export type TeamMember = {
   readonly role?: string;
 };
 
+/**
+ * The lead says two things, and both are checkable.
+ *
+ * The make-up is counted off the roster below — four doctors, five nurses, a
+ * hygienist and reception — so a test fails if somebody joins and the sentence
+ * is left behind saying otherwise.
+ *
+ * The second half is not a claim about the clinic, it is a report of what
+ * their own Google reviews say. Four of the fifteen use almost the same words:
+ * *"chodim aj s celou rodinou uz mnoho rokov"*, *"navštevujeme pravidelne s
+ * celou mojou rodinou"*, *"medzičasom sme pacientmi celá rodina"*, *"Sme u
+ * Dobesovcov uz roky cela rodina"*. Reporting a pattern in the reviews is
+ * something a reader can go and verify; asserting the retention rate that
+ * produced it is not.
+ *
+ * It replaced "Jedenásť ľudí, ktorí sa o vás starajú od prvého telefonátu až
+ * po kontrolu po ošetrení" — true of every dental practice that has ever
+ * existed, which is what made it worth nothing.
+ */
 export const teamIntro = {
   eyebrow: "Tím",
   headline: "Za každým úsmevom stojí celý tím.",
   lead:
-    "Jedenásť ľudí, ktorí sa o vás starajú od prvého telefonátu až po kontrolu " +
-    "po ošetrení. Poznáte ich po mene ešte predtým, než si sadnete do kresla.",
+    "Štyria lekári, päť sestier, dentálna hygienička a recepcia. V recenziách " +
+    "sa opakuje tá istá veta — chodíme sem celá rodina, už roky.",
 } as const;
 
 export const teamMembers: readonly TeamMember[] = [
