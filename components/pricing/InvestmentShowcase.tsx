@@ -64,6 +64,19 @@ export function InvestmentShowcase(): JSX.Element {
        */
       const steps = Math.max(0, slides.length - 1);
       const hold = steps > 0 ? 1 / slides.length : 1;
+
+      /*
+       * `--intro` is that first viewport, 0 to 1. The headline arrives at full
+       * size and shrinks across it while the photograph grows — so the hold is
+       * not dead scrolling but the section settling into itself, and by the
+       * time the run begins the reader is looking at the work rather than at
+       * the title.
+       */
+      section.style.setProperty(
+        "--intro",
+        String(Math.min(1, Math.max(0, raw / hold))),
+      );
+
       const position =
         steps > 0 ? Math.max(0, (raw - hold) / (1 - hold)) * steps : 0;
       section.style.setProperty("--slide", String(position));

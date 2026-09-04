@@ -9,6 +9,7 @@
 
 .section {
   --slide: 0;
+  --intro: 0;
 
   position: relative;
   /* A viewport per slide, plus one for the last to stand still in. */
@@ -75,19 +76,39 @@
 
 /* ---------------------------------------------------------------- stage --- */
 
+/*
+ * `height`, not `min-height`.
+ *
+ * A sticky element taller than the viewport scrolls with the page until its
+ * bottom edge arrives and only then sticks — which showed up as everything
+ * lurching upward part-way through the run, with the headline cut off at the
+ * top. Pinning the stage to exactly one viewport removes the travel that
+ * caused it; everything inside is sized to fit, and the intro shrinking is
+ * what makes room for the photograph to grow.
+ */
 .stage {
   position: sticky;
   z-index: 1;
   top: 0;
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
-  gap: clamp(26px, 4vh, 52px);
-  padding: clamp(70px, 9vh, 110px) clamp(20px, 4vw, 72px) clamp(46px, 7vh, 80px);
+  gap: clamp(14px, 2.4vh, 34px);
+  padding: clamp(56px, 8vh, 92px) clamp(20px, 4vw, 72px) clamp(30px, 5vh, 56px);
 }
 
+/*
+ * The title arrives at full size and gives way.
+ *
+ * `--shrink` drives both lines from one number, so they stay in proportion,
+ * and the eyebrow leaves entirely — at the smaller size it is a third piece of
+ * furniture above the thing the reader came to look at.
+ */
 .intro {
+  --shrink: calc(1 - var(--intro) * 0.46);
+
   max-width: 46rem;
   margin: 0 auto;
   text-align: center;
@@ -98,7 +119,10 @@
   gap: 12px;
   align-items: center;
   justify-content: center;
-  margin: 0 0 14px;
+  height: calc(1.2em * (1 - var(--intro)));
+  margin: 0 0 calc(14px * (1 - var(--intro)));
+  overflow: hidden;
+  opacity: calc(1 - var(--intro) * 1.6);
   color: var(--taupe);
   font-size: 0.72rem;
   font-weight: 600;
@@ -114,8 +138,8 @@
 }
 
 .headline {
-  margin: 0 0 12px;
-  font-size: clamp(1.9rem, 4.4vw, 3.4rem);
+  margin: 0 0 calc(12px * var(--shrink));
+  font-size: calc(clamp(1.9rem, 4.4vw, 3.4rem) * var(--shrink));
   font-weight: 500;
   letter-spacing: -0.04em;
   line-height: 1.04;
@@ -126,7 +150,7 @@
   max-width: 34rem;
   margin: 0 auto;
   color: rgb(250 249 246 / 68%);
-  font-size: clamp(0.92rem, 1.4vw, 1.05rem);
+  font-size: calc(clamp(0.92rem, 1.4vw, 1.05rem) * var(--shrink));
   line-height: 1.6;
   text-wrap: pretty;
 }
@@ -140,7 +164,7 @@
   align-items: center;
   margin: 0 auto;
   gap: clamp(20px, 3vw, 56px);
-  grid-template-columns: minmax(0, 1fr) minmax(0, 22rem) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
 }
 
 /*
@@ -205,12 +229,20 @@
  * from below — and because the window is the only thing clipped, the two are
  * on screen together for the whole of the change.
  */
+/*
+ * Sized from the viewport's height rather than the column's width, so it
+ * always fits inside the pinned stage — and it grows across the hold, into the
+ * room the title gives up.
+ */
 .filmstrip {
   position: relative;
   overflow: hidden;
-  width: 100%;
+  height: calc(
+    clamp(14rem, 33vh, 21rem) + var(--intro) * clamp(2.5rem, 11vh, 7rem)
+  );
   border-radius: 18px;
   aspect-ratio: 4 / 5;
+  justify-self: center;
 }
 
 .track {
@@ -492,8 +524,11 @@
     text-align: center;
   }
 
+  /* Grows across the hold exactly as it does on a wide screen. */
   .filmstrip {
-    width: min(100%, 20rem);
+    height: calc(
+      clamp(11rem, 26vh, 15rem) + var(--intro) * clamp(2rem, 8vh, 5rem)
+    );
   }
 
   .points {
@@ -536,7 +571,17 @@
   }
 
   .filmstrip {
+    height: auto;
     aspect-ratio: auto;
+  }
+
+  .intro {
+    --shrink: 1;
+  }
+
+  .eyebrow {
+    height: auto;
+    opacity: 1;
   }
 
   .track {

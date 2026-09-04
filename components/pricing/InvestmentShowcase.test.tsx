@@ -152,6 +152,40 @@ describe("InvestmentShowcase", () => {
     );
   });
 
+  /*
+   * The hold is not dead scrolling. The title arrives full size and gives way
+   * across it while the photograph grows into the room it frees, so by the
+   * time the run starts the reader is looking at the work rather than the
+   * heading.
+   */
+  it("shrinks the title and grows the photograph across the hold", () => {
+    const css = readFileSync(
+      "components/pricing/investment.module.css",
+      "utf8",
+    ).replace(/\/\*[\s\S]*?\*\//g, "");
+    const flat = css.replace(/\s+/g, " ");
+
+    expect(flat).toContain("--shrink: calc(1 - var(--intro) * 0.46)");
+    expect(flat).toContain("font-size: calc(clamp(1.9rem, 4.4vw, 3.4rem) * var(--shrink))");
+    expect(flat).toMatch(/\.filmstrip \{[^}]*var\(--intro\)/);
+  });
+
+  /*
+   * A sticky element taller than the viewport scrolls with the page before it
+   * sticks, which showed up as everything lurching upward mid-run with the
+   * headline cut off. The stage is pinned to exactly one viewport instead.
+   */
+  it("pins the stage to one viewport so it cannot travel", () => {
+    const css = readFileSync(
+      "components/pricing/investment.module.css",
+      "utf8",
+    ).replace(/\/\*[\s\S]*?\*\//g, "");
+    const stage = css.slice(css.indexOf(".stage {"), css.indexOf(".intro"));
+
+    expect(stage).toMatch(/height:\s*100vh/);
+    expect(stage).not.toMatch(/min-height/);
+  });
+
   it("drives the run from one value, and drops it under reduced motion", () => {
     const css = readFileSync("components/pricing/investment.module.css", "utf8");
     // Comments stripped: the note above the rule explains why `abs()` is
