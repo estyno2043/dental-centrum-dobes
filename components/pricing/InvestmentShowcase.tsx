@@ -197,8 +197,9 @@ export function InvestmentShowcase(): JSX.Element {
             the next one comes up from below — the movement is what says the
             run has advanced, which is why nothing else moves.
           */}
-          <div className={styles.filmstrip}>
-            <div className={styles.track}>
+          <div className={styles.filmWrap}>
+            <div className={styles.filmstrip}>
+              <div className={styles.track}>
               {slides.map((slide, index) => {
                 const service = allServices.find((s) => s.slug === slide.slug);
                 const href = `/sluzby/${slide.slug}`;
@@ -253,6 +254,7 @@ export function InvestmentShowcase(): JSX.Element {
                   </Link>
                 );
               })}
+              </div>
             </div>
           </div>
 

@@ -168,13 +168,25 @@
  * reader is actually here for. Modest on purpose: enough to feel the section
  * settle, not so much that the layout appears to jump.
  */
+/*
+ * Takes whatever height the stage has left, so the card can fill it.
+ *
+ * The card's size used to be a guessed clamp, and every guess was wrong in one
+ * direction or the other — too small beside the title, or overflowing without
+ * it. It now derives from the room actually available: this row flexes to fill
+ * the stage, and the card takes its height from the row. When the title's box
+ * is removed the row grows and the card grows with it, with no number to keep
+ * in sync.
+ */
 .slides {
   --grow: calc(1 + var(--intro) * 0.07);
 
   display: grid;
   width: 100%;
+  min-height: 0;
   max-width: 96rem;
-  align-items: center;
+  flex: 1 1 auto;
+  align-items: stretch;
   margin: 0 auto;
   gap: clamp(20px, 3vw, 56px);
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
@@ -188,6 +200,8 @@
  */
 .column {
   display: grid;
+  align-content: center;
+  min-height: 0;
 }
 
 /*
@@ -253,15 +267,32 @@
  * of what it hands over — so the growth is not decoration, it is the section
  * spending the room on the thing the reader came for.
  */
+/*
+ * A wrapper that stretches, so `height: 100%` on the card has something
+ * definite to resolve against.
+ */
+.filmWrap {
+  display: grid;
+  min-height: 0;
+  place-items: center;
+}
+
+/*
+ * The whole of the room, capped at 40rem so it never becomes absurd on a tall
+ * monitor. At a normal desktop that is 512 x 640 against the 352 x 440 it
+ * started at — the card is the section, and it was being starved by numbers
+ * chosen to keep a title company.
+ * `container-type` is what lets the card's own overlay scale with it — at the
+ * smaller size the name and lead used to spill straight out of the frame,
+ * because they were sized in rem while the card was sized in viewport.
+ */
 .filmstrip {
   position: relative;
   overflow: hidden;
-  height: calc(
-    clamp(16rem, 36vh, 24rem) + var(--intro) * clamp(3rem, 12vh, 8rem)
-  );
+  height: min(100%, 40rem);
   border-radius: 18px;
   aspect-ratio: 4 / 5;
-  justify-self: center;
+  container-type: inline-size;
 }
 
 .track {
@@ -318,8 +349,8 @@
 
 .cardIndex {
   position: absolute;
-  top: 18px;
-  left: 20px;
+  top: 4cqw;
+  left: 5cqw;
   color: rgb(250 249 246 / 88%);
   font-size: 0.76rem;
   font-variant-numeric: tabular-nums;
@@ -364,25 +395,33 @@
 
 .cardBody {
   position: absolute;
-  right: 22px;
-  bottom: 22px;
-  left: 22px;
+  right: 5cqw;
+  bottom: 5cqw;
+  left: 5cqw;
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
 .cardName {
-  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  font-size: clamp(0.95rem, 6cqw, 1.35rem);
   font-weight: 600;
   letter-spacing: -0.025em;
   line-height: 1.14;
   text-wrap: balance;
 }
 
+/*
+ * Three lines at most. The words stay whole in the markup; the card shows what
+ * it has room for rather than pushing the rest out of its own frame.
+ */
 .cardLead {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
   color: rgb(250 249 246 / 74%);
-  font-size: 0.8rem;
+  font-size: clamp(0.72rem, 3.9cqw, 0.85rem);
+  -webkit-line-clamp: 3;
   line-height: 1.45;
   text-wrap: pretty;
 }
@@ -543,11 +582,8 @@
     text-align: center;
   }
 
-  /* Grows across the hold exactly as it does on a wide screen. */
   .filmstrip {
-    height: calc(
-      clamp(14rem, 32vh, 20rem) + var(--intro) * clamp(2.5rem, 10vh, 6rem)
-    );
+    height: min(100%, 26rem);
   }
 
   .points {
@@ -591,7 +627,12 @@
 
   .filmstrip {
     height: auto;
-    aspect-ratio: auto;
+    aspect-ratio: 4 / 5;
+  }
+
+  .slides {
+    flex: 0 0 auto;
+    align-items: center;
   }
 
   .intro {

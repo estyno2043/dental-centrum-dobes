@@ -169,7 +169,13 @@ describe("InvestmentShowcase", () => {
     expect(flat).toContain("opacity: clamp(0, calc(1 - var(--intro) * 1.5), 1)");
     expect(flat).toContain("calc(var(--intro-height, 0px) * var(--intro) * -1)");
     expect(flat).toContain("--grow: calc(1 + var(--intro) * 0.07)");
-    expect(flat).toMatch(/\.filmstrip \{[^}]*var\(--intro\)/);
+
+    /*
+     * The card's overlay is sized against the card, not the root. In rem it
+     * spilled straight out of the frame whenever the card was short.
+     */
+    expect(flat).toContain("font-size: clamp(0.95rem, 6cqw, 1.35rem)");
+    expect(flat).toMatch(/\.filmstrip \{[^}]*container-type: inline-size/);
 
     // The title keeps its size; it is leaving, not shrinking.
     /*
@@ -178,12 +184,13 @@ describe("InvestmentShowcase", () => {
      */
     expect(flat).toContain("font-size: clamp(1.6rem, min(4.4vw, 4.4vh), 3.4rem)");
     /*
-     * Two numbers, not one: the card takes the smaller while the title is on
-     * screen, because both at full size will not fit a short laptop — and most
-     * of what the title hands over as it leaves.
+     * The card's height is not a guessed clamp any more — every guess was
+     * wrong in one direction or the other. The row flexes to fill the stage
+     * and the card takes the room, so removing the title's box grows it with
+     * nothing to keep in sync.
      */
-    expect(flat).toContain("clamp(16rem, 36vh, 24rem)");
-    expect(flat).toContain("var(--intro) * clamp(3rem, 12vh, 8rem)");
+    expect(flat).toContain("height: min(100%, 40rem)");
+    expect(flat).toMatch(/\.slides \{[^}]*flex: 1 1 auto/);
   });
 
   /*
