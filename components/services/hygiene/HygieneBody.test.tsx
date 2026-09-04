@@ -62,6 +62,22 @@ describe("HygieneBody", () => {
     expect(photo.getAttribute("srcSet")).toContain("hygiena-airflow-mobile.webp 450w");
   });
 
+  /*
+   * The comparison is where the case is made, so the way to act belongs there
+   * too — not eight steps and a price list further down.
+   */
+  it("offers a way to act where the comparison lands", () => {
+    render(<HygieneBody />);
+
+    expect(
+      screen.getByRole("link", { name: "Objednať sa na hygienu" }),
+    ).toHaveAttribute("href", "#booking");
+    expect(screen.getByRole("link", { name: /0918 800 002/ })).toHaveAttribute(
+      "href",
+      "tel:+421918800002",
+    );
+  });
+
   /* Both frames are filled now; a leftover placeholder would be a bug. */
   it("has no placeholders left", () => {
     render(<HygieneBody />);

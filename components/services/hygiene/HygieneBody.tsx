@@ -1,5 +1,5 @@
 import type { JSX } from "react";
-import { IconCheck, IconMinus } from "@tabler/icons-react";
+import { IconCheck, IconMinus, IconPhone } from "@tabler/icons-react";
 
 import { BeforeAfter } from "@/components/patients/BeforeAfter";
 import {
@@ -67,6 +67,25 @@ export function HygieneBody(): JSX.Element {
               ))}
             </ul>
           </div>
+        </div>
+
+        {/*
+          The call to action sits here rather than only at the foot of the
+          page. This is the moment the comparison has just made the case, and a
+          reader who is convinced by it should not have to scroll past eight
+          steps and a price list to act on it.
+
+          The telephone is beside the button, not beneath it: hygiene is the
+          appointment people ring to move, not to research.
+        */}
+        <div className={styles.compareActions}>
+          <a className={styles.actionPrimary} href="#booking">
+            Objednať sa na hygienu
+          </a>
+          <a className={styles.actionPhone} href="tel:+421918800002">
+            <IconPhone size={17} stroke={1.7} />
+            0918 800 002
+          </a>
         </div>
       </section>
 
