@@ -134,36 +134,45 @@
 /* --------------------------------------------------------------- slides --- */
 
 .slides {
-  position: relative;
-  display: grid;
-}
-
-/*
- * Every slide occupies the same cell, so they cross-fade in place rather than
- * pushing each other around. The one being read is the only one that can be
- * clicked — an invisible card still catching the pointer is the bug this
- * avoids.
- */
-.slide {
   display: grid;
   width: 100%;
   max-width: 96rem;
   align-items: center;
   margin: 0 auto;
   gap: clamp(20px, 3vw, 56px);
-  grid-area: 1 / 1;
   grid-template-columns: minmax(0, 1fr) minmax(0, 22rem) minmax(0, 1fr);
-  opacity: clamp(
-    0,
-    calc(1 - max(var(--slide) - var(--index), var(--index) - var(--slide))),
-    1
-  );
-  pointer-events: none;
-  transition: opacity 0.2s linear;
 }
 
-.slide[data-active="true"] {
-  pointer-events: auto;
+/*
+ * The two text columns. Every panel sits in the same cell and only its opacity
+ * changes — nothing here travels. Moving the words as well as the photograph
+ * turns a transition into a scene change, and the reader loses which of the
+ * two they were part-way through.
+ */
+.column {
+  display: grid;
+}
+
+/*
+ * Twice the distance, so the two never share the screen.
+ *
+ * The panels are stacked in one cell, and a gentle cross-fade put both at 0.7
+ * through the middle of the change — two paragraphs printed over each other,
+ * which is worse than either. Doubling the distance empties the outgoing panel
+ * by the halfway point and starts the incoming one after it, so the swap reads
+ * as a cut rather than a blend. Words are legible or they are not.
+ */
+.name,
+.points {
+  grid-area: 1 / 1;
+  opacity: clamp(
+    0,
+    calc(
+      1 - max(var(--slide) - var(--index), var(--index) - var(--slide)) * 2
+    ),
+    1
+  );
+  transition: opacity 0.2s linear;
 }
 
 .name {
@@ -188,21 +197,58 @@
   text-wrap: balance;
 }
 
+/* ----------------------------------------------------------- filmstrip --- */
+
+/*
+ * One window onto a column of cards. The track is translated by whole windows,
+ * so the card being read rises out of the top exactly as the next one comes up
+ * from below — and because the window is the only thing clipped, the two are
+ * on screen together for the whole of the change.
+ */
+.filmstrip {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  border-radius: 18px;
+  aspect-ratio: 4 / 5;
+}
+
+.track {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  transform: translateY(calc(var(--slide) * -100%));
+  transition: transform 0.2s linear;
+  will-change: transform;
+}
+
+.track > * {
+  flex: 0 0 100%;
+  height: 100%;
+}
+
 /* ----------------------------------------------------------------- card --- */
 
 .card {
   position: relative;
   display: block;
   color: inherit;
+  pointer-events: none;
   text-decoration: none;
+}
+
+/* Only the card being read can be clicked; see `InvestmentShowcase`. */
+.card[data-active="true"] {
+  pointer-events: auto;
 }
 
 /* The box the morph flies out of — see `serviceTransition.ts`. */
 .frame {
   display: block;
   overflow: hidden;
+  width: 100%;
+  height: 100%;
   border-radius: 18px;
-  aspect-ratio: 4 / 5;
   box-shadow: 0 30px 70px -34px rgb(0 0 0 / 65%);
 }
 
@@ -356,6 +402,42 @@
   line-height: 1.45;
 }
 
+/* -------------------------------------------------------------- counter --- */
+
+.counter {
+  display: flex;
+  gap: 7px;
+  align-self: center;
+  margin: 0;
+}
+
+.tick {
+  display: block;
+  width: 26px;
+  height: 2px;
+  border-radius: 2px;
+  background: rgb(250 249 246 / 26%);
+}
+
+/* Lit in step with its slide, off the same distance the panels use. */
+.tick {
+  background: color-mix(
+    in oklab,
+    var(--taupe)
+      calc(
+        clamp(
+            0,
+            calc(
+              1 - max(var(--slide) - var(--index), var(--index) - var(--slide))
+            ),
+            1
+          ) * 100%
+      ),
+    rgb(250 249 246 / 26%)
+  );
+  transition: background-color 0.2s linear;
+}
+
 /* ----------------------------------------------------------------- more --- */
 
 .more {
@@ -400,24 +482,22 @@
 }
 
 @media (max-width: 1023px) {
-  .slide {
+  .slides {
     gap: 20px;
     grid-template-columns: 1fr;
     justify-items: center;
-    text-align: center;
   }
 
   .name {
     text-align: center;
   }
 
-  .card {
+  .filmstrip {
     width: min(100%, 20rem);
   }
 
   .points {
     width: min(100%, 30rem);
-    text-align: left;
   }
 }
 
@@ -443,9 +523,29 @@
     height: auto;
   }
 
-  .slide {
+  /*
+   * No run to drive: the slides become a plain stack, every panel visible and
+   * the filmstrip showing its first card. A scroll-linked cross-fade is
+   * exactly the motion this setting is about.
+   */
+  .name,
+  .points {
     opacity: 1;
     grid-area: auto;
+    transition: none;
+  }
+
+  .filmstrip {
+    aspect-ratio: auto;
+  }
+
+  .track {
+    transform: none;
+    transition: none;
+  }
+
+  .card {
+    pointer-events: auto;
   }
 
   .frame img,

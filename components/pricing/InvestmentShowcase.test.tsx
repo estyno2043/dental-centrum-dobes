@@ -92,6 +92,66 @@ describe("InvestmentShowcase", () => {
    * takes the whole mechanism away rather than merely shortening it — a
    * scroll-linked cross-fade is exactly the motion that setting is about.
    */
+  /*
+   * The first slide holds before anything moves. The section takes the
+   * viewport the moment its top reaches the top, and the header is still
+   * retracting then — without the hold, the reader's first flick both hides
+   * the bar and swaps the service, and what they arrived at is gone before
+   * they have read it.
+   */
+  it("spends a viewport standing still before the run starts", () => {
+    const source = readFileSync(
+      "components/pricing/InvestmentShowcase.tsx",
+      "utf8",
+    ).replace(/\/\*[\s\S]*?\*\//g, "");
+
+    expect(source).toContain("1 / slides.length");
+    expect(source).toContain("(raw - hold) / (1 - hold)");
+    // A viewport per slide plus the one it holds in.
+    expect(
+      readFileSync("components/pricing/investment.module.css", "utf8"),
+    ).toMatch(/calc\(\(var\(--count\) \+ 1\) \* 100vh\)/);
+  });
+
+  /*
+   * Only the photographs travel. Moving the words as well turns a transition
+   * into a scene change, and the reader loses which of the two they were
+   * part-way through — so the track translates and the panels only fade.
+   */
+  it("moves the filmstrip and leaves the words in place", () => {
+    const css = readFileSync(
+      "components/pricing/investment.module.css",
+      "utf8",
+    ).replace(/\/\*[\s\S]*?\*\//g, "");
+
+    expect(css.replace(/\s+/g, " ")).toContain(
+      "transform: translateY(calc(var(--slide) * -100%))",
+    );
+    /*
+     * The panels swap by opacity alone. Anchored to a property boundary: an
+     * unanchored `transform:` also matches `text-transform`, which the kicker
+     * uses, and the guard passed on a technicality.
+     */
+    const panels = css.slice(css.indexOf(".name,"), css.indexOf(".filmstrip"));
+    expect(panels).not.toMatch(/(^|[\s;{])transform:/);
+  });
+
+  /*
+   * Doubling the distance empties the outgoing panel by the halfway point and
+   * starts the incoming one after it. A gentle cross-fade put both at 0.7
+   * through the middle — two paragraphs printed over each other.
+   */
+  it("never shows two panels at once", () => {
+    const css = readFileSync(
+      "components/pricing/investment.module.css",
+      "utf8",
+    ).replace(/\/\*[\s\S]*?\*\//g, "");
+
+    expect(css.replace(/\s+/g, " ")).toContain(
+      "1 - max(var(--slide) - var(--index), var(--index) - var(--slide)) * 2",
+    );
+  });
+
   it("drives the run from one value, and drops it under reduced motion", () => {
     const css = readFileSync("components/pricing/investment.module.css", "utf8");
     // Comments stripped: the note above the rule explains why `abs()` is

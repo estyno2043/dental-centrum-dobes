@@ -50,8 +50,22 @@ export function InvestmentShowcase(): JSX.Element {
        * standing still on the final slide before the page moves on.
        */
       const travel = Math.max(1, rect.height - window.innerHeight);
-      const progress = Math.min(1, Math.max(0, -rect.top / travel));
-      const position = progress * Math.max(0, slides.length - 1);
+      const raw = Math.min(1, Math.max(0, -rect.top / travel));
+
+      /*
+       * The first slide holds before anything moves.
+       *
+       * The section takes over the viewport the moment its top reaches the
+       * top, and the header is still retracting at that point — so without a
+       * hold the reader's first flick both hides the bar and swaps the
+       * service, and the thing they arrived at is gone before they have read
+       * it. One viewport of the travel is spent standing still; only after
+       * that does the run begin.
+       */
+      const steps = Math.max(0, slides.length - 1);
+      const hold = steps > 0 ? 1 / slides.length : 1;
+      const position =
+        steps > 0 ? Math.max(0, (raw - hold) / (1 - hold)) * steps : 0;
       section.style.setProperty("--slide", String(position));
 
       /*
@@ -127,86 +141,128 @@ export function InvestmentShowcase(): JSX.Element {
         </header>
 
         <div className={styles.slides}>
-          {slides.map((slide, index) => {
-            const service = allServices.find((s) => s.slug === slide.slug);
-            const href = `/sluzby/${slide.slug}`;
-            /*
-             * A slide is a treatment; a service page can hold several. The
-             * override is what stops a whitening slide carrying the whole
-             * aesthetics page's name and photograph.
-             */
-            const card = slide.card ?? {
-              image: service?.image ?? "",
-              name: service?.name ?? "",
-              lead: service?.lead ?? "",
-            };
-
-            return (
-              <article
-                className={styles.slide}
-                data-slide
+          {/*
+            The names cross-fade in place. Only the photographs travel — moving
+            three things at once turns a transition into a scene change, and
+            the reader loses which of them they were reading.
+          */}
+          <div className={styles.column}>
+            {slides.map((slide, index) => (
+              <div
+                className={styles.name}
                 key={slide.slug}
                 style={{ "--index": index } as CSSProperties}
               >
-                <div className={styles.name}>
-                  <p className={styles.kicker}>{slide.kicker}</p>
-                  <h3>{slide.title}</h3>
-                </div>
+                <p className={styles.kicker}>{slide.kicker}</p>
+                <h3>{slide.title}</h3>
+              </div>
+            ))}
+          </div>
 
-                {/* The catalogue's own card, morph and all. */}
-                <Link
-                  className={styles.card}
-                  href={href}
-                  onClick={(event) => openService(event, href)}
-                >
-                  <span className={styles.frame} data-service-photo>
-                    {card.image ? (
-                      /* eslint-disable-next-line @next/next/no-img-element -- Pre-cropped 4:5 clinic asset. */
-                      <img
-                        alt=""
-                        decoding="async"
-                        height="1250"
-                        sizes="(max-width: 1023px) 70vw, 26vw"
-                        src={`/media/sluzby/${card.image}.webp`}
-                        srcSet={`/media/sluzby/${card.image}-mobile.webp 500w, /media/sluzby/${card.image}.webp 1000w`}
-                        width="1000"
-                      />
-                    ) : null}
-                  </span>
+          {/*
+            The filmstrip: one window, a column of cards behind it, translated
+            by whole windows. The current photograph rises out of the top as
+            the next one comes up from below — the movement is what says the
+            run has advanced, which is why nothing else moves.
+          */}
+          <div className={styles.filmstrip}>
+            <div className={styles.track}>
+              {slides.map((slide, index) => {
+                const service = allServices.find((s) => s.slug === slide.slug);
+                const href = `/sluzby/${slide.slug}`;
+                /*
+                 * A slide is a treatment; a service page can hold several. The
+                 * override is what stops a whitening slide carrying the whole
+                 * aesthetics page's name and photograph.
+                 */
+                const card = slide.card ?? {
+                  image: service?.image ?? "",
+                  name: service?.name ?? "",
+                  lead: service?.lead ?? "",
+                };
 
-                  <span aria-hidden="true" className={styles.cardIndex}>
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  {/* Decorative: the link's text is the service name below. */}
-                  <span aria-hidden="true" className={styles.cardArrow}>
-                    <svg viewBox="0 0 24 24">
-                      <path d="M6 18 L18 6 M9 6 h9 v9" />
-                    </svg>
-                  </span>
+                return (
+                  <Link
+                    className={styles.card}
+                    data-slide
+                    href={href}
+                    key={slide.slug}
+                    onClick={(event) => openService(event, href)}
+                  >
+                    <span className={styles.frame} data-service-photo>
+                      {card.image ? (
+                        /* eslint-disable-next-line @next/next/no-img-element -- Pre-cropped 4:5 clinic asset. */
+                        <img
+                          alt=""
+                          decoding="async"
+                          height="1250"
+                          sizes="(max-width: 1023px) 70vw, 26vw"
+                          src={`/media/sluzby/${card.image}.webp`}
+                          srcSet={`/media/sluzby/${card.image}-mobile.webp 500w, /media/sluzby/${card.image}.webp 1000w`}
+                          width="1000"
+                        />
+                      ) : null}
+                    </span>
 
-                  <span className={styles.cardBody}>
-                    <span className={styles.cardName}>{card.name}</span>
-                    <span className={styles.cardLead}>{card.lead}</span>
-                  </span>
-                </Link>
+                    <span aria-hidden="true" className={styles.cardIndex}>
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    {/* Decorative: the link's text is the service name below. */}
+                    <span aria-hidden="true" className={styles.cardArrow}>
+                      <svg viewBox="0 0 24 24">
+                        <path d="M6 18 L18 6 M9 6 h9 v9" />
+                      </svg>
+                    </span>
 
-                <div className={styles.points}>
-                  <ul>
-                    {slide.points.map((point) => (
-                      <li key={point}>{point}</li>
-                    ))}
-                  </ul>
+                    <span className={styles.cardBody}>
+                      <span className={styles.cardName}>{card.name}</span>
+                      <span className={styles.cardLead}>{card.lead}</span>
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
 
-                  <p className={styles.price}>
-                    {slide.price.was ? <s>{slide.price.was}</s> : null}
-                    <strong>{slide.price.value}</strong>
-                    <span>{slide.price.note}</span>
-                  </p>
-                </div>
-              </article>
-            );
-          })}
+          <div className={styles.column}>
+            {slides.map((slide, index) => (
+              <div
+                className={styles.points}
+                key={slide.slug}
+                style={{ "--index": index } as CSSProperties}
+              >
+                <ul>
+                  {slide.points.map((point) => (
+                    <li key={point}>{point}</li>
+                  ))}
+                </ul>
+
+                <p className={styles.price}>
+                  {slide.price.was ? <s>{slide.price.was}</s> : null}
+                  <strong>{slide.price.value}</strong>
+                  <span>{slide.price.note}</span>
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
+
+        {/*
+          Where the reader is in the run. A section that holds the viewport
+          owes them that — without it there is no way to tell how much of the
+          page is still this one.
+        */}
+        {slides.length > 1 ? (
+          <p aria-hidden="true" className={styles.counter}>
+            {slides.map((slide, index) => (
+              <span
+                className={styles.tick}
+                key={slide.slug}
+                style={{ "--index": index } as CSSProperties}
+              />
+            ))}
+          </p>
+        ) : null}
 
         <Link className={styles.more} href="/cennik">
           <span>Celý cenník — {entryCount} položiek</span>
