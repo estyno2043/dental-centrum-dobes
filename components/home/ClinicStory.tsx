@@ -159,6 +159,8 @@ export function ClinicStory(): JSX.Element {
     const playhead = { progressVh: 0 };
     let previousSequenceProgress = 0;
     let preloadRequested = false;
+    let appliedRadius = -1;
+    let appliedZIndex = -1;
     let layout: StoryLayout = {
       finalHeight: 1,
       finalLeft: 0,
@@ -183,14 +185,16 @@ export function ClinicStory(): JSX.Element {
       const detailScale = 1 + (fullscreenScale - 1) * motion.state.detail;
       const galleryOpacity = 1 - motion.state.detail;
 
+      /*
+       * Only properties a stylesheet actually reads are written. Setting a
+       * custom property on the section invalidates style for everything that
+       * inherits it — the whole jaw overlay included — so a variable nothing
+       * consumes still costs that invalidation on every scroll sample.
+       */
       section.style.setProperty("--grow", String(motion.state.grow));
-      section.style.setProperty("--pan", String(motion.state.pan));
-      section.style.setProperty("--detail", String(motion.state.detail));
       section.style.setProperty("--handoff", String(motion.state.handoff));
-      section.style.setProperty("--sequence-progress", String(motion.state.sequenceProgress));
       section.style.setProperty("--cue-opacity", String(motion.state.cueOpacity));
       section.style.setProperty("--tease", String(motion.state.teaseProgress));
-      section.style.setProperty("--map-reveal", String(motion.state.mapReveal));
       section.style.setProperty("--exit", String(motion.state.exit));
       section.style.setProperty(
         "--jaw-opacity",
@@ -198,13 +202,26 @@ export function ClinicStory(): JSX.Element {
       );
       gsap.set(track, { force3D: true, x: trackX });
       gsap.set(finalFrame, {
-        borderRadius: motion.state.detail >= 0.999 ? 0 : 4,
         force3D: true,
         scale: detailScale,
         x: -handoffX * motion.state.detail,
         y: -handoffY * motion.state.detail,
-        zIndex: motion.state.detail > 0 ? 2 : 0,
       });
+      /*
+       * These two cross a threshold once each. Writing them every sample asks
+       * for a paint and a stacking change on a photograph that is on its way
+       * to filling the screen.
+       */
+      const nextRadius = motion.state.detail >= 0.999 ? 0 : 4;
+      const nextZIndex = motion.state.detail > 0 ? 2 : 0;
+      if (nextRadius !== appliedRadius) {
+        appliedRadius = nextRadius;
+        gsap.set(finalFrame, { borderRadius: nextRadius });
+      }
+      if (nextZIndex !== appliedZIndex) {
+        appliedZIndex = nextZIndex;
+        gsap.set(finalFrame, { zIndex: nextZIndex });
+      }
       if (intro) gsap.set(intro, { opacity: galleryOpacity });
       gsap.set(otherFrames, { opacity: galleryOpacity });
     };

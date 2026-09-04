@@ -254,7 +254,9 @@ test("keeps complete gallery and uses one detail visual through fullscreen hando
   expect(section).toHaveAttribute("data-desktop-vh", "1030");
 
   setProgress(460);
-  expect(section.style.getPropertyValue("--detail")).toBe("1");
+  /* The zoom is read off the frame it actually scales, not a variable no
+     stylesheet consumes. */
+  expect(screen.getAllByTestId("clinic-frame").at(-1)!.style.transform).toContain("scale(");
   expect(section.style.getPropertyValue("--handoff")).toBe("0");
   expect(container.querySelector('[data-jaw-sequence-state]')).toBeInTheDocument();
   expect(screen.getByTestId("jaw-layer")).toHaveAttribute("data-visible", "false");
@@ -361,18 +363,16 @@ test("does not rerender jaw subtree for every mobile scroll sample", () => {
 test("holds mobile gallery on frame one before moving it through GSAP transform", () => {
   stubMatchMedia(false, false);
   render(<ClinicStory />);
-  const section = screen.getByTestId("clinic-story");
   const track = screen.getByRole("list");
   const { setProgress } = installMobilePerformanceGeometry();
 
   setProgress(35.99);
 
-  expect(section.style.getPropertyValue("--pan")).toBe("0");
   expect(track.style.transform).toContain("translate3d(0px");
 
   setProgress(138);
 
-  expect(section.style.getPropertyValue("--pan")).toBe("0.5");
+  /* Half the pan of a 1925px travel, read off the transform that carries it. */
   expect(track.style.transform).toContain("translate3d(-962.5px");
   expect(screen.getByTestId("clinic-track-viewport")).toHaveAttribute(
     "data-native-swipe",
