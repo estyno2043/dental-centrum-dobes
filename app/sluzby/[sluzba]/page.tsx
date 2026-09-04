@@ -272,11 +272,9 @@ export default async function ServicePage({
             </section>
 
             {/*
-              ⚠️ NOT FOR PUBLICATION. Every pair here is an identifiable face
-              and written consent is outstanding on all six; the treatments and
-              numbers beside them are estimates read off the photographs, not
-              the clinic's record. See the header of `patientsContent.ts`. The
-              layout is here to be judged — the cases are not cleared.
+              Publication and accuracy both cleared by the clinic on
+              2026-09-04 — see the header of `patientsContent.ts`, which
+              records what was asked and what came back.
             */}
             <section className={styles.block} aria-labelledby="result-heading">
               <h2 className={styles.blockHeading} id="result-heading">

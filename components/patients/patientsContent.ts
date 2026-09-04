@@ -33,15 +33,16 @@ export const patientsIntro = {
  * Publication cleared by the clinic on 2026-09-04, relayed by the user:
  * *"fotky zverejnit mozeme, vsetky prace co tam su mozu byt na webe."*
  *
- * That settles consent, which was the blocker on all six pairs. It does not
- * settle accuracy, and one flag stays:
+ * That settles consent, which was the blocker on all six pairs.
  *
- * ⚠️ Every `treatments` and `facts` value is still a PROVISIONAL estimate —
- * reasoned from what the photographs show plus the standard protocol for that
- * kind of work, and written out case by case below. The clinic has not
- * confirmed a single visit count. A patient looking at their own photograph
- * should find their own treatment described, and typical numbers are not
- * theirs. `problem` is safe; it is read off the images.
+ * Accuracy is settled too, as of the same day: every `treatments` and `facts`
+ * value below started as a reading of the photographs plus the standard
+ * protocol for that kind of work, and the clinic confirmed them — *"odhady sú
+ * správne, zatiaľ to necháme tak, potom keď tak upravíme."*
+ *
+ * The reasoning behind each is kept where it was written rather than deleted.
+ * These began as estimates, they were checked rather than supplied, and
+ * whoever revisits a number should be able to see what it was built on.
  */
 
 /**
@@ -53,9 +54,10 @@ export const patientsIntro = {
  * complete, worn and discoloured, and in the "after" both are restored to one
  * shade and one shape.
  *
- * ⚠️ PROVISIONAL — the clinic must confirm every value here before this page
- * goes live. Only `problem` is read off the photographs. The rest is a
- * professional estimate the user asked for on 2026-08-25, reasoned as:
+ * Confirmed by the clinic on 2026-09-04. `problem` is read off the
+ * photographs; the rest began as a professional estimate made on 2026-08-25
+ * and was checked rather than supplied. The reasoning is kept because that is
+ * what it was checked against:
  *
  *   Crowns, not veneers. The "before" shows worn incisal edges and central
  *   incisors distinctly darker than their neighbours — the signature of a
@@ -70,8 +72,8 @@ export const patientsIntro = {
  *   span months rather than weeks; two arches put it at the upper end.
  *
  * A patient looking at their own photograph should find their own treatment
- * described. These numbers are typical, not theirs, so they need a yes from
- * the clinic — the same yes the consent line below already waits on.
+ * described. That is what the clinic's yes settles, and why it was worth
+ * waiting for rather than publishing typical numbers and hoping.
  */
 export const featuredCase: PatientCase = {
   id: "obnova-oboch-oblukov",

@@ -225,10 +225,12 @@ export const pricing = {
  * Publication cleared by the clinic on 2026-09-04, along with the rest of the
  * patient photography. See the header of `patientsContent.ts`.
  *
- * ⚠️ One question about this pair was never answered: the source files came
- * from an AI image editor (`google_nano-banana-2_edit_…`). Retouching light or
- * crop is ordinary; if the editor altered the clinical content, the pair
- * cannot stand as a real result. Asked twice, on 2026-09-03.
+ * The source files came from an AI image editor
+ * (`google_nano-banana-2_edit_…`), which is why it was asked what it changed.
+ * The clinic's answer, 2026-09-04: *"svetlo a orez."* Light and crop are
+ * ordinary retouching and leave the clinical content as photographed, so the
+ * pair stands as a real result. Had the editor altered what the teeth look
+ * like, it could not have.
  */
 export const disclosingCase = {
   before: "/media/hygiena-gbt-pred.webp",

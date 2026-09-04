@@ -216,9 +216,8 @@ export function EntryBody(): JSX.Element {
           Kam to vedie
         </h2>
         {/*
-          ⚠️ NOT FOR PUBLICATION. Six identifiable faces, written consent
-          outstanding on every one, and the treatments beside them are
-          estimates read off the photographs. See `patientsContent.ts`.
+          Publication and accuracy both cleared by the clinic on 2026-09-04;
+          `patientsContent.ts` records what was asked and what came back.
         */}
         <figure className={styles.case}>
           <CaseGallery cases={[featuredCase, ...patientCases]} />
