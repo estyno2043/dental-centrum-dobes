@@ -2,7 +2,12 @@ import { describe, expect, it } from "vitest";
 
 import { priceGroups } from "@/components/pricing/pricingContent";
 import { reviews } from "@/components/reviews/reviewsContent";
-import { objections, offer, proofReviewIds } from "./entryContent";
+import {
+  objections,
+  offer,
+  proofReviewIds,
+  reassurances,
+} from "./entryContent";
 
 const published = new Map(
   priceGroups
@@ -64,14 +69,46 @@ describe("entry examination offer", () => {
    * Every answer restates a position the clinic already holds. A page that
    * invents reassurance is one the clinic then has to keep.
    */
-  it("answers the doubts without promising a duration nobody gave us", () => {
-    expect(objections.length).toBeGreaterThanOrEqual(5);
+  it("answers the doubts the clinic can stand behind", () => {
+    expect(objections.length).toBeGreaterThanOrEqual(7);
     for (const item of objections) {
       expect(item.question.length).toBeGreaterThan(10);
       expect(item.answer.length).toBeGreaterThan(30);
-      // Nobody has told us how long a visit takes; a made-up minute count is
-      // the kind of promise that is broken in the chair.
-      expect(item.answer).not.toMatch(/\b\d+\s*(minút|min|hodin)/i);
     }
+  });
+
+  /*
+   * The duration was the one blank this page was not allowed to fill in for
+   * itself; the clinic gave thirty minutes on 2026-09-04. Guarded in both
+   * places it appears, because a duration that drifts between the summary and
+   * the answer is the kind of contradiction a reader notices and nobody does.
+   *
+   * The earlier guard here rejected any answer containing digits followed by
+   * "minút". It passed the moment the real figure arrived, because the answer
+   * spells the number as a word — so it was checking spelling, not honesty.
+   */
+  it("states the clinic's duration, and the same one twice", () => {
+    const summary = reassurances.find((item) =>
+      item.label.includes("vstupná prehliadka"),
+    );
+    expect(summary?.value).toBe("30 minút");
+
+    const answer = objections.find((item) =>
+      item.question.includes("Ako dlho"),
+    )?.answer;
+    expect(answer).toMatch(/tridsať minút/);
+  });
+
+  /*
+   * One question about bringing things, not two. Answering the same worry
+   * twice made it look as though there were paperwork to organise.
+   */
+  it("asks once what to bring, and answers nothing", () => {
+    const bring = objections.filter((item) =>
+      /priniesť|snímky/i.test(item.question),
+    );
+
+    expect(bring).toHaveLength(1);
+    expect(bring[0]?.answer).toMatch(/^Nič\./);
   });
 });

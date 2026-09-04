@@ -1,12 +1,9 @@
 /**
  * Content for the "Naši pacienti" section.
  *
- * ⚠️ No real patient photography is wired up, and none should be until the
- * clinic supplies **written consent** for each case. Before/after images of
- * identifiable patients are health data; publishing them without documented
- * consent is not a design decision to make on anyone's behalf. Until then
- * every case renders a labelled placeholder, and `before`/`after` are the only
- * fields that need filling in.
+ * Six real before/after pairs, cleared for publication by the clinic on
+ * 2026-09-04. They are health data about identifiable people, so the clearance
+ * is recorded here with its date rather than assumed from the files existing.
  *
  * `treatments` are the tags shown on a case. Keep them to what was actually
  * done — they double as the filter labels if filtering is added later.
@@ -33,23 +30,18 @@ export const patientsIntro = {
 } as const;
 
 /**
- * ⚠️ NONE of these may be published yet, for two separate reasons.
+ * Publication cleared by the clinic on 2026-09-04, relayed by the user:
+ * *"fotky zverejnit mozeme, vsetky prace co tam su mozu byt na webe."*
  *
- * Consent. All six pairs show an identifiable face. Before/after photographs
- * of identifiable patients are health data; publishing them without documented
- * written consent is not a design decision to make on anyone's behalf.
+ * That settles consent, which was the blocker on all six pairs. It does not
+ * settle accuracy, and one flag stays:
  *
- * Accuracy. On 2026-08-25 every case was rewritten against its own
- * photographs, because the original text predated the photography and
- * described nobody. `problem` is now read off the images and is safe. Every
- * `treatments` and `facts` value, however, is a PROVISIONAL estimate the user
- * asked for — reasoned from what the pictures show plus the standard protocol
- * for that kind of work, and written out case by case below so the clinic can
- * check the reasoning rather than just the number.
- *
- * A patient looking at their own photograph should find their own treatment
- * described. Typical numbers are not theirs. The clinic confirms both things
- * in one pass, or this section does not go live.
+ * ⚠️ Every `treatments` and `facts` value is still a PROVISIONAL estimate —
+ * reasoned from what the photographs show plus the standard protocol for that
+ * kind of work, and written out case by case below. The clinic has not
+ * confirmed a single visit count. A patient looking at their own photograph
+ * should find their own treatment described, and typical numbers are not
+ * theirs. `problem` is safe; it is read off the images.
  */
 
 /**

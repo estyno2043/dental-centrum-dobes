@@ -222,8 +222,13 @@ export const pricing = {
  * biofilm that was there the whole time and could not be seen. It is the
  * argument of the whole protocol in one picture.
  *
- * ⚠️ Consent is outstanding, as it is for every patient photograph on this
- * site. See the header of `patientsContent.ts`.
+ * Publication cleared by the clinic on 2026-09-04, along with the rest of the
+ * patient photography. See the header of `patientsContent.ts`.
+ *
+ * ⚠️ One question about this pair was never answered: the source files came
+ * from an AI image editor (`google_nano-banana-2_edit_…`). Retouching light or
+ * crop is ordinary; if the editor altered the clinical content, the pair
+ * cannot stand as a real result. Asked twice, on 2026-09-03.
  */
 export const disclosingCase = {
   before: "/media/hygiena-gbt-pred.webp",

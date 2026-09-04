@@ -1,6 +1,10 @@
 /**
  * The entry examination — the page the clinic wins patients on.
  *
+ * Duration and what to bring were the two blanks left when this was written;
+ * the clinic filled them on 2026-09-04 (thirty minutes, nothing to bring) and
+ * both now sit where somebody looks for them rather than in a footnote.
+ *
  * Everything here is built to answer one question in order: *is this worth
  * ringing about, and what happens if I do?* That is why the offer is stated
  * before the detail, why the reviews are the ones about being afraid rather
@@ -57,6 +61,7 @@ export const reassurances: readonly {
   reviews?: true;
 }[] = [
   { value: "4,5 ★", label: "zo 42 recenzií na Google", reviews: true },
+  { value: "30 minút", label: "trvá vstupná prehliadka" },
   { value: "od 3 rokov", label: "ošetrujeme aj deti" },
   { value: "Po–Št do 19:00", label: "otvorené aj po práci" },
   { value: "Zdarma", label: "parkovanie pri klinike" },
@@ -88,6 +93,13 @@ export const proofReviewIds = [
  * invents reassurance is one the clinic then has to keep.
  */
 export const objections: readonly Objection[] = [
+  {
+    /* Supplied by the clinic on 2026-09-04. */
+    question: "Ako dlho to trvá?",
+    answer:
+      "Zhruba tridsať minút. Vojde sa do obedňajšej pauzy a nemusíte si na to " +
+      "brať voľno.",
+  },
   {
     question: "Bojím sa zubára. Roky som nebol.",
     answer:
@@ -128,10 +140,15 @@ export const objections: readonly Objection[] = [
     answer: "Áno, kartou aj v hotovosti. Platí sa až po ošetrení.",
   },
   {
-    question: "Mám staré snímky od iného zubára.",
+    /*
+     * Two questions used to sit here — one about old X-rays, one about what to
+     * bring. They are the same worry, and answering it twice made it look like
+     * there was paperwork to organise. Supplied by the clinic on 2026-09-04.
+     */
+    question: "Musím si niečo priniesť?",
     answer:
-      "Pokojne ich prineste, pozrieme sa na ne. Vlastný záznam si však robíme " +
-      "od začiatku, aby sme vychádzali z toho, čo sme videli sami.",
+      "Nič. Ak máte staré snímky alebo výsledky, pokojne ich vezmite so sebou " +
+      "— pozrieme sa na ne. Vlastný záznam si však robíme od začiatku.",
   },
 ];
 
