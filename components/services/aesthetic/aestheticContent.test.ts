@@ -49,6 +49,22 @@ describe("aesthetic dentistry", () => {
     expect(gentle[0]?.facts[0]?.value).toBe("Vôbec");
   });
 
+  /*
+   * "Podľa toho, čo pijete" was true and told nobody anything. The clinic gave
+   * the real span on 2026-09-04, and the body names what moves it — a range
+   * without its cause is as useless as the hand-wave it replaced.
+   */
+  it("states how long whitening lasts, and what decides it", () => {
+    const whitening = solutions.find((s) => s.id === "bielenie")!;
+
+    expect(whitening.facts.at(-1)).toEqual({
+      label: "Vydrží",
+      value: "6 mesiacov – 2 roky",
+    });
+    expect(whitening.body).toMatch(/káva|kávy/i);
+    expect(whitening.body).toMatch(/zopakovať/);
+  });
+
   it("gives every option the same three facts to be compared on", () => {
     const labels = solutions.map((s) => s.facts.map((f) => f.label).join("|"));
     expect(new Set(labels).size).toBe(1);

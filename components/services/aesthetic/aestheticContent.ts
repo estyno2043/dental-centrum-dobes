@@ -54,6 +54,13 @@ export const aestheticIntro = {
 
 export const solutions: readonly Solution[] = [
   {
+    /*
+     * The range is the clinic's, given on 2026-09-04, and it replaced "podľa
+     * toho, čo pijete" — which was true, and told nobody anything. A span with
+     * its cause named is what somebody can actually decide against: it is the
+     * only option here that has to be repeated, and that belongs in the
+     * comparison rather than in the small print.
+     */
     id: "bielenie",
     name: "Bielenie Nite White",
     kind: "Domáce bielenie v šablónach",
@@ -62,11 +69,13 @@ export const solutions: readonly Solution[] = [
     body:
       "Odoberieme odtlačok a vyrobíme šablóny presne na váš chrup. Gél si " +
       "aplikujete doma, cez noc, počas dvoch týždňov. Zub sa nijako nebrúsi " +
-      "— zo všetkých riešení je toto jediné úplne vratné.",
+      "— zo všetkých riešení je toto jediné úplne vratné. Ako dlho výsledok " +
+      "vydrží, rozhoduje káva, čaj, víno a cigarety: pri striedmom pití aj " +
+      "dva roky, pri každodennej káve skôr pol roka. Potom sa dá zopakovať.",
     facts: [
       { label: "Zub sa brúsi", value: "Vôbec" },
       { label: "Hotové", value: "Za dva týždne doma" },
-      { label: "Vydrží", value: "Podľa toho, čo pijete" },
+      { label: "Vydrží", value: "6 mesiacov – 2 roky" },
     ],
     gentlest: true,
   },
