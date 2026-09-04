@@ -1,0 +1,427 @@
+/*
+ * Estetická stomatológia.
+ *
+ * Slower and quieter than its siblings: wider margins, larger type, a single
+ * column of prose. These are the clinic's expensive procedures, and a page that
+ * hurries the reader through them reads as a page that is selling. The luxury
+ * here is space and restraint rather than ornament — one gold hairline, one
+ * weight of shadow, and nothing that moves unless it was asked to.
+ */
+
+.headline {
+  max-width: 24ch;
+  margin: 0 0 16px;
+  font-size: clamp(1.75rem, 4vw, 3rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: 40ch;
+  margin: 0 0 clamp(32px, 4.5vw, 56px);
+  color: rgb(38 38 42 / 70%);
+  font-size: clamp(0.98rem, 1.6vw, 1.12rem);
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.sectionHeading {
+  margin: 0 0 clamp(16px, 2.2vw, 24px);
+  font-size: clamp(1.4rem, 2.6vw, 2.1rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.solutions {
+  padding-top: clamp(38px, 5vw, 64px);
+}
+
+/* ------------------------------------------------------------- switcher --- */
+
+.switcher {
+  display: grid;
+  gap: clamp(16px, 2.4vw, 30px);
+  grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+  align-items: start;
+}
+
+.tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/*
+ * A rail rather than a row of pills: five names of this length wrap into an
+ * unreadable block horizontally, and read as a menu vertically. The price sits
+ * on the tab, so the choice is never made blind.
+ */
+.tab {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 13px 16px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: none;
+  color: rgb(38 38 42 / 62%);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition:
+    background-color 0.35s var(--ease),
+    border-color 0.35s var(--ease),
+    color 0.35s var(--ease);
+}
+
+.tab:hover {
+  background: rgb(174 155 126 / 12%);
+  color: var(--ink);
+}
+
+.tab[aria-selected="true"] {
+  border-color: rgb(174 155 126 / 55%);
+  background: rgb(255 255 255 / 62%);
+  color: var(--ink);
+  box-shadow: 0 10px 26px -20px rgb(60 48 34 / 55%);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--taupe-deep);
+  outline-offset: 2px;
+}
+
+.tabName {
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  line-height: 1.3;
+}
+
+.tabPrice {
+  color: var(--taupe-deep);
+  font-size: 0.76rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------------------- panel --- */
+
+.panel {
+  padding: clamp(24px, 3.4vw, 42px);
+  border: 1px solid rgb(174 155 126 / 42%);
+  border-radius: 20px;
+  background:
+    radial-gradient(130% 100% at 6% 0%, rgb(174 155 126 / 14%), transparent 58%),
+    rgb(255 255 255 / 58%);
+  box-shadow: 0 26px 54px -38px rgb(60 48 34 / 55%);
+}
+
+.panel:focus-visible {
+  outline: 2px solid var(--taupe-deep);
+  outline-offset: 3px;
+}
+
+.panelHead {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding-bottom: clamp(16px, 2vw, 22px);
+  border-bottom: 1px solid rgb(138 115 88 / 26%);
+  margin-bottom: clamp(16px, 2vw, 22px);
+}
+
+.panelKind {
+  margin: 0 0 5px;
+  color: var(--taupe-deep);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.panelName {
+  margin: 0;
+  font-size: clamp(1.15rem, 2.2vw, 1.55rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.panelPrice {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Per tooth, said out loud — a four-figure smile quoted as a three-figure
+   number is the surprise that ends the appointment. */
+.panelPrice span {
+  margin-top: 5px;
+  color: rgb(38 38 42 / 55%);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.panelSolves {
+  margin: 0 0 12px;
+  font-size: clamp(1rem, 1.8vw, 1.18rem);
+  font-weight: 500;
+  letter-spacing: -0.018em;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.panelBody {
+  max-width: 46ch;
+  margin: 0 0 clamp(20px, 2.6vw, 28px);
+  color: rgb(38 38 42 / 72%);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.panelFacts {
+  display: grid;
+  margin: 0;
+  gap: 16px 30px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.panelFacts dt {
+  color: rgb(38 38 42 / 52%);
+  font-size: 0.67rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.panelFacts dd {
+  margin: 5px 0 0;
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  line-height: 1.3;
+}
+
+/* The one option that can be undone says so, because it changes the decision. */
+.gentlest {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  align-items: baseline;
+  margin: clamp(20px, 2.6vw, 28px) 0 0;
+  padding: 12px 16px;
+  border-left: 2px solid var(--taupe);
+  border-radius: 0 10px 10px 0;
+  background: rgb(174 155 126 / 13%);
+  color: rgb(38 38 42 / 75%);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.gentlest span {
+  color: var(--taupe-deep);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* -------------------------------------------------------------- preview --- */
+
+.preview {
+  display: grid;
+  gap: clamp(22px, 3.5vw, 48px);
+  padding-top: clamp(58px, 8vw, 110px);
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  align-items: start;
+}
+
+.previewLead {
+  max-width: 42ch;
+  margin: 0 0 clamp(22px, 3vw, 32px);
+  color: rgb(38 38 42 / 72%);
+  font-size: 0.96rem;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.previewSteps {
+  padding: 0;
+  margin: 0 0 clamp(18px, 2.4vw, 26px);
+  list-style: none;
+}
+
+.previewSteps li {
+  padding: 14px 0;
+  border-top: 1px solid rgb(138 115 88 / 24%);
+}
+
+.previewSteps li:last-child {
+  border-bottom: 1px solid rgb(138 115 88 / 24%);
+}
+
+.previewStepHead {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.previewStepHead h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.previewStepHead span {
+  color: var(--taupe-deep);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.previewSteps p {
+  margin: 4px 0 0;
+  color: rgb(38 38 42 / 68%);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.previewNote {
+  max-width: 40ch;
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.92rem;
+  font-weight: 500;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* ----------------------------------------------------------------- work --- */
+
+.work {
+  padding-top: clamp(58px, 8vw, 110px);
+}
+
+.case {
+  max-width: 42rem;
+  margin: 0;
+}
+
+.caseNote {
+  margin-top: 12px;
+  color: rgb(38 38 42 / 58%);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+/* ------------------------------------------------------------ longevity --- */
+
+.longevity {
+  padding-top: clamp(58px, 8vw, 110px);
+}
+
+/* The answer, given the size of the question it settles. */
+.longevityClaim {
+  max-width: 22ch;
+  margin: 0 0 16px;
+  font-size: clamp(1.4rem, 3.2vw, 2.3rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.longevityBody {
+  max-width: 46ch;
+  margin: 0 0 clamp(22px, 3vw, 30px);
+  color: rgb(38 38 42 / 72%);
+  font-size: 0.94rem;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.longevityLink {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  padding: 14px 24px;
+  border: 1px solid rgb(138 115 88 / 45%);
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    background-color 0.35s var(--ease),
+    border-color 0.35s var(--ease);
+}
+
+.longevityLink svg {
+  transition: transform 0.35s var(--ease);
+}
+
+.longevityLink:hover,
+.longevityLink:focus-visible {
+  border-color: var(--taupe-deep);
+  background: rgb(174 155 126 / 16%);
+}
+
+.longevityLink:hover svg,
+.longevityLink:focus-visible svg {
+  transform: translateX(4px);
+}
+
+@media (max-width: 860px) {
+  .switcher,
+  .preview {
+    grid-template-columns: 1fr;
+  }
+
+  /* Horizontal on a phone, where a five-item rail costs a screen of height. */
+  .tabs {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+
+  .tab {
+    flex: none;
+  }
+
+  .panelFacts {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab,
+  .longevityLink,
+  .longevityLink svg {
+    transition: none;
+  }
+}

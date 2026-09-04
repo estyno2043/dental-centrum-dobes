@@ -4,6 +4,7 @@ import type { JSX } from "react";
 
 import { ServiceBooking } from "@/components/booking/ServiceBooking";
 import { SiteHeader } from "@/components/hero/SiteHeader";
+import { AestheticBody } from "@/components/services/aesthetic/AestheticBody";
 import { EntryBody } from "@/components/services/entry/EntryBody";
 import { HygieneBody } from "@/components/services/hygiene/HygieneBody";
 import { CaseGallery } from "@/components/patients/CaseGallery";
@@ -96,6 +97,7 @@ function Photo({
 const BESPOKE_BODIES: Readonly<Record<string, () => JSX.Element>> = {
   "dentalna-hygiena": HygieneBody,
   "vstupna-prehliadka": EntryBody,
+  "esteticka-stomatologia": AestheticBody,
 };
 
 export default async function ServicePage({
