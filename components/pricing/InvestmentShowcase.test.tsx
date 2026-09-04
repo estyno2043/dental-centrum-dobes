@@ -172,7 +172,12 @@ describe("InvestmentShowcase", () => {
     expect(flat).toMatch(/\.filmstrip \{[^}]*var\(--intro\)/);
 
     // The title keeps its size; it is leaving, not shrinking.
-    expect(flat).toContain("font-size: clamp(1.9rem, 4.4vw, 3.4rem)");
+    /*
+     * The card is back to the size it was; the title is what yields on a short
+     * screen, so its size is height-aware rather than width-only.
+     */
+    expect(flat).toContain("font-size: clamp(1.6rem, min(4.4vw, 4.4vh), 3.4rem)");
+    expect(flat).toContain("clamp(17rem, 41vh, 27.5rem)");
   });
 
   /*
