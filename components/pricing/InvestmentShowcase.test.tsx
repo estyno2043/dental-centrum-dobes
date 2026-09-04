@@ -153,21 +153,42 @@ describe("InvestmentShowcase", () => {
   });
 
   /*
-   * The hold is not dead scrolling. The title arrives full size and gives way
-   * across it while the photograph grows into the room it frees, so by the
-   * time the run starts the reader is looking at the work rather than the
-   * heading.
+   * The hold is not dead scrolling. The title says its piece and leaves —
+   * fading out rather than shrinking, with a negative margin taking its box
+   * with it so the card re-centres into the whole stage instead of sitting
+   * under an empty gap. The card and its columns grow into the room.
    */
-  it("shrinks the title and grows the photograph across the hold", () => {
+  it("clears the title and grows the card across the hold", () => {
     const css = readFileSync(
       "components/pricing/investment.module.css",
       "utf8",
     ).replace(/\/\*[\s\S]*?\*\//g, "");
     const flat = css.replace(/\s+/g, " ");
 
-    expect(flat).toContain("--shrink: calc(1 - var(--intro) * 0.46)");
-    expect(flat).toContain("font-size: calc(clamp(1.9rem, 4.4vw, 3.4rem) * var(--shrink))");
+    // Gone by two thirds of the hold, not merely dimmed.
+    expect(flat).toContain("opacity: clamp(0, calc(1 - var(--intro) * 1.5), 1)");
+    expect(flat).toContain("calc(var(--intro-height, 0px) * var(--intro) * -1)");
+    expect(flat).toContain("--grow: calc(1 + var(--intro) * 0.07)");
     expect(flat).toMatch(/\.filmstrip \{[^}]*var\(--intro\)/);
+
+    // The title keeps its size; it is leaving, not shrinking.
+    expect(flat).toContain("font-size: clamp(1.9rem, 4.4vw, 3.4rem)");
+  });
+
+  /*
+   * The margin that removes the title's box has to be its real height. Two
+   * lines of balanced text at a clamped size is not a number a stylesheet can
+   * know, and guessing leaves either a gap or the card sliding too far.
+   */
+  it("measures the title rather than guessing its height", () => {
+    const source = readFileSync(
+      "components/pricing/InvestmentShowcase.tsx",
+      "utf8",
+    ).replace(/\/\*[\s\S]*?\*\//g, "");
+
+    expect(source).toContain("--intro-height");
+    expect(source).toContain("[data-intro]");
+    expect(source).toContain('window.addEventListener("resize", onResize)');
   });
 
   /*

@@ -100,17 +100,20 @@
 }
 
 /*
- * The title arrives at full size and gives way.
+ * The title says its piece and leaves.
  *
- * `--shrink` drives both lines from one number, so they stay in proportion,
- * and the eyebrow leaves entirely — at the smaller size it is a third piece of
- * furniture above the thing the reader came to look at.
+ * It fades out over the first two thirds of the hold — `× 1.5` — rather than
+ * shrinking, and the negative margin underneath takes its box with it, so the
+ * card and its columns re-centre into the whole stage instead of sitting
+ * below an empty gap. `--intro-height` is measured in the component, because
+ * the height of two lines of balanced text is not something CSS can be told
+ * in advance.
  */
 .intro {
-  --shrink: calc(1 - var(--intro) * 0.46);
-
   max-width: 46rem;
-  margin: 0 auto;
+  margin: 0 auto calc(var(--intro-height, 0px) * var(--intro) * -1);
+  opacity: clamp(0, calc(1 - var(--intro) * 1.5), 1);
+  pointer-events: none;
   text-align: center;
 }
 
@@ -119,10 +122,7 @@
   gap: 12px;
   align-items: center;
   justify-content: center;
-  height: calc(1.2em * (1 - var(--intro)));
-  margin: 0 0 calc(14px * (1 - var(--intro)));
-  overflow: hidden;
-  opacity: calc(1 - var(--intro) * 1.6);
+  margin: 0 0 14px;
   color: var(--taupe);
   font-size: 0.72rem;
   font-weight: 600;
@@ -138,8 +138,8 @@
 }
 
 .headline {
-  margin: 0 0 calc(12px * var(--shrink));
-  font-size: calc(clamp(1.9rem, 4.4vw, 3.4rem) * var(--shrink));
+  margin: 0 0 12px;
+  font-size: clamp(1.9rem, 4.4vw, 3.4rem);
   font-weight: 500;
   letter-spacing: -0.04em;
   line-height: 1.04;
@@ -150,14 +150,21 @@
   max-width: 34rem;
   margin: 0 auto;
   color: rgb(250 249 246 / 68%);
-  font-size: calc(clamp(0.92rem, 1.4vw, 1.05rem) * var(--shrink));
+  font-size: clamp(0.92rem, 1.4vw, 1.05rem);
   line-height: 1.6;
   text-wrap: pretty;
 }
 
 /* --------------------------------------------------------------- slides --- */
 
+/*
+ * `--grow` is the room the departing title hands over, spent on the thing the
+ * reader is actually here for. Modest on purpose: enough to feel the section
+ * settle, not so much that the layout appears to jump.
+ */
 .slides {
+  --grow: calc(1 + var(--intro) * 0.07);
+
   display: grid;
   width: 100%;
   max-width: 96rem;
@@ -214,7 +221,7 @@
 
 .name h3 {
   margin: 0;
-  font-size: clamp(1.7rem, 3.6vw, 3rem);
+  font-size: calc(clamp(1.7rem, 3.6vw, 3rem) * var(--grow));
   font-weight: 500;
   letter-spacing: -0.042em;
   line-height: 1.02;
@@ -387,7 +394,7 @@
   position: relative;
   padding-left: 26px;
   color: rgb(250 249 246 / 88%);
-  font-size: clamp(0.86rem, 1.25vw, 0.98rem);
+  font-size: calc(clamp(0.86rem, 1.25vw, 0.98rem) * var(--grow));
   line-height: 1.45;
   text-wrap: pretty;
 }
@@ -420,7 +427,7 @@
 }
 
 .price strong {
-  font-size: clamp(1.7rem, 3vw, 2.4rem);
+  font-size: calc(clamp(1.7rem, 3vw, 2.4rem) * var(--grow));
   font-variant-numeric: tabular-nums;
   font-weight: 500;
   letter-spacing: -0.035em;
@@ -576,12 +583,12 @@
   }
 
   .intro {
-    --shrink: 1;
+    margin-bottom: 0;
+    opacity: 1;
   }
 
-  .eyebrow {
-    height: auto;
-    opacity: 1;
+  .slides {
+    --grow: 1;
   }
 
   .track {

@@ -42,6 +42,19 @@ export function InvestmentShowcase(): JSX.Element {
     const section = sectionRef.current;
     if (!section) return;
 
+    /*
+     * The intro's own height, handed to CSS so the negative margin that
+     * removes it can be exact. Two lines of balanced text at a clamped size is
+     * not a number a stylesheet can know in advance, and guessing it leaves
+     * either a gap under the title or the card sliding up too far.
+     */
+    const measureIntro = () => {
+      const intro = section.querySelector<HTMLElement>("[data-intro]");
+      if (intro) {
+        section.style.setProperty("--intro-height", `${intro.offsetHeight}px`);
+      }
+    };
+
     const update = () => {
       const rect = section.getBoundingClientRect();
       /*
@@ -96,12 +109,18 @@ export function InvestmentShowcase(): JSX.Element {
       }
     };
 
+    const onResize = () => {
+      measureIntro();
+      update();
+    };
+
+    measureIntro();
     update();
     window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
+    window.addEventListener("resize", onResize);
     return () => {
       window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
+      window.removeEventListener("resize", onResize);
     };
   }, []);
 
@@ -142,7 +161,7 @@ export function InvestmentShowcase(): JSX.Element {
       </div>
 
       <div className={styles.stage}>
-        <header className={styles.intro}>
+        <header className={styles.intro} data-intro>
           <p className={styles.eyebrow}>
             <span aria-hidden="true" className={styles.eyebrowRule} />
             {investmentIntro.eyebrow}
