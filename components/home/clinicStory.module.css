@@ -320,18 +320,33 @@
 }
 
 @media (max-width: 767px) {
+  /*
+   * Three viewport heights used to disagree here: pixels frozen by JS at
+   * mount, `svh` fallbacks, and live `dvh`. iOS retracts the URL bar on the
+   * first scroll, so the frozen pixels described a viewport that no longer
+   * existed while the `dvh` layout kept moving underneath them.
+   *
+   * One rule now: the pin is sized in `lvh`, which never changes *and* covers
+   * the tallest state, so no strip of the next section can show beneath it.
+   * Everything inside composes in `svh`, the always-visible box, so nothing
+   * hides behind the bar and nothing reflows while it retracts.
+   */
   .section {
-    height: 780svh;
-    height: var(--story-height, 780svh);
+    height: 780lvh;
   }
 
   .pin {
+    height: 100lvh;
+  }
+
+  .galleryLayer,
+  .jawLayer {
     height: 100svh;
-    height: var(--pin-height, 100svh);
+    bottom: auto;
   }
 
   .galleryLayer {
-    padding: max(62px, 9dvh) 0 max(24px, 4dvh);
+    padding: max(62px, 9svh) 0 max(24px, 4svh);
     gap: 24px;
   }
 
@@ -356,7 +371,7 @@
   }
 
   .track {
-    --frame-h: 56dvh;
+    --frame-h: 56svh;
 
     width: max-content;
     padding: 0 9vw;
@@ -374,7 +389,7 @@
   }
 
   .jawViewport {
-    width: min(calc(100% - 1rem), calc(92dvh * 9 / 16));
+    width: min(calc(100% - 1rem), calc(92svh * 9 / 16));
     border-radius: clamp(16px, 5vw, 26px);
     aspect-ratio: 9 / 16;
   }

@@ -76,6 +76,14 @@ function stubMatchMedia(reduced: boolean, wide = true) {
   );
 }
 
+function mobileMediaBlock(): string {
+  const start = cssText.indexOf("@media (max-width: 767px) {");
+  if (start < 0) throw new Error("mobile media block missing from clinicStory.module.css");
+  const end = cssText.indexOf("\n}\n", start);
+  if (end < 0) throw new Error("mobile media block is unterminated");
+  return cssText.slice(start, end);
+}
+
 function triggerResizeObservers() {
   for (const callback of resizeCallbacks) callback([], {} as ResizeObserver);
   ScrollTrigger.refresh();
@@ -372,7 +380,7 @@ test("holds mobile gallery on frame one before moving it through GSAP transform"
   );
 });
 
-test("keeps mobile sticky geometry stable when browser chrome changes only height", () => {
+test("leaves mobile sticky geometry to CSS instead of freezing mount-time pixels", () => {
   Object.defineProperty(window, "innerHeight", { configurable: true, value: 844 });
   Object.defineProperty(window, "innerWidth", { configurable: true, value: 390 });
   stubMatchMedia(false, false);
@@ -381,14 +389,48 @@ test("keeps mobile sticky geometry stable when browser chrome changes only heigh
   const pin = screen.getByTestId("clinic-story-pin");
 
   triggerResizeObservers();
-  expect(section.style.getPropertyValue("--story-height")).toBe("6583.2px");
-  expect(pin.style.getPropertyValue("--pin-height")).toBe("844px");
+
+  /*
+   * These two used to be written as the mount-time `window.innerHeight` and
+   * then deliberately never refreshed, so that a retracting URL bar could not
+   * jump the scene mid-scroll. Stability was the right goal; pixels were the
+   * wrong way to reach it. iOS retracts that bar on the first scroll, which
+   * left the pin ~135px shorter than the screen — a dead strip showing the
+   * next section — and left every phase boundary calibrated to a viewport
+   * that no longer existed. `lvh` is constant *and* covers the tallest state,
+   * so the geometry is now stable by construction rather than by a guard.
+   */
+  expect(pin.style.getPropertyValue("--pin-height")).toBe("");
+  expect(section.style.getPropertyValue("--story-height")).toBe("");
 
   Object.defineProperty(window, "innerHeight", { configurable: true, value: 700 });
   triggerResizeObservers();
 
-  expect(section.style.getPropertyValue("--story-height")).toBe("6583.2px");
-  expect(pin.style.getPropertyValue("--pin-height")).toBe("844px");
+  expect(pin.style.getPropertyValue("--pin-height")).toBe("");
+  expect(section.style.getPropertyValue("--story-height")).toBe("");
+});
+
+test("sizes the mobile pinned scene in viewport units the URL bar cannot move", () => {
+  const mobile = mobileMediaBlock();
+
+  expect(mobile).toMatch(/\.pin\s*\{[^}]*height:\s*100lvh;/);
+  expect(mobile).toMatch(/\.section\s*\{[^}]*height:\s*780lvh;/);
+
+  /*
+   * `dvh` tracks the retracting URL bar, so any layout expressed in it
+   * reflows the seven-frame flex track on every frame of that retraction —
+   * during the exact scroll that starts the gallery. The scene composes in
+   * `svh` (always visible) inside a pin sized in `lvh` (always covering).
+   */
+  expect(mobile.replace(/\/\*[\s\S]*?\*\//g, "")).not.toMatch(/dvh/);
+  expect(mobile).toMatch(/--frame-h:\s*56svh;/);
+});
+
+test("composes mobile scene layers inside the always-visible viewport box", () => {
+  const mobile = mobileMediaBlock();
+
+  expect(mobile).toMatch(/\.galleryLayer,\s*\n?\s*\.jawLayer\s*\{[^}]*height:\s*100svh;/);
+  expect(mobile).toMatch(/\.galleryLayer,\s*\n?\s*\.jawLayer\s*\{[^}]*bottom:\s*auto;/);
 });
 
 test("links mobile gallery directly to scroll and ignores browser-bar resizes", () => {

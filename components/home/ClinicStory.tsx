@@ -114,6 +114,7 @@ function sameRenderFlags(left: RenderFlags, right: RenderFlags): boolean {
 export function ClinicStory(): JSX.Element {
   const sectionRef = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
+  const galleryRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLUListElement>(null);
   const finalFrameRef = useRef<HTMLLIElement>(null);
   const jawSequenceRef = useRef<JawFrameSequenceHandle>(null);
@@ -158,10 +159,6 @@ export function ClinicStory(): JSX.Element {
     const playhead = { progressVh: 0 };
     let previousSequenceProgress = 0;
     let preloadRequested = false;
-    let stableMobileViewport = {
-      height: Math.max(1, window.innerHeight),
-      width: Math.max(1, window.innerWidth),
-    };
     let layout: StoryLayout = {
       finalHeight: 1,
       finalLeft: 0,
@@ -226,20 +223,17 @@ export function ClinicStory(): JSX.Element {
 
     const measure = () => {
       /* All layout reads stay together. ScrollTrigger runs this only on refresh. */
-      const viewportWidth = Math.max(1, window.innerWidth);
-      const liveViewportHeight = Math.max(1, window.innerHeight);
-      if (
-        profile === "mobile" &&
-        Math.abs(viewportWidth - stableMobileViewport.width) > 40
-      ) {
-        stableMobileViewport = {
-          height: liveViewportHeight,
-          width: viewportWidth,
-        };
-      }
-      const viewportHeight = profile === "mobile"
-        ? stableMobileViewport.height
-        : liveViewportHeight;
+      /*
+       * The gallery layer, not the window, is the box the frames are laid out
+       * in and the box the detail frame zooms to fill. On mobile it is sized
+       * in `svh`, so it keeps one height whatever the URL bar does — which is
+       * what the frozen mount-time `window.innerHeight` was reaching for, now
+       * read straight from the element instead of guessed once and held.
+       * The window is the fallback for environments without layout.
+       */
+      const composeBox = galleryRef.current;
+      const viewportWidth = Math.max(1, composeBox?.offsetWidth || window.innerWidth);
+      const viewportHeight = Math.max(1, composeBox?.offsetHeight || window.innerHeight);
       const finalLeft = finalFrame.offsetLeft;
       const finalWidth = Math.max(1, finalFrame.offsetWidth);
       const finalTop = track.offsetTop;
@@ -256,15 +250,11 @@ export function ClinicStory(): JSX.Element {
         viewportWidth,
       };
 
-      /* Writes happen only after every measurement above has completed. */
-      section.style.setProperty("--travel", `${layout.trackTravel}px`);
-      if (profile === "mobile") {
-        section.style.setProperty(
-          "--story-height",
-          `${(MOBILE_STORY_SCROLL_VH * viewportHeight) / 100}px`,
-        );
-        pin.style.setProperty("--pin-height", `${viewportHeight}px`);
-      }
+      /*
+       * Nothing is written back. The pinned scene is sized in CSS `lvh`/`svh`,
+       * which the retracting mobile URL bar cannot move, so there is no
+       * mount-time pixel height to freeze here and later disagree with.
+       */
     };
 
     const sync = () => {
@@ -352,7 +342,7 @@ export function ClinicStory(): JSX.Element {
       style={{ pointerEvents: "auto" }}
     >
       <div className={styles.pin} data-testid="clinic-story-pin" ref={pinRef}>
-        <div className={styles.galleryLayer}>
+        <div className={styles.galleryLayer} ref={galleryRef}>
           <header className={styles.intro}>
             <p className={styles.eyebrow}>
               <span className={styles.eyebrowRule} aria-hidden="true" />
