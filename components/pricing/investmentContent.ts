@@ -5,10 +5,12 @@
  * left, its card in the middle and what you get on the right, over a
  * photograph that cross-fades as you scroll from one to the next.
  *
- * ⚠️ Built for several and populated with one. The background photography for
- * the rest has not been chosen, and a slide with a borrowed background is
- * worse than a section with one slide — so `slides` is the whole of it, and
- * adding the second is an entry here rather than a rebuild.
+ * ⚠️ Every figure is the clinic's, from the price list valid 1. 3. 2026.
+ *
+ * ⚠️ The whitening card's photograph is ceramic work, not whitening — there is
+ * no photograph of whitening in the library. It reads as white and as careful
+ * craft, which is why it stands in, and it is captioned by the card's own text
+ * rather than passed off as something it is not. A real one should replace it.
  *
  * Bullets, not prose, and deliberately mixed: what it includes, what it costs
  * and what it saves you sit in the same list. Somebody scanning this is
@@ -19,6 +21,20 @@
 export type ShowcaseSlide = {
   /** Matches a service slug, so the card links and morphs like the others. */
   readonly slug: string;
+  /**
+   * Overrides what the card shows.
+   *
+   * A slide is a *treatment*, and a service page can hold several — whitening
+   * is one of five options on the aesthetics page. Without this the card would
+   * carry that page's own name and photograph, and promise a reader who came
+   * for whitening something broader than they asked about. The link still goes
+   * to the service page, where whitening is the first thing open.
+   */
+  readonly card?: {
+    readonly image: string;
+    readonly name: string;
+    readonly lead: string;
+  };
   /** Short. The card underneath carries the service's full name. */
   readonly title: string;
   readonly kicker: string;
@@ -57,6 +73,29 @@ export const slides: readonly ShowcaseSlide[] = [
       value: "80 €",
       was: "105 €",
       note: "Panoramatický snímok nedoplácate.",
+    },
+  },
+  {
+    slug: "esteticka-stomatologia",
+    kicker: "Estetická stomatológia",
+    title: "Bielenie Nite White",
+    background: "cennik-pozadie-02",
+    backgroundAlt: "",
+    card: {
+      image: "bielenie-karta",
+      name: "Bielenie Nite White",
+      lead: "Šablóny na mieru, gél doma cez noc. Zub sa nijako nebrúsi.",
+    },
+    points: [
+      "Šablóny vyrobené presne na váš chrup",
+      "Bielite doma, cez noc, počas dvoch týždňov",
+      "Zub sa nebrúsi — jediné riešenie, ktoré sa dá vziať späť",
+      "Výsledok vydrží 6 mesiacov až 2 roky",
+      "Keď vyprchá, dá sa jednoducho zopakovať",
+    ],
+    price: {
+      value: "260 €",
+      note: "Za celý chrup, vrátane šablón.",
     },
   },
 ];

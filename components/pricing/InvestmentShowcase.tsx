@@ -130,6 +130,16 @@ export function InvestmentShowcase(): JSX.Element {
           {slides.map((slide, index) => {
             const service = allServices.find((s) => s.slug === slide.slug);
             const href = `/sluzby/${slide.slug}`;
+            /*
+             * A slide is a treatment; a service page can hold several. The
+             * override is what stops a whitening slide carrying the whole
+             * aesthetics page's name and photograph.
+             */
+            const card = slide.card ?? {
+              image: service?.image ?? "",
+              name: service?.name ?? "",
+              lead: service?.lead ?? "",
+            };
 
             return (
               <article
@@ -150,15 +160,15 @@ export function InvestmentShowcase(): JSX.Element {
                   onClick={(event) => openService(event, href)}
                 >
                   <span className={styles.frame} data-service-photo>
-                    {service?.image ? (
+                    {card.image ? (
                       /* eslint-disable-next-line @next/next/no-img-element -- Pre-cropped 4:5 clinic asset. */
                       <img
                         alt=""
                         decoding="async"
                         height="1250"
                         sizes="(max-width: 1023px) 70vw, 26vw"
-                        src={`/media/sluzby/${service.image}.webp`}
-                        srcSet={`/media/sluzby/${service.image}-mobile.webp 500w, /media/sluzby/${service.image}.webp 1000w`}
+                        src={`/media/sluzby/${card.image}.webp`}
+                        srcSet={`/media/sluzby/${card.image}-mobile.webp 500w, /media/sluzby/${card.image}.webp 1000w`}
                         width="1000"
                       />
                     ) : null}
@@ -175,8 +185,8 @@ export function InvestmentShowcase(): JSX.Element {
                   </span>
 
                   <span className={styles.cardBody}>
-                    <span className={styles.cardName}>{service?.name}</span>
-                    <span className={styles.cardLead}>{service?.lead}</span>
+                    <span className={styles.cardName}>{card.name}</span>
+                    <span className={styles.cardLead}>{card.lead}</span>
                   </span>
                 </Link>
 

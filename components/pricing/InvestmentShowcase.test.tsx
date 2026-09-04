@@ -36,6 +36,38 @@ describe("InvestmentShowcase", () => {
     expect(container.querySelector("[data-slide]")).not.toBeNull();
   });
 
+  /*
+   * A slide is a treatment; a service page can hold several. Whitening is one
+   * of five options on the aesthetics page, and without its own card the slide
+   * would carry that page's name and photograph — promising somebody who came
+   * for whitening something broader than they asked about.
+   */
+  it("lets a slide carry its own card while linking to the service", () => {
+    render(<InvestmentShowcase />);
+
+    const whitening = slides.find((s) => s.slug === "esteticka-stomatologia")!;
+    const link = screen.getByRole("link", { name: /Bielenie Nite White/ });
+
+    expect(link).toHaveAttribute("href", "/sluzby/esteticka-stomatologia");
+    expect(link.querySelector("img")).toHaveAttribute(
+      "src",
+      `/media/sluzby/${whitening.card!.image}.webp`,
+    );
+    expect(link).not.toHaveTextContent("Fazety, keramické korunky");
+  });
+
+  /*
+   * The card promises whitening and the page has to open on it — otherwise the
+   * click lands somewhere that has to be searched for what was clicked.
+   */
+  it("opens the aesthetics page on the treatment the card promised", async () => {
+    const { solutions } = await import(
+      "@/components/services/aesthetic/aestheticContent"
+    );
+
+    expect(solutions[0]?.id).toBe("bielenie");
+  });
+
   it("points every slide at a service that exists", () => {
     for (const slide of slides) {
       expect(
@@ -62,10 +94,17 @@ describe("InvestmentShowcase", () => {
    */
   it("drives the run from one value, and drops it under reduced motion", () => {
     const css = readFileSync("components/pricing/investment.module.css", "utf8");
+    // Comments stripped: the note above the rule explains why `abs()` is
+    // avoided, and the guard below would otherwise trip over that sentence.
+    const rules = css.replace(/\/\*[\s\S]*?\*\//g, "");
 
-    expect(css).toMatch(/min-height:\s*calc\(\(var\(--count\) \+ 1\) \* 100vh\)/);
-    expect(css).toMatch(/abs\(var\(--slide\) - var\(--index\)\)/);
-    expect(css).toMatch(
+    expect(rules).toMatch(/min-height:\s*calc\(\(var\(--count\) \+ 1\) \* 100vh\)/);
+    // `max(a - b, b - a)` rather than `abs()` — same arithmetic, but `abs()`
+    // only reached Chrome in 2025 and this has to work on older phones.
+    expect(rules.replace(/\s+/g, " ")).toContain(
+      "max(var(--slide) - var(--index), var(--index) - var(--slide))",
+    );
+    expect(rules).toMatch(
       /@media \(prefers-reduced-motion: reduce\)[\s\S]*min-height:\s*0/,
     );
   });

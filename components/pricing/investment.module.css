@@ -29,15 +29,25 @@
 }
 
 /*
- * Each layer is lit only while the run is on its slide. `abs(--slide - index)`
- * is the distance in slides; one slide away is fully gone, so the two crossing
- * layers always sum to roughly one and the ground never dips to black between
- * them.
+ * Each layer is lit only while the run is on its slide.
+ *
+ * The `max()` is the distance in slides — `max(a - b, b - a)` is `abs()`
+ * written the long way, and it is written the long way for reach: `abs()` only
+ * arrived in Chrome in 2025, while `max()` has been everywhere for years. Both
+ * compute the same thing and both survive the build; this one works on more of
+ * the phones the clinic's patients actually hold.
+ *
+ * One slide away is fully gone, so the two crossing layers always sum to
+ * roughly one and the ground never dips to black between them.
  */
 .backdropLayer {
   position: absolute;
   inset: 0;
-  opacity: clamp(0, calc(1 - abs(var(--slide) - var(--index))), 1);
+  opacity: clamp(
+    0,
+    calc(1 - max(var(--slide) - var(--index), var(--index) - var(--slide))),
+    1
+  );
   transition: opacity 0.2s linear;
 }
 
@@ -53,8 +63,12 @@
 .scrim {
   position: absolute;
   background:
-    linear-gradient(180deg, rgb(20 20 23 / 82%) 0%, rgb(20 20 23 / 55%) 34%,
-      rgb(20 20 23 / 72%) 100%),
+    linear-gradient(
+      180deg,
+      rgb(20 20 23 / 82%) 0%,
+      rgb(20 20 23 / 55%) 34%,
+      rgb(20 20 23 / 72%) 100%
+    ),
     radial-gradient(120% 80% at 50% 100%, rgb(20 20 23 / 60%), transparent 70%);
   inset: 0;
 }
@@ -139,7 +153,11 @@
   gap: clamp(20px, 3vw, 56px);
   grid-area: 1 / 1;
   grid-template-columns: minmax(0, 1fr) minmax(0, 22rem) minmax(0, 1fr);
-  opacity: clamp(0, calc(1 - abs(var(--slide) - var(--index))), 1);
+  opacity: clamp(
+    0,
+    calc(1 - max(var(--slide) - var(--index), var(--index) - var(--slide))),
+    1
+  );
   pointer-events: none;
   transition: opacity 0.2s linear;
 }
