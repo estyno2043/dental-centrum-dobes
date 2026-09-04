@@ -3,7 +3,7 @@ import { Hero } from "@/components/hero/Hero";
 import { ClinicStory } from "@/components/home/ClinicStory";
 import { DriftScene } from "@/components/drift/DriftScene";
 import { PatientsSection } from "@/components/patients/PatientsSection";
-import { PricingBand } from "@/components/pricing/PricingBand";
+import { InvestmentShowcase } from "@/components/pricing/InvestmentShowcase";
 import { ServicesSection } from "@/components/services/ServicesSection";
 import { SiteHeader } from "@/components/hero/SiteHeader";
 import { TeamSection } from "@/components/team/TeamSection";
@@ -40,10 +40,11 @@ export default function HomePage() {
       <ServicesSection />
       <TeamSection />
       {/*
-        The page closes on ink. Three sections have held the same pale ground
-        by then, and the last word should land rather than fade.
+        The page closes on ink and on a photograph. Three sections have held
+        the same pale ground by then, and the last word should land rather
+        than fade.
       */}
-      <PricingBand />
+      <InvestmentShowcase />
     </>
   );
 }

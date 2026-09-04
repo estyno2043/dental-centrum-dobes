@@ -1,0 +1,439 @@
+/*
+ * "Investujte do svojho úsmevu."
+ *
+ * Wider than anything else on the page and set over a photograph, because this
+ * is where the homepage stops arguing and shows the work. One value arrives
+ * from JavaScript — `--slide`, the position in the run — and everything below
+ * is derived from it and each element's own `--index`.
+ */
+
+.section {
+  --slide: 0;
+
+  position: relative;
+  /* A viewport per slide, plus one for the last to stand still in. */
+  min-height: calc((var(--count) + 1) * 100vh);
+  background: var(--ink);
+  color: var(--porcelain);
+}
+
+/* ------------------------------------------------------------- backdrop --- */
+
+.backdrop {
+  position: sticky;
+  z-index: 0;
+  top: 0;
+  height: 100vh;
+  margin-bottom: -100vh;
+  overflow: hidden;
+}
+
+/*
+ * Each layer is lit only while the run is on its slide. `abs(--slide - index)`
+ * is the distance in slides; one slide away is fully gone, so the two crossing
+ * layers always sum to roughly one and the ground never dips to black between
+ * them.
+ */
+.backdropLayer {
+  position: absolute;
+  inset: 0;
+  opacity: clamp(0, calc(1 - abs(var(--slide) - var(--index))), 1);
+  transition: opacity 0.2s linear;
+}
+
+.backdropLayer img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Held back so type sits on it; the photograph is a ground, not a subject. */
+  filter: grayscale(0.25) brightness(0.72) contrast(1.02);
+}
+
+.scrim {
+  position: absolute;
+  background:
+    linear-gradient(180deg, rgb(20 20 23 / 82%) 0%, rgb(20 20 23 / 55%) 34%,
+      rgb(20 20 23 / 72%) 100%),
+    radial-gradient(120% 80% at 50% 100%, rgb(20 20 23 / 60%), transparent 70%);
+  inset: 0;
+}
+
+/* ---------------------------------------------------------------- stage --- */
+
+.stage {
+  position: sticky;
+  z-index: 1;
+  top: 0;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(26px, 4vh, 52px);
+  padding: clamp(70px, 9vh, 110px) clamp(20px, 4vw, 72px) clamp(46px, 7vh, 80px);
+}
+
+.intro {
+  max-width: 46rem;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.eyebrow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  margin: 0 0 14px;
+  color: var(--taupe);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.eyebrowRule {
+  display: block;
+  width: 34px;
+  height: 1px;
+  background: var(--taupe);
+}
+
+.headline {
+  margin: 0 0 12px;
+  font-size: clamp(1.9rem, 4.4vw, 3.4rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: 34rem;
+  margin: 0 auto;
+  color: rgb(250 249 246 / 68%);
+  font-size: clamp(0.92rem, 1.4vw, 1.05rem);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* --------------------------------------------------------------- slides --- */
+
+.slides {
+  position: relative;
+  display: grid;
+}
+
+/*
+ * Every slide occupies the same cell, so they cross-fade in place rather than
+ * pushing each other around. The one being read is the only one that can be
+ * clicked — an invisible card still catching the pointer is the bug this
+ * avoids.
+ */
+.slide {
+  display: grid;
+  width: 100%;
+  max-width: 96rem;
+  align-items: center;
+  margin: 0 auto;
+  gap: clamp(20px, 3vw, 56px);
+  grid-area: 1 / 1;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 22rem) minmax(0, 1fr);
+  opacity: clamp(0, calc(1 - abs(var(--slide) - var(--index))), 1);
+  pointer-events: none;
+  transition: opacity 0.2s linear;
+}
+
+.slide[data-active="true"] {
+  pointer-events: auto;
+}
+
+.name {
+  text-align: right;
+}
+
+.kicker {
+  margin: 0 0 10px;
+  color: var(--taupe);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.name h3 {
+  margin: 0;
+  font-size: clamp(1.7rem, 3.6vw, 3rem);
+  font-weight: 500;
+  letter-spacing: -0.042em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+/* ----------------------------------------------------------------- card --- */
+
+.card {
+  position: relative;
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* The box the morph flies out of — see `serviceTransition.ts`. */
+.frame {
+  display: block;
+  overflow: hidden;
+  border-radius: 18px;
+  aspect-ratio: 4 / 5;
+  box-shadow: 0 30px 70px -34px rgb(0 0 0 / 65%);
+}
+
+.frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s var(--ease);
+}
+
+.card:hover .frame img,
+.card:focus-visible .frame img {
+  transform: scale(1.035);
+}
+
+.cardIndex {
+  position: absolute;
+  top: 18px;
+  left: 20px;
+  color: rgb(250 249 246 / 88%);
+  font-size: 0.76rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.2em;
+}
+
+.cardArrow {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgb(250 249 246 / 55%);
+  border-radius: 50%;
+  place-items: center;
+  transition:
+    background-color 0.35s var(--ease),
+    border-color 0.35s var(--ease);
+}
+
+.cardArrow svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: rgb(250 249 246 / 90%);
+  stroke-linecap: round;
+  stroke-width: 1.5;
+}
+
+.card:hover .cardArrow,
+.card:focus-visible .cardArrow {
+  border-color: var(--taupe);
+  background: rgb(174 155 126 / 30%);
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--taupe);
+  outline-offset: 5px;
+  border-radius: 20px;
+}
+
+.cardBody {
+  position: absolute;
+  right: 22px;
+  bottom: 22px;
+  left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cardName {
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.14;
+  text-wrap: balance;
+}
+
+.cardLead {
+  color: rgb(250 249 246 / 74%);
+  font-size: 0.8rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+/* --------------------------------------------------------------- points --- */
+
+.points ul {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0 0 clamp(18px, 2.4vw, 26px);
+  gap: 11px;
+  list-style: none;
+}
+
+/*
+ * A hairline tick rather than a bullet glyph: five dots read as a shopping
+ * list, five ticks read as things already accounted for.
+ */
+.points li {
+  position: relative;
+  padding-left: 26px;
+  color: rgb(250 249 246 / 88%);
+  font-size: clamp(0.86rem, 1.25vw, 0.98rem);
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.points li::before {
+  position: absolute;
+  top: 0.45em;
+  left: 0;
+  width: 13px;
+  height: 7px;
+  border-bottom: 1.5px solid var(--taupe);
+  border-left: 1.5px solid var(--taupe);
+  content: "";
+  transform: rotate(-45deg);
+}
+
+.price {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  align-items: baseline;
+  padding-top: clamp(14px, 2vw, 20px);
+  border-top: 1px solid rgb(250 249 246 / 22%);
+  margin: 0;
+}
+
+.price s {
+  color: rgb(250 249 246 / 45%);
+  font-size: 0.92rem;
+}
+
+.price strong {
+  font-size: clamp(1.7rem, 3vw, 2.4rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+.price span {
+  width: 100%;
+  color: rgb(250 249 246 / 62%);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+/* ----------------------------------------------------------------- more --- */
+
+.more {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  align-self: center;
+  padding: 15px 26px;
+  border: 1px solid rgb(174 155 126 / 65%);
+  border-radius: 999px;
+  color: var(--porcelain);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    background-color 0.35s var(--ease),
+    border-color 0.35s var(--ease),
+    color 0.35s var(--ease);
+}
+
+.more svg {
+  transition: transform 0.35s var(--ease);
+}
+
+.more:hover,
+.more:focus-visible {
+  border-color: var(--taupe);
+  background: var(--taupe);
+  color: var(--ink);
+}
+
+.more:hover svg,
+.more:focus-visible svg {
+  transform: translateX(4px);
+}
+
+.more:focus-visible {
+  outline: 2px solid var(--porcelain);
+  outline-offset: 3px;
+}
+
+@media (max-width: 1023px) {
+  .slide {
+    gap: 20px;
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .name {
+    text-align: center;
+  }
+
+  .card {
+    width: min(100%, 20rem);
+  }
+
+  .points {
+    width: min(100%, 30rem);
+    text-align: left;
+  }
+}
+
+/*
+ * No cross-fade to drive, so the section collapses to its slides stacked and
+ * the stage stops sticking. Scroll-linked opacity is exactly the motion this
+ * setting is about.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .section {
+    min-height: 0;
+  }
+
+  .backdrop,
+  .stage {
+    position: static;
+    margin-bottom: 0;
+  }
+
+  .backdrop {
+    position: absolute;
+    inset: 0;
+    height: auto;
+  }
+
+  .slide {
+    opacity: 1;
+    grid-area: auto;
+  }
+
+  .frame img,
+  .cardArrow,
+  .more,
+  .more svg {
+    transition: none;
+  }
+}
