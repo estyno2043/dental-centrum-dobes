@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef } from "react";
 import Lenis from "lenis";
 
 import { SCROLL_REQUEST, type ScrollRequest } from "./scrollToSection";
@@ -42,6 +43,13 @@ import { SCROLL_REQUEST, type ScrollRequest } from "./scrollToSection";
  * here to add.
  */
 export function SmoothScroll() {
+  /*
+   * The instance, reachable from the route effect below. It is created and
+   * destroyed by the effect that owns the loop; this only borrows it.
+   */
+  const lenisRef = useRef<Lenis | null>(null);
+  const pathname = usePathname();
+
   useEffect(() => {
     const query = globalThis.matchMedia?.("(prefers-reduced-motion: reduce)");
     if (!query) return;
@@ -77,6 +85,8 @@ export function SmoothScroll() {
         stopInertiaOnNavigate: true,
       });
 
+      lenisRef.current = lenis;
+
       const raf = (time: number) => {
         lenis?.raf(time);
         frame = requestAnimationFrame(raf);
@@ -88,6 +98,7 @@ export function SmoothScroll() {
       cancelAnimationFrame(frame);
       lenis?.destroy();
       lenis = null;
+      lenisRef.current = null;
     };
 
     if (!query.matches) start();
@@ -160,6 +171,37 @@ export function SmoothScroll() {
       stop();
     };
   }, []);
+
+  /*
+   * Every route change, whatever caused it.
+   *
+   * `popstate` above is not enough, and the way it fell short is exactly how
+   * the reader hit it: the service page's close button is a `<button>`, not a
+   * link, and when there is no history behind it it calls `router.push("/")`.
+   * That fires no `popstate`, and `stopInertiaOnNavigate` only watches link
+   * clicks — so neither guard saw it. The router scrolled the homepage to the
+   * top and Lenis, still holding the *service page's* offset as its target,
+   * calmly eased back down to it. Landing a couple of thousand pixels into the
+   * homepage looks like the site guessing at a position; it was Lenis
+   * finishing a journey the reader had already left.
+   *
+   * Keying on the pathname catches every cause at once — links, `push` from a
+   * button, `back`, and the browser's own arrows — because it watches the
+   * outcome rather than enumerating the triggers.
+   *
+   * It runs after the commit, so the router has already scrolled by now and
+   * the reset syncs to the right place. `popstate` stays as well: on back it
+   * fires *before* the restoration lands, and clearing `isScrolling` early is
+   * what lets Lenis accept the restoration through its own native-scroll path
+   * whenever it arrives.
+   */
+  useEffect(() => {
+    const lenis = lenisRef.current;
+    if (!lenis) return;
+
+    lenis.stop();
+    lenis.start();
+  }, [pathname]);
 
   return null;
 }

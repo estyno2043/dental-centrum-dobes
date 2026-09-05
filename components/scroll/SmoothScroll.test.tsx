@@ -7,6 +7,13 @@ const construct = vi.fn();
 const stop = vi.fn();
 const start = vi.fn();
 
+let pathname = "/";
+
+vi.mock("next/navigation", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("next/navigation")>()),
+  usePathname: () => pathname,
+}));
+
 vi.mock("lenis", () => ({
   default: class {
     constructor(options: unknown) {
@@ -61,6 +68,7 @@ describe("SmoothScroll", () => {
     destroy.mockClear();
     stop.mockClear();
     start.mockClear();
+    pathname = "/";
   });
 
   afterEach(() => {
@@ -113,31 +121,58 @@ describe("SmoothScroll", () => {
 
 
   /*
-   * Back and forward.
-   *
-   * The router restores the previous page's scroll position with an ordinary
-   * programmatic scroll, and Lenis ignores those while it is mid-ease — its
-   * `onNativeScroll` bails unless `isScrolling` is `false` or `"native"`. So
-   * somebody who scrolled a service page and pressed back was carried to that
-   * page's offset on the homepage rather than to the card they had opened it
-   * from.
+   * Lenis keeps its own idea of where the page is, and syncs it to the
+   * document only while it is not mid-ease — `onNativeScroll` bails unless
+   * `isScrolling` is `false` or `"native"`. The router moves the page with an
+   * ordinary programmatic scroll, so across a navigation Lenis would keep
+   * easing towards the offset of the page the reader had just left.
    *
    * `stop()` then `start()` is Lenis's reset through its public API: both run
    * the private `reset()`, which clears `isScrolling`, and `start()` leaves it
    * running. Order matters — `start()` returns early unless it is stopped, so
    * calling them the other way round does nothing at all.
    */
+  const resets = () => {
+    expect(stop).toHaveBeenCalledTimes(start.mock.calls.length);
+    for (let i = 0; i < stop.mock.calls.length; i++) {
+      expect(stop.mock.invocationCallOrder[i]).toBeLessThan(
+        start.mock.invocationCallOrder[i]!,
+      );
+    }
+    return stop.mock.calls.length;
+  };
+
+  /*
+   * The one that was actually reported. A service page's close button is a
+   * `<button>`, and with no history behind it it calls `router.push("/")` —
+   * which fires no `popstate`, and which `stopInertiaOnNavigate` cannot see
+   * either, since that only watches link clicks. The router scrolled the
+   * homepage to the top and Lenis eased back down to the service page's
+   * offset, landing the reader a couple of thousand pixels in.
+   *
+   * Keying on the pathname watches the outcome instead of enumerating the
+   * triggers, so it covers links, `push` from a button, `back`, and the
+   * browser's own arrows at once.
+   */
+  it("resets on any route change, however it was caused", () => {
+    stubMedia();
+    const { rerender } = render(<SmoothScroll />);
+    const atMount = resets();
+
+    pathname = "/sluzby/esteticka-stomatologia";
+    rerender(<SmoothScroll />);
+
+    expect(resets()).toBe(atMount + 1);
+  });
+
   it("makes Lenis receptive again when the reader goes back", () => {
     stubMedia();
     render(<SmoothScroll />);
+    const before = resets();
 
     window.dispatchEvent(new PopStateEvent("popstate"));
 
-    expect(stop).toHaveBeenCalledTimes(1);
-    expect(start).toHaveBeenCalledTimes(1);
-    expect(stop.mock.invocationCallOrder[0]).toBeLessThan(
-      start.mock.invocationCallOrder[0]!,
-    );
+    expect(resets()).toBe(before + 1);
   });
 
   it("stops listening for history moves on unmount", () => {
@@ -145,6 +180,8 @@ describe("SmoothScroll", () => {
     const { unmount } = render(<SmoothScroll />);
 
     unmount();
+    stop.mockClear();
+    start.mockClear();
     window.dispatchEvent(new PopStateEvent("popstate"));
 
     expect(stop).not.toHaveBeenCalled();
