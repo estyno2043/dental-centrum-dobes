@@ -12,8 +12,9 @@ import { SolutionSwitcher } from "./SolutionSwitcher";
 import {
   aestheticCaseIds,
   aestheticIntro,
+  course,
   longevity,
-  preview,
+  mockUp,
 } from "./aestheticContent";
 import styles from "./aesthetic.module.css";
 
@@ -46,34 +47,56 @@ export function AestheticBody(): JSX.Element {
         <SolutionSwitcher />
       </section>
 
-      {/* --- the fear, answered ------------------------------------------ */}
-      <section aria-labelledby="preview-heading" className={styles.preview}>
+      {/* --- the fear, answered ------------------------------------------
+          Not with the mock-up, which the clinic offers but rarely sells, but
+          with the fortnight that patients actually dread — and which the
+          next-day milled temporaries remove. --- */}
+      <section aria-labelledby="course-heading" className={styles.preview}>
         <div className={styles.previewText}>
-          <h2 className={styles.sectionHeading} id="preview-heading">
-            {preview.heading}
+          <h2 className={styles.sectionHeading} id="course-heading">
+            {course.heading}
           </h2>
-          <p className={styles.previewLead}>{preview.lead}</p>
+          <p className={styles.previewLead}>{course.lead}</p>
 
           <ol className={styles.previewSteps}>
-            {preview.steps.map((step) => (
+            {course.steps.map((step) => (
               <li key={step.name}>
                 <div className={styles.previewStepHead}>
                   <h3>{step.name}</h3>
-                  <span>{step.price}</span>
+                  <span>{step.when}</span>
                 </div>
                 <p>{step.note}</p>
               </li>
             ))}
           </ol>
 
-          <p className={styles.previewNote}>{preview.note}</p>
+          <p className={styles.previewNote}>{course.note}</p>
         </div>
 
         <PhotoFrame
-          brief="Voskový mock up nasadený na vlastných zuboch pacienta, zblízka na úsmev. Toto je najsilnejší obrázok stránky — ukazuje výsledok predtým, než sa čokoľvek brúsi."
+          brief="Intraorálny skener 3Shape v ruke lekára pri práci v ústach pacienta. Ukazuje, čím sa nahradil silikónový odtlačok — a je to jediný obrázok tejto sekcie, ktorý nesie jej sľub o pohodlí."
           ratio="4 / 5"
         />
       </section>
+
+      {/* --- the option, priced honestly ---------------------------------- */}
+      <aside aria-labelledby="mockup-heading" className={styles.option}>
+        <h2 className={styles.optionHeading} id="mockup-heading">
+          {mockUp.heading}
+        </h2>
+        <p className={styles.optionBody}>{mockUp.body}</p>
+        <ul className={styles.optionSteps}>
+          {mockUp.steps.map((step) => (
+            <li key={step.name}>
+              <div className={styles.previewStepHead}>
+                <h3>{step.name}</h3>
+                <span>{step.price}</span>
+              </div>
+              <p>{step.note}</p>
+            </li>
+          ))}
+        </ul>
+      </aside>
 
       {/* --- proof -------------------------------------------------------- */}
       <section aria-labelledby="work-heading" className={styles.work}>

@@ -317,6 +317,56 @@
   text-wrap: pretty;
 }
 
+/* --------------------------------------------------------------- option --- */
+
+/*
+ * The mock-up, demoted. It reads as an aside rather than a step: inset from
+ * the text column, on its own hairline, with the two prices carried at the
+ * same weight the preview steps use so the reader can see what it costs
+ * without reading the sentence that says so.
+ */
+.option {
+  max-width: 62ch;
+  padding: clamp(20px, 2.6vw, 30px) 0 0;
+  margin-top: clamp(38px, 5vw, 62px);
+  border-top: 1px solid rgb(138 115 88 / 30%);
+}
+
+.optionHeading {
+  max-width: 32ch;
+  margin: 0 0 10px;
+  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.optionBody {
+  max-width: 52ch;
+  margin: 0 0 clamp(16px, 2.2vw, 24px);
+  color: rgb(38 38 42 / 72%);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.optionSteps {
+  display: grid;
+  gap: clamp(14px, 2vw, 26px);
+  padding: 0;
+  margin: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  list-style: none;
+}
+
+.optionSteps p {
+  margin: 4px 0 0;
+  color: rgb(38 38 42 / 68%);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
 /* ----------------------------------------------------------------- work --- */
 
 .work {
@@ -396,7 +446,8 @@
 
 @media (max-width: 860px) {
   .switcher,
-  .preview {
+  .preview,
+  .optionSteps {
     grid-template-columns: 1fr;
   }
 

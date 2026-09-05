@@ -10,12 +10,29 @@
  *
  * Every price is the clinic's, quoted from the list valid 1. 3. 2026.
  *
- * ⚠️ One reading is mine and needs confirming: the list bills `Fazetovanie
- * zuba` at 190 € and `Fazetovanie zuba Empress Direct` at 220 €. Both are
- * direct composite done chairside; Empress Direct is Ivoclar's premium
- * nano-hybrid, so the difference is described here as the material rather than
- * the method. If the 30 € is in fact extent or something else, this is the
- * line to fix.
+ * ⚠️ One reading is mine and still needs confirming: the list bills
+ * `Fazetovanie zuba` at 190 € and `Fazetovanie zuba Empress Direct` at 220 €.
+ * Both are direct composite done chairside; Empress Direct is Ivoclar's
+ * premium nano-hybrid, so the difference is described here as the material
+ * rather than the method. If the 30 € is in fact extent or something else,
+ * this is the line to fix. Asked on 2026-09-04; not answered.
+ *
+ * Clinic answers, 2026-09-05, and what each one changed here:
+ *
+ * - *"Vieme urobiť aj mock up pred začatím práce, ale moc to ľudia
+ *   nevyžadujú. V sumáre to navíši cenu, tak sa do toho nehrnú."* — the page
+ *   had made the try-before-you-drill preview its spine and described it as
+ *   what always happens. It is not. It is now an option the reader can ask
+ *   for, with the cost named, and the section that carried it was rebuilt
+ *   around what does happen.
+ * - *"Máme skener 3shape. To je náhrada silikónových odtlačkov."* — so the
+ *   scan is a comfort, not a preview device.
+ * - *"Výroba koruniek trvá 2 týždne. Na druhý deň po obrúsení dostane pacient
+ *   frézované dočasné korunky z laboratória... cca 3 návštevy sú štandard."*
+ *   — this is the stronger answer to the fear the page is built against, and
+ *   unlike the mock-up it is what the clinic actually does every time.
+ * - *"Ordinačné bielenie nerobíme. Neosvedčilo sa."* — stated on the
+ *   whitening option rather than left as a hole for the reader to notice.
  */
 
 /*
@@ -71,7 +88,9 @@ export const solutions: readonly Solution[] = [
       "aplikujete doma, cez noc, počas dvoch týždňov. Zub sa nijako nebrúsi " +
       "— zo všetkých riešení je toto jediné úplne vratné. Ako dlho výsledok " +
       "vydrží, rozhoduje káva, čaj, víno a cigarety: pri striedmom pití aj " +
-      "dva roky, pri každodennej káve skôr pol roka. Potom sa dá zopakovať.",
+      "dva roky, pri každodennej káve skôr pol roka. Potom sa dá zopakovať. " +
+      "Jednorazové ordinačné bielenie v kresle nerobíme — nemá podľa nás " +
+      "dostatočne dobré výsledky na to, aby sme ho ponúkali.",
     facts: [
       { label: "Zub sa brúsi", value: "Vôbec" },
       { label: "Hotové", value: "Za dva týždne doma" },
@@ -124,10 +143,11 @@ export const solutions: readonly Solution[] = [
     body:
       "Tenká keramická škrupinka, vyrobená podľa odtlačku alebo 3D skenu. " +
       "Keramika sa nezafarbuje od kávy ani vína a odtieň si drží roky. " +
-      "Vyžaduje viac návštev, lebo medzi nimi pracuje laboratórium.",
+      "Vyžaduje tri návštevy, lebo medzi nimi pracuje laboratórium — a " +
+      "medzitým nosíte dočasné korunky, nie obrúsené zuby.",
     facts: [
       { label: "Zub sa brúsi", value: "Tenká vrstva skloviny" },
-      { label: "Hotové", value: "Vo viacerých návštevách" },
+      { label: "Hotové", value: "3 návštevy, zhruba dva týždne" },
       { label: "Vydrží", value: "Nezafarbuje sa" },
     ],
   },
@@ -145,37 +165,87 @@ export const solutions: readonly Solution[] = [
       "obopne celý a prevezme naň žuvací tlak.",
     facts: [
       { label: "Zub sa brúsi", value: "Po obvode" },
-      { label: "Hotové", value: "Vo viacerých návštevách" },
+      { label: "Hotové", value: "3 návštevy, zhruba dva týždne" },
       { label: "Vydrží", value: "Chráni aj oslabený zub" },
     ],
   },
 ];
 
 /**
- * The try-before-you-drill section.
+ * What actually happens, visit by visit.
  *
- * The clinic confirmed on 2026-09-04 that they do this, and it is the single
- * strongest thing on the page: the fear that stops people is not the price, it
- * is that the tooth does not grow back. Being able to see and wear the result
- * before anything is touched answers exactly that.
+ * This section used to be the mock-up. The clinic corrected that on
+ * 2026-09-05: the mock-up is technically available but is not routine, most
+ * people decline it once it is priced, and building the page's spine on
+ * something most patients never see would have been a promise the clinic did
+ * not make.
  *
- * Prices are the clinic's own preparation rows.
+ * What replaced it is stronger, because it is what happens every time. The
+ * fear behind "na predných zuboch sa nedá nič vrátiť" is not really the
+ * drilling — it is the fortnight afterwards, walking around ground down while
+ * a laboratory works. That fortnight does not exist here: milled temporaries
+ * arrive from the laboratory the next day and already resemble the finished
+ * porcelain.
+ *
+ * ⚠️ Not asked, and deliberately not implied either way: whether the 120 €
+ * `3D sken 3SHAPE` is billed on top of the 455 € crown or is part of it. The
+ * step below names the scanner as the method and quotes no price for it.
  */
-export const preview = {
-  heading: "Uvidíte to skôr, než sa čokoľvek dotkne zuba",
+export const course = {
+  heading: "Tri návštevy — a ani jeden deň s obrúsenými zubami",
   lead:
-    "Na predných zuboch sa nedá nič vrátiť späť. Preto sa výsledok najprv " +
-    "postaví — a vy sa naň pozriete v zrkadle, kým je ešte všetko len návrh.",
+    "Keramická fazeta aj korunka sa vyrábajú v laboratóriu a to trvá zhruba " +
+    "dva týždne. Nečakáte ich však s obrúsenými zubami: hneď na druhý deň " +
+    "dostávate dočasné korunky, ktoré sa už podobajú tým budúcim.",
   steps: [
     {
-      name: "3D sken",
-      price: "120 €",
-      note: "Digitálny odtlačok chrupu, bez hmoty v ústach.",
+      name: "Obrúsenie a 3D sken",
+      when: "1. návšteva",
+      note:
+        "Odtlačok robíme skenerom 3Shape namiesto silikónu — nič stuhnuté " +
+        "v ústach a laboratórium dostáva podklad rovno.",
     },
+    {
+      name: "Dočasné korunky z laboratória",
+      when: "Na druhý deň",
+      note:
+        "Frézované, nie narýchlo dolepené v kresle. Sú urobené tak, aby sa " +
+        "čo najviac podobali budúcim porcelánovým, a nosia sa pohodlne.",
+    },
+    {
+      name: "Nasadenie definitívnej práce",
+      when: "Zhruba o dva týždne",
+      note:
+        "Toľko trvá výroba. Ak potrebujete byť hotový skôr — svadba, " +
+        "fotenie — termín sa dá dohodnúť individuálne.",
+    },
+  ],
+  note:
+    "Tri návštevy sú štandard. Koľko ich bude presne u vás, viete po prvom " +
+    "vyšetrení, nie skôr.",
+} as const;
+
+/**
+ * The mock-up, told the way the clinic actually offers it.
+ *
+ * Left on the page rather than deleted, because for the one reader in ten who
+ * cannot commit without seeing it first this is the thing that decides — but
+ * demoted, and with the reason people skip it stated rather than hidden. A
+ * page that sells an add-on as standard practice is the kind of page this one
+ * is trying not to be.
+ */
+export const mockUp = {
+  heading: "Ak si chcete tvar vyskúšať ešte pred brúsením",
+  body:
+    "Dá sa to. Nový tvar sa vymodeluje mimo úst a potom sa vám nasadí na " +
+    "vlastné zuby, takže sa naň pozriete v zrkadle, kým sme sa ničoho " +
+    "nedotkli. Nie je to bežná súčasť práce — navyšuje to cenu a väčšina " +
+    "ľudí to nevyžaduje. Keď to chcete, povedzte nám to hneď na začiatku.",
+  steps: [
     {
       name: "Wax up",
       price: "20 € / zub",
-      note: "Nový tvar sa vymodeluje na modeli, mimo úst.",
+      note: "Nový tvar sa vymodeluje na modeli.",
     },
     {
       name: "Voskový mock up",
@@ -183,9 +253,6 @@ export const preview = {
       note: "Ten tvar dostanete nasadený na vlastné zuby. Nič sa nebrúsi.",
     },
   ],
-  note:
-    "Až keď poviete áno tomu, čo vidíte v zrkadle, začíname pracovať na " +
-    "definitívnom riešení.",
 } as const;
 
 /**

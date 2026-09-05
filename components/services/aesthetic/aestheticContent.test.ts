@@ -4,8 +4,9 @@ import { priceGroups } from "@/components/pricing/pricingContent";
 import {
   aestheticCaseIds,
   aestheticIntro,
+  course,
   longevity,
-  preview,
+  mockUp,
   solutions,
 } from "./aestheticContent";
 import {
@@ -22,7 +23,7 @@ describe("aesthetic dentistry", () => {
     for (const solution of solutions) {
       expect(published.has(solution.price), `${solution.name}`).toBe(true);
     }
-    for (const step of preview.steps) {
+    for (const step of mockUp.steps) {
       const bare = step.price.replace(" / zub", "");
       expect(published.has(bare), `${step.name}: ${step.price}`).toBe(true);
     }
@@ -80,6 +81,47 @@ describe("aesthetic dentistry", () => {
     expect(longevity.claim).toMatch(/^Kým sa oň staráte/);
     expect(longevity.body).toMatch(/pravidelnej dentálnej hygiene/);
     expect(longevity.linkHref).toBe("/sluzby/dentalna-hygiena");
+  });
+
+
+  /*
+   * The clinic's 2026-09-05 answer, pinned in both places it is claimed. The
+   * fact row and the prose have to agree: three visits and about two weeks.
+   * These were "vo viacerých návštevách" — true, and useless to somebody
+   * deciding whether they can fit it in before a wedding.
+   */
+  it("states the real visit count for the laboratory work", () => {
+    for (const id of ["keramika", "korunka"]) {
+      const option = solutions.find((s) => s.id === id)!;
+      const done = option.facts.find((f) => f.label === "Hotové")!;
+      expect(done.value, id).toBe("3 návštevy, zhruba dva týždne");
+    }
+    expect(course.steps).toHaveLength(3);
+    expect(course.steps[1]?.when).toBe("Na druhý deň");
+    expect(course.lead).toMatch(/dva týždne/);
+  });
+
+  /*
+   * The mock-up is available but is not what the clinic routinely does, and
+   * they were explicit that its cost is why people decline it. The page may
+   * offer it; it may not present it as the standard flow, and it may not
+   * quote it without saying it adds to the total.
+   */
+  it("offers the mock-up as an option, with its cost owned", () => {
+    expect(mockUp.body).toMatch(/navyšuje to cenu/);
+    expect(mockUp.body).toMatch(/nie je to bežná súčasť/i);
+    expect(course.heading).not.toMatch(/mock ?up/i);
+    expect(course.lead).not.toMatch(/mock ?up/i);
+  });
+
+  /*
+   * They do not do chairside whitening and said why. A missing option reads
+   * as an oversight; a stated one reads as a judgement.
+   */
+  it("says outright that chairside whitening is not offered", () => {
+    const whitening = solutions.find((s) => s.id === "bielenie")!;
+    expect(whitening.body).toMatch(/ordinačné bielenie/i);
+    expect(whitening.body).toMatch(/nerobíme/);
   });
 
   it("shows only cases that are this service's own work", () => {
