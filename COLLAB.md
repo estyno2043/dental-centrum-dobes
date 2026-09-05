@@ -1141,6 +1141,84 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   Files released. Next: real iOS/Android touch-inertia and frame-rate review on
   `http://localhost:3000/`; do not merge or push to `main` before approval.
 
+- 2026-09-05 — Claude applied the clinic's second round of answers and built
+  the implant page, on `claude/smooth-scroll`.
+
+  **Estetická stomatológia, corrected.** The page's spine was wrong. It had
+  made the wax-up mock-up the thing that removes the fear of drilling a front
+  tooth; the clinic answered that they can do one but *"moc to ľudia
+  nevyžadujú… v sumáre to navíši cenu, tak sa do toho nehrnú."* Building a page
+  on an add-on most patients decline was promising something the clinic does
+  not routinely do.
+
+  What replaced it is what happens every time: a 3Shape scan instead of a
+  silicone impression, **milled temporaries from the laboratory the next day**
+  that already resemble the finished porcelain, and the definitive work about
+  two weeks later — three visits. That answers the same fear better, because
+  the fear is not the drilling, it is the fortnight spent ground down. The
+  mock-up survives as an aside with its cost owned in the sentence offering it.
+  Chairside whitening is now stated as a decision the clinic made rather than
+  left as a hole. Still unanswered and still flagged in-source: why a composite
+  veneer is 190 € and the Empress Direct one 220 €.
+
+  **Zubné implantáty**, new bespoke body at `/sluzby/zubne-implantaty`.
+
+  The page's spine is the total. Every competitor publishes `implantát od
+  810 €`; this itemises implant + abutment + crown and adds them up, with the
+  crown switchable — 1 490 – 1 605 € full-ceramic, 1 385 – 1 500 €
+  metal-ceramic. A test does the arithmetic at both ends of the range, so the
+  total cannot drift from the parts printed above it. `Vhojovacia skrutka`
+  (120 €) is deliberately *not* in the base — see the open question below.
+
+  **No instalment calculator, and none may be added.** The clinic answered
+  *"splátky nemáme s nikým zabezpečené, čiže neposkytujeme"*, so the calculator
+  originally requested would have priced a service that does not exist. A test
+  greps the whole content module for `splátk|mesačne|financovan|úver|RPMN`. If
+  financing ever does exist, note that a Slovak instalment calculator carries
+  consumer-credit disclosure obligations — it is a legal question before it is
+  a design one.
+
+  Clinic answers used: Osstem; 3 months' healing; 2-year warranty and **a free
+  second attempt if the implant does not take**; usually 4 visits; augmentation
+  and sinus lift done, but *"doktorka rozhoduje, čo je ochotná a v akom
+  rozsahu"*; and — the answer the page could not be written without — **the
+  patient wears a temporary tooth through the whole three months.**
+
+  Three deliberate restraints, each pinned by a test: the timeline is four
+  *phases*, not four numbered visits, because the clinic gave the totals and
+  not an agenda for each, and an invented agenda reads as authoritative
+  precisely because it was made up; nothing quotes a sinus lift price, which
+  the list does not carry; and the Osstem section explains why a named system
+  matters without ranking its maker, since market-position claims need a source
+  a clinic page cannot give.
+
+  **A better verification technique than the replica used previously.** This
+  preview reports `clientWidth: 0`, so every element appears to overflow and
+  service-page screenshots come back blank. Rendering the real route inside a
+  fixed-size `<iframe>` and measuring in its `contentDocument` gives true
+  layout at any width. At 1440, 1280, 1024, 861 and 390: zero horizontal
+  overflow, the crown radios move the total both ways, clean console. It also
+  caught two defects a screenshot would have: the dark guarantee panel painted
+  across the page gutter and ran to both screen edges at 1088px and under
+  (`.page > *` puts `padding-inline` on every direct child, so a background on
+  the section covers the gutter — it needed an inner box, as `.bundle` already
+  does), and the marked phase lost its charcoal rule to `.phases li` on
+  specificity.
+
+  Verified: 295 tests, lint, TypeScript, production build of 21 routes.
+
+  ⚠️ Open, and blocking nothing: is `Vhojovacia skrutka` (120 €) billed on
+  every implant? A two-stage protocol normally uses one. It sits among the
+  case-dependent add-ons, where being wrong costs the reader nothing; in the
+  base total, being wrong would understate every quote on the page. The sinus
+  lift price is also still outstanding, and the clinic has no publishable
+  implant case yet — the user said photographs will follow, so the page carries
+  no case gallery rather than borrowing someone else's work.
+
+  Files reserved: `components/services/implants/**`,
+  `components/services/aesthetic/**`, `app/sluzby/[sluzba]/page.tsx`. Awaiting
+  the user's localhost approval; nothing here has reached `main`.
+
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
 credentials, tokens, or local configuration values in repository files,
