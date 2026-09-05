@@ -1219,6 +1219,79 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   `components/services/aesthetic/**`, `app/sluzby/[sluzba]/page.tsx`. Awaiting
   the user's localhost approval; nothing here has reached `main`.
 
+- 2026-09-05 — Claude, three follow-ups on `claude/smooth-scroll`.
+
+  **The Osstem renders.** The user supplied two, encoded from
+  `~/Downloads/dobes-media-raw/Osstem`. The cross-section went beside the price
+  list rather than into the Osstem section: it shows the screw, the abutment
+  and the crown as three separate things, which is exactly what the three lines
+  next to it charge for. It keeps its navy ground — the only saturated colour
+  on a cream page, which reads as "this is a diagram" rather than "this is our
+  clinic", and the alternative is recolouring a medical illustration and
+  shifting the gum and bone with it. The product render sits on pure white
+  (sampled: every corner 255,255,255) and renders with `mix-blend-mode:
+  multiply`, so the white drops out and the soft reflection darkens correctly —
+  a white rectangle on a cream page reads as a hole punched in it. Capped at
+  300px and shipped without a `-mobile` half, because the source is only 393px
+  wide; a test fails if a half-size file appears without a srcset to use it.
+
+  ⚠️ The product render carries Osstem's wordmark. Ordinary for a clinic that
+  works on the system, and manufacturers supply the files for it, but the right
+  to publish comes from Osstem or their distributor. Flagged to the user.
+
+  **Back now returns to the card you left from.** This was Lenis, not the
+  router. `onNativeScroll` syncs Lenis's internal position to the document's
+  only while `isScrolling` is `false` or `"native"` — a native scroll arriving
+  mid-ease is discarded and Lenis keeps easing towards its stale target. The
+  router restores with an ordinary programmatic scroll, so a reader who
+  scrolled a service page and pressed back was carried to *that page's* offset
+  on the homepage.
+
+  Two changes. `stopInertiaOnNavigate: true` kills the ease when a link leaves
+  the route (safe with the menu — Lenis only resets when the href's pathname
+  differs, and `/#sluzby` shares the homepage's `/`). And on `popstate`,
+  `stop()` then `start()`: Lenis's own reset through its public API, since both
+  call the private `reset()` that clears `isScrolling`. It runs *before* the
+  restoration lands, deliberately — matching the position is not the point,
+  being receptive when the restoration arrives is, and Lenis then takes it
+  through its own native-scroll path. No polling, no guess about router timing.
+
+  ⚠️ Do **not** replace that with `scrollTo(y, { immediate: true })`, which
+  looks like the obvious public equivalent. It ends by calling
+  `preventNextNativeScrollEvent`, and the next native scroll event is precisely
+  the restoration this exists to let through.
+
+  The router's half is verified end to end in a 1440×900 iframe: from a
+  27352px homepage, clicking a service card at 18697px and pressing back
+  returns to 18697px exactly, drift 0, after scrolling the subpage elsewhere
+  first. Lenis's half could not be exercised — see the note on this environment
+  below — so the mechanism is read off the shipped source and the wiring is
+  covered by tests. The user has to confirm it on a real browser.
+
+  **Vaňková's portrait** swapped to `DSC07507`, the frame from the same sitting
+  where she is smiling openly rather than with her mouth closed. Same tripod,
+  same framing; encoded through the same transform as the rest of the roster so
+  the grid rhythm does not move. That transform was confirmed rather than
+  assumed: the existing file was matched against candidate crops of its own
+  source and top offset 0 came back closest, at a mean absolute difference of
+  2.78 of 255 on a greyscale downsample — webp compression and nothing else.
+
+  **Worth carrying forward: how to verify layout in this preview.** It runs
+  with `visibilityState: "hidden"`, where `clientWidth` reads 0, `rAF` never
+  fires and image `decode()` never settles — so screenshots of subpages come
+  back blank and every element appears to overflow. Rendering the real route in
+  a fixed-size `<iframe>` and measuring in its `contentDocument` gives true
+  layout at any width, and `setTimeout` does still run, so navigation can be
+  driven and awaited. That is how the scroll restoration above was measured. It
+  cannot help with anything that needs a frame to be painted.
+
+  Verified: 300 tests, lint, TypeScript, production build of 21 routes.
+
+  Files reserved: `components/services/implants/**`,
+  `components/services/aesthetic/**`, `components/scroll/**`,
+  `public/media/tim/vankova*`, `app/sluzby/[sluzba]/page.tsx`. Awaiting the
+  user's localhost approval; nothing here has reached `main`.
+
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
 credentials, tokens, or local configuration values in repository files,
