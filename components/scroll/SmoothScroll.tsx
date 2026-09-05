@@ -63,6 +63,18 @@ export function SmoothScroll() {
         wheelMultiplier: 1,
         // Touch never reaches here at all; see the note above the component.
         syncTouch: false,
+        /*
+         * Clicking a link to another route stops the ease dead. Without it the
+         * inertia left over from the wheel carries into the page that opens,
+         * which then scrolls itself down to an offset that belonged to the
+         * page before it.
+         *
+         * Safe with the menu: Lenis only resets when the clicked href's
+         * pathname differs from the current one, and the menu's `/#sluzby`
+         * shares the homepage's `/`. The travel that `scrollToSection` starts
+         * is left alone.
+         */
+        stopInertiaOnNavigate: true,
       });
 
       const raf = (time: number) => {
@@ -109,9 +121,42 @@ export function SmoothScroll() {
     };
     window.addEventListener(SCROLL_REQUEST, onRequest);
 
+    /*
+     * Back and forward.
+     *
+     * The router restores the scroll position of the page being returned to
+     * with an ordinary programmatic scroll — and Lenis ignores those while it
+     * is mid-ease. `onNativeScroll` bails unless `isScrolling` is `false` or
+     * `"native"`, so a reader who scrolled a service page and then pressed
+     * back was carried to *that page's* offset on the homepage instead of
+     * back to the card they had opened it from.
+     *
+     * `stop()` then `start()` is Lenis's own reset, reached through its public
+     * API: both call the private `reset()`, which syncs the internal position
+     * to the document's and clears `isScrolling`, and `start()` leaves it
+     * running. It happens inside one tick, so nothing is ever un-scrollable.
+     *
+     * It runs at `popstate` — *before* the restoration lands, on purpose.
+     * Matching the position here is not the point; being receptive when the
+     * restoration arrives a moment later is, and Lenis then picks that up
+     * through its own native-scroll path. That is why this needs no polling
+     * and makes no guess about when the router finishes.
+     *
+     * Not `scrollTo(y, { immediate: true })`, which looks like the obvious
+     * public equivalent and is the one thing that cannot work here: it ends by
+     * calling `preventNextNativeScrollEvent`, and the next native scroll event
+     * is precisely the restoration this exists to let through.
+     */
+    const onPopState = () => {
+      lenis?.stop();
+      lenis?.start();
+    };
+    window.addEventListener("popstate", onPopState);
+
     return () => {
       query.removeEventListener("change", onChange);
       window.removeEventListener(SCROLL_REQUEST, onRequest);
+      window.removeEventListener("popstate", onPopState);
       stop();
     };
   }, []);

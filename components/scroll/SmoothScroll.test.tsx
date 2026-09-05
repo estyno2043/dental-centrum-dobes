@@ -4,6 +4,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const destroy = vi.fn();
 const raf = vi.fn();
 const construct = vi.fn();
+const stop = vi.fn();
+const start = vi.fn();
 
 vi.mock("lenis", () => ({
   default: class {
@@ -12,6 +14,8 @@ vi.mock("lenis", () => ({
     }
     raf = raf;
     destroy = destroy;
+    stop = stop;
+    start = start;
   },
 }));
 
@@ -55,6 +59,8 @@ describe("SmoothScroll", () => {
   beforeEach(() => {
     construct.mockClear();
     destroy.mockClear();
+    stop.mockClear();
+    start.mockClear();
   });
 
   afterEach(() => {
@@ -103,6 +109,59 @@ describe("SmoothScroll", () => {
     render(<SmoothScroll />);
 
     expect(construct).not.toHaveBeenCalled();
+  });
+
+
+  /*
+   * Back and forward.
+   *
+   * The router restores the previous page's scroll position with an ordinary
+   * programmatic scroll, and Lenis ignores those while it is mid-ease — its
+   * `onNativeScroll` bails unless `isScrolling` is `false` or `"native"`. So
+   * somebody who scrolled a service page and pressed back was carried to that
+   * page's offset on the homepage rather than to the card they had opened it
+   * from.
+   *
+   * `stop()` then `start()` is Lenis's reset through its public API: both run
+   * the private `reset()`, which clears `isScrolling`, and `start()` leaves it
+   * running. Order matters — `start()` returns early unless it is stopped, so
+   * calling them the other way round does nothing at all.
+   */
+  it("makes Lenis receptive again when the reader goes back", () => {
+    stubMedia();
+    render(<SmoothScroll />);
+
+    window.dispatchEvent(new PopStateEvent("popstate"));
+
+    expect(stop).toHaveBeenCalledTimes(1);
+    expect(start).toHaveBeenCalledTimes(1);
+    expect(stop.mock.invocationCallOrder[0]).toBeLessThan(
+      start.mock.invocationCallOrder[0]!,
+    );
+  });
+
+  it("stops listening for history moves on unmount", () => {
+    stubMedia();
+    const { unmount } = render(<SmoothScroll />);
+
+    unmount();
+    window.dispatchEvent(new PopStateEvent("popstate"));
+
+    expect(stop).not.toHaveBeenCalled();
+  });
+
+  /*
+   * Leaving by a link kills the ease outright, so no inertia left over from
+   * the wheel carries into the page that opens and scrolls it to an offset
+   * that belonged to the page before it.
+   */
+  it("drops its inertia when a link leaves the route", () => {
+    stubMedia();
+    render(<SmoothScroll />);
+
+    expect(construct).toHaveBeenCalledWith(
+      expect.objectContaining({ stopInertiaOnNavigate: true }),
+    );
   });
 
   it("tears down its loop on unmount", () => {
