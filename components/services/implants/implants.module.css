@@ -1,0 +1,470 @@
+/*
+ * Zubné implantáty.
+ *
+ * The most expensive service, so the page is built to be trusted rather than
+ * to dazzle: one accent (the taupe hairline), one weight of emphasis, and the
+ * only thing on the page allowed to be loud is a number the reader came for.
+ *
+ * Two moments carry that weight — the total, and the sentence where the clinic
+ * takes the risk. Everything else stays quiet so those two read as decisions
+ * and not as advertising.
+ */
+
+.sectionHeading {
+  margin: 0 0 clamp(14px, 2vw, 20px);
+  font-size: clamp(1.4rem, 2.6vw, 2.1rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: 46ch;
+  margin: 0 0 clamp(22px, 3vw, 34px);
+  color: rgb(38 38 42 / 72%);
+  font-size: 0.98rem;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+/* Available to assistive technology, absent from the page. */
+.hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  border: 0;
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------- the money -- */
+
+.money {
+  display: grid;
+  gap: clamp(24px, 4vw, 56px);
+  padding-top: clamp(38px, 5vw, 64px);
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  align-items: start;
+}
+
+.costItems {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.costItems > li {
+  padding: 16px 0;
+  border-top: 1px solid rgb(138 115 88 / 26%);
+}
+
+.costRow {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.costRow h3,
+.costRow h4 {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.costPrice {
+  color: var(--taupe-deep);
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.costItems p,
+.addOns p {
+  margin: 5px 0 0;
+  color: rgb(38 38 42 / 68%);
+  font-size: 0.86rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/*
+ * The crown choice. Two labels on a hairline rail; the checked one fills.
+ * `:has()` is what lets the label respond to its own hidden input, and the
+ * fallback if it were ever missing is two plain labels that still work — the
+ * radios themselves are the control, this is only its skin.
+ */
+.crownChoice {
+  display: flex;
+  gap: 6px;
+  padding: 0;
+  margin: 12px 0 0;
+  border: 0;
+}
+
+.crownOption {
+  padding: 7px 13px;
+  border: 1px solid rgb(138 115 88 / 34%);
+  border-radius: 999px;
+  color: rgb(38 38 42 / 74%);
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 500;
+  line-height: 1.2;
+  transition:
+    background-color 220ms var(--ease),
+    border-color 220ms var(--ease),
+    color 220ms var(--ease);
+}
+
+.crownOption:hover {
+  border-color: var(--taupe-deep);
+}
+
+.crownOption:has(input:checked) {
+  border-color: var(--charcoal);
+  background: var(--charcoal);
+  color: var(--porcelain);
+}
+
+/* Focus is the input's, drawn on the label the reader can actually see. */
+.crownOption:has(input:focus-visible) {
+  outline: 2px solid var(--taupe-deep);
+  outline-offset: 2px;
+}
+
+.costTotal {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-top: 18px;
+  margin: 0;
+  border-top: 2px solid var(--charcoal);
+}
+
+.costTotalLabel {
+  color: rgb(38 38 42 / 72%);
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.costTotal strong {
+  font-size: clamp(1.35rem, 2.6vw, 1.9rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+
+.addOns {
+  padding: clamp(20px, 2.6vw, 28px);
+  border: 1px solid rgb(138 115 88 / 26%);
+  border-radius: 4px;
+  background: rgb(250 249 246 / 62%);
+}
+
+.addOnsHeading {
+  margin: 0 0 14px;
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.addOns ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.addOns > ul > li + li {
+  padding-top: 13px;
+  margin-top: 13px;
+  border-top: 1px solid rgb(138 115 88 / 20%);
+}
+
+.addOnsNote {
+  margin: 18px 0 0;
+  color: rgb(38 38 42 / 74%);
+  font-size: 0.85rem;
+  font-style: italic;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* ---------------------------------------------------------- the timeline -- */
+
+.timeline {
+  padding-top: clamp(58px, 8vw, 110px);
+}
+
+.facts {
+  display: grid;
+  gap: clamp(14px, 2.4vw, 30px);
+  margin: 0 0 clamp(28px, 4vw, 44px);
+  grid-template-columns: repeat(3, minmax(0, max-content));
+}
+
+.facts dt {
+  color: rgb(38 38 42 / 58%);
+  font-size: 0.74rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.facts dd {
+  margin: 5px 0 0;
+  font-size: clamp(1rem, 1.6vw, 1.15rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.phases {
+  display: grid;
+  gap: clamp(16px, 2.2vw, 24px);
+  padding: 0;
+  margin: 0;
+  /*
+   * Two by two, stated rather than fitted. `auto-fit` with a minimum put three
+   * of the four across and stranded the fourth on a row of its own — and the
+   * stranded one is the temporary tooth, which is the phase the whole section
+   * exists for. Raising the minimum only moved the boundary: the content
+   * column is 944px at 1440 but 960px at 1280, so 19rem gave 2×2 on the wider
+   * screen and 3+1 on the narrower one. A count does not have a boundary.
+   */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  list-style: none;
+}
+
+.phases li {
+  padding-top: 16px;
+  border-top: 1px solid rgb(138 115 88 / 26%);
+}
+
+.phaseIndex {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--taupe-deep);
+  font-size: 0.76rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+}
+
+.phaseHead h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.phaseWhen {
+  display: block;
+  margin-top: 3px;
+  color: rgb(38 38 42 / 56%);
+  font-size: 0.8rem;
+}
+
+.phases p {
+  margin: 10px 0 0;
+  color: rgb(38 38 42 / 70%);
+  font-size: 0.87rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/*
+ * The phase the section is written for. Marked with the charcoal rule rather
+ * than a colour fill: the reader scanning the four should land on this one,
+ * and it is the only emphasis in the row.
+ */
+.phases .phaseKey {
+  border-top-color: var(--charcoal);
+}
+
+.phaseKey .phaseIndex {
+  color: var(--charcoal);
+}
+
+/* --------------------------------------------------------- the guarantee -- */
+
+/*
+ * The panel is an inner element, not the section itself. `.page > *` puts the
+ * shell's `padding-inline` on every direct child, so a background declared on
+ * the section paints across the page gutter too — at 1088px and under, the
+ * dark card ran to both screen edges with its 6px radius cut off by them. The
+ * inner box starts where the text column starts, which is where it belongs.
+ */
+.guarantee {
+  padding-top: clamp(58px, 8vw, 110px);
+}
+
+.guaranteeInner {
+  padding: clamp(34px, 5vw, 62px) clamp(24px, 4vw, 62px);
+  border-radius: 6px;
+  background: var(--charcoal);
+  color: var(--porcelain);
+}
+
+.guarantee .sectionHeading {
+  color: rgb(250 249 246 / 62%);
+  font-size: clamp(0.76rem, 1.1vw, 0.82rem);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.guaranteeClaim {
+  max-width: 20ch;
+  margin: 0 0 clamp(16px, 2.2vw, 22px);
+  font-size: clamp(1.5rem, 3.4vw, 2.6rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.guaranteeBody {
+  max-width: 52ch;
+  margin: 0;
+  color: rgb(250 249 246 / 76%);
+  font-size: 0.96rem;
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+
+.guaranteeFacts {
+  display: grid;
+  gap: clamp(16px, 3vw, 44px);
+  margin: clamp(24px, 3.4vw, 38px) 0 0;
+  grid-template-columns: repeat(2, minmax(0, max-content));
+}
+
+.guaranteeFacts dt {
+  color: rgb(250 249 246 / 54%);
+  font-size: 0.74rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.guaranteeFacts dd {
+  margin: 6px 0 0;
+  font-size: clamp(1rem, 1.6vw, 1.15rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+/* ------------------------------------------------------------ the system -- */
+
+.system {
+  display: grid;
+  gap: clamp(22px, 3.5vw, 48px);
+  padding-top: clamp(58px, 8vw, 110px);
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  align-items: start;
+}
+
+.systemPoints {
+  display: grid;
+  gap: 0;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.systemPoints li {
+  padding: 14px 0;
+  border-top: 1px solid rgb(138 115 88 / 24%);
+}
+
+.systemPoints li:last-child {
+  border-bottom: 1px solid rgb(138 115 88 / 24%);
+}
+
+.systemPoints h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.systemPoints p {
+  margin: 4px 0 0;
+  color: rgb(38 38 42 / 68%);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/* -------------------------------------------------------------- the bone -- */
+
+.bone {
+  padding-top: clamp(58px, 8vw, 110px);
+}
+
+.boneBody {
+  max-width: 54ch;
+  margin: 0 0 clamp(18px, 2.4vw, 26px);
+  color: rgb(38 38 42 / 74%);
+  font-size: 0.98rem;
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+
+.boneLink {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 18px;
+  border: 1px solid rgb(138 115 88 / 42%);
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    background-color 240ms var(--ease),
+    border-color 240ms var(--ease),
+    color 240ms var(--ease);
+}
+
+.boneLink svg {
+  transition: translate 240ms var(--ease);
+}
+
+.boneLink:hover,
+.boneLink:focus-visible {
+  border-color: var(--charcoal);
+  background: var(--charcoal);
+  color: var(--porcelain);
+}
+
+.boneLink:hover svg,
+.boneLink:focus-visible svg {
+  translate: 4px 0;
+}
+
+@media (max-width: 860px) {
+  .money,
+  .system,
+  .phases {
+    grid-template-columns: 1fr;
+  }
+
+  .facts {
+    grid-template-columns: repeat(auto-fit, minmax(7rem, max-content));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crownOption,
+  .boneLink,
+  .boneLink svg {
+    transition: none;
+  }
+}
