@@ -163,6 +163,29 @@
   white-space: nowrap;
 }
 
+/* The diagram sits above the add-ons, sharing the narrow column with it. */
+.moneyAside {
+  display: grid;
+  gap: clamp(18px, 2.4vw, 26px);
+  align-content: start;
+}
+
+.diagram {
+  margin: 0;
+}
+
+.diagram img {
+  border-radius: 4px;
+}
+
+.diagram figcaption {
+  margin-top: 9px;
+  color: rgb(38 38 42 / 62%);
+  font-size: 0.79rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
 .addOns {
   padding: clamp(20px, 2.6vw, 28px);
   border: 1px solid rgb(138 115 88 / 26%);
@@ -399,6 +422,26 @@
   font-size: 0.85rem;
   line-height: 1.5;
   text-wrap: pretty;
+}
+
+/*
+ * The Osstem render sits on pure white, and a white rectangle on a cream page
+ * reads as a hole punched in it. `multiply` drops the white to nothing and
+ * darkens the soft reflection underneath it correctly — no cut-out, no seam,
+ * and it survives the page ground being retuned later.
+ *
+ * Capped well under the column: the source is 393px wide, so filling a 398px
+ * slot would show it at 1:1 and leave nothing for a retina screen. At 300 it
+ * is comfortably sharp, and a single implant does not need to be large.
+ */
+.systemPhoto {
+  margin: 0;
+  justify-self: center;
+}
+
+.systemPhoto img {
+  max-width: 300px;
+  mix-blend-mode: multiply;
 }
 
 /* -------------------------------------------------------------- the bone -- */

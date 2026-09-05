@@ -2,9 +2,16 @@ import Link from "next/link";
 import type { JSX } from "react";
 import { IconArrowNarrowRight } from "@tabler/icons-react";
 
-import { PhotoFrame } from "../PhotoFrame";
 import { ImplantCost } from "./ImplantCost";
-import { bone, cost, guarantee, system, timeline } from "./implantContent";
+import {
+  bone,
+  cost,
+  crossSection,
+  guarantee,
+  system,
+  systemPhoto,
+  timeline,
+} from "./implantContent";
 import styles from "./implants.module.css";
 
 /**
@@ -36,6 +43,31 @@ export function ImplantBody(): JSX.Element {
           <ImplantCost />
         </div>
 
+        <div className={styles.moneyAside}>
+          {/*
+            The cross-section belongs here rather than in the Osstem section:
+            it shows the screw, the abutment and the crown as three separate
+            things, which is precisely what the list beside it charges for.
+            A reader who has never seen inside a jaw learns the itemisation
+            from the picture faster than from the prose.
+          */}
+          <figure className={styles.diagram}>
+            {/* eslint-disable-next-line @next/next/no-img-element -- Pre-sized asset; the image service adds nothing. */}
+            <img
+              alt={crossSection.alt}
+              decoding="async"
+              height={crossSection.height}
+              sizes="(max-width: 860px) 100vw, 24rem"
+              src={`/media/sluzby/${crossSection.src}.webp`}
+              srcSet={
+                `/media/sluzby/${crossSection.src}-mobile.webp 390w, ` +
+                `/media/sluzby/${crossSection.src}.webp 780w`
+              }
+              width={crossSection.width}
+            />
+            <figcaption>{crossSection.caption}</figcaption>
+          </figure>
+
         <div className={styles.addOns}>
           <h3 className={styles.addOnsHeading}>{cost.addOnsHeading}</h3>
           <ul>
@@ -50,6 +82,7 @@ export function ImplantBody(): JSX.Element {
             ))}
           </ul>
           <p className={styles.addOnsNote}>{cost.addOnsNote}</p>
+          </div>
         </div>
       </section>
 
@@ -124,10 +157,16 @@ export function ImplantBody(): JSX.Element {
           </ul>
         </div>
 
-        <PhotoFrame
-          brief="Implantát Osstem v ruke alebo na modeli čeľuste, zblízka, na tmavom podklade. Na starej stránke kliniky (bratislavazubar.sk) k tomu existujú obrázky — buď ich prevezmeme, alebo sa dofotí vlastný záber."
-          ratio="4 / 5"
-        />
+        <figure className={styles.systemPhoto}>
+          {/* eslint-disable-next-line @next/next/no-img-element -- Pre-sized asset; see `systemPhoto`. */}
+          <img
+            alt={systemPhoto.alt}
+            decoding="async"
+            height={systemPhoto.height}
+            src={`/media/sluzby/${systemPhoto.src}.webp`}
+            width={systemPhoto.width}
+          />
+        </figure>
       </section>
 
       {/* --- the honest caveat -------------------------------------------- */}

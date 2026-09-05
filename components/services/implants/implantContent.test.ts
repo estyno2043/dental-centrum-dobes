@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { priceGroups } from "@/components/pricing/pricingContent";
@@ -7,9 +7,11 @@ import {
   bone,
   cost,
   costBase,
+  crossSection,
   crowns,
   guarantee,
   system,
+  systemPhoto,
   timeline,
 } from "./implantContent";
 
@@ -117,6 +119,50 @@ describe("dental implants", () => {
    * claim with no source here. The section may explain why a named system
    * matters; it may not rank one.
    */
+
+  /*
+   * The files, and their stated dimensions.
+   *
+   * A misspelt stem is a broken image in production and nothing at all in
+   * development, because Next serves `public/` straight through and a 404 on
+   * an `<img>` is silent. The declared width also has to be the real one: a
+   * srcset that misdescribes its own candidates has the browser pick a file
+   * too small for the slot, and the only symptom is a soft picture.
+   *
+   * Encoded 2026-09-05 from the material the user supplied.
+   */
+  it("ships the images it references, at the sizes it claims", async () => {
+    const sharp = (await import("sharp")).default;
+    const dir = join(process.cwd(), "public/media/sluzby");
+
+    const expected = [
+      [`${crossSection.src}.webp`, crossSection.width, crossSection.height],
+      [`${crossSection.src}-mobile.webp`, 390, 260],
+      [`${systemPhoto.src}.webp`, systemPhoto.width, systemPhoto.height],
+    ] as const;
+
+    for (const [file, width, height] of expected) {
+      const meta = await sharp(join(dir, file)).metadata();
+      expect(meta.width, file).toBe(width);
+      expect(meta.height, file).toBe(height);
+    }
+  });
+
+  /*
+   * The Osstem render has no `-mobile` half, on purpose: the source is 393px
+   * wide and the frame caps at 300px, so a half-size file would be smaller
+   * than the slot it was meant to fill. If somebody adds one later, the page
+   * has to gain a srcset in the same change — this fails if the file appears
+   * on its own.
+   */
+  it("keeps the single-file rule for the product render", () => {
+    const half = join(
+      process.cwd(),
+      `public/media/sluzby/${systemPhoto.src}-mobile.webp`,
+    );
+    expect(existsSync(half)).toBe(false);
+  });
+
   it("explains the system without ranking its maker", () => {
     const text = [system.body, ...system.points.map((p) => p.note)].join(" ");
     expect(system.heading).toMatch(/Osstem/);

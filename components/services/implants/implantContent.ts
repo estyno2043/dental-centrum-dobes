@@ -284,3 +284,46 @@ export const bone = {
   linkLabel: "Cenník chirurgických výkonov",
   linkHref: "/cennik",
 } as const;
+
+/* ------------------------------------------------------------- the images - */
+
+/**
+ * Two renders supplied by the user on 2026-09-05, from the clinic's own
+ * material for the system they work on.
+ *
+ * ⚠️ The product shot carries Osstem's wordmark. Displaying the brand of the
+ * system a clinic actually uses is ordinary and manufacturers supply these
+ * files for it — but the right to publish it comes from Osstem or their
+ * distributor, not from us, and the user should be sure they have it.
+ *
+ * The cross-section keeps its navy ground. It is the only saturated colour on
+ * a cream page, which reads as "this is a diagram" rather than "this is our
+ * clinic" — a distinction worth having, and the alternative is recolouring a
+ * medical illustration, which would shift the gum and bone with it.
+ */
+export const crossSection = {
+  src: "implantat-rez",
+  alt:
+    "Rez čeľusťou: titánová skrutka implantátu v kosti, na nej kovová " +
+    "nadstavba a korunka, vedľa vlastné zuby s koreňmi a ďasnom",
+  width: 780,
+  height: 520,
+  caption: "Skrutka, nadstavba, korunka — tri položky, ktoré vidíte vyššie.",
+} as const;
+
+/**
+ * No `-mobile` variant, deliberately. The source is 393px wide and the frame
+ * caps at 300px, so a half-size file would be smaller than the slot it was
+ * meant to fill. One file covers every width this is shown at.
+ *
+ * Rendered with `mix-blend-mode: multiply` over the page's cream: the render
+ * sits on pure white (sampled — every corner is 255,255,255), and multiply
+ * drops that to nothing while darkening the soft reflection correctly. A white
+ * rectangle on a cream page reads as a hole in it.
+ */
+export const systemPhoto = {
+  src: "osstem-ts",
+  alt: "Implantát Osstem TS system s nadstavbou a korunkou",
+  width: 393,
+  height: 545,
+} as const;
