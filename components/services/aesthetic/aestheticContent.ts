@@ -80,11 +80,19 @@ export const solutions: readonly Solution[] = [
      */
     id: "bielenie",
     name: "Bielenie Nite White",
-    kind: "Domáce bielenie v šablónach",
+    /*
+     * "Bieliace dlahy" is the clinic's term and it is used everywhere the
+     * whitening is described — except here, where "bielenie v bieliacich
+     * dlahách" stutters on its own root directly under the word "Bielenie".
+     * The noun is what was asked for; the adjective is redundant when the
+     * heading above already says it, and the full term is in the body below.
+     */
+    kind: "Domáce bielenie v dlahách na mieru",
     price: "260 €",
     solves: "Zuby máte zdravé a rovné, len tmavšie, než by ste chceli.",
     body:
-      "Odoberieme odtlačok a vyrobíme šablóny presne na váš chrup. Gél si " +
+      "Odoberieme odtlačok a vyrobíme bieliace dlahy presne na váš chrup. " +
+      "Gél si " +
       "aplikujete doma, cez noc, počas dvoch týždňov. Zub sa nijako nebrúsi " +
       "— zo všetkých riešení je toto jediné úplne vratné. Ako dlho výsledok " +
       "vydrží, rozhoduje káva, čaj, víno a cigarety: pri striedmom pití aj " +

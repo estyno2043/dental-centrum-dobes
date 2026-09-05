@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 import { priceGroups } from "@/components/pricing/pricingContent";
 import {
@@ -122,6 +124,26 @@ describe("aesthetic dentistry", () => {
     const whitening = solutions.find((s) => s.id === "bielenie")!;
     expect(whitening.body).toMatch(/ordinačné bielenie/i);
     expect(whitening.body).toMatch(/nerobíme/);
+  });
+
+
+  /*
+   * The clinic calls them bieliace dlahy, not šablóny. Asked on 2026-09-05,
+   * and it is the kind of word that drifts back the next time somebody
+   * rewrites a line — so the guard covers both files that describe the
+   * whitening rather than the strings they happen to export today.
+   */
+  it("calls the trays what the clinic calls them", () => {
+    for (const file of [
+      "components/services/aesthetic/aestheticContent.ts",
+      "components/pricing/investmentContent.ts",
+    ]) {
+      const source = readFileSync(join(process.cwd(), file), "utf8");
+      expect(source, file).not.toMatch(/šablón/i);
+    }
+
+    const whitening = solutions.find((s) => s.id === "bielenie")!;
+    expect(whitening.body).toMatch(/bieliace dlahy/i);
   });
 
   it("shows only cases that are this service's own work", () => {

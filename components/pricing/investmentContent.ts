@@ -96,10 +96,11 @@ export const slides: readonly ShowcaseSlide[] = [
        */
       image: "bielenie-karta",
       name: "Bielenie Nite White",
-      lead: "Šablóny na mieru, gél doma cez noc. Zub sa nijako nebrúsi.",
+      lead:
+        "Bieliace dlahy na mieru, gél doma cez noc. Zub sa nijako nebrúsi.",
     },
     points: [
-      "Šablóny vyrobené presne na váš chrup",
+      "Bieliace dlahy vyrobené presne na váš chrup",
       "Bielite doma, cez noc, počas dvoch týždňov",
       "Zub sa nebrúsi — jediné riešenie, ktoré sa dá vziať späť",
       "Výsledok vydrží 6 mesiacov až 2 roky",
@@ -107,7 +108,7 @@ export const slides: readonly ShowcaseSlide[] = [
     ],
     price: {
       value: "260 €",
-      note: "Za celý chrup, vrátane šablón.",
+      note: "Za celý chrup, vrátane bieliacich dláh.",
     },
   },
 ];
