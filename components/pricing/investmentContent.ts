@@ -82,6 +82,18 @@ export const slides: readonly ShowcaseSlide[] = [
     background: "cennik-pozadie-02",
     backgroundAlt: "",
     card: {
+      /*
+       * Replaced on 2026-09-05 with the image the user supplied: a woman at
+       * home on a sofa, seating a whitening tray. It says what the service is
+       * — trays, at home, in the evening — where the shot before it did not.
+       *
+       * ⚠️ Generated, not photographed (the source is named
+       * `google_nano-banana-2_text-to-image`). Fine for a card that
+       * illustrates a service, and it is not presented as a patient of the
+       * clinic or as the clinic's own room — but it must never migrate into
+       * the patient cases or the clinic gallery, where every image is real and
+       * the whole point of them is that they are.
+       */
       image: "bielenie-karta",
       name: "Bielenie Nite White",
       lead: "Šablóny na mieru, gél doma cez noc. Zub sa nijako nebrúsi.",
