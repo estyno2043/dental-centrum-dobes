@@ -327,15 +327,24 @@
   padding-top: clamp(58px, 8vw, 110px);
 }
 
+/*
+ * Warm sand rather than charcoal. The panel still has to be the loudest thing
+ * on the page — it is the one place the clinic takes the risk instead of the
+ * patient — but a near-black slab was doing that by weight, and on a cream
+ * page it read as a different site cut into this one. Deeper and warmer than
+ * the ground, with a taupe hairline, separates it just as clearly and belongs
+ * to the same family as everything around it.
+ */
 .guaranteeInner {
   padding: clamp(34px, 5vw, 62px) clamp(24px, 4vw, 62px);
+  border: 1px solid rgb(138 115 88 / 38%);
   border-radius: 6px;
-  background: var(--charcoal);
-  color: var(--porcelain);
+  background: #ece2cf;
+  color: var(--ink);
 }
 
 .guarantee .sectionHeading {
-  color: rgb(250 249 246 / 62%);
+  color: var(--taupe-deep);
   font-size: clamp(0.76rem, 1.1vw, 0.82rem);
   font-weight: 500;
   letter-spacing: 0.1em;
@@ -355,7 +364,7 @@
 .guaranteeBody {
   max-width: 52ch;
   margin: 0;
-  color: rgb(250 249 246 / 76%);
+  color: rgb(38 38 42 / 74%);
   font-size: 0.96rem;
   line-height: 1.7;
   text-wrap: pretty;
@@ -369,7 +378,7 @@
 }
 
 .guaranteeFacts dt {
-  color: rgb(250 249 246 / 54%);
+  color: rgb(38 38 42 / 58%);
   font-size: 0.74rem;
   letter-spacing: 0.09em;
   text-transform: uppercase;
