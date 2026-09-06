@@ -91,6 +91,39 @@ export const featuredCase: PatientCase = {
 
 export const patientCases: readonly PatientCase[] = [
   /*
+   * hygiena-gbt — the disclosing pair from the GBT protocol.
+   *
+   * Added on the user's request 2026-09-06, and the one case here that is not
+   * a result over time: both frames are from the *same appointment*, step 2
+   * against step 7 of the protocol. That is stated in `problem` and in the
+   * visit count rather than left for somebody to assume months of work, and it
+   * is also why it is worth showing — the whole argument of the hygiene page
+   * is that the plaque was there all along and simply could not be seen.
+   *
+   * The pair is already published on `/sluzby/dentalna-hygiena`, so this adds
+   * no exposure it did not already have. Its photographs are the clinic's own,
+   * at 1400×939, matching the rest of the gallery.
+   *
+   * ⚠️ No duration. The clinic has not given one for a hygiene appointment and
+   * it is not stated anywhere else on the site, so the third fact is the recall
+   * interval — which they did give — rather than a number that would read as
+   * theirs without being it.
+   */
+  {
+    id: "hygiena-gbt",
+    treatments: ["Dentálna hygiena GBT"],
+    problem:
+      "Povlak, ktorý pri domácom čistení unikal — a nebolo ho vidieť, kým " +
+      "sme ho nezafarbili.",
+    facts: [
+      { label: "Návštev", value: "1" },
+      { label: "Ďalší termín", value: "O 6 mesiacov" },
+      { label: "Riešenie", value: "Protokol GBT s AIR FLOW" },
+    ],
+    before: "/media/hygiena-gbt-pred.webp",
+    after: "/media/hygiena-gbt-po.webp",
+  },
+  /*
    * pacient-02 — worn incisal edges rebuilt.
    *
    * "Before" shows the biting edges of both centrals gone translucent grey and
