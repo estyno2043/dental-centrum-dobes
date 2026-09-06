@@ -1,0 +1,554 @@
+/*
+ * Parodontológia.
+ *
+ * The one service page that has to argue before it sells, so it is quieter at
+ * the top and only gains weight once the reader has recognised themselves. Two
+ * things carry emphasis and nothing else does: the checklist's verdict, and
+ * the plasma panel. Everything between them is hairlines and space.
+ */
+
+.headline {
+  max-width: 20ch;
+  margin: 0 0 16px;
+  font-size: clamp(1.6rem, 3.4vw, 2.6rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.sectionHeading {
+  margin: 0 0 clamp(14px, 2vw, 20px);
+  font-size: clamp(1.4rem, 2.6vw, 2.1rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: 46ch;
+  margin: 0 0 clamp(20px, 2.8vw, 30px);
+  color: rgb(38 38 42 / 72%);
+  font-size: 0.98rem;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.prose {
+  max-width: 54ch;
+  margin: 0 0 clamp(18px, 2.4vw, 26px);
+  color: rgb(38 38 42 / 76%);
+  font-size: 0.98rem;
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+
+.block {
+  padding-top: clamp(52px, 7vw, 100px);
+}
+
+/* ---------------------------------------------------------- recognition --- */
+
+.recognise {
+  display: grid;
+  gap: clamp(24px, 4vw, 56px);
+  padding-top: clamp(38px, 5vw, 64px);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  align-items: start;
+}
+
+.check {
+  padding: clamp(22px, 3vw, 34px);
+  border: 1px solid rgb(138 115 88 / 30%);
+  border-radius: 6px;
+  background: rgb(250 249 246 / 70%);
+}
+
+.checkFields {
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.checkQuestion {
+  padding: 0;
+  margin: 0 0 14px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.checkItem {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 10px 0;
+  border-top: 1px solid rgb(138 115 88 / 20%);
+  color: rgb(38 38 42 / 84%);
+  cursor: pointer;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+/* The input drives everything; the drawn box is what the reader sees. */
+.checkItem input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.checkBox {
+  position: relative;
+  flex: none;
+  width: 19px;
+  height: 19px;
+  margin-top: 1px;
+  border: 1px solid rgb(138 115 88 / 55%);
+  border-radius: 3px;
+  transition:
+    background-color 180ms var(--ease),
+    border-color 180ms var(--ease);
+}
+
+.checkBox::after {
+  position: absolute;
+  top: 3px;
+  left: 6px;
+  width: 5px;
+  height: 9px;
+  border: solid var(--porcelain);
+  border-width: 0 1.7px 1.7px 0;
+  content: "";
+  opacity: 0;
+  rotate: 45deg;
+  transition: opacity 180ms var(--ease);
+}
+
+.checkItem input:checked + .checkBox {
+  border-color: var(--taupe-deep);
+  background: var(--taupe-deep);
+}
+
+.checkItem input:checked + .checkBox::after {
+  opacity: 1;
+}
+
+.checkItem input:focus-visible + .checkBox {
+  outline: 2px solid var(--taupe-deep);
+  outline-offset: 2px;
+}
+
+/*
+ * The absence of a symptom, set apart from the five that are symptoms — a
+ * heavier rule above it and the type in ink, because this is the line the
+ * section is really about.
+ */
+.checkPainless {
+  margin-top: 6px;
+  border-top: 1px solid var(--charcoal);
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.checkVerdict {
+  padding-top: 16px;
+  margin-top: 16px;
+  border-top: 1px solid rgb(138 115 88 / 30%);
+}
+
+.checkVerdictText {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
+  text-wrap: pretty;
+}
+
+.checkPainlessNote {
+  margin: 10px 0 0;
+  color: rgb(38 38 42 / 74%);
+  font-size: 0.87rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* Never decoration: a checklist that reads as a diagnosis is another document. */
+.checkDisclaimer {
+  margin: 12px 0 0;
+  color: rgb(38 38 42 / 56%);
+  font-size: 0.8rem;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------------------- causes --- */
+
+.causes {
+  display: grid;
+  gap: clamp(16px, 2.2vw, 26px);
+  padding: 0;
+  margin: 0;
+  /*
+   * Two by two, stated as a count. `auto-fit` fitted three of the four across
+   * the 944px column and stranded the fourth on a row of its own — and the
+   * stranded one was hygiene, which is the whole point of the section: it is
+   * one cause of four, not the cause. Same lesson as the implant phases.
+   */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  list-style: none;
+}
+
+.causes li {
+  padding-top: 14px;
+  border-top: 1px solid rgb(138 115 88 / 26%);
+}
+
+.causeIndex {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--taupe-deep);
+  font-size: 0.74rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+}
+
+.causes h3 {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.causes p {
+  margin: 6px 0 0;
+  color: rgb(38 38 42 / 70%);
+  font-size: 0.86rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* ------------------------------------------------------------- systemic --- */
+
+.systemic {
+  padding-top: clamp(52px, 7vw, 100px);
+}
+
+.systemicBody {
+  max-width: 50ch;
+  margin: 0;
+  font-size: clamp(1rem, 1.7vw, 1.18rem);
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+/* ------------------------------------------------------------ protocol ---- */
+
+.steps {
+  display: grid;
+  gap: 0;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.steps li {
+  display: grid;
+  gap: clamp(12px, 2vw, 26px);
+  padding: 16px 0;
+  border-top: 1px solid rgb(138 115 88 / 26%);
+  grid-template-columns: 3rem minmax(0, 1fr);
+}
+
+.steps li:last-child {
+  border-bottom: 1px solid rgb(138 115 88 / 26%);
+}
+
+.stepIndex {
+  color: var(--taupe-deep);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+}
+
+.steps h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.steps p {
+  max-width: 56ch;
+  margin: 6px 0 0;
+  color: rgb(38 38 42 / 70%);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* The two steps that are the reason this is not ordinary cleaning. */
+.stepPivotal {
+  border-top-color: var(--charcoal);
+}
+
+.stepPivotal .stepIndex {
+  color: var(--charcoal);
+}
+
+/* --------------------------------------------------------------- plasma --- */
+
+.plasma {
+  padding-top: clamp(52px, 7vw, 100px);
+}
+
+.plasmaInner {
+  padding: clamp(30px, 4.5vw, 56px) clamp(22px, 4vw, 56px);
+  border: 1px solid rgb(138 115 88 / 38%);
+  border-radius: 6px;
+  background: #ece2cf;
+}
+
+.plasma .sectionHeading {
+  color: var(--taupe-deep);
+  font-size: clamp(0.76rem, 1.1vw, 0.82rem);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.plasmaClaim {
+  max-width: 24ch;
+  margin: 0 0 clamp(14px, 2vw, 20px);
+  font-size: clamp(1.35rem, 3vw, 2.2rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.plasmaBody {
+  max-width: 54ch;
+  margin: 0;
+  color: rgb(38 38 42 / 76%);
+  font-size: 0.96rem;
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+
+.plasmaFacts {
+  display: grid;
+  gap: clamp(16px, 3vw, 44px);
+  margin: clamp(22px, 3vw, 32px) 0 0;
+  grid-template-columns: repeat(2, minmax(0, max-content));
+}
+
+.plasmaFacts dt {
+  color: rgb(38 38 42 / 58%);
+  font-size: 0.74rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.plasmaFacts dd {
+  margin: 6px 0 0;
+  font-size: clamp(1rem, 1.6vw, 1.15rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+/* ---------------------------------------------------------------- money --- */
+
+.money {
+  display: grid;
+  gap: clamp(24px, 4vw, 56px);
+  padding-top: clamp(52px, 7vw, 100px);
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  align-items: start;
+}
+
+.costItems {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.costItems > li {
+  padding: 14px 0;
+  border-top: 1px solid rgb(138 115 88 / 26%);
+}
+
+.costRow {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.costRow h3 {
+  margin: 0;
+  font-size: 0.96rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.costPrice {
+  color: var(--taupe-deep);
+  font-size: 0.88rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.costItems p {
+  margin: 5px 0 0;
+  color: rgb(38 38 42 / 68%);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.costTotal {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-top: 18px;
+  margin: 0;
+  border-top: 2px solid var(--charcoal);
+}
+
+.costTotalLabel {
+  color: rgb(38 38 42 / 72%);
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.costTotal strong {
+  font-size: clamp(1.35rem, 2.6vw, 1.9rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+
+.costAlternative {
+  max-width: 50ch;
+  margin: 16px 0 0;
+  color: rgb(38 38 42 / 72%);
+  font-size: 0.86rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.later {
+  padding: clamp(20px, 2.6vw, 28px);
+  border: 1px solid rgb(138 115 88 / 26%);
+  border-radius: 4px;
+  background: rgb(250 249 246 / 62%);
+}
+
+.laterHeading {
+  margin: 0 0 12px;
+  font-size: 0.96rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.later ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.later li {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 9px 0;
+  border-top: 1px solid rgb(138 115 88 / 20%);
+  font-size: 0.88rem;
+}
+
+.laterNote {
+  margin: 14px 0 0;
+  color: rgb(38 38 42 / 70%);
+  font-size: 0.83rem;
+  font-style: italic;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* -------------------------------------------------------------- outcome --- */
+
+.outcome {
+  padding-top: clamp(52px, 7vw, 100px);
+}
+
+.outcomeClaim {
+  max-width: 22ch;
+  margin: 0 0 clamp(16px, 2.2vw, 24px);
+  font-size: clamp(1.5rem, 3.4vw, 2.6rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.outcomeLink {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 18px;
+  margin-bottom: clamp(28px, 4vw, 46px);
+  border: 1px solid rgb(138 115 88 / 42%);
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    background-color 240ms var(--ease),
+    border-color 240ms var(--ease),
+    color 240ms var(--ease);
+}
+
+.outcomeLink svg {
+  transition: translate 240ms var(--ease);
+}
+
+.outcomeLink:hover,
+.outcomeLink:focus-visible {
+  border-color: var(--charcoal);
+  background: var(--charcoal);
+  color: var(--porcelain);
+}
+
+.outcomeLink:hover svg,
+.outcomeLink:focus-visible svg {
+  translate: 4px 0;
+}
+
+@media (max-width: 860px) {
+  .recognise,
+  .money,
+  .causes {
+    grid-template-columns: 1fr;
+  }
+
+  .steps li {
+    grid-template-columns: 2.4rem minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .checkBox,
+  .checkBox::after,
+  .outcomeLink,
+  .outcomeLink svg {
+    transition: none;
+  }
+}

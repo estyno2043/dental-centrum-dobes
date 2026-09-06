@@ -8,6 +8,7 @@ import { AestheticBody } from "@/components/services/aesthetic/AestheticBody";
 import { EntryBody } from "@/components/services/entry/EntryBody";
 import { HygieneBody } from "@/components/services/hygiene/HygieneBody";
 import { ImplantBody } from "@/components/services/implants/ImplantBody";
+import { PerioBody } from "@/components/services/perio/PerioBody";
 import { CaseGallery } from "@/components/patients/CaseGallery";
 import {
   featuredCase,
@@ -100,6 +101,7 @@ const BESPOKE_BODIES: Readonly<Record<string, () => JSX.Element>> = {
   "vstupna-prehliadka": EntryBody,
   "esteticka-stomatologia": AestheticBody,
   "zubne-implantaty": ImplantBody,
+  parodontologia: PerioBody,
 };
 
 export default async function ServicePage({

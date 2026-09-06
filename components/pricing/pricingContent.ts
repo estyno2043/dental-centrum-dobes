@@ -124,7 +124,13 @@ export const priceGroups: readonly PriceGroup[] = [
       { label: "Návrh paro liečby", price: "35 €" },
       { label: "Aplikácia liečiva do paro vačku", price: "Podľa rozsahu" },
       { label: "Odber materiálu Mikro-gen", price: "155 €" },
-      { label: "Odmer materiálu Mikro", price: "85 €" },
+      /*
+       * "Odmer" in the clinic's PDF. Corrected to "Odber" — the same word is
+       * spelled correctly on the row directly above it and again under
+       * prevention, so the typo is theirs and unambiguous. Flagged to the user
+       * on 2026-09-06 so the clinic can fix their own document.
+       */
+      { label: "Odber materiálu Mikro", price: "85 €" },
       { label: "PRF – krvná plazma", price: "75 €" },
       { label: "PRP – každá ďalšia skúmavka", price: "15 €" },
     ],
