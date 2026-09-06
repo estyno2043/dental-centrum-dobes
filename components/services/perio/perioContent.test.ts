@@ -7,6 +7,7 @@ import {
   causes,
   check,
   cost,
+  illustration,
   outcome,
   plasma,
   protocol,
@@ -135,6 +136,46 @@ describe("periodontology", () => {
       "DNA analýza z výteru",
       "Vlastná krvná plazma",
     ]);
+  });
+
+
+  /*
+   * ⚠️ The two gum images are generated, not photographs of a patient.
+   *
+   * Checked on the files rather than their names, 2026-09-06: both arrived as
+   * `google_nano-banana-2_…`, one from a text prompt and one an AI edit of
+   * that same generated image — the "after" is exactly half the "before"'s
+   * resolution and differs from it by a mean of 5.7 of 255. Neither carries
+   * any EXIF.
+   *
+   * The user was told and asked for them anyway, which is their call. What is
+   * not negotiable is the framing: this page carries the clinic's promise that
+   * patient photographs are published only with written consent, and a
+   * generated pair presented as a result the clinic achieved would make that
+   * sentence false three sections below where it is printed.
+   *
+   * So the disclaimer is load-bearing, and no label may claim a patient or a
+   * treatment performed. If a real case ever arrives it replaces this outright
+   * rather than joining it — at which point this test should be deleted, not
+   * weakened.
+   */
+  it("never passes the generated pair off as a patient's result", () => {
+    expect(illustration.note).toMatch(/nie je to fotografia pacienta/i);
+    expect(illustration.note).toMatch(/písomným súhlasom/i);
+
+    const claims = [
+      illustration.heading,
+      illustration.lead,
+      illustration.labels.before,
+      illustration.labels.after,
+      illustration.before.alt,
+      illustration.after.alt,
+    ].join(" ");
+
+    expect(claims).not.toMatch(/náš pacient|nášho pacienta|pred ošetrením|po ošetrení/i);
+    for (const alt of [illustration.before.alt, illustration.after.alt]) {
+      expect(alt).toMatch(/^Ilustrácia:/);
+    }
   });
 
   /* Four factors, and hygiene is only one of them — that is the point. */

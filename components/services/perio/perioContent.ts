@@ -268,3 +268,47 @@ export const outcome = {
   linkLabel: "Zubné implantáty",
   linkHref: "/sluzby/zubne-implantaty",
 } as const;
+
+/* ---------------------------------------------------------- the comparison */
+
+/**
+ * Inflamed gum against a settled one, on a slider.
+ *
+ * ⚠️ **These two images are generated, not photographs of a patient**, and the
+ * page must never say otherwise. Checked on 2026-09-06 at the user's request,
+ * on the files rather than on their names: both arrived as
+ * `google_nano-banana-2_…`, one from a text prompt and one an AI edit *of that
+ * same generated image* — the "after" is exactly half the "before"'s
+ * resolution and differs from it by a mean of 5.7 of 255, with 4.2% of pixels
+ * visibly changed. Neither carries any EXIF: no camera, no lens, no exposure.
+ *
+ * The user was told and asked for them anyway, so they are here — but as an
+ * illustration of what the disease looks like, which is true, and not as a
+ * result this clinic achieved on a person, which would be a fabricated
+ * clinical record on a page that promises a page below it that photographs
+ * are published only with the patient's written consent.
+ *
+ * `note` is therefore load-bearing and a test pins it. If a real case ever
+ * arrives — intraoral pair, or better an X-ray pair, where the regained bone
+ * is the actual evidence and no face is identifiable — it replaces this
+ * outright rather than joining it.
+ */
+export const illustration = {
+  heading: "Rozdiel, ktorý liečba robí",
+  lead:
+    "Vľavo ďasno pri zápale — tmavšie, opuchnuté, s ustúpeným okrajom pri " +
+    "krčkoch. Vpravo to isté ďasno po zvládnutí zápalu. Potiahnite deliacu " +
+    "čiaru.",
+  before: {
+    src: "paro-pred",
+    alt: "Ilustrácia: zapálené ďasno pri parodontitíde, opuchnuté a začervenané pri krčkoch zubov",
+  },
+  after: {
+    src: "paro-po",
+    alt: "Ilustrácia: to isté ďasno po zvládnutí zápalu, svetlejšie a priliehajúce k zubom",
+  },
+  labels: { before: "Zápal", after: "Po liečbe" },
+  note:
+    "Ilustračné zobrazenie — nie je to fotografia pacienta našej kliniky. " +
+    "Fotografie pacientov zverejňujeme iba s ich písomným súhlasom.",
+} as const;

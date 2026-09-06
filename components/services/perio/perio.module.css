@@ -532,6 +532,158 @@
   translate: 4px 0;
 }
 
+
+/* ---------------------------------------------------- the illustration --- */
+
+.illustration {
+  padding-top: clamp(28px, 4vw, 44px);
+}
+
+.illustrationHeading {
+  margin: 0 0 12px;
+  font-size: clamp(1.05rem, 1.7vw, 1.3rem);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+
+.compareFigure {
+  margin: 0;
+}
+
+/*
+ * The same mechanism the patients section uses: one wiper over two stacked
+ * copies, driven by a native range so mouse, touch, keyboard and screen
+ * readers are all covered by one control.
+ */
+.compare {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 3 / 2;
+  border-radius: 6px;
+  background: rgb(38 38 42 / 6%);
+}
+
+.compare img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.compareAfter,
+.compareBefore {
+  position: absolute;
+  inset: 0;
+}
+
+/* Clipped to the wiper: everything left of it is the inflamed state. */
+.compareBefore {
+  clip-path: inset(0 calc(100% - var(--pos)) 0 0);
+}
+
+.compareTag {
+  position: absolute;
+  bottom: 12px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: rgb(14 13 12 / 62%);
+  color: var(--porcelain);
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.compareTag[data-side="before"] {
+  left: 12px;
+}
+
+.compareTag[data-side="after"] {
+  right: 12px;
+}
+
+.compareDivider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--pos);
+  width: 2px;
+  background: rgb(250 249 246 / 88%);
+  pointer-events: none;
+  translate: -1px 0;
+}
+
+.compareKnob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 34px;
+  height: 34px;
+  border: 2px solid rgb(250 249 246 / 92%);
+  border-radius: 50%;
+  background: rgb(14 13 12 / 34%);
+  translate: -50% -50%;
+}
+
+/* Invisible, but it is the control: focus and keyboard belong to it. */
+.compareRange {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  appearance: none;
+  background: transparent;
+  cursor: ew-resize;
+}
+
+.compareRange::-webkit-slider-thumb {
+  width: 44px;
+  height: 100%;
+  appearance: none;
+  background: transparent;
+  cursor: ew-resize;
+}
+
+.compareRange::-moz-range-thumb {
+  width: 44px;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  cursor: ew-resize;
+}
+
+.compareRange:focus-visible {
+  outline: 2px solid var(--taupe-deep);
+  outline-offset: 3px;
+}
+
+/*
+ * Not decoration. These two images are generated rather than photographed, and
+ * this line is what keeps the section an illustration instead of a fabricated
+ * clinical result — see `illustration` in `perioContent.ts`. A test pins it.
+ */
+.compareNote {
+  margin: 10px 0 0;
+  color: rgb(38 38 42 / 62%);
+  font-size: 0.8rem;
+  font-style: italic;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  border: 0;
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
 @media (max-width: 860px) {
   .recognise,
   .money,

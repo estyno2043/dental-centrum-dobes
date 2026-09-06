@@ -2,13 +2,14 @@ import Link from "next/link";
 import type { JSX } from "react";
 import { IconArrowNarrowRight } from "@tabler/icons-react";
 
-import { PhotoFrame } from "../PhotoFrame";
+import { GumCompare } from "./GumCompare";
 import { SymptomCheck } from "./SymptomCheck";
 import {
   causes,
   check,
   cost,
   disease,
+  illustration,
   outcome,
   plasma,
   protocol,
@@ -170,10 +171,11 @@ export function PerioBody(): JSX.Element {
           <IconArrowNarrowRight size={18} stroke={1.7} />
         </Link>
 
-        <PhotoFrame
-          brief="RTG snímka toho istého chrupu pred liečbou a po nej, vedľa seba — na parodontitíde je dorastená kosť vidieť a je to dôkaz, aký fotka úsmevu nedá. Alternatíva: odber krvi na plazmu v ordinácii."
-          ratio="16 / 9"
-        />
+        <div className={styles.illustration}>
+          <h3 className={styles.illustrationHeading}>{illustration.heading}</h3>
+          <p className={styles.lead}>{illustration.lead}</p>
+          <GumCompare />
+        </div>
       </section>
     </>
   );
