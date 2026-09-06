@@ -344,7 +344,7 @@ describe("createBrowserJawFrameDecoder", () => {
     const controller = new AbortController();
     const decoded = await decoder("/jaw/custom-2.webp", controller.signal);
 
-    expect(fetchMock).toHaveBeenCalledWith("/jaw/custom-2.webp", { signal: controller.signal });
+    expect(fetchMock).toHaveBeenCalledWith("/jaw/custom-2.webp");
     expect(decoded.index).toBe(2);
     expect(decoded.source).toBe(bitmap);
     decoded.close();
@@ -389,6 +389,48 @@ describe("createBrowserJawFrameDecoder", () => {
     task.resolve(bitmap);
     await flushPromises();
     expect(bitmap.close).toHaveBeenCalledTimes(1);
+  });
+
+  it("reuses fetched bytes when fast scrolling aborts one decode and requests the frame again", async () => {
+    const firstTask = deferred<ImageBitmap>();
+    const lateBitmap = { close: vi.fn() } as unknown as ImageBitmap;
+    const currentBitmap = { close: vi.fn() } as unknown as ImageBitmap;
+    const fetchMock = vi.fn().mockResolvedValue(response());
+    const bitmapMock = vi.fn()
+      .mockImplementationOnce(() => firstTask.promise)
+      .mockResolvedValueOnce(currentBitmap);
+    vi.stubGlobal("fetch", fetchMock);
+    Object.defineProperty(window, "createImageBitmap", { configurable: true, value: bitmapMock });
+    const decoder = createBrowserJawFrameDecoder(manifest(1));
+    const firstController = new AbortController();
+
+    const firstDecode = decoder("/jaw/custom-1.webp", firstController.signal);
+    await flushPromises();
+    firstController.abort();
+    await expect(firstDecode).rejects.toMatchObject({ name: "AbortError" });
+
+    const secondDecode = decoder("/jaw/custom-1.webp", new AbortController().signal);
+    await expect(secondDecode).resolves.toMatchObject({ index: 1, source: currentBitmap });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    firstTask.resolve(lateBitmap);
+    await flushPromises();
+    expect(lateBitmap.close).toHaveBeenCalledTimes(1);
+  });
+
+  it("preloads each frame URL once with shared browser cache", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(response());
+    vi.stubGlobal("fetch", fetchMock);
+    Object.defineProperty(window, "createImageBitmap", {
+      configurable: true,
+      value: vi.fn().mockResolvedValue({ close: vi.fn() }),
+    });
+    const decoder = createBrowserJawFrameDecoder(manifest(2));
+
+    await decoder.preload();
+    await decoder.preload();
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
   it("falls back after bitmap decode failure and revokes the object URL on success", async () => {

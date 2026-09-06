@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable @next/next/no-img-element -- Canvas fallback must preserve raw sequence endpoint pixels. */
 
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from "react";
 
 import { jawSequenceManifests, type JawSequenceProfile } from "./jawSequenceManifest.generated";
 import {
@@ -22,17 +22,23 @@ export type JawFrameSequenceProps = Readonly<{
   onPermanentFailure: () => void;
 }>;
 
+export type JawFrameSequenceHandle = Readonly<{
+  preload: () => void;
+  setMotion: (targetFrame: number, direction: -1 | 0 | 1, visible: boolean) => void;
+}>;
+
 type SequenceMode = "fallback" | "loading" | "ready" | "reduced";
 
 type Runtime = Readonly<{
   loader: JawSequenceLoader;
+  preload: () => void;
   requestDraw: () => void;
   sync: () => void;
 }>;
 
 const dprCap: Readonly<Record<JawSequenceProfile, number>> = {
   desktop: 1.5,
-  mobile: 1.25,
+  mobile: 1.5,
 };
 
 function clampFrame(index: number, count: number): number {
@@ -80,14 +86,14 @@ function StaticJawFrame({ profile, mode }: Readonly<{ profile: JawSequenceProfil
   );
 }
 
-function AnimatedJawFrameSequence({
+const AnimatedJawFrameSequence = forwardRef<JawFrameSequenceHandle, AnimatedJawFrameSequenceProps>(function AnimatedJawFrameSequence({
   profile,
   targetFrame,
   direction,
   visible,
   onExactFrameDrawn,
   onPermanentFailure,
-}: AnimatedJawFrameSequenceProps) {
+}: AnimatedJawFrameSequenceProps, ref) {
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const runtimeRef = useRef<Runtime | undefined>(undefined);
@@ -100,13 +106,27 @@ function AnimatedJawFrameSequence({
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     targetRef.current = targetFrame;
     directionRef.current = direction;
     visibleRef.current = visible;
+    runtimeRef.current?.sync();
+  }, [direction, targetFrame, visible]);
+
+  useEffect(() => {
     exactCallbackRef.current = onExactFrameDrawn;
     failureCallbackRef.current = onPermanentFailure;
-  }, [direction, onExactFrameDrawn, onPermanentFailure, targetFrame, visible]);
+  }, [onExactFrameDrawn, onPermanentFailure]);
+
+  useImperativeHandle(ref, () => ({
+    preload: () => runtimeRef.current?.preload(),
+    setMotion: (nextTargetFrame, nextDirection, nextVisible) => {
+      targetRef.current = nextTargetFrame;
+      directionRef.current = nextDirection;
+      visibleRef.current = nextVisible;
+      runtimeRef.current?.sync();
+    },
+  }), []);
 
   useEffect(() => {
     const manifest = jawSequenceManifests[profile];
@@ -236,7 +256,12 @@ function AnimatedJawFrameSequence({
     };
     document.addEventListener("visibilitychange", onVisibilityChange);
     lastExactFrameRef.current = undefined;
-    runtimeRef.current = { loader, requestDraw, sync };
+    const preload = () => {
+      void browserDecode.preload().catch(() => {
+        // Foreground decode reports relevant failures and retries failed fetches.
+      });
+    };
+    runtimeRef.current = { loader, preload, requestDraw, sync };
     sync();
 
     return () => {
@@ -273,9 +298,12 @@ function AnimatedJawFrameSequence({
       />
     </div>
   );
-}
+});
 
-export function JawFrameSequence({ reducedMotion, ...props }: JawFrameSequenceProps) {
+export const JawFrameSequence = forwardRef<JawFrameSequenceHandle, JawFrameSequenceProps>(function JawFrameSequence(
+  { reducedMotion, ...props },
+  ref,
+) {
   if (reducedMotion) {
     return (
       <div className={styles.sequenceStage} data-jaw-sequence-state="reduced">
@@ -284,5 +312,5 @@ export function JawFrameSequence({ reducedMotion, ...props }: JawFrameSequencePr
     );
   }
 
-  return <AnimatedJawFrameSequence key={props.profile} {...props} />;
-}
+  return <AnimatedJawFrameSequence key={props.profile} ref={ref} {...props} />;
+});

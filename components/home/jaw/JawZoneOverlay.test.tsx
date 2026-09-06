@@ -279,6 +279,32 @@ describe("JawZoneOverlay pain map", () => {
     expect(gum).toHaveFocus();
   });
 
+  it("removes mobile zone controls and assistance from interaction while problem sheet is open", async () => {
+    const user = userEvent.setup();
+    setViewport(true);
+    renderOverlay();
+
+    await user.click(screen.getByTestId("jaw-zone-button-front"));
+
+    expect(screen.getByTestId("jaw-zone-overlay")).toHaveAttribute("data-panel-open", "true");
+    expect(screen.getByTestId("jaw-zone-buttons")).toHaveAttribute("aria-hidden", "true");
+    expect(screen.getByTestId("jaw-assistance")).toHaveAttribute("aria-hidden", "true");
+    expect(screen.getAllByTestId(/jaw-zone-button-/).every((button) => button.hasAttribute("disabled")))
+      .toBe(true);
+  });
+
+  it("scales mobile anatomy with jaw focus while leaving HTML controls unscaled", () => {
+  expect(cssText).toMatch(
+    /@media \(max-width: 767px\)[\s\S]*?\.zoneArtwork\s*\{[^}]*scale\(calc\(1 \+ var\(--tease\) \* 0\.5\)\)/,
+  );
+  expect(cssText).toMatch(
+    /@media \(max-width: 767px\)[\s\S]*?\.sequenceStage\s*\{[^}]*scale\(calc\(1 \+ var\(--tease\) \* 0\.5\)\)/,
+  );
+    expect(cssText).not.toMatch(
+      /@media \(max-width: 767px\)[\s\S]*?\.zoneArtboard\s*\{[^}]*scale\(/,
+    );
+  });
+
   it("shows final interactive map immediately for reduced motion", () => {
     renderOverlay({
       exactEndDrawn: false,

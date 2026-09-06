@@ -14,6 +14,7 @@ export const DESKTOP_PHASES = Object.freeze({
 });
 
 export const MOBILE_PHASES = Object.freeze({
+  galleryStart: 36,
   galleryEnd: 240,
   snapEnd: 300,
   detailDwellEnd: 340,
@@ -137,7 +138,7 @@ function mapSequenceMotion(input: ClinicStoryMotionInput): ClinicStoryMotionStat
 
   const grow = isMobile ? 1 : range(progressVh, 0, 84);
   const pan = isMobile
-    ? range(progressVh, 0, MOBILE_PHASES.galleryEnd)
+    ? range(progressVh, MOBILE_PHASES.galleryStart, MOBILE_PHASES.galleryEnd)
     : range(progressVh, 84, DESKTOP_PHASES.galleryEnd);
   const detail = range(progressVh, galleryEnd, detailEnd);
   const handoff = range(progressVh, detailDwellEnd, handoffEnd);
@@ -164,10 +165,9 @@ function mapSequenceMotion(input: ClinicStoryMotionInput): ClinicStoryMotionStat
     targetFrame: 1 + Math.round(sequenceProgress * (frameCount - 1)),
     zonesVisible,
     interactive:
-      progressVh >= mapEnd &&
-      progressVh < interactiveEnd &&
-      input.exactEndDrawn &&
-      input.revealComplete,
+      progressVh > teaseEnd &&
+      progressVh < storyEnd &&
+      input.exactEndDrawn,
   };
 }
 

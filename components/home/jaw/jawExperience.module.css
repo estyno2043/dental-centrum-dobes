@@ -940,6 +940,12 @@
 }
 
 @media (max-width: 767px) {
+  .sequenceStage {
+    transform: scale(calc(1 + var(--tease) * 0.5));
+    transform-origin: center;
+    will-change: transform;
+  }
+
   .zoneHeading {
     top: 0.75rem;
     font-size: clamp(1.65rem, 8vw, 2.35rem);
@@ -989,6 +995,12 @@
     display: none;
   }
 
+  .zoneArtwork {
+    transform: scale(calc(1 + var(--tease) * 0.5));
+    transform-origin: center;
+    will-change: transform;
+  }
+
   .zoneButtons {
     top: 100%;
     right: 0;
@@ -1014,15 +1026,23 @@
     translate: none;
   }
 
+  .zoneOverlay[data-panel-open="true"] .zoneButtons,
+  .zoneOverlay[data-panel-open="true"] .assistanceBar {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+  }
+
   .zonePanel {
     top: auto;
     right: 0;
     bottom: 0;
     left: 0;
     width: auto;
-    max-height: min(58dvh, 30rem);
+    max-height: min(52dvh, 27rem);
     overflow-y: auto;
     border-radius: 1.25rem 1.25rem 0 0;
+    background: linear-gradient(to bottom, rgb(38 34 31 / 98%), rgb(20 18 16 / 99%));
     transform: none;
     animation-name: mobile-card-pop;
   }

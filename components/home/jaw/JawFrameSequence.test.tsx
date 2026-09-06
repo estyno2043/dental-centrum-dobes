@@ -222,8 +222,8 @@ describe("JawFrameSequence", () => {
 
     const mobile = renderSequence({ profile: "mobile" });
     resize(300, 200, 1);
-    expect(mobile.container.querySelector("canvas")!.width).toBe(375);
-    expect(mobile.container.querySelector("canvas")!.height).toBe(250);
+    expect(mobile.container.querySelector("canvas")!.width).toBe(450);
+    expect(mobile.container.querySelector("canvas")!.height).toBe(300);
   });
 
   it("restores closed fallback during a resize until canvas redraw completes", () => {

@@ -5,23 +5,53 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: GSAP mobile gallery path fix approved for publication
-- Owner: —
-- Branch: `codex/mobile-clinicstory-performance`
-- Task: replace the direct mobile frame-1-to-frame-7 snap with one GSAP
-  ScrollTrigger timeline that visibly traverses all seven gallery frames,
-  preserves the gallery-to-jaw handoff, and keeps native document scrolling.
-  User approved publication to `main` after localhost review.
-  Local verification: 215 tests, lint, TypeScript, production build,
-  jaw-sequence validation, `git diff --check`, and changed-file credential scan
-  pass. Headless Chrome checks at 390×844, 375×812, and 1440×900 show the
-  complete progressive gallery path, centered detail endpoint, sticky `top: 0`,
-  zero horizontal page overflow, no console errors, no Next error overlay, and
-  no long tasks in a 120-frame mobile scroll run (p95 9.2 ms). One pre-existing
-  production audit advisory remains in transitive `nanoid@3.3.17`; unrelated to
-  GSAP and not auto-updated in this visual branch.
+- Status: mobile viewport geometry fix approved for publication
+- Owner: Claude
+- Branch: `claude/mobile-viewport-geometry`
+- Task: the pinned story mixed JS-frozen pixel heights with live `dvh`, so a
+  retracting iOS URL bar left the scene 135px short of the screen and left
+  every phase boundary calibrated to a viewport that no longer existed. The
+  pin is now `100lvh`, the layers inside compose in `100svh`, and no geometry
+  is written from JS. Dead per-sample style writes removed in a separate
+  commit. Verified: dead strip `135px → 0px`, pin tracks the viewport in both
+  browser-chrome states, 226 tests, lint, TypeScript, production build of 20
+  routes. User approved publication on 2026-09-04; `main` and `develop`
+  fast-forward to the same commit.
+
+### Previously published
+
+- Status: Mobile ClinicStory repair complete and approved for publication
+- Owner: Codex
+- Branch: `codex/mobile-clinicstory-entry-fix`
+- Task: keep the already verified direct mobile scroll patch, then repair the
+  physical-device regressions in bounded stages: stable sticky geometry and an
+  entry dwell, one continuous photo-7 zoom with no duplicate handoff image,
+  jaw-frame loading without abort/refetch churn, and a non-overlapping mobile
+  tooth-zone panel. Each stage gets a failing regression test, focused checks,
+  and browser verification. Keep native document scrolling. No merge or push
+  to `main` before mobile localhost approval. Verification: 224 tests, lint,
+  TypeScript, production build, jaw media validation, `git diff --check`,
+  credential scan, and 390×844 browser interaction passed. Browser confirmed
+  no internal focus-scroll jump, no horizontal overflow, and clean console.
+  User approved localhost on 2026-09-03 and requested push to production
+  `main`; `develop` will fast-forward to the same commit.
 
 ## File Reservations
+
+- Codex releases `components/home/ClinicStory.tsx`,
+  `components/home/ClinicStory.test.tsx`,
+  `components/home/clinicStoryMotion.ts`,
+  `components/home/clinicStoryMotion.test.ts`,
+  `components/home/clinicStory.module.css`,
+  `components/home/jaw/JawFrameSequence.tsx`,
+  `components/home/jaw/JawFrameSequence.test.tsx`,
+  `components/home/jaw/jawSequenceLoader.ts`,
+  `components/home/jaw/jawSequenceLoader.test.ts`,
+  `components/home/jaw/JawZoneOverlay.tsx`,
+  `components/home/jaw/JawZoneOverlay.test.tsx`,
+  `components/home/jaw/jawExperience.module.css`, `app/page.test.tsx`, and
+  `COLLAB.md` after localhost approval and full verification of the mobile
+  physical-device repair.
 
 - GSAP mobile gallery repair released `package.json`, `package-lock.json`,
   `components/home/ClinicStory.tsx`, `components/home/ClinicStory.test.tsx`,
@@ -1140,6 +1170,72 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   metadata validation, `git diff --check`, and changed-file credential scan.
   Files released. Next: real iOS/Android touch-inertia and frame-rate review on
   `http://localhost:3000/`; do not merge or push to `main` before approval.
+
+- 2026-09-03 — User approved the follow-up mobile ClinicStory repair on
+  `codex/mobile-clinicstory-entry-fix` and requested production publication.
+  Gallery motion now waits for the section entry, photo 7 becomes the handoff
+  without a duplicate image, jaw frames preload through a bounded shared cache,
+  and the mobile pain-zone sheet cannot overlap its controls or focus-scroll
+  the clipped jaw viewport. Verification: 224 tests, lint, TypeScript,
+  production build, jaw media validation, `git diff --check`, credential scan,
+  and 390×844 browser interaction with clean console and zero page overflow.
+  Files released. Publication target: `main`; mirror `develop` to the same
+  commit.
+
+- 2026-09-04 — Claude fixed the mobile viewport geometry behind the reported
+  gallery stutter and the jaw section "not fitting the screen", on
+  `claude/mobile-viewport-geometry`. User approved publication; fast-forwarded
+  onto `main` and `develop`.
+
+  The scene held three disagreeing notions of viewport height: pixels frozen
+  by JS at mount (`--pin-height`, `--story-height`, `--travel`), `svh`
+  fallbacks, and live `dvh`. iOS retracts the URL bar on the first scroll, so
+  the frozen pixels described a viewport that no longer existed while the
+  `dvh` layout kept moving underneath them.
+
+  Measured on the deployed build, mounting at 745 then growing to 880: all
+  three frozen values stayed put, leaving the pinned scene 135px shorter than
+  the screen — a dead strip the next section shows through — and every phase
+  boundary calibrated to a viewport that was gone. `measure()` refreshed only
+  when the *width* moved more than 40px, so a height change never recovered.
+  The pathological case is reachable: mounting while `window.innerHeight`
+  reads 0 collapses the whole section to 8px, permanently.
+
+  The pin is now `100lvh` — constant, and covers the tallest state — and the
+  layers inside compose in `100svh`, anchored to the top, so nothing hides
+  behind the bar and nothing reflows while it retracts. `--frame-h` and the
+  jaw viewport moved off `dvh` for the same reason. The zoom geometry reads
+  the gallery layer it composes in rather than the window, which removes the
+  frozen mount-time height rather than merely refreshing it. Freezing was the
+  right goal reached the wrong way; the geometry is stable by construction
+  now, so `ignoreMobileResize` still protects the scroll without the scene
+  going stale behind it. Codex's test that asserted the frozen pixels was
+  replaced by one asserting CSS ownership, with the reasoning recorded beside
+  it.
+
+  Separately, and in its own commit so the two can be judged apart: five of
+  eleven custom properties written per scroll sample had no consumer in any
+  stylesheet, each costing a subtree style invalidation for nothing, and
+  `borderRadius`/`zIndex` were written every sample to cross one threshold
+  each. Six properties remain, all consumed; the two thresholds are written
+  on change.
+
+  Verified: dead strip `135px → 0px`, pin height tracks the viewport in both
+  states, no JS-written geometry variables remain, dead custom properties
+  absent from the rendered section, 226 tests, lint, TypeScript, production
+  build of 20 routes.
+
+  ⚠️ Not established, and deliberately out of scope: whether the 1.0–1.5s
+  freezes during the jaw phase are frame decoding or simply the user not
+  scrolling. Frame-differencing the user's recording shows the gallery
+  repeatedly holding pixel-identical for ~100ms and then jumping three
+  samples' worth of travel at once, which is dropped frames; the layout cause
+  above is one contributor, but the on-device frame rate was not measured and
+  cannot be from this environment. Re-measure on a real handset after this
+  lands before opening the jaw preload question.
+
+  Files reserved: none remaining — `components/home/ClinicStory.tsx`,
+  `ClinicStory.test.tsx`, and `clinicStory.module.css` are released.
 
 - 2026-09-05 — Claude applied the clinic's second round of answers and built
   the implant page, on `claude/smooth-scroll`.
