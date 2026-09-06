@@ -326,12 +326,44 @@
 
 /* The box the morph flies out of — see `serviceTransition.ts`. */
 .frame {
+  position: relative;
   display: block;
   overflow: hidden;
   width: 100%;
   height: 100%;
   border-radius: 18px;
   box-shadow: 0 30px 70px -34px rgb(0 0 0 / 65%);
+}
+
+/*
+ * The scrim the caption sits on.
+ *
+ * There was none, and it worked only because the first photographs happened to
+ * be dark. Measured over the bottom 28% of each card, where the name and lead
+ * sit: implantaty 64 of 255, bielenie 151, diagnostika 172 — and hygiena 210,
+ * which is very nearly white. White type on that is about 1.3:1, which is not
+ * low contrast so much as no contrast, and the name was simply gone.
+ *
+ * A gradient rather than a per-image fix: the next photograph will be
+ * whatever it is, and a card that only works with dark photography is a trap
+ * for whoever adds the next one. Against the worst case here it brings 210
+ * down to roughly 79 behind the text, which carries the 74%-white lead at
+ * about 5:1. Clipped by the frame's own radius and overflow, and inert to the
+ * pointer so the card stays one link.
+ */
+.frame::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: linear-gradient(
+    to top,
+    rgb(14 13 12 / 82%) 0%,
+    rgb(14 13 12 / 72%) 24%,
+    rgb(14 13 12 / 40%) 44%,
+    rgb(14 13 12 / 10%) 62%,
+    transparent 76%
+  );
+  pointer-events: none;
 }
 
 .frame img {
@@ -419,7 +451,7 @@
   display: -webkit-box;
   overflow: hidden;
   -webkit-box-orient: vertical;
-  color: rgb(250 249 246 / 74%);
+  color: rgb(250 249 246 / 82%);
   font-size: clamp(0.72rem, 3.9cqw, 0.85rem);
   -webkit-line-clamp: 3;
   line-height: 1.45;
