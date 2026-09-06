@@ -91,6 +91,36 @@ export const featuredCase: PatientCase = {
 
 export const patientCases: readonly PatientCase[] = [
   /*
+   * parodontitida — the clinic's periodontitis case.
+   *
+   * Published on the user's instruction, 2026-09-06, after they confirmed the
+   * case is the clinic's own and that an AI tool was used on the light and the
+   * angle. The full history of that decision, including what I measured and
+   * why I twice held off, is on `illustration` in
+   * `components/services/perio/perioContent.ts` — read it there before
+   * touching this, rather than re-deriving it.
+   *
+   * ⚠️ No visit count and no duration, because the clinic has not given either
+   * for periodontal treatment. They are two of the three questions still
+   * outstanding on that service. The three facts below are all from the
+   * doctor's own written description of the protocol, and none of them is a
+   * number nobody supplied.
+   */
+  {
+    id: "parodontitida",
+    treatments: ["Liečba parodontitídy"],
+    problem:
+      "Zapálené a ustupujúce ďasná — ochorenie, ktoré takmer nebolí, a preto " +
+      "sa naň príde neskoro.",
+    facts: [
+      { label: "Diagnostika", value: "DNA analýza z výteru" },
+      { label: "Liečba", value: "Cielené antibiotiká a probiotiká" },
+      { label: "Záver", value: "Vlastná krvná plazma" },
+    ],
+    before: "/media/sluzby/paro-pred.webp",
+    after: "/media/sluzby/paro-po.webp",
+  },
+  /*
    * hygiena-gbt — the disclosing pair from the GBT protocol.
    *
    * Added on the user's request 2026-09-06, and the one case here that is not

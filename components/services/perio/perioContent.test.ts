@@ -7,7 +7,6 @@ import {
   causes,
   check,
   cost,
-  illustration,
   outcome,
   plasma,
   protocol,
@@ -138,33 +137,6 @@ describe("periodontology", () => {
     ]);
   });
 
-
-  /*
-   * ⚠️ These two files are one frame, and that is a measurement rather than a
-   * suspicion. Their difference is minimised at exactly zero offset — 23.3
-   * against 32.9 a single pixel either way — and is uniform across the
-   * picture, 5.5 of 255 on the teeth against 5.9 on the gum. Two photographs
-   * months apart cannot align to the pixel or differ that evenly.
-   *
-   * The clinic says the underlying case is theirs, and the claim that it was
-   * not was removed. What may not happen is this pair appearing among the
-   * patient cases as a treatment result, because the pair does not show one.
-   * When the two original frames arrive they replace this — at which point
-   * this test goes with them rather than being loosened.
-   */
-  it("does not present the adjusted pair as a treatment result", () => {
-    const claims = [
-      illustration.heading,
-      illustration.lead,
-      illustration.labels.before,
-      illustration.labels.after,
-      illustration.before.alt,
-      illustration.after.alt,
-    ].join(" ");
-
-    expect(claims).not.toMatch(/pred ošetrením|po ošetrení|náš pacient/i);
-    expect(illustration.note).toMatch(/upraven/i);
-  });
 
   /* Four factors, and hygiene is only one of them — that is the point. */
   it("keeps hygiene as one cause of four", () => {

@@ -8,13 +8,10 @@ import styles from "./perio.module.css";
 /**
  * The before/after slider for the gum illustration.
  *
- * Its own component rather than `BeforeAfter` from the patients section, and
- * that is the whole point: that one takes a `PatientCase` and writes "Pred
- * ošetrením" / "Po ošetrení" into its alt text, which asserts a person and a
- * treatment the clinic performed. These two images are generated — see
- * `illustration` in `perioContent.ts` — so the alt text says illustration, the
- * labels say what is being shown rather than whose it is, and the note under
- * it says outright that this is not a patient of the clinic.
+ * Its own component rather than `BeforeAfter` from the patients section only
+ * because this pair sits inline in the page's closing section rather than in a
+ * dot gallery; the same case also appears among the patient cases, through
+ * `BeforeAfter`, from one record in `patientsContent.ts`.
  *
  * Mechanically the same native `<input type="range">` the patients section
  * uses: one control that covers mouse, touch, keyboard and screen readers.
@@ -68,11 +65,11 @@ export function GumCompare(): JSX.Element {
         </span>
 
         <span className={styles.visuallyHidden} id={labelId}>
-          Porovnanie ilustrácie zapáleného a zahojeného ďasna
+          Porovnanie ďasna pred liečbou a po nej
         </span>
         <input
           aria-labelledby={labelId}
-          aria-valuetext={`Zobrazené ${position} % stavu pri zápale`}
+          aria-valuetext={`Zobrazené ${position} % stavu pred liečbou`}
           className={styles.compareRange}
           max={100}
           min={0}
@@ -82,9 +79,6 @@ export function GumCompare(): JSX.Element {
           value={position}
         />
       </div>
-
-      {/* Not a caption to be trimmed later: see `illustration` in the content. */}
-      <figcaption className={styles.compareNote}>{illustration.note}</figcaption>
     </figure>
   );
 }

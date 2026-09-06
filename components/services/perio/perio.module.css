@@ -763,20 +763,6 @@
   outline-offset: 3px;
 }
 
-/*
- * Not decoration. These two images are generated rather than photographed, and
- * this line is what keeps the section an illustration instead of a fabricated
- * clinical result — see `illustration` in `perioContent.ts`. A test pins it.
- */
-.compareNote {
-  margin: 10px 0 0;
-  color: rgb(38 38 42 / 62%);
-  font-size: 0.8rem;
-  font-style: italic;
-  line-height: 1.5;
-  text-wrap: pretty;
-}
-
 .visuallyHidden {
   position: absolute;
   width: 1px;
