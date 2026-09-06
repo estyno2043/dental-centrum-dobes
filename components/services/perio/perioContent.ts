@@ -40,7 +40,7 @@ export const check = {
   heading: "Nebolí. To je na nej to najhoršie.",
   lead:
     "Parodontitída neubližuje tak, aby ste kvôli nej prišli. Ohlási sa " +
-    "drobnosťami, ktoré si človek zvykne prehliadať — a kým ich prehliada, " +
+    "drobnosťami, ktoré si človek zvykne prehliadať. Kým ich prehliada, " +
     "ubúda kosť, v ktorej zub drží.",
   question: "Poznávate sa v niečom z toho?",
   items: [
