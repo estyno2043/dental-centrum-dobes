@@ -182,16 +182,31 @@
    * are what the reader travels through, and air between them is what lets one
    * row hold the light on its own.
    */
-  gap: clamp(56px, 9vw, 130px) clamp(24px, 5vw, 72px);
-  grid-template-columns: 1.06fr 0.94fr;
+  /*
+   * Down the page, not across it: the rows are what the reader travels
+   * through, and air between them is what lets one row hold the light on its
+   * own. Sideways there is now only the gap itself.
+   */
+  gap: clamp(56px, 9vw, 130px) clamp(40px, 7vw, 104px);
+  /*
+   * Columns sized to the cards and centred, rather than two fractions of the
+   * full width. With `fr` tracks the pair sat at the outer edges of a 1036px
+   * row and the distance between the two portraits was whatever was left over
+   * — 356px at 1440, and not a number anybody had chosen. Now the gap *is* the
+   * distance, and the 20px of extra room in the left track is all that remains
+   * of the unequal columns.
+   */
+  grid-template-columns: minmax(0, 360px) minmax(0, 340px);
+  justify-content: center;
   list-style: none;
 }
 
 .member {
   /*
-   * Narrower than its own track, and pushed to the outside of it. Cards that
-   * fill the grid read as a staff table; holding each one back and letting the
-   * gutter open up between the columns reads as a spread.
+   * Pulled towards the middle of the row rather than held back to the outside.
+   * The spread was the point when the cards sat in fractional tracks; with the
+   * columns sized to the cards there is nothing to hold back from, and the
+   * pair reads as a pair.
    */
   --focus: 1;
   --hover: 0;
@@ -210,11 +225,11 @@
 }
 
 .member:nth-child(odd) {
-  justify-self: start;
+  justify-self: end;
 }
 
 .member:nth-child(even) {
-  justify-self: end;
+  justify-self: start;
 }
 
 /* +--drift at the top of its travel, −--drift at the bottom. */
