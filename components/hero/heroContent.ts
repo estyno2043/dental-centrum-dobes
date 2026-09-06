@@ -16,7 +16,15 @@ export const headlineVariants = [
  */
 export const navigationItems = [
   { label: "Služby", href: "/#sluzby" },
-  { label: "Cenník", href: "#" },
+  /*
+   * The section, not the page. `/#cennik` behaves like its two neighbours:
+   * from the homepage `scrollToSection` eases there, and from a service page
+   * the browser navigates home and lands on it. The section then hands the
+   * reader on to `/cennik` itself with "Celý cenník" under the slides — which
+   * is the right order, because the showcase is what makes those numbers mean
+   * something and the list is what somebody checks afterwards.
+   */
+  { label: "Cenník", href: "/#cennik" },
   { label: "Tím", href: "/#tim" },
   { label: "Kontakt", href: "#" },
 ] as const;
