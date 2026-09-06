@@ -1388,6 +1388,49 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   `public/media/tim/vankova*`, `app/sluzby/[sluzba]/page.tsx`. Awaiting the
   user's localhost approval; nothing here has reached `main`.
 
+- 2026-09-05 — Claude published `claude/smooth-scroll` to `main` after the user
+  approved it on localhost and asked for it to go out.
+
+  `origin/main` had moved five commits — Codex's mobile ClinicStory work — so
+  it was merged into the branch first. Only `COLLAB.md` conflicted, both sides
+  purely additive log entries, resolved by keeping both in date order. No code
+  file overlapped: that work is `components/home/**`, this is
+  `components/services/**`, `components/pricing/**`, `components/scroll/**` and
+  media.
+
+  What lands: the Implantáty page, the corrected Estetická stomatológia, the
+  two Osstem renders, the Nite White card image, Vaňková's portrait, the
+  "bieliace dlahy" terminology, and the back-navigation fix.
+
+  Verified on the merged tree before pushing: 313 tests, lint, TypeScript,
+  production build of 21 routes, `git diff --check`, and a credential scan of
+  every changed file. All clean.
+
+  ⚠️ Carried into `main` and still outstanding — none of it is new, but it is
+  now live-adjacent rather than parked on a branch:
+
+  1. The back-navigation fix could not be exercised in this environment at all.
+     The preview runs with `visibilityState: "hidden"`, where rAF never fires,
+     so neither Lenis nor GSAP ever runs. The user confirmed the symptom, the
+     diagnosis is read off Lenis's source, and the wiring is covered by tests —
+     but nobody has yet watched it work.
+  2. The clinic has no publishable implant case, so that page carries no case
+     gallery. The user said photographs will follow.
+  3. Two questions the clinic has not answered: whether `Vhojovacia skrutka`
+     (120 €) is billed on every implant, and what a sinus lift costs. Both are
+     handled by omission rather than by a guess.
+  4. The whitening card image is generated rather than photographed. Fine where
+     it is; it must not migrate into the patient cases or the clinic gallery.
+  5. The Osstem product render carries the manufacturer's wordmark. The right
+     to publish it comes from Osstem or their distributor.
+  6. Six of the ten service pages are still name, one line and a form.
+
+  Netlify was not verified — no CLI link or site URL is available from this
+  environment. Whoever touches this next should confirm the live deployment
+  matches and record the URL here.
+
+  No files reserved.
+
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
 credentials, tokens, or local configuration values in repository files,
