@@ -103,19 +103,40 @@ export function PerioBody(): JSX.Element {
       {/* --- the part nobody else offers ---------------------------------- */}
       <section aria-labelledby="plasma-heading" className={styles.plasma}>
         <div className={styles.plasmaInner}>
-          <h2 className={styles.sectionHeading} id="plasma-heading">
-            {plasma.heading}
-          </h2>
-          <p className={styles.plasmaClaim}>{plasma.claim}</p>
-          <p className={styles.plasmaBody}>{plasma.body}</p>
-          <dl className={styles.plasmaFacts}>
-            {plasma.facts.map((fact) => (
-              <div key={fact.label}>
-                <dt>{fact.label}</dt>
-                <dd>{fact.value}</dd>
-              </div>
-            ))}
-          </dl>
+          {/*
+            Decorative, and `alt=""` on purpose — see `plasma.photo`. It is
+            texture behind the type, and its provenance is not established
+            well enough to describe it to anybody as the clinic's own room.
+          */}
+          {/* eslint-disable-next-line @next/next/no-img-element -- Pre-sized asset. */}
+          <img
+            alt=""
+            aria-hidden="true"
+            className={styles.plasmaPhoto}
+            decoding="async"
+            sizes="(max-width: 860px) 100vw, 60rem"
+            src={`/media/sluzby/${plasma.photo.src}.webp`}
+            srcSet={
+              `/media/sluzby/${plasma.photo.src}-mobile.webp ${plasma.photo.width / 2}w, ` +
+              `/media/sluzby/${plasma.photo.src}.webp ${plasma.photo.width}w`
+            }
+          />
+
+          <div className={styles.plasmaText}>
+            <h2 className={styles.sectionHeading} id="plasma-heading">
+              {plasma.heading}
+            </h2>
+            <p className={styles.plasmaClaim}>{plasma.claim}</p>
+            <p className={styles.plasmaBody}>{plasma.body}</p>
+            <dl className={styles.plasmaFacts}>
+              {plasma.facts.map((fact) => (
+                <div key={fact.label}>
+                  <dt>{fact.label}</dt>
+                  <dd>{fact.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
         </div>
       </section>
 

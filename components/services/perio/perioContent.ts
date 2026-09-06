@@ -187,6 +187,26 @@ export const protocol = {
  * that verb is doing honest work.
  */
 export const plasma = {
+  /*
+   * The panel's own photograph, supplied by the user 2026-09-06: blood being
+   * drawn in the surgery, tubes on the tray. Held far back — see
+   * `.plasmaPhoto` — so it reads as texture behind the type rather than as a
+   * picture competing with it, which is also why the panel keeps its dark type
+   * on warm sand instead of flipping to a dark card.
+   *
+   * ⚠️ Provenance not established. It carries no EXIF at all — no camera, no
+   * lens, no exposure — and it arrived in the same folder as two images that
+   * were definitely generated. That is suggestive, not proof. It matters less
+   * here than it did for the before/after pair, because this is a background
+   * and claims nothing about a result. Two things follow from it anyway: it is
+   * never captioned as this clinic's own room or staff, and it is decorative
+   * (`alt=""`) so no screen reader is told what it depicts.
+   *
+   * It does show a recognisable face. At the opacity it renders at, the face
+   * is barely discernible — but if it is a real photograph, the clinic needs
+   * that person's consent like any other.
+   */
+  photo: { src: "paro-plazma", width: 1800 },
   heading: "Z vašej vlastnej krvi",
   claim: "Nič cudzie. Odoberieme vám krv a vrátime vám ju tam, kde sa hojí.",
   body:

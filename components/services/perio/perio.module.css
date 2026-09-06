@@ -305,10 +305,55 @@
 }
 
 .plasmaInner {
+  position: relative;
+  overflow: hidden;
   padding: clamp(30px, 4.5vw, 56px) clamp(22px, 4vw, 56px);
   border: 1px solid rgb(138 115 88 / 38%);
   border-radius: 6px;
   background: #ece2cf;
+}
+
+/*
+ * The photograph, held a long way back.
+ *
+ * The opacity was chosen by compositing it against the sand and measuring,
+ * not by eye. At 0.30 the panel's darkest region falls to 159 of 255, where
+ * the body text came out at 4.19:1 — under the threshold, and the picture was
+ * only marginally more visible for it. At 0.24, with the body raised from 76%
+ * to 82% ink, the darkest point is about 172: the heading reads near 7.5:1 and
+ * the body near 5.3:1, everywhere on the panel rather than only where the
+ * photograph happens to be light.
+ *
+ * That is the whole reason it is this faint. The panel keeps dark type on a
+ * light ground — which is what it was changed to when the implant panel's
+ * near-black read as too heavy — and a photograph legible enough to compete
+ * would have forced it back the other way.
+ *
+ * Warmed and desaturated so a photograph shot under white surgery light does
+ * not pull the sand grey.
+ */
+/*
+ * Selected through the panel, not on its own: the service shell sets
+ * `.page img { height: auto }`, which outranks a single class and left this
+ * rendering at its intrinsic 703px inside a 493px panel — anchored at the top,
+ * so `object-fit: cover` did nothing and the tray of tubes at the foot of the
+ * frame was simply cut off. Same specificity trap as the implant page's marked
+ * phase, and just as silent.
+ */
+.plasmaInner .plasmaPhoto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  filter: grayscale(0.45) sepia(0.12);
+  object-fit: cover;
+  opacity: 0.24;
+  pointer-events: none;
+}
+
+/* Above the photograph, without a z-index anybody has to remember. */
+.plasmaText {
+  position: relative;
 }
 
 .plasma .sectionHeading {
@@ -332,7 +377,8 @@
 .plasmaBody {
   max-width: 54ch;
   margin: 0;
-  color: rgb(38 38 42 / 76%);
+  /* 82%, not 76%: see the note on `.plasmaPhoto` — measured, not guessed. */
+  color: rgb(38 38 42 / 82%);
   font-size: 0.96rem;
   line-height: 1.7;
   text-wrap: pretty;
