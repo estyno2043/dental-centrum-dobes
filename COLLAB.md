@@ -5,7 +5,7 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: mobile viewport geometry fixed; awaiting mobile localhost approval
+- Status: mobile viewport geometry fix approved for publication
 - Owner: Claude
 - Branch: `claude/mobile-viewport-geometry`
 - Task: the pinned story mixed JS-frozen pixel heights with live `dvh`, so a
@@ -15,7 +15,8 @@ update it before taking or handing off work.
   is written from JS. Dead per-sample style writes removed in a separate
   commit. Verified: dead strip `135px → 0px`, pin tracks the viewport in both
   browser-chrome states, 226 tests, lint, TypeScript, production build of 20
-  routes. Do not merge before the user approves it on a real handset.
+  routes. User approved publication on 2026-09-04; `main` and `develop`
+  fast-forward to the same commit.
 
 ### Previously published
 
@@ -1183,8 +1184,8 @@ not achievable without interpolation artifacts, whatever the export is tagged.
 
 - 2026-09-04 — Claude fixed the mobile viewport geometry behind the reported
   gallery stutter and the jaw section "not fitting the screen", on
-  `claude/mobile-viewport-geometry`. Awaiting mobile localhost approval; not
-  merged.
+  `claude/mobile-viewport-geometry`. User approved publication; fast-forwarded
+  onto `main` and `develop`.
 
   The scene held three disagreeing notions of viewport height: pixels frozen
   by JS at mount (`--pin-height`, `--story-height`, `--travel`), `svh`
