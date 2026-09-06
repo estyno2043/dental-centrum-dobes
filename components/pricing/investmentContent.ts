@@ -62,6 +62,16 @@ export const investmentIntro = {
     "Zvyšok nájdete v cenníku.",
 } as const;
 
+/**
+ * Four, and the user set that ceiling deliberately on 2026-09-06.
+ *
+ * The section is `(count + 1) × 100vh` tall, so every slide costs a full
+ * screen of scrolling: four is five screens, and a fifth would make the
+ * showcase longer than the rest of the homepage's closing third. If more
+ * services should appear here later, the mechanism has to change — a second
+ * row, a shorter travel per slide, something — rather than the count growing.
+ * A test holds the ceiling.
+ */
 export const slides: readonly ShowcaseSlide[] = [
   {
     slug: "vstupna-prehliadka",
@@ -143,6 +153,40 @@ export const slides: readonly ShowcaseSlide[] = [
     price: {
       value: "100 €",
       note: "Celý protokol vrátane AIRFLOW. Deti 75 €.",
+    },
+  },
+  {
+    /*
+     * The top of the ladder, and the reason the section is called what it is.
+     * Its fourth bullet is the strongest sentence on the site — the one place
+     * the clinic carries the risk instead of the patient — and it earns its
+     * place here rather than only on the service page, because this is where
+     * the reader is counting the money.
+     *
+     * No override: implants are the whole of their page.
+     */
+    slug: "zubne-implantaty",
+    cardWidth: 900,
+    kicker: "Náhrada chýbajúceho zuba",
+    title: "Zubné implantáty",
+    background: "cennik-pozadie-04",
+    backgroundAlt: "",
+    points: [
+      "Implantát Osstem, plánovaný z 3D snímku",
+      "Tri mesiace hojenia — a ani jeden deň bez zuba",
+      "Zvyčajne štyri návštevy",
+      "Ak implantát nechytí, druhý pokus je zadarmo",
+      "Záruka 2 roky",
+    ],
+    price: {
+      /*
+       * "od" off a whole tooth, not off its cheapest part. 1 490 € is the
+       * complete implant, abutment and crown at the lower abutment price; the
+       * note carries the top of the range so the figure cannot be read as the
+       * whole story. See the rule on `anchorPrices` in `pricingContent.ts`.
+       */
+      value: "od 1 490 €",
+      note: "Celý zub: implantát, nadstavba aj korunka. Podľa nadstavby do 1 605 €.",
     },
   },
 ];

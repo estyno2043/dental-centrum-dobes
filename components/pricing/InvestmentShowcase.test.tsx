@@ -294,4 +294,38 @@ describe("InvestmentShowcase", () => {
     const service = allServices.find((s) => s.slug === "dentalna-hygiena")!;
     expect(hygiene.title).toBe(service.name);
   });
+
+  /*
+   * The user's ceiling, set on 2026-09-06: four cards, no more.
+   *
+   * Not taste — arithmetic. `.section` is `(count + 1) × 100vh`, so each slide
+   * costs a whole screen of scrolling and four already means five. A fifth
+   * would make this one section longer than the rest of the homepage's closing
+   * third, and the reader has to get through all of it to reach the footer.
+   * More services here means changing the mechanism, not the number.
+   */
+  it("holds the four-slide ceiling", () => {
+    expect(slides.length).toBeLessThanOrEqual(4);
+  });
+
+  /*
+   * Every slide must lead somewhere finished. Six of the ten service pages are
+   * still a name, one line and a form, and sending a reader from a card like
+   * these to "Obsah tejto stránky pripravujeme" is worse than not showing the
+   * card at all.
+   */
+  it("only shows services whose page is actually written", () => {
+    const written = readFileSync(
+      join(process.cwd(), "app/sluzby/[sluzba]/page.tsx"),
+      "utf8",
+    );
+    const bespoke = written.slice(
+      written.indexOf("const BESPOKE_BODIES"),
+      written.indexOf("export default async function"),
+    );
+
+    for (const slide of slides) {
+      expect(bespoke, slide.slug).toContain(`"${slide.slug}"`);
+    }
+  });
 });
