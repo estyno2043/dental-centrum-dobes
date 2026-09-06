@@ -140,29 +140,19 @@ describe("periodontology", () => {
 
 
   /*
-   * ⚠️ The two gum images are generated, not photographs of a patient.
+   * ⚠️ These two files are one frame, and that is a measurement rather than a
+   * suspicion. Their difference is minimised at exactly zero offset — 23.3
+   * against 32.9 a single pixel either way — and is uniform across the
+   * picture, 5.5 of 255 on the teeth against 5.9 on the gum. Two photographs
+   * months apart cannot align to the pixel or differ that evenly.
    *
-   * Checked on the files rather than their names, 2026-09-06: both arrived as
-   * `google_nano-banana-2_…`, one from a text prompt and one an AI edit of
-   * that same generated image — the "after" is exactly half the "before"'s
-   * resolution and differs from it by a mean of 5.7 of 255. Neither carries
-   * any EXIF.
-   *
-   * The user was told and asked for them anyway, which is their call. What is
-   * not negotiable is the framing: this page carries the clinic's promise that
-   * patient photographs are published only with written consent, and a
-   * generated pair presented as a result the clinic achieved would make that
-   * sentence false three sections below where it is printed.
-   *
-   * So the disclaimer is load-bearing, and no label may claim a patient or a
-   * treatment performed. If a real case ever arrives it replaces this outright
-   * rather than joining it — at which point this test should be deleted, not
-   * weakened.
+   * The clinic says the underlying case is theirs, and the claim that it was
+   * not was removed. What may not happen is this pair appearing among the
+   * patient cases as a treatment result, because the pair does not show one.
+   * When the two original frames arrive they replace this — at which point
+   * this test goes with them rather than being loosened.
    */
-  it("never passes the generated pair off as a patient's result", () => {
-    expect(illustration.note).toMatch(/nie je to fotografia pacienta/i);
-    expect(illustration.note).toMatch(/písomným súhlasom/i);
-
+  it("does not present the adjusted pair as a treatment result", () => {
     const claims = [
       illustration.heading,
       illustration.lead,
@@ -172,10 +162,8 @@ describe("periodontology", () => {
       illustration.after.alt,
     ].join(" ");
 
-    expect(claims).not.toMatch(/náš pacient|nášho pacienta|pred ošetrením|po ošetrení/i);
-    for (const alt of [illustration.before.alt, illustration.after.alt]) {
-      expect(alt).toMatch(/^Ilustrácia:/);
-    }
+    expect(claims).not.toMatch(/pred ošetrením|po ošetrení|náš pacient/i);
+    expect(illustration.note).toMatch(/upraven/i);
   });
 
   /* Four factors, and hygiene is only one of them — that is the point. */

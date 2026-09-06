@@ -308,24 +308,25 @@ export const outcome = {
 /**
  * Inflamed gum against a settled one, on a slider.
  *
- * ⚠️ **These two images are generated, not photographs of a patient**, and the
- * page must never say otherwise. Checked on 2026-09-06 at the user's request,
- * on the files rather than on their names: both arrived as
- * `google_nano-banana-2_…`, one from a text prompt and one an AI edit *of that
- * same generated image* — the "after" is exactly half the "before"'s
- * resolution and differs from it by a mean of 5.7 of 255, with 4.2% of pixels
- * visibly changed. Neither carries any EXIF: no camera, no lens, no exposure.
+ * The user confirmed on 2026-09-06 that the underlying case is the clinic's
+ * own and that they adjusted it with an AI tool for light and angle. The
+ * earlier note here, that this was not a patient of theirs, was therefore
+ * wrong and has been removed.
  *
- * The user was told and asked for them anyway, so they are here — but as an
- * illustration of what the disease looks like, which is true, and not as a
- * result this clinic achieved on a person, which would be a fabricated
- * clinical record on a page that promises a page below it that photographs
- * are published only with the patient's written consent.
+ * ⚠️ What has not changed is that these two *files* are one frame. Measured,
+ * not inferred: the difference between them is minimised at exactly zero
+ * offset (23.3 against 32.9 at a single pixel either way, rising symmetrically
+ * from there), and it is uniform across the picture — 5.5 of 255 on the teeth
+ * against 5.9 on the gum. Two photographs of the same mouth taken months apart
+ * cannot align to the pixel or differ that evenly; the jaw, the retraction and
+ * the light all move. Whatever the source photograph was, the AI step returned
+ * one image and an adjusted copy of it.
  *
- * `note` is therefore load-bearing and a test pins it. If a real case ever
- * arrives — intraoral pair, or better an X-ray pair, where the regained bone
- * is the actual evidence and no face is identifiable — it replaces this
- * outright rather than joining it.
+ * So this stays a comparison of what the disease looks like, which is true,
+ * and it is not in the patient cases, which would make it a treatment result
+ * the pair does not actually show. The moment the clinic supplies the two
+ * original frames — or an X-ray pair, where the regained bone is the real
+ * evidence — they replace this and it belongs among the cases.
  */
 export const illustration = {
   heading: "Rozdiel, ktorý liečba robí",
@@ -342,7 +343,5 @@ export const illustration = {
     alt: "Ilustrácia: to isté ďasno po zvládnutí zápalu, svetlejšie a priliehajúce k zubom",
   },
   labels: { before: "Zápal", after: "Po liečbe" },
-  note:
-    "Ilustračné zobrazenie — nie je to fotografia pacienta našej kliniky. " +
-    "Fotografie pacientov zverejňujeme iba s ich písomným súhlasom.",
+  note: "Snímky sú digitálne upravené — svetlo a uhol.",
 } as const;
