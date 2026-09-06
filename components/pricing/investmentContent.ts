@@ -35,6 +35,14 @@ export type ShowcaseSlide = {
     readonly name: string;
     readonly lead: string;
   };
+  /**
+   * The encoded width of the card's photograph, and half of it is the
+   * `-mobile` file. Stated per slide rather than assumed: the showcase used to
+   * hardcode 1000w for every card, and `hygiena` is 900 — a srcset that
+   * misdescribes its own candidates has the browser pick a file too small for
+   * the slot, and the only symptom is a soft picture.
+   */
+  readonly cardWidth: number;
   /** Short. The card underneath carries the service's full name. */
   readonly title: string;
   readonly kicker: string;
@@ -57,6 +65,7 @@ export const investmentIntro = {
 export const slides: readonly ShowcaseSlide[] = [
   {
     slug: "vstupna-prehliadka",
+    cardWidth: 1000,
     kicker: "Pre nových pacientov",
     title: "Vstupná prehliadka",
     background: "cennik-pozadie-01",
@@ -77,6 +86,7 @@ export const slides: readonly ShowcaseSlide[] = [
   },
   {
     slug: "esteticka-stomatologia",
+    cardWidth: 1000,
     kicker: "Estetická stomatológia",
     title: "Bielenie Nite White",
     background: "cennik-pozadie-02",
@@ -109,6 +119,30 @@ export const slides: readonly ShowcaseSlide[] = [
     price: {
       value: "260 €",
       note: "Za celý chrup, vrátane bieliacich dláh.",
+    },
+  },
+  {
+    /*
+     * No `card` override: the service's own name, lead and photograph are
+     * exactly what this slide is. The override exists for a treatment that is
+     * one of several on its page, and hygiene is the whole page.
+     */
+    slug: "dentalna-hygiena",
+    cardWidth: 900,
+    kicker: "Prevencia",
+    title: "Dentálna hygiena GBT",
+    background: "cennik-pozadie-03",
+    backgroundAlt: "",
+    points: [
+      "Biofilm sa najprv zafarbí — vidíte, čo sa odstraňuje",
+      "AIRFLOW namiesto škrabania: teplá voda a jemný prášok",
+      "Osem krokov v pevnom poradí, nič sa nepreskočí",
+      "Naučíme vás, čo doma unikalo — na vašich vlastných zuboch",
+      "Na konci dohodneme, kedy prísť nabudúce",
+    ],
+    price: {
+      value: "100 €",
+      note: "Celý protokol vrátane AIRFLOW. Deti 75 €.",
     },
   },
 ];

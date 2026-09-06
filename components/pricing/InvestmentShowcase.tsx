@@ -228,11 +228,15 @@ export function InvestmentShowcase(): JSX.Element {
                         <img
                           alt=""
                           decoding="async"
-                          height="1250"
+                          /* 4:5, every card. */
+                          height={Math.round(slide.cardWidth * 1.25)}
                           sizes="(max-width: 1023px) 70vw, 26vw"
                           src={`/media/sluzby/${card.image}.webp`}
-                          srcSet={`/media/sluzby/${card.image}-mobile.webp 500w, /media/sluzby/${card.image}.webp 1000w`}
-                          width="1000"
+                          srcSet={
+                            `/media/sluzby/${card.image}-mobile.webp ${slide.cardWidth / 2}w, ` +
+                            `/media/sluzby/${card.image}.webp ${slide.cardWidth}w`
+                          }
+                          width={slide.cardWidth}
                         />
                       ) : null}
                     </span>

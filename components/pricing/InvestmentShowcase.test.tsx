@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
@@ -240,5 +241,57 @@ describe("InvestmentShowcase", () => {
     expect(rules).toMatch(
       /@media \(prefers-reduced-motion: reduce\)[\s\S]*min-height:\s*0/,
     );
+  });
+
+  /*
+   * Every photograph the showcase names, at the size it claims.
+   *
+   * The srcset used to hardcode 1000w and 500w for every card, and `hygiena`
+   * is 900 — so adding the hygiene slide would have quietly told the browser a
+   * 900px file was 1000px wide. A srcset that misdescribes its own candidates
+   * has the browser choose one too small for the slot, and the only symptom is
+   * a soft picture that nobody traces back to a number in a template.
+   *
+   * This also fails on a misspelt stem, which is a broken image in production
+   * and silent in development: Next serves `public/` straight through and a
+   * 404 on an `<img>` says nothing.
+   */
+  it("ships every image it names, at the width it advertises", async () => {
+    const sharp = (await import("sharp")).default;
+    const size = async (file: string) =>
+      sharp(join(process.cwd(), "public/media", file)).metadata();
+
+    for (const slide of slides) {
+      const service = allServices.find((s) => s.slug === slide.slug);
+      const image = slide.card?.image ?? service?.image;
+      expect(image, slide.slug).toBeTruthy();
+
+      const full = await size(`sluzby/${image}.webp`);
+      const half = await size(`sluzby/${image}-mobile.webp`);
+
+      expect(full.width, `${image}`).toBe(slide.cardWidth);
+      expect(half.width, `${image}-mobile`).toBe(slide.cardWidth / 2);
+      /* 4:5 — the frame the filmstrip reserves. */
+      expect(full.height).toBe(Math.round(slide.cardWidth * 1.25));
+
+      const bg = await size(`${slide.background}.webp`);
+      const bgHalf = await size(`${slide.background}-mobile.webp`);
+      expect(bg.width, slide.background).toBe(2200);
+      expect(bgHalf.width, `${slide.background}-mobile`).toBe(1100);
+    }
+  });
+
+  /*
+   * A slide is a treatment and a service page can hold several, so the card
+   * may override the page's own name and photograph — but only where that is
+   * actually true. Hygiene is its whole page, so it carries no override and
+   * inherits the name and lead the services section already shows.
+   */
+  it("overrides the card only where the slide is not the whole service", () => {
+    const hygiene = slides.find((s) => s.slug === "dentalna-hygiena")!;
+    expect(hygiene.card).toBeUndefined();
+
+    const service = allServices.find((s) => s.slug === "dentalna-hygiena")!;
+    expect(hygiene.title).toBe(service.name);
   });
 });
