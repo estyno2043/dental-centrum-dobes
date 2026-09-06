@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState, type JSX } from "react";
+import { IconArrowNarrowRight } from "@tabler/icons-react";
 
 import { check } from "./perioContent";
 import styles from "./perio.module.css";
@@ -82,6 +83,19 @@ export function SymptomCheck(): JSX.Element {
         {painless ? (
           <p className={styles.checkPainlessNote}>{check.painlessNote}</p>
         ) : null}
+
+        {/*
+          The action, where the intent is. Not a client-router link: it is an
+          in-page anchor to the booking form the shell renders at the foot of
+          every service page, so it works with or without JavaScript.
+        */}
+        <p className={styles.checkCtaText}>{check.cta.text}</p>
+        <a className={styles.checkCta} href={check.cta.href}>
+          {check.cta.label}
+          <IconArrowNarrowRight size={18} stroke={1.8} aria-hidden="true" />
+        </a>
+
+        {/* Last, and small: fine print under the action, not instead of it. */}
         <p className={styles.checkDisclaimer}>{check.disclaimer}</p>
       </div>
     </div>

@@ -50,12 +50,19 @@
 
 /* ---------------------------------------------------------- recognition --- */
 
+/*
+ * Centred, not top-aligned. The checklist is more than twice the height of the
+ * text beside it — 566px against 211px once the button was added — so pinning
+ * both to the top left 355px of nothing under the heading, and the eye reads
+ * that as a missing element rather than as space. Centred, the two read as one
+ * statement and one panel.
+ */
 .recognise {
   display: grid;
   gap: clamp(24px, 4vw, 56px);
   padding-top: clamp(38px, 5vw, 64px);
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
-  align-items: start;
+  align-items: center;
 }
 
 .check {
@@ -173,6 +180,58 @@
   font-size: 0.87rem;
   line-height: 1.55;
   text-wrap: pretty;
+}
+
+.checkCtaText {
+  margin: 14px 0 12px;
+  color: rgb(38 38 42 / 76%);
+  font-size: 0.87rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/*
+ * Solid, where every other control on this page is an outline pill. This is
+ * the one action the page is built to produce, and the verdict directly above
+ * it is what produces it — the outline idiom is for the secondary links out to
+ * hygiene and implants.
+ */
+.checkCta {
+  display: inline-flex;
+  gap: 9px;
+  align-items: center;
+  padding: 12px 22px;
+  border: 1px solid var(--charcoal);
+  border-radius: 999px;
+  background: var(--charcoal);
+  color: var(--porcelain);
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  transition:
+    background-color 240ms var(--ease),
+    border-color 240ms var(--ease);
+}
+
+.checkCta svg {
+  transition: translate 240ms var(--ease);
+}
+
+.checkCta:hover,
+.checkCta:focus-visible {
+  border-color: var(--taupe-deep);
+  background: var(--taupe-deep);
+}
+
+.checkCta:hover svg,
+.checkCta:focus-visible svg {
+  translate: 4px 0;
+}
+
+.checkCta:focus-visible {
+  outline: 2px solid var(--taupe-deep);
+  outline-offset: 3px;
 }
 
 /* Never decoration: a checklist that reads as a diagnosis is another document. */
@@ -745,6 +804,8 @@
 @media (prefers-reduced-motion: reduce) {
   .checkBox,
   .checkBox::after,
+  .checkCta,
+  .checkCta svg,
   .outcomeLink,
   .outcomeLink svg {
     transition: none;

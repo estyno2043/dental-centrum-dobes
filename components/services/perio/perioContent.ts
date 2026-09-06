@@ -62,6 +62,20 @@ export const check = {
     "vtedy, keď je zub uvoľnený, a vtedy už chýba kosť.",
   disclaimer:
     "Toto nie je diagnóza. Je to dôvod prísť sa dať vyšetriť.",
+  /*
+   * The button belongs here rather than further down the page: the verdict
+   * directly above it is what creates the intent, and a reader who has just
+   * ticked three boxes should not have to go looking for what to do about it.
+   *
+   * The line above the button says what the appointment costs them in time
+   * rather than in money — at this point they do not yet know they have
+   * anything, so half an hour is the objection to answer, not 240 €.
+   */
+  cta: {
+    text: "Vyšetrenie trvá pol hodiny a poviete si s lekárom, na čom ste.",
+    label: "Objednať sa na vyšetrenie",
+    href: "#booking",
+  },
 } as const;
 
 /* --------------------------------------------------------------- what it is */
