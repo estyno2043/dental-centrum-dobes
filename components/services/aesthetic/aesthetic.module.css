@@ -317,6 +317,19 @@
   text-wrap: pretty;
 }
 
+/*
+ * The scanner photograph. Sized by the column it sits in rather than by a
+ * ratio of its own, since it is already cropped 4:5 to match the frame the
+ * placeholder reserved, so nothing reflows now that the file has landed.
+ */
+.coursePhoto {
+  margin: 0;
+}
+
+.coursePhoto img {
+  border-radius: 4px;
+}
+
 /* --------------------------------------------------------------- option --- */
 
 /*

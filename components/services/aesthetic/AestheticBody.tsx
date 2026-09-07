@@ -7,12 +7,12 @@ import {
   featuredCase,
   patientCases,
 } from "@/components/patients/patientsContent";
-import { PhotoFrame } from "../PhotoFrame";
 import { SolutionSwitcher } from "./SolutionSwitcher";
 import {
   aestheticCaseIds,
   aestheticIntro,
   course,
+  coursePhoto,
   longevity,
   mockUp,
 } from "./aestheticContent";
@@ -73,10 +73,21 @@ export function AestheticBody(): JSX.Element {
           <p className={styles.previewNote}>{course.note}</p>
         </div>
 
-        <PhotoFrame
-          brief="Intraorálny skener 3Shape v ruke lekára pri práci v ústach pacienta. Ukazuje, čím sa nahradil silikónový odtlačok, a je to jediný obrázok tejto sekcie, ktorý nesie jej sľub o pohodlí."
-          ratio="4 / 5"
-        />
+        <figure className={styles.coursePhoto}>
+          {/* eslint-disable-next-line @next/next/no-img-element -- Pre-cropped clinic asset. */}
+          <img
+            alt={coursePhoto.alt}
+            decoding="async"
+            height={coursePhoto.height}
+            sizes="(max-width: 860px) 100vw, 24rem"
+            src={`/media/sluzby/${coursePhoto.src}.webp`}
+            srcSet={
+              `/media/sluzby/${coursePhoto.src}-mobile.webp ${coursePhoto.width / 2}w, ` +
+              `/media/sluzby/${coursePhoto.src}.webp ${coursePhoto.width}w`
+            }
+            width={coursePhoto.width}
+          />
+        </figure>
       </section>
 
       {/* --- the option, priced honestly ---------------------------------- */}

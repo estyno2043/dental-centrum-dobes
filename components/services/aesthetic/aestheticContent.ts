@@ -264,6 +264,28 @@ export const mockUp = {
 } as const;
 
 /**
+ * The photograph for the course section, supplied by the user 2026-09-07.
+ *
+ * It is the one image on this page that carries its promise about comfort: the
+ * 3Shape wand actually in a patient's mouth, where the silicone tray used to
+ * go. The frame's placeholder had asked for exactly this shot.
+ *
+ * Cropped 4:5 from the source's 1536x2752, 180px down, which keeps the loupes,
+ * both hands, the wand and the mouth and drops only the chair below them.
+ *
+ * ⚠️ A real patient's face, and the clinic's own. Their consent applies here
+ * the same as for any case photograph on this site.
+ */
+export const coursePhoto = {
+  src: "estetika-skener",
+  width: 900,
+  height: 1125,
+  alt:
+    "Lekár s lupovými okuliarmi sníma chrup pacientky intraorálnym skenerom " +
+    "3Shape",
+} as const;
+
+/**
  * How long it lasts.
  *
  * The clinic's own answer, 2026-09-04: *"ak sa o to starajú (pravidelné
