@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: "Tím — Dental Centrum Dobeš",
   description:
     `${teamMembers.length} ľudí, ktorí sa v Dental Centrum Dobeš na Kramároch ` +
-    "starajú o vaše zuby — lekári, dentálna hygienička a zdravotné sestry.",
+    "starajú o vaše zuby: lekári, dentálna hygienička a zdravotné sestry.",
 };
 
 export default function TeamPage(): JSX.Element {

@@ -110,7 +110,7 @@ describe("aesthetic dentistry", () => {
    * quote it without saying it adds to the total.
    */
   it("offers the mock-up as an option, with its cost owned", () => {
-    expect(mockUp.body).toMatch(/navyšuje to cenu/);
+    expect(mockUp.body).toMatch(/navyšuje to cenu/i);
     expect(mockUp.body).toMatch(/nie je to bežná súčasť/i);
     expect(course.heading).not.toMatch(/mock ?up/i);
     expect(course.lead).not.toMatch(/mock ?up/i);

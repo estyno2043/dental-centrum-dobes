@@ -123,7 +123,7 @@ export function PriceList(): JSX.Element {
 
       {groups.length === 0 ? (
         <p className={styles.empty}>
-          Nič sme nenašli. Skúste kratšie slovo — alebo nám zavolajte na{" "}
+          Nič sme nenašli. Skúste kratšie slovo, alebo nám zavolajte na{" "}
           <a href="tel:+421918800002">0918 800 002</a> a nájdeme to spolu.
         </p>
       ) : (
@@ -155,7 +155,7 @@ export function PriceList(): JSX.Element {
 
       <footer className={styles.legend}>
         <p>
-          <strong>Podľa rozsahu</strong> — cenu určíme podľa toho, čo je
+          <strong>Podľa rozsahu.</strong> Cenu určíme podľa toho, čo je
           potrebné; poviete si o ňu vopred a dostanete ju predtým, než začneme.
         </p>
         <p>

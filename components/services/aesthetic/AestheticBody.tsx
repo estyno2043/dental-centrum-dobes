@@ -74,7 +74,7 @@ export function AestheticBody(): JSX.Element {
         </div>
 
         <PhotoFrame
-          brief="Intraorálny skener 3Shape v ruke lekára pri práci v ústach pacienta. Ukazuje, čím sa nahradil silikónový odtlačok — a je to jediný obrázok tejto sekcie, ktorý nesie jej sľub o pohodlí."
+          brief="Intraorálny skener 3Shape v ruke lekára pri práci v ústach pacienta. Ukazuje, čím sa nahradil silikónový odtlačok, a je to jediný obrázok tejto sekcie, ktorý nesie jej sľub o pohodlí."
           ratio="4 / 5"
         />
       </section>

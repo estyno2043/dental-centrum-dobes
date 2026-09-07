@@ -52,7 +52,7 @@ export const teamIntro = {
   headline: "Za každým úsmevom stojí celý tím.",
   lead:
     "Štyria lekári, päť sestier, dentálna hygienička a recepcia. V recenziách " +
-    "sa opakuje tá istá veta — chodíme sem celá rodina, už roky.",
+    "sa opakuje tá istá veta: chodíme sem celá rodina, už roky.",
 } as const;
 
 export const teamMembers: readonly TeamMember[] = [

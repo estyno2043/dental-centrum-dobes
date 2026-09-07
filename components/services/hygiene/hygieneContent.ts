@@ -33,8 +33,8 @@ export const hygieneIntro = {
   headline: "Najprv uvidíte, čo sa má odstrániť.",
   claim:
     "Guided Biofilm Therapy je protokol o ôsmich krokoch. Povlak sa najprv " +
-    "zafarbí, takže presne vidíte, čo vám doma uniká a čo ideme odstrániť — " +
-    "a až potom sa začne pracovať.",
+    "zafarbí, takže presne vidíte, čo vám doma uniká a čo ideme odstrániť. " +
+    "A až potom sa začne pracovať.",
 } as const;
 
 /**
@@ -58,7 +58,7 @@ export const comparison = {
   gbt: {
     title: "Guided Biofilm Therapy",
     points: [
-      "Povlak sa zafarbí — vidíte ho vy aj my, nič sa nehádame.",
+      "Povlak sa zafarbí, vidíte ho vy aj my, nič sa nehádame.",
       "Teplá voda a jemný prášok zmyjú povlak aj pigmentácie.",
       "Ultrazvuk sa dotkne len toho, čo je naozaj tvrdé.",
       "Bezpečné na implantátoch, korunkách, fazetách aj strojčeku.",
@@ -73,7 +73,7 @@ export const protocol: readonly ProtocolStep[] = [
     title: "Pozrieme sa, ako na tom ste",
     body:
       "Zuby, ďasná a hĺbka vačkov. Bez toho sa nedá povedať, čo vaše ďasná " +
-      "potrebujú — a či bude treba piaty krok.",
+      "potrebujú a či bude treba piaty krok.",
   },
   {
     number: 2,
@@ -108,8 +108,8 @@ export const protocol: readonly ProtocolStep[] = [
       "vyčistí vačok bez škrabania koreňa.",
     optional: true,
     optionalNote:
-      "Len pri parodontóze. Pri zdravých ďasnách sa tento krok nerobí — " +
-      "poznáme to už z prvého kroku.",
+      "Len pri parodontóze. Pri zdravých ďasnách sa tento krok nerobí. " +
+      "Poznáme to už z prvého kroku.",
   },
   {
     number: 6,
@@ -132,7 +132,7 @@ export const protocol: readonly ProtocolStep[] = [
     name: "Ďalší termín",
     title: "Dohodneme interval",
     body:
-      "Podľa toho, čo sme videli — nie podľa kalendára. Termín dostanete ešte " +
+      "Podľa toho, čo sme videli, nie podľa kalendára. Termín dostanete ešte " +
       "než odídete.",
   },
 ];
@@ -208,8 +208,8 @@ export const pricing = {
   partialNote:
     "Tieto ceny platia pre samostatný úkon, nie ako príplatok k hygiene.",
   partial: [
-    { label: "Air flow — jedno zuboradie", price: "50 €" },
-    { label: "Polishing — jedno zuboradie", price: "40 €" },
+    { label: "Air flow, jedno zuboradie", price: "50 €" },
+    { label: "Polishing, jedno zuboradie", price: "40 €" },
     { label: "Fluoridácia lakom", price: "30 €" },
     { label: "Inštruktáž a nácvik ústnej hygieny", price: "20 €" },
   ],
@@ -236,7 +236,7 @@ export const disclosingCase = {
   before: "/media/hygiena-gbt-pred.webp",
   after: "/media/hygiena-gbt-po.webp",
   caption:
-    "Krok 2 a krok 7. Fialové je povlak, ktorý tam bol celý čas — len ho " +
+    "Krok 2 a krok 7. Fialové je povlak, ktorý tam bol celý čas. Len ho " +
     "nebolo vidieť. Posuňte deliacu čiaru.",
 } as const;
 

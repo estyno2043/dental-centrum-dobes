@@ -100,7 +100,7 @@ const vstupnaPrehliadka: ServiceDetail = {
   benefits: [
     {
       title: "Komplexné vyšetrenie celej ústnej dutiny",
-      note: "Ďasná, jazyk, čeľustné kĺby aj sliznica — nie iba zub, ktorý bolí.",
+      note: "Ďasná, jazyk, čeľustné kĺby aj sliznica, nie iba zub, ktorý bolí.",
     },
     {
       title: "4× intraorálny RTG snímok",

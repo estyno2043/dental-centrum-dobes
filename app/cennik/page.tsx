@@ -32,7 +32,7 @@ export default function PricingPage(): JSX.Element {
           <h1 className={styles.headline}>Ceny bez prekvapení.</h1>
           <p className={styles.lead}>
             Celý cenník výkonov aj produktov, tak ako ho máme na ambulancii.
-            Cenu ošetrenia poznáte predtým, než začneme — a ak si nie ste istí,
+            Cenu ošetrenia poznáte predtým, než začneme. A ak si nie ste istí,
             čo potrebujete, povieme vám to na vstupnej prehliadke.
           </p>
           <PriceList />

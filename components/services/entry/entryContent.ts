@@ -104,7 +104,7 @@ export const objections: readonly Objection[] = [
     question: "Bojím sa zubára. Roky som nebol.",
     answer:
       "Vstupná prehliadka je vyšetrenie, nie zákrok. Nič sa nevŕta a nič " +
-      "nerozhodujete na mieste — pozrieme sa, čo je, a povieme vám to nahlas.",
+      "nerozhodujete na mieste. Pozrieme sa, čo je, a povieme vám to nahlas.",
   },
   {
     question: "Budem musieť hneď niečo riešiť?",
@@ -116,7 +116,7 @@ export const objections: readonly Objection[] = [
     question: "Priplácam si niečo k tým 80 eurám?",
     answer:
       "Za vyšetrenie ani za snímky nie. Ak sa počas prehliadky ukáže niečo, " +
-      "čo treba ošetriť, cenu poviete vopred — nie po zákroku.",
+      "čo treba ošetriť, cenu poviete vopred, nie po zákroku.",
   },
   {
     question: "Beriete deti?",
@@ -132,8 +132,8 @@ export const objections: readonly Objection[] = [
      */
     question: "Ako rýchlo sa dostanem na termín?",
     answer:
-      "Objednať sa môžete hneď. Termín vám vieme dať spravidla do mesiaca — " +
-      "ak sa niečo uvoľní skôr, ozveme sa.",
+      "Objednať sa môžete hneď. Termín vám vieme dať spravidla do mesiaca. " +
+      "Ak sa niečo uvoľní skôr, ozveme sa.",
   },
   {
     question: "Dá sa platiť kartou?",
@@ -148,7 +148,7 @@ export const objections: readonly Objection[] = [
     question: "Musím si niečo priniesť?",
     answer:
       "Nič. Ak máte staré snímky alebo výsledky, pokojne ich vezmite so sebou " +
-      "— pozrieme sa na ne. Vlastný záznam si však robíme od začiatku.",
+      "a pozrieme sa na ne. Vlastný záznam si však robíme od začiatku.",
   },
 ];
 
@@ -159,7 +159,7 @@ export const entrySteps: readonly { title: string; note: string }[] = [
   },
   {
     title: "Prezrieme celú ústnu dutinu",
-    note: "Ďasná, jazyk, čeľustné kĺby aj sliznicu — nie iba zub, ktorý bolí.",
+    note: "Ďasná, jazyk, čeľustné kĺby aj sliznicu, nie iba zub, ktorý bolí.",
   },
   {
     title: "Doplníme snímky",

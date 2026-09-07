@@ -98,8 +98,8 @@ export const crowns: readonly CrownChoice[] = [
 export const cost = {
   heading: "Čo stojí jeden zub, celý",
   lead:
-    "Implantát nie je jedna položka. Sú to tri — koreň, nadstavba a korunka — " +
-    "a väčšina cenníkov ukáže prvú z nich a zvyšok necháte zistiť v kresle. " +
+    "Implantát nie je jedna položka. Sú to tri: koreň, nadstavba a korunka. " +
+    "Väčšina cenníkov ukáže prvú z nich a zvyšok necháte zistiť v kresle. " +
     "Tu je celá suma, aj s tým, čo ju mení.",
   crownHeading: "Korunka",
   totalLabel: "Spolu za jeden zub",
@@ -150,7 +150,7 @@ export type Phase = {
 export const timeline = {
   heading: "Tri mesiace hojenia. Ani jeden deň bez zuba.",
   lead:
-    "To, čo ľudí na implantáte desí, nie je zákrok — je to predstava, že " +
+    "To, čo ľudí na implantáte desí, nie je zákrok. Je to predstava, že " +
     "budú pol roka chodiť s medzerou. Nebudete. Dočasný zub máte po celý čas, " +
     "kým sa implantát hojí.",
   facts: [
@@ -165,7 +165,7 @@ export const timeline = {
       body:
         "Kosť sa premeria v troch rozmeroch, nie odhadne z bežného röntgenu. " +
         "Z toho sa vie, či je implantát možný, kam presne patrí a či bude " +
-        "treba kosť doplniť — ešte predtým, než sa čokoľvek rozhodne.",
+        "treba kosť doplniť, ešte predtým, než sa čokoľvek rozhodne.",
     },
     {
       name: "Zavedenie implantátu",
@@ -178,7 +178,7 @@ export const timeline = {
       name: "Hojenie s dočasným zubom",
       when: "Tri mesiace",
       body:
-        "Implantát počas nich zrastá s kosťou — to je to, čo mu dáva pevnosť " +
+        "Implantát počas nich zrastá s kosťou. To je to, čo mu dáva pevnosť " +
         "vlastného koreňa a čo sa nedá urýchliť. V ústach máte po celý ten " +
         "čas dočasný zub, takže do práce ani medzi ľudí nejdete s medzerou.",
       reassures: true,
@@ -208,7 +208,7 @@ export const guarantee = {
   claim: "Ak implantát nechytí, druhý pokus je zadarmo.",
   body:
     "Na implantát dávame štandardne dvojročnú záruku. A keby sa stalo to, " +
-    "čoho sa pri takejto sume bojíte najviac — že sa implantát neujme — " +
+    "čoho sa pri takejto sume bojíte najviac, teda že sa implantát neujme, " +
     "druhý zavedieme na naše náklady. Nemyslíme si, že za biologické riziko " +
     "má platiť pacient.",
   facts: [
@@ -232,7 +232,7 @@ export const guarantee = {
 export const system = {
   heading: "Osstem, a prečo na tom mene záleží",
   body:
-    "Implantát vám zostane v ústach desiatky rokov — dlhšie, než väčšina " +
+    "Implantát vám zostane v ústach desiatky rokov, dlhšie než väčšina " +
     "ľudí chodí k jednému lekárovi. Preto nie je jedno, čo je v kosti: keď sa " +
     "o desať rokov treba dorobiť korunka alebo vymeniť nadstavba, pri " +
     "zavedenom systéme sa to jednoducho objedná. Pri bezmennom implantáte " +
@@ -277,8 +277,8 @@ export const bone = {
   heading: "Keď kosti nie je dosť",
   body:
     "Po dlhšie chýbajúcom zube kosť ubúda a niekedy jej na implantát " +
-    "nestačí. Augmentáciu aj sinus lift robíme — či sa dá vo vašom prípade a " +
-    "v akom rozsahu, však rozhoduje lekárka podľa 3D snímku a nálezu, nie " +
+    "nestačí. Augmentáciu aj sinus lift robíme. Či sa dá vo vašom prípade a " +
+    "v akom rozsahu, rozhoduje lekárka podľa 3D snímku a nálezu, nie " +
     "webová stránka. Preto tu nenájdete sľub, že sa to dá vždy. Nájdete " +
     "termín, na ktorom sa to zistí.",
   linkLabel: "Cenník chirurgických výkonov",
@@ -308,7 +308,7 @@ export const crossSection = {
     "nadstavba a korunka, vedľa vlastné zuby s koreňmi a ďasnom",
   width: 780,
   height: 520,
-  caption: "Skrutka, nadstavba, korunka — tri položky, ktoré vidíte vyššie.",
+  caption: "Skrutka, nadstavba, korunka. Tri položky, ktoré vidíte vyššie.",
 } as const;
 
 /**

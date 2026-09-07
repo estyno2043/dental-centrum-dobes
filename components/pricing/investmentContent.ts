@@ -58,7 +58,7 @@ export const investmentIntro = {
   eyebrow: "Cenník",
   headline: "Investujte do svojho úsmevu.",
   lead:
-    "Cenu vám povieme skôr, než začneme — a tu je, čo za ňu dostanete. " +
+    "Cenu vám povieme skôr, než začneme. A tu je, čo za ňu dostanete. " +
     "Zvyšok nájdete v cenníku.",
 } as const;
 
@@ -83,7 +83,7 @@ export const slides: readonly ShowcaseSlide[] = [
     points: [
       "Komplexné vyšetrenie celej ústnej dutiny",
       "4× intraorálny RTG snímok",
-      "Panoramatický snímok celého chrupu — zdarma",
+      "Panoramatický snímok celého chrupu zdarma",
       "Plán ošetrenia: čo je súrne a čo pokojne počká",
       "Trvá zhruba 30 minút",
       "Nič si nemusíte priniesť",
@@ -122,7 +122,7 @@ export const slides: readonly ShowcaseSlide[] = [
     points: [
       "Bieliace dlahy vyrobené presne na váš chrup",
       "Bielite doma, cez noc, počas dvoch týždňov",
-      "Zub sa nebrúsi — jediné riešenie, ktoré sa dá vziať späť",
+      "Zub sa nebrúsi, jediné riešenie, ktoré sa dá vziať späť",
       "Výsledok vydrží 6 mesiacov až 2 roky",
       "Keď vyprchá, dá sa jednoducho zopakovať",
     ],
@@ -144,10 +144,10 @@ export const slides: readonly ShowcaseSlide[] = [
     background: "cennik-pozadie-03",
     backgroundAlt: "",
     points: [
-      "Biofilm sa najprv zafarbí — vidíte, čo sa odstraňuje",
+      "Biofilm sa najprv zafarbí, takže vidíte, čo sa odstraňuje",
       "AIRFLOW namiesto škrabania: teplá voda a jemný prášok",
       "Osem krokov v pevnom poradí, nič sa nepreskočí",
-      "Naučíme vás, čo doma unikalo — na vašich vlastných zuboch",
+      "Na vašich vlastných zuboch vám ukážeme, čo doma unikalo",
       "Na konci dohodneme, kedy prísť nabudúce",
     ],
     price: {
@@ -173,7 +173,7 @@ export const slides: readonly ShowcaseSlide[] = [
     backgroundAlt: "",
     points: [
       "Implantát Osstem, plánovaný z 3D snímku",
-      "Tri mesiace hojenia — a ani jeden deň bez zuba",
+      "Tri mesiace hojenia a ani jeden deň bez zuba",
       "Zvyčajne štyri návštevy",
       "Ak implantát nechytí, druhý pokus je zadarmo",
       "Záruka 2 roky",

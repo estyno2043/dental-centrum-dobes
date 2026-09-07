@@ -110,7 +110,7 @@ export const patientCases: readonly PatientCase[] = [
     id: "parodontitida",
     treatments: ["Liečba parodontitídy"],
     problem:
-      "Zapálené a ustupujúce ďasná — ochorenie, ktoré takmer nebolí, a preto " +
+      "Zapálené a ustupujúce ďasná. Ochorenie, ktoré takmer nebolí, a preto " +
       "sa naň príde neskoro.",
     facts: [
       { label: "Diagnostika", value: "DNA analýza z výteru" },
@@ -143,7 +143,7 @@ export const patientCases: readonly PatientCase[] = [
     id: "hygiena-gbt",
     treatments: ["Dentálna hygiena GBT"],
     problem:
-      "Povlak, ktorý pri domácom čistení unikal — a nebolo ho vidieť, kým " +
+      "Povlak, ktorý pri domácom čistení unikal a nebolo ho vidieť, kým " +
       "sme ho nezafarbili.",
     facts: [
       { label: "Návštev", value: "1" },

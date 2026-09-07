@@ -35,8 +35,8 @@ export const servicesIntro = {
   headline: "Od prvej prehliadky po zub, ktorý nikto nespozná.",
   lead:
     "Päť vecí, ktoré robíme najčastejšie, a päť ďalších, ktoré k nim patria. " +
-    "Ak neviete, do ktorej kolónky patríte, začnite vstupnou prehliadkou — " +
-    "od nej sa odvíja všetko ostatné.",
+    "Ak neviete, do ktorej kolónky patríte, začnite vstupnou prehliadkou. " +
+    "Od nej sa odvíja všetko ostatné.",
 } as const;
 
 /** The five with photography. Order is the patient's journey. */
@@ -61,7 +61,7 @@ export const featuredServices: readonly Service[] = [
     slug: "esteticka-stomatologia",
     name: "Estetická stomatológia",
     lead:
-      "Fazety, keramické korunky a bielenie — tvar a farba predných zubov, " +
+      "Fazety, keramické korunky a bielenie. Tvar a farba predných zubov, " +
       "ktoré vydržia aj zblízka.",
     image: "estetika",
   },

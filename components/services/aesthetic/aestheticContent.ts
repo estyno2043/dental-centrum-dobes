@@ -65,7 +65,7 @@ export const aestheticIntro = {
   headline: "Päť ciest k tomu istému úsmevu. Líšia sa tým, čo za ne dáte.",
   lead:
     "Fazeta, korunka a bielenie riešia iné veci a stoja iné peniaze. Nižšie " +
-    "je, čo ktorá z nich naozaj rieši — aby ste sa rozhodovali podľa toho, a " +
+    "je, čo ktorá z nich naozaj rieši, aby ste sa rozhodovali podľa toho, a " +
     "nie podľa ceny.",
 } as const;
 
@@ -93,11 +93,11 @@ export const solutions: readonly Solution[] = [
     body:
       "Odoberieme odtlačok a vyrobíme bieliace dlahy presne na váš chrup. " +
       "Gél si " +
-      "aplikujete doma, cez noc, počas dvoch týždňov. Zub sa nijako nebrúsi " +
-      "— zo všetkých riešení je toto jediné úplne vratné. Ako dlho výsledok " +
+      "aplikujete doma, cez noc, počas dvoch týždňov. Zub sa nijako nebrúsi. " +
+      "Zo všetkých riešení je toto jediné úplne vratné. Ako dlho výsledok " +
       "vydrží, rozhoduje káva, čaj, víno a cigarety: pri striedmom pití aj " +
       "dva roky, pri každodennej káve skôr pol roka. Potom sa dá zopakovať. " +
-      "Jednorazové ordinačné bielenie v kresle nerobíme — nemá podľa nás " +
+      "Jednorazové ordinačné bielenie v kresle nerobíme. Nemá podľa nás " +
       "dostatočne dobré výsledky na to, aby sme ho ponúkali.",
     facts: [
       { label: "Zub sa brúsi", value: "Vôbec" },
@@ -116,8 +116,8 @@ export const solutions: readonly Solution[] = [
       "vidieť hneď.",
     body:
       "Kompozit sa nanáša a modeluje priamo na zub, v ten istý deň. Brúsi sa " +
-      "minimálne alebo vôbec. Je to najdostupnejší spôsob, ako zmeniť tvar — " +
-      "a keď sa časom ošúcha, dá sa opraviť bez toho, aby sa začínalo odznova.",
+      "minimálne alebo vôbec. Je to najdostupnejší spôsob, ako zmeniť tvar. " +
+      "A keď sa časom ošúcha, dá sa opraviť bez toho, aby sa začínalo odznova.",
     facts: [
       { label: "Zub sa brúsi", value: "Minimálne" },
       { label: "Hotové", value: "Za jednu návštevu" },
@@ -134,7 +134,7 @@ export const solutions: readonly Solution[] = [
     body:
       "Rovnaký postup za jednu návštevu, iný kompozit. Empress Direct sa " +
       "vrstvi v odtieňoch a drží lesk dlhšie, takže sa lepšie stráca medzi " +
-      "vlastnými zubami — čo je pri predných jednotkách celý rozdiel.",
+      "vlastnými zubami, čo je pri predných jednotkách celý rozdiel.",
     facts: [
       { label: "Zub sa brúsi", value: "Minimálne" },
       { label: "Hotové", value: "Za jednu návštevu" },
@@ -151,8 +151,8 @@ export const solutions: readonly Solution[] = [
     body:
       "Tenká keramická škrupinka, vyrobená podľa odtlačku alebo 3D skenu. " +
       "Keramika sa nezafarbuje od kávy ani vína a odtieň si drží roky. " +
-      "Vyžaduje tri návštevy, lebo medzi nimi pracuje laboratórium — a " +
-      "medzitým nosíte dočasné korunky, nie obrúsené zuby.",
+      "Vyžaduje tri návštevy, lebo medzi nimi pracuje laboratórium. " +
+      "Medzitým nosíte dočasné korunky, nie obrúsené zuby.",
     facts: [
       { label: "Zub sa brúsi", value: "Tenká vrstva skloviny" },
       { label: "Hotové", value: "3 návštevy, zhruba dva týždne" },
@@ -165,11 +165,11 @@ export const solutions: readonly Solution[] = [
     kind: "Prekryje celý zub, nie iba prednú plochu",
     price: "455 €",
     solves:
-      "Zub nie je len škaredý — je oslabený, po endodoncii alebo s veľkou " +
+      "Zub nie je len škaredý. Je oslabený, po endodoncii alebo s veľkou " +
       "výplňou.",
     body:
       "Fazeta rieši vzhľad, korunka aj pevnosť. Keď zo zuba veľa chýba alebo " +
-      "je po ošetrení koreňových kanálikov, fazeta ho neudrží — korunka ho " +
+      "je po ošetrení koreňových kanálikov, fazeta ho neudrží. Korunka ho " +
       "obopne celý a prevezme naň žuvací tlak.",
     facts: [
       { label: "Zub sa brúsi", value: "Po obvode" },
@@ -200,7 +200,7 @@ export const solutions: readonly Solution[] = [
  * step below names the scanner as the method and quotes no price for it.
  */
 export const course = {
-  heading: "Tri návštevy — a ani jeden deň s obrúsenými zubami",
+  heading: "Tri návštevy a ani jeden deň s obrúsenými zubami",
   lead:
     "Keramická fazeta aj korunka sa vyrábajú v laboratóriu a to trvá zhruba " +
     "dva týždne. Nečakáte ich však s obrúsenými zubami: hneď na druhý deň " +
@@ -210,7 +210,7 @@ export const course = {
       name: "Obrúsenie a 3D sken",
       when: "1. návšteva",
       note:
-        "Odtlačok robíme skenerom 3Shape namiesto silikónu — nič stuhnuté " +
+        "Odtlačok robíme skenerom 3Shape namiesto silikónu. Nič stuhnuté " +
         "v ústach a laboratórium dostáva podklad rovno.",
     },
     {
@@ -224,8 +224,8 @@ export const course = {
       name: "Nasadenie definitívnej práce",
       when: "Zhruba o dva týždne",
       note:
-        "Toľko trvá výroba. Ak potrebujete byť hotový skôr — svadba, " +
-        "fotenie — termín sa dá dohodnúť individuálne.",
+        "Toľko trvá výroba. Ak potrebujete byť hotový skôr, napríklad na svadbu alebo " +
+        "fotenie, termín sa dá dohodnúť individuálne.",
     },
   ],
   note:
@@ -247,7 +247,7 @@ export const mockUp = {
   body:
     "Dá sa to. Nový tvar sa vymodeluje mimo úst a potom sa vám nasadí na " +
     "vlastné zuby, takže sa naň pozriete v zrkadle, kým sme sa ničoho " +
-    "nedotkli. Nie je to bežná súčasť práce — navyšuje to cenu a väčšina " +
+    "nedotkli. Nie je to bežná súčasť práce. Navyšuje to cenu a väčšina " +
     "ľudí to nevyžaduje. Keď to chcete, povedzte nám to hneď na začiatku.",
   steps: [
     {
@@ -279,7 +279,7 @@ export const longevity = {
   heading: "Ako dlho to vydrží",
   claim: "Kým sa oň staráte, tak dlho, ako vlastný zub.",
   body:
-    "Fazety ani korunky sa nekazia — kazí sa zub a ďasno pod nimi. Pri " +
+    "Fazety ani korunky sa nekazia. Kazí sa zub a ďasno pod nimi. Pri " +
     "pravidelnej dentálnej hygiene vydrží estetická práca podľa našich " +
     "skúseností celý život. Bez nej ju o ňu pripraví to isté, čo pripraví " +
     "človeka o vlastné zuby.",

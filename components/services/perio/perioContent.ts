@@ -46,7 +46,7 @@ export const check = {
   items: [
     "Pri čistení zubov mi krvácajú ďasná",
     "Z úst cítiť zápach, ktorý po umytí nezmizne",
-    "Ďasná mi ustúpili — zuby vyzerajú dlhšie ako kedysi",
+    "Ďasná mi ustúpili, zuby vyzerajú dlhšie ako kedysi",
     "Medzi zubami sa objavili medzery, ktoré tam neboli",
     "Niektorý zub sa mierne kýve",
   ],
@@ -58,7 +58,7 @@ export const check = {
     many: "Toto už nebýva náhoda. Objednajte sa na vyšetrenie.",
   },
   painlessNote:
-    "Že to nebolí, nie je dobrá správa — je to typické. Bolesť prichádza až " +
+    "Že to nebolí, nie je dobrá správa. Je to typické. Bolesť prichádza až " +
     "vtedy, keď je zub uvoľnený, a vtedy už chýba kosť.",
   disclaimer:
     "Toto nie je diagnóza. Je to dôvod prísť sa dať vyšetriť.",
@@ -84,7 +84,7 @@ export const disease = {
   heading: "Nie sú to len ďasná",
   body:
     "Parodontitída je zápal ďasien a zároveň kosti, v ktorej je zub uložený. " +
-    "Ďasno sa zahojí. Kosť sama nedorastie — a práve tá drží zub na mieste. " +
+    "Ďasno sa zahojí. Kosť sama nedorastie a práve tá drží zub na mieste. " +
     "Preto sa ochorenie neohlási bolesťou, ale kývaním: v tej chvíli už časť " +
     "kosti nie je. To je celý dôvod, prečo pri tejto diagnóze rozhoduje, " +
     "kedy prídete.",
@@ -102,7 +102,7 @@ export const causes = {
   heading: "Prečo práve vy",
   lead:
     "Na parodontitíde sa podieľajú štyri veci naraz. Hygiena je len jedna z " +
-    "nich — a u koho rozhodujú tie ostatné, ten si ju nevyčistí, nech robí " +
+    "nich. A u koho rozhodujú tie ostatné, ten si ju nevyčistí, nech robí " +
     "čokoľvek.",
   items: [
     {
@@ -119,7 +119,7 @@ export const causes = {
     },
     {
       name: "Hygiena",
-      note: "Jediná zo štyroch, ktorá je celá vo vašich rukách — a sama o sebe nestačí.",
+      note: "Jediná zo štyroch, ktorá je celá vo vašich rukách, a sama o sebe nestačí.",
     },
   ],
 } as const;
@@ -132,7 +132,7 @@ export const systemic = {
     "Ďasno pri parodontitíde je otvorená zapálená rana a baktérie z nej sa " +
     "dostávajú do krvného obehu. Výskum ich spája so srdcovocievnymi " +
     "ochoreniami, s cukrovkou a s ďalšími ochoreniami, pri ktorých by to " +
-    "nikoho nenapadlo hľadať. Preto sa neliečia len ďasná — a preto sa to " +
+    "nikoho nenapadlo hľadať. Preto sa neliečia len ďasná. A preto sa to " +
     "neodkladá.",
 } as const;
 
@@ -171,8 +171,8 @@ export const protocol = {
     {
       name: "Eradikácia",
       note:
-        "Dentálna hygiena a antibiotiká cielené na to, čo laboratórium našlo " +
-        "— nie na to, čo sa dáva zvyčajne.",
+        "Dentálna hygiena a antibiotiká cielené na to, čo laboratórium našlo, " +
+        "a nie na to, čo sa dáva zvyčajne.",
     },
     {
       name: "Osídlenie",
@@ -226,7 +226,7 @@ export const plasma = {
   body:
     "Poslednou fázou je aplikácia vlastnej krvnej plazmy. Odoberie sa vám " +
     "krv, oddelí sa z nej plazma a tá sa aplikuje k postihnutým zubom. " +
-    "Umožní hojenie kosti a obnovu spojenia ďasna so zubom — teda presne to, " +
+    "Umožní hojenie kosti a obnovu spojenia ďasna so zubom, teda presne to, " +
     "čo pri parodontitíde chýba. Keďže je vaša vlastná, telo ju neodmieta.",
   facts: [
     { label: "Materiál", value: "Vaša vlastná krv" },
@@ -250,7 +250,7 @@ export const cost = {
   heading: "Čo stojí zistiť, na čom ste",
   lead:
     "Koľko bude stáť liečba, sa poctivo nedá povedať skôr, než vieme, čo " +
-    "liečime. Zistiť to však stojí presnú sumu — a tú vieme povedať hneď.",
+    "liečime. Zistiť to však stojí presnú sumu a tú vieme povedať hneď.",
   items: [
     {
       label: "Komplexné parodontologické vyšetrenie",
@@ -272,7 +272,7 @@ export const cost = {
   total: "240 €",
   alternative:
     "Bez genetickej časti (Odber materiálu Mikro, 85 €) je to 170 €. " +
-    "Genetiku odporúčame — je to jediný zo štyroch faktorov, ktorý sa nedá " +
+    "Genetiku odporúčame. Je to jediný zo štyroch faktorov, ktorý sa nedá " +
     "zmeniť, a preto sa oplatí o ňom vedieť.",
   laterHeading: "Čo prichádza potom",
   laterNote:
@@ -297,7 +297,7 @@ export const outcome = {
   claim: "Zuby, ktoré sme v minulosti extrahovali, dnes zachraňujeme.",
   body:
     "Táto liečba je overená na mnohých pacientoch a výsledky sú veľmi dobré. " +
-    "Nie každý zub sa však zachrániť dá — a keď je kosti primálo, poctivejšie " +
+    "Nie každý zub sa však zachrániť dá. Keď je kosti primálo, poctivejšie " +
     "je povedať to hneď než to skúšať za vaše peniaze.",
   linkLabel: "Zubné implantáty",
   linkHref: "/sluzby/zubne-implantaty",
@@ -328,7 +328,7 @@ export const outcome = {
 export const illustration = {
   heading: "Rozdiel, ktorý liečba robí",
   lead:
-    "Vľavo ďasno pri zápale — tmavšie, opuchnuté, s ustúpeným okrajom pri " +
+    "Vľavo ďasno pri zápale: tmavšie, opuchnuté, s ustúpeným okrajom pri " +
     "krčkoch. Vpravo to isté ďasno po zvládnutí zápalu. Potiahnite deliacu " +
     "čiaru.",
   before: {
