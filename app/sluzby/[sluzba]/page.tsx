@@ -9,6 +9,7 @@ import { EndoBody } from "@/components/services/endo/EndoBody";
 import { EntryBody } from "@/components/services/entry/EntryBody";
 import { HygieneBody } from "@/components/services/hygiene/HygieneBody";
 import { ImplantBody } from "@/components/services/implants/ImplantBody";
+import { KidsBody } from "@/components/services/kids/KidsBody";
 import { PerioBody } from "@/components/services/perio/PerioBody";
 import { CaseGallery } from "@/components/patients/CaseGallery";
 import {
@@ -104,6 +105,7 @@ const BESPOKE_BODIES: Readonly<Record<string, () => JSX.Element>> = {
   "zubne-implantaty": ImplantBody,
   parodontologia: PerioBody,
   endodoncia: EndoBody,
+  "osetrenie-deti": KidsBody,
 };
 
 export default async function ServicePage({
