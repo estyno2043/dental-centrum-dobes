@@ -69,6 +69,50 @@
   text-wrap: pretty;
 }
 
+/* --------------------------------------------------------------- pain --- */
+
+/*
+ * A short block on a rule, not a panel. It is a reassurance rather than an
+ * argument, and giving it a card of its own would make the reader stop on it
+ * for longer than it deserves. The question is the heading, so somebody
+ * scanning finds it without reading a word of the answer.
+ */
+.pain {
+  display: grid;
+  gap: clamp(14px, 3vw, 48px);
+  padding-top: clamp(44px, 6vw, 78px);
+  grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+  align-items: start;
+}
+
+.painHeading {
+  margin: 0;
+  padding-top: 14px;
+  border-top: 2px solid var(--charcoal);
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.painClaim {
+  margin: 0 0 10px;
+  padding-top: 14px;
+  border-top: 1px solid rgb(138 115 88 / 30%);
+  font-size: clamp(1.15rem, 2vw, 1.5rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+.painBody {
+  max-width: 54ch;
+  margin: 0;
+  color: rgb(38 38 42 / 76%);
+  font-size: 0.98rem;
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+
 /* ----------------------------------------------------------- the odds ----- */
 
 .odds {
@@ -510,6 +554,7 @@
 @media (max-width: 860px) {
   .odds,
   .money,
+  .pain,
   .scales {
     grid-template-columns: 1fr;
   }

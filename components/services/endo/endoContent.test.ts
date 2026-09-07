@@ -12,6 +12,7 @@ import {
   microscope,
   odds,
   opening,
+  pain,
   visit,
 } from "./endoContent";
 
@@ -177,6 +178,25 @@ describe("endodontics", () => {
       ?.join(" ") ?? "";
 
     expect(prose).not.toContain("\u2014");
+  });
+
+
+  /*
+   * The clinic's answer on pain, and the hedge that makes it theirs.
+   *
+   * They wrote "vo väčšine prípadov bezbolestné". Dropping those three words
+   * turns a careful sentence into a promise they did not make, and it is the
+   * kind of promise a patient remembers word for word if it does not hold for
+   * them. So the qualifier is pinned, and any bare claim of painlessness
+   * fails here.
+   */
+  it("keeps the hedge on the painlessness claim", () => {
+    expect(pain.body).toMatch(/vo väčšine prípadov/i);
+    expect(pain.claim).toMatch(/väčšinou/i);
+    expect(pain.claim).not.toMatch(/^bezbolestn/i);
+    expect(pain.body).not.toMatch(/vždy bezbolestné|úplne bezbolestné/i);
+    /* It answers the question in its own heading, so scanning finds it. */
+    expect(pain.heading).toMatch(/bolí/i);
   });
 
   /* Nothing on this page may imply a guarantee the clinic refused to give. */

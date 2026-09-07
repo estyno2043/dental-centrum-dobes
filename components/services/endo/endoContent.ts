@@ -37,6 +37,31 @@ export const opening = {
     "nedá.",
 } as const;
 
+/* -------------------------------------------------------------- the pain --- */
+
+/**
+ * The question everybody actually has, answered on 2026-09-06 in the clinic's
+ * own words: *"Samotné endodontické ošetrenie je vďaka modernej lokálnej
+ * anestézii vo väčšine prípadov bezbolestné."*
+ *
+ * ⚠️ The hedge is the sentence. "Bezbolestné" on its own is a promise the
+ * clinic did not make, and it is the kind of promise a reader remembers word
+ * for word if it turns out not to hold for them. A test fails if "vo väčšine
+ * prípadov" ever goes missing.
+ *
+ * It sits before the odds rather than after: somebody who is afraid it will
+ * hurt does not act on an argument about timing, however good it is.
+ */
+export const pain = {
+  heading: "Bolí to?",
+  claim: "Väčšinou nie.",
+  body:
+    "Samotné endodontické ošetrenie je vďaka modernej lokálnej anestézii vo " +
+    "väčšine prípadov bezbolestné. Zub je umŕtvený skôr, než sa začne, a na " +
+    "jedno ošetrenie máme vyhradené aj dve hodiny, takže sa nič nerobí " +
+    "narýchlo.",
+} as const;
+
 /* ------------------------------------------------------------- the odds --- */
 
 /**

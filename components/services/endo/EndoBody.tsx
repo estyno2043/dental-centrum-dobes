@@ -12,6 +12,7 @@ import {
   microscope,
   odds,
   opening,
+  pain,
   visit,
 } from "./endoContent";
 import styles from "./endo.module.css";
@@ -38,6 +39,17 @@ export function EndoBody(): JSX.Element {
           {opening.heading}
         </h2>
         <p className={styles.openingBody}>{opening.body}</p>
+      </section>
+
+      {/* --- the question everybody has, before the argument to act ------- */}
+      <section aria-labelledby="pain-heading" className={styles.pain}>
+        <h2 className={styles.painHeading} id="pain-heading">
+          {pain.heading}
+        </h2>
+        <div>
+          <p className={styles.painClaim}>{pain.claim}</p>
+          <p className={styles.painBody}>{pain.body}</p>
+        </div>
       </section>
 
       {/* --- why today rather than next month ---------------------------- */}
