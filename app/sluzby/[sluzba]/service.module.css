@@ -16,6 +16,32 @@
   color: var(--charcoal);
 }
 
+/*
+ * The children's page carries a pink-to-blue wash instead of the cream.
+ *
+ * A vertical linear gradient rather than radials or `background-attachment:
+ * fixed`: this page is several screens tall, so anything sized as a percentage
+ * of the element would stretch into a smear, and `fixed` is unreliable on iOS
+ * Safari. A linear ramp reads correctly at any height and turns from pink to
+ * blue as the reader travels down it, which is the effect that was asked for.
+ *
+ * Every stop is pale on purpose. The text is ink and measures above 14:1 on
+ * the darkest of them, and this page is read by a parent judging whether the
+ * clinic is serious.
+ */
+.page[data-tone="kids"] {
+  /* A ground to fall back to if the gradient never paints. */
+  background-color: #f7f4f6;
+  background-image: linear-gradient(
+    180deg,
+    #fdf2f5 0%,
+    #fbf5f5 26%,
+    #f7f6f8 52%,
+    #f1f5fb 78%,
+    #e9f0fa 100%
+  );
+}
+
 .page > *:not(.backdrop) {
   position: relative;
   z-index: 1;

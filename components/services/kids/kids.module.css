@@ -74,6 +74,13 @@
     radial-gradient(46% 40% at 72% 22%, var(--pink) 0%, transparent 68%),
     radial-gradient(42% 44% at 30% 62%, var(--blue) 0%, transparent 70%);
   filter: blur(6px);
+  /*
+   * Held back since the page gained its own pink-to-blue ground. At full
+   * strength the two washes stacked into a muddy patch behind the headline;
+   * at half it still gives the opening some local depth without competing
+   * with the gradient underneath it.
+   */
+  opacity: 0.5;
   pointer-events: none;
 }
 
