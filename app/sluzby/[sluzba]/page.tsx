@@ -5,6 +5,7 @@ import type { JSX } from "react";
 import { ServiceBooking } from "@/components/booking/ServiceBooking";
 import { SiteHeader } from "@/components/hero/SiteHeader";
 import { AestheticBody } from "@/components/services/aesthetic/AestheticBody";
+import { EndoBody } from "@/components/services/endo/EndoBody";
 import { EntryBody } from "@/components/services/entry/EntryBody";
 import { HygieneBody } from "@/components/services/hygiene/HygieneBody";
 import { ImplantBody } from "@/components/services/implants/ImplantBody";
@@ -102,6 +103,7 @@ const BESPOKE_BODIES: Readonly<Record<string, () => JSX.Element>> = {
   "esteticka-stomatologia": AestheticBody,
   "zubne-implantaty": ImplantBody,
   parodontologia: PerioBody,
+  endodoncia: EndoBody,
 };
 
 export default async function ServicePage({

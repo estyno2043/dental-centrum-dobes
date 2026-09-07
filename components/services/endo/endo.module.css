@@ -1,0 +1,448 @@
+/*
+ * Endodoncia pod mikroskopom.
+ *
+ * The page argues about time before it argues about money, so its weight sits
+ * at the top: the odds carry the largest type on the page and everything after
+ * them is hairlines and space. Two panels only — the missing guarantee and the
+ * save-or-replace scales — and both are light, because this page's job is to
+ * be believed rather than to impress.
+ */
+
+.sectionHeading {
+  margin: 0 0 clamp(14px, 2vw, 20px);
+  font-size: clamp(1.4rem, 2.6vw, 2.1rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: 46ch;
+  margin: 0 0 clamp(20px, 2.8vw, 30px);
+  color: rgb(38 38 42 / 72%);
+  font-size: 0.98rem;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.prose {
+  max-width: 54ch;
+  margin: 0 0 clamp(16px, 2.2vw, 24px);
+  color: rgb(38 38 42 / 76%);
+  font-size: 0.98rem;
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+
+.block {
+  padding-top: clamp(52px, 7vw, 100px);
+}
+
+/* ----------------------------------------------------------- the odds ----- */
+
+.odds {
+  display: grid;
+  gap: clamp(24px, 4vw, 56px);
+  padding-top: clamp(38px, 5vw, 64px);
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+  align-items: start;
+}
+
+/* The largest type on the page, because it is the argument for coming today. */
+.claim {
+  max-width: 22ch;
+  margin: 0 0 clamp(16px, 2.2vw, 24px);
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.oddsNote {
+  max-width: 44ch;
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.94rem;
+  font-weight: 500;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.lowers {
+  padding: clamp(20px, 2.6vw, 30px);
+  border: 1px solid rgb(138 115 88 / 30%);
+  border-radius: 6px;
+  background: rgb(250 249 246 / 66%);
+}
+
+.lowersHeading {
+  margin: 0 0 12px;
+  color: var(--taupe-deep);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.lowers ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.lowers li {
+  padding: 10px 0;
+  border-top: 1px solid rgb(138 115 88 / 22%);
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+/* ------------------------------------------------------------ no promise -- */
+
+/*
+ * The absence of a guarantee, given a panel of its own. On the implant page
+ * the guarantee is the loudest thing the clinic says; here the loudest thing
+ * is that there isn't one, and it is set in the same warm sand so the two read
+ * as the same kind of statement rather than as good news and bad.
+ */
+.honest {
+  padding-top: clamp(52px, 7vw, 100px);
+}
+
+.honestHeading {
+  max-width: 24ch;
+  margin: 0 0 clamp(14px, 2vw, 20px);
+  padding-top: clamp(26px, 3.4vw, 38px);
+  border-top: 2px solid var(--charcoal);
+  font-size: clamp(1.25rem, 2.4vw, 1.8rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.honestBody {
+  max-width: 56ch;
+  margin: 0;
+  color: rgb(38 38 42 / 78%);
+  font-size: 1rem;
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+
+/* ----------------------------------------------------------- microscope --- */
+
+/* Said once, in its own line, because elsewhere it is a surcharge. */
+.freeTag {
+  display: inline-block;
+  padding: 8px 15px;
+  margin: 0 0 clamp(20px, 2.6vw, 28px);
+  border: 1px solid rgb(138 115 88 / 40%);
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 0.86rem;
+  font-weight: 500;
+}
+
+.scopePoints {
+  display: grid;
+  gap: clamp(16px, 2.2vw, 26px);
+  padding: 0;
+  margin: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  list-style: none;
+}
+
+.scopePoints li {
+  padding-top: 14px;
+  border-top: 1px solid rgb(138 115 88 / 26%);
+}
+
+.scopePoints h3 {
+  margin: 0;
+  font-size: 0.96rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.scopePoints p {
+  margin: 6px 0 0;
+  color: rgb(38 38 42 / 70%);
+  font-size: 0.86rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* ---------------------------------------------------------------- visit --- */
+
+.facts {
+  display: grid;
+  gap: clamp(14px, 2.4vw, 34px);
+  margin: 0 0 clamp(24px, 3.4vw, 38px);
+  grid-template-columns: repeat(3, minmax(0, max-content));
+}
+
+.facts dt {
+  color: rgb(38 38 42 / 58%);
+  font-size: 0.74rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.facts dd {
+  margin: 5px 0 0;
+  font-size: clamp(1rem, 1.6vw, 1.15rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+/* ----------------------------------------------------------------- cost --- */
+
+.money {
+  display: grid;
+  gap: clamp(24px, 4vw, 56px);
+  padding-top: clamp(52px, 7vw, 100px);
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  align-items: start;
+}
+
+.exampleHeading {
+  margin: 0 0 4px;
+  font-size: 0.94rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.costItems {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.costItems > li {
+  padding: 13px 0;
+  border-top: 1px solid rgb(138 115 88 / 26%);
+}
+
+.costRow {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.costRow h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.costPrice {
+  color: var(--taupe-deep);
+  font-size: 0.88rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.costItems p {
+  margin: 5px 0 0;
+  color: rgb(38 38 42 / 68%);
+  font-size: 0.84rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/*
+ * "Zhruba", not "Spolu". The doctor was explicit that no exact price exists
+ * before the tooth is seen, so the strong figure is labelled an estimate in
+ * the same breath — a total here would be the surprise this section exists to
+ * prevent.
+ */
+.costTotal {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-top: 18px;
+  margin: 0;
+  border-top: 2px solid var(--charcoal);
+}
+
+.costTotalLabel {
+  color: rgb(38 38 42 / 72%);
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.costTotal strong {
+  font-size: clamp(1.35rem, 2.6vw, 1.9rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+
+.costNote {
+  max-width: 52ch;
+  margin: 14px 0 clamp(18px, 2.4vw, 26px);
+  color: rgb(38 38 42 / 74%);
+  font-size: 0.87rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.twoVisits {
+  padding: clamp(20px, 2.6vw, 28px);
+  border: 1px solid rgb(138 115 88 / 26%);
+  border-radius: 4px;
+  background: rgb(250 249 246 / 62%);
+}
+
+.twoVisitsHeading {
+  margin: 0 0 10px;
+  font-size: 0.96rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.twoVisits p {
+  margin: 0;
+  color: rgb(38 38 42 / 72%);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* -------------------------------------------------------------- compare --- */
+
+.compare {
+  padding-top: clamp(52px, 7vw, 100px);
+}
+
+.scales {
+  display: grid;
+  gap: clamp(16px, 2.4vw, 28px);
+  margin-bottom: clamp(18px, 2.4vw, 26px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.scaleKeep,
+.scaleReplace {
+  padding: clamp(22px, 3vw, 34px);
+  border-radius: 6px;
+}
+
+/* The one the page argues for, so it carries the fill. */
+.scaleKeep {
+  border: 1px solid rgb(138 115 88 / 38%);
+  background: #ece2cf;
+}
+
+.scaleReplace {
+  border: 1px solid rgb(138 115 88 / 26%);
+  background: rgb(250 249 246 / 62%);
+}
+
+.scaleLabel {
+  display: block;
+  margin-bottom: 8px;
+  color: rgb(38 38 42 / 62%);
+  font-size: 0.76rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.scales strong {
+  display: block;
+  font-size: clamp(1.5rem, 3vw, 2.3rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+}
+
+.scales p {
+  max-width: 34ch;
+  margin: 10px 0 0;
+  color: rgb(38 38 42 / 70%);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.scaleLink {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 14px;
+  color: var(--taupe-deep);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.scaleLink:hover span,
+.scaleLink:focus-visible span {
+  text-decoration: underline;
+}
+
+/* ----------------------------------------------------------------- link --- */
+
+.textLink {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 18px;
+  border: 1px solid rgb(138 115 88 / 42%);
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    background-color 240ms var(--ease),
+    border-color 240ms var(--ease),
+    color 240ms var(--ease);
+}
+
+.textLink svg {
+  transition: translate 240ms var(--ease);
+}
+
+.textLink:hover,
+.textLink:focus-visible {
+  border-color: var(--charcoal);
+  background: var(--charcoal);
+  color: var(--porcelain);
+}
+
+.textLink:hover svg,
+.textLink:focus-visible svg {
+  translate: 4px 0;
+}
+
+@media (max-width: 860px) {
+  .odds,
+  .money,
+  .scales {
+    grid-template-columns: 1fr;
+  }
+
+  .scopePoints {
+    grid-template-columns: 1fr;
+  }
+
+  .facts {
+    grid-template-columns: repeat(auto-fit, minmax(7rem, max-content));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .textLink,
+  .textLink svg {
+    transition: none;
+  }
+}
