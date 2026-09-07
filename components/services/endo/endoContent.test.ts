@@ -3,7 +3,17 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { priceGroups } from "@/components/pricing/pricingContent";
-import { compare, cost, crown, guarantee, limit, microscope, odds, visit } from "./endoContent";
+import {
+  compare,
+  cost,
+  crown,
+  guarantee,
+  limit,
+  microscope,
+  odds,
+  opening,
+  visit,
+} from "./endoContent";
 
 const published = new Map(
   priceGroups.flatMap((group) =>
@@ -128,6 +138,45 @@ describe("endodontics", () => {
 
     expect(crown.body).toMatch(/povinná nie je/i);
     expect(crown.body).toMatch(/premolároch|stoličkách/i);
+  });
+
+
+  /*
+   * The page opens on the sentence the reader arrived with, and ends the
+   * argument in a button. Almost nobody searches for endodontics; they search
+   * after being told a tooth has to come out, and a page that answers that and
+   * then makes them scroll past six sections to act on it has wasted the only
+   * moment it had.
+   */
+  it("names the reader's situation and gives them somewhere to go", () => {
+    expect(opening.heading).toMatch(/musí von/i);
+    expect(opening.body).toMatch(/nie vždy/i);
+
+    expect(odds.cta.href).toBe("#booking");
+    expect(odds.cta.label).toMatch(/objednať/i);
+    expect(odds.cta.text).toMatch(/čím skôr/i);
+  });
+
+  /*
+   * No em dashes. They had become a tic — roughly one every four sentences
+   * across the site — and the user asked for them gone. Almost every one was
+   * a full stop avoiding itself, and the sentences read better split.
+   *
+   * Scoped to this page's own copy, since the rest of the site still carries
+   * them. Extend it as they are cleared, rather than loosening it here.
+   */
+  it("keeps the copy free of em dashes", () => {
+    const source = readFileSync(
+      join(process.cwd(), "components/services/endo/endoContent.ts"),
+      "utf8",
+    );
+    const prose = source
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/\/\/.*$/gm, "")
+      .match(/"(?:[^"\\]|\\.)*"/g)
+      ?.join(" ") ?? "";
+
+    expect(prose).not.toContain("\u2014");
   });
 
   /* Nothing on this page may imply a guarantee the clinic refused to give. */

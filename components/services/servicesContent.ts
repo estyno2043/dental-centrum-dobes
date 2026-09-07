@@ -80,8 +80,8 @@ export const featuredServices: readonly Service[] = [
     slug: "endodoncia",
     name: "Endodoncia pod mikroskopom",
     lead:
-      "Pri 25-násobnom zväčšení vieme prerobiť zle ošetrené kanáliky aj vybrať " +
-      "zalomený nástroj — a zachrániť zub, ktorý inde končí v kliešťach.",
+      "Zub, ktorý inde končí v kliešťach, sa pod mikroskopom často ešte dá " +
+      "zachrániť.",
     image: "endodoncia",
   },
 ] as const;

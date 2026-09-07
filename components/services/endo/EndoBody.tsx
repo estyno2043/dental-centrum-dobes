@@ -11,6 +11,7 @@ import {
   limit,
   microscope,
   odds,
+  opening,
   visit,
 } from "./endoContent";
 import styles from "./endo.module.css";
@@ -31,6 +32,14 @@ import styles from "./endo.module.css";
 export function EndoBody(): JSX.Element {
   return (
     <>
+      {/* --- the sentence the reader arrived with -------------------------- */}
+      <section aria-labelledby="opening-heading" className={styles.opening}>
+        <h2 className={styles.openingHeading} id="opening-heading">
+          {opening.heading}
+        </h2>
+        <p className={styles.openingBody}>{opening.body}</p>
+      </section>
+
       {/* --- why today rather than next month ---------------------------- */}
       <section aria-labelledby="odds-heading" className={styles.odds}>
         <div>
@@ -40,6 +49,17 @@ export function EndoBody(): JSX.Element {
           <p className={styles.claim}>{odds.claim}</p>
           <p className={styles.prose}>{odds.body}</p>
           <p className={styles.oddsNote}>{odds.note}</p>
+
+          {/*
+            The action, where the argument peaks. A plain in-page anchor to the
+            booking form the shell renders at the foot of every service page,
+            so it works with or without JavaScript.
+          */}
+          <p className={styles.ctaText}>{odds.cta.text}</p>
+          <a className={styles.cta} href={odds.cta.href}>
+            {odds.cta.label}
+            <IconArrowNarrowRight size={18} stroke={1.8} aria-hidden="true" />
+          </a>
         </div>
 
         <div className={styles.lowers}>
@@ -180,7 +200,7 @@ export function EndoBody(): JSX.Element {
         </Link>
 
         <PhotoFrame
-          brief="RTG snímka pred reliečbou a po nej, vedľa seba — na endodoncii je dôkaz práve na snímke: kanáliky zaplnené po hrot koreňa a ustupujúci zápal okolo neho. Doktor snímky má a vyberá ich (2026-09-06). Nie je na nich nikoho tvár."
+          brief="RTG snímka pred reliečbou a po nej, vedľa seba. Na endodoncii je dôkaz práve na snímke: kanáliky zaplnené po hrot koreňa a ustupujúci zápal okolo neho. Doktor snímky má a vyberá ich (2026-09-06). Nie je na nich nikoho tvár."
           ratio="16 / 9"
         />
       </section>

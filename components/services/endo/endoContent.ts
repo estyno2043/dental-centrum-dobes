@@ -18,6 +18,25 @@
  * 170 €" every competitor publishes and then surprises people with.
  */
 
+/* ---------------------------------------------------------- the opening --- */
+
+/**
+ * The sentence the reader arrived with.
+ *
+ * Almost nobody searches for endodontics. They search after somebody has told
+ * them a tooth has to come out, and the page's first job is to say that this
+ * is not always true. The odds underneath then say why waiting makes it less
+ * true by the month.
+ */
+export const opening = {
+  heading: "Povedali vám, že zub musí von?",
+  body:
+    "Nie vždy musí. Pod mikroskopom vidno kanáliky, ktoré voľným okom vidieť " +
+    "nie je, a prerobiť sa dá aj ošetrenie, ktoré sa niekomu inému " +
+    "nepodarilo. Vytrhnutie má zmysel až vtedy, keď sa zub naozaj zachrániť " +
+    "nedá.",
+} as const;
+
 /* ------------------------------------------------------------- the odds --- */
 
 /**
@@ -33,7 +52,7 @@ export const odds = {
   claim: "Kým nerv v zube ešte žije, ošetrenie sa darí takmer vždy.",
   body:
     "Úspešnosť koreňového ošetrenia nie je jedno číslo. Závisí od toho, v " +
-    "akom stave zub prinesiete. Pri živom nerve je takmer stopercentná — a s " +
+    "akom stave zub prinesiete. Pri živom nerve je takmer stopercentná. S " +
     "každou vecou, ktorá sa medzitým pridá, klesá.",
   lowersHeading: "Čo ju znižuje",
   lowers: [
@@ -45,6 +64,17 @@ export const odds = {
   note:
     "Preto tu nenájdete jedno percento úspešnosti. Nájdete dôvod neodkladať " +
     "to o mesiac.",
+  /*
+   * The button goes here rather than at the foot of the page. This section is
+   * the whole argument, and its argument is about time: a reader who has just
+   * been told that every month lowers the odds should not have to scroll past
+   * six more sections to act on it.
+   */
+  cta: {
+    text: "Čím skôr zub uvidíme, tým viac sa s ním ešte dá urobiť.",
+    label: "Objednať sa na vyšetrenie",
+    href: "#booking",
+  },
 } as const;
 
 /**
@@ -59,8 +89,8 @@ export const guarantee = {
   heading: "Na endodonciu záruku nedávame",
   body:
     "Hojenie po koreňovom ošetrení závisí od stavu zuba a od toho, ako sa s " +
-    "ním vyrovná váš organizmus. To nie je vec, ktorú vieme sľúbiť — a preto " +
-    "ju nesľubujeme. Vieme sľúbiť, ako to urobíme.",
+    "ním vyrovná váš organizmus. To nie je vec, ktorú vieme sľúbiť, a preto " +
+    "ju nesľubujeme. Sľúbiť vieme, ako to urobíme.",
 } as const;
 
 /* -------------------------------------------------------- the microscope --- */
@@ -70,7 +100,7 @@ export const microscope = {
   body:
     "Koreňový kanálik je užší než vlas a býva ich v zube viac, než je vidieť " +
     "voľným okom. Mikroskop je rozdiel medzi ošetrením podľa citu a ošetrením " +
-    "podľa toho, čo je naozaj vidieť — a rozhoduje aj o tom, čo sa dá ešte " +
+    "podľa toho, čo je naozaj vidieť. Rozhoduje aj o tom, čo sa ešte dá " +
     "zachrániť.",
   /* Stated as a fact of its own, because elsewhere it is a surcharge. */
   free: "Mikroskop sa nepripláca. Je súčasťou ošetrenia.",
@@ -84,8 +114,8 @@ export const microscope = {
     {
       title: "Vyberieme zalomený nástroj",
       note:
-        "Väčšinou sa to podarí — pokiaľ je v mieste, kam pod mikroskopom " +
-        "vidíme. To je presne to, na čom tu záleží.",
+        "Väčšinou sa to podarí, pokiaľ je v mieste, kam pod mikroskopom " +
+        "vidíme. Presne na tom tu záleží.",
     },
     {
       title: "Nájdeme kanálik, ktorý sa prehliadol",
@@ -112,8 +142,7 @@ export const visit = {
   body:
     "Vyhradiť si na jeden zub dve hodiny je rozhodnutie, nie prísľub. " +
     "Koreňové kanáliky sa nedajú robiť v dvadsaťminútových oknách medzi " +
-    "inými pacientmi — a keď sa o to niekto pokúsi, je to práve to ošetrenie, " +
-    "ktoré sa o dva roky prerába.",
+    "inými pacientmi. Práve tie ošetrenia sa potom o dva roky prerábajú.",
 } as const;
 
 /* -------------------------------------------------------------- the cost --- */
@@ -137,9 +166,10 @@ export type CostLine = {
 export const cost = {
   heading: "Prečo vám presnú cenu nikto nepovie vopred",
   lead:
-    "Koreňové ošetrenie nie je jedna položka a jeho cena sa neskladá dopredu. " +
-    "Nižšie je skutočný príklad so všetkým, čo doňho vstupuje — aby ste " +
-    "vedeli, z čoho sa suma skladá, aj keď ju presne poznáme až pri snímke.",
+    "Koreňové ošetrenie nie je jedna položka a jeho cena sa nedá poskladať " +
+    "dopredu. Nižšie je skutočný príklad so všetkým, čo doňho vstupuje, aby " +
+    "ste vedeli, z čoho sa suma skladá, aj keď ju presne poznáme až pri " +
+    "snímke.",
   exampleHeading: "Stolička so štyrmi kanálikmi, na jedno sedenie",
   lines: [
     { label: "Jednorazové endo 4 kk", price: "270 €", note: "Celé ošetrenie kanálikov od začiatku do konca." },
@@ -153,12 +183,12 @@ export const cost = {
   estimate: "415 €",
   estimateNote:
     "Odhad, nie cenník. Presnú sumu vám povieme pred zákrokom, keď vidíme " +
-    "snímku — nie po ňom.",
+    "snímku. Nie po ňom.",
   freeNote: "Mikroskop v tom je. Nepripláca sa zaň.",
   twoVisitsHeading: "Keď sa to robí na dvakrát",
   twoVisits:
     "Niektorý zub treba najprv upokojiť. Vtedy sa pri prvej návšteve platí " +
-    "paliatívne ošetrenie kanálikov a pri druhej definitívna koreňová výplň — " +
+    "paliatívne ošetrenie kanálikov a pri druhej definitívna koreňová výplň, " +
     "70 € za každý kanálik. Anestézia a koferdam sa rátajú pri oboch.",
 } as const;
 
@@ -189,8 +219,8 @@ export const compare = {
     href: "/sluzby/zubne-implantaty",
   },
   note:
-    "Obe sumy sú odhady. Rozdiel však nie je len v peniazoch — vlastný koreň " +
-    "drží v kosti inak než titán a nič sa nemusí hojiť tri mesiace.",
+    "Obe sumy sú odhady. Rozdiel však nie je len v peniazoch. Vlastný koreň " +
+    "drží v kosti inak než titán a nič sa nemusí tri mesiace hojiť.",
 } as const;
 
 /* -------------------------------------------------------------- the crown */
@@ -200,7 +230,7 @@ export const crown = {
   body:
     "Odporúčame ju, povinná nie je. Najmä pri premolároch a stoličkách, kde " +
     "je žuvací tlak najväčší a zub po ošetrení krehne. Predné zuby sa " +
-    "korunkujú menej často — spravidla vtedy, keď to vyžaduje vzhľad.",
+    "korunkujú menej často, spravidla vtedy, keď to vyžaduje vzhľad.",
   linkLabel: "Estetická stomatológia",
   linkHref: "/sluzby/esteticka-stomatologia",
 } as const;
@@ -216,8 +246,8 @@ export const crown = {
 export const limit = {
   heading: "Keď sa zachrániť nedá",
   body:
-    "Zoznam podmienok, za ktorých je zub stratený, neexistuje — je príliš " +
-    "veľa možností a rozhoduje konkrétny nález. Keď to tak je, povieme vám to " +
+    "Zoznam podmienok, za ktorých je zub stratený, neexistuje. Možností je " +
+    "príliš veľa a rozhoduje konkrétny nález. Keď to tak je, povieme vám to " +
     "rovno a nebudeme to skúšať za vaše peniaze. Vtedy má zmysel baviť sa o " +
     "náhrade.",
   linkLabel: "Zubné implantáty",

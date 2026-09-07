@@ -39,6 +39,36 @@
   padding-top: clamp(52px, 7vw, 100px);
 }
 
+/* -------------------------------------------------------- the opening --- */
+
+/*
+ * Almost nobody arrives searching for endodontics; they arrive after somebody
+ * told them a tooth has to come out. So the page opens on that sentence, in
+ * the largest type it uses, and answers it in two lines before it explains
+ * anything.
+ */
+.opening {
+  padding-top: clamp(32px, 4.5vw, 56px);
+}
+
+.openingHeading {
+  max-width: 18ch;
+  margin: 0 0 clamp(14px, 2vw, 20px);
+  font-size: clamp(1.7rem, 4vw, 3rem);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1.03;
+  text-wrap: balance;
+}
+
+.openingBody {
+  max-width: 50ch;
+  margin: 0;
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
 /* ----------------------------------------------------------- the odds ----- */
 
 .odds {
@@ -97,6 +127,59 @@
   border-top: 1px solid rgb(138 115 88 / 22%);
   font-size: 0.92rem;
   line-height: 1.4;
+}
+
+
+.ctaText {
+  max-width: 40ch;
+  margin: clamp(20px, 2.6vw, 28px) 0 12px;
+  color: rgb(38 38 42 / 76%);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/*
+ * Filled, where every other control on this page is an outline pill. It is the
+ * one action the page exists to produce, and it sits under the argument that
+ * produces it rather than at the foot of six more sections.
+ */
+.cta {
+  display: inline-flex;
+  gap: 9px;
+  align-items: center;
+  padding: 12px 22px;
+  border: 1px solid var(--charcoal);
+  border-radius: 999px;
+  background: var(--charcoal);
+  color: var(--porcelain);
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  transition:
+    background-color 240ms var(--ease),
+    border-color 240ms var(--ease);
+}
+
+.cta svg {
+  transition: translate 240ms var(--ease);
+}
+
+.cta:hover,
+.cta:focus-visible {
+  border-color: var(--taupe-deep);
+  background: var(--taupe-deep);
+}
+
+.cta:hover svg,
+.cta:focus-visible svg {
+  translate: 4px 0;
+}
+
+.cta:focus-visible {
+  outline: 2px solid var(--taupe-deep);
+  outline-offset: 3px;
 }
 
 /* ------------------------------------------------------------ no promise -- */
@@ -441,6 +524,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .cta,
+  .cta svg,
   .textLink,
   .textLink svg {
     transition: none;
