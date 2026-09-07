@@ -1431,6 +1431,66 @@ not achievable without interpolation artifacts, whatever the export is tagged.
 
   No files reserved.
 
+- 2026-09-07 — Claude published twenty commits to `main`. `origin/main` had not
+  moved, so it fast-forwarded.
+
+  **Two new service pages.** `/sluzby/parodontologia` opens on recognition
+  rather than on the service, because the clinic's own sharpest sentence about
+  periodontitis is that it barely hurts: five things a reader recognises, and
+  set apart from them the line that is not a symptom at all. Its diagnostics
+  are priced to the euro (50 + 155 + 35 = 240 €) because the treatment total
+  honestly cannot be, and a test does that arithmetic against the clinic's
+  rows. `/sluzby/endodoncia` argues about time rather than money: nearly 100%
+  while the nerve is alive, falling from there, with no guarantee and the
+  reason there is none. Its price is a worked example under the word "Zhruba",
+  never "Spolu", because the doctor said outright that no exact figure exists
+  in advance.
+
+  Six of the ten service pages are now written. Four remain: `biele-vyplne`,
+  `osetrenie-deti`, `protetika`, `stomatochirurgia`.
+
+  **The pricing showcase is finished** at four slides, a ceiling the user set
+  and a test holds: the section is `(count + 1) × 100vh`, so a fifth would make
+  it longer than the rest of the homepage's closing third. A second test
+  refuses any slide whose service page is still a placeholder.
+
+  **Em dashes removed site-wide**, 61 of them across nine pages, at the user's
+  request: "vyzerá to genericky ai". They were running at roughly one sentence
+  in four and almost every one was a full stop avoiding itself. Two kinds are
+  deliberately kept and neither is prose — the browser-tab title separator, and
+  the jaw section's `Vstupné vyšetrenie — 100 EUR`, which three tests in
+  Codex's area freeze as an exact string. A test on the endodontics module
+  fails on a dash; extend it to the other pages rather than loosening it.
+
+  ⚠️ **Unresolved, and the user has hit it repeatedly.** Returning from a
+  service page lands them partway down the homepage instead of where they left,
+  and it depends on how long they were away. Two fixes are in
+  `components/scroll/SmoothScroll.tsx` and neither settled it. The environment
+  cannot reproduce it: measured twice from a 29745px homepage, back-navigation
+  restored 25546px exactly, drift 0, because `visibilityState` is `hidden`
+  here and rAF never fires, so neither Lenis nor GSAP ever runs. Current
+  hypothesis, untested: the Next client router cache expires (~5 min for a
+  static route), the homepage is refetched, and the restoration lands against a
+  document that has not yet reached its full height, so it clamps. The user has
+  a console trace armed to confirm or kill it. **Do not add a third
+  speculative fix before that data arrives.**
+
+  ⚠️ Two images on the periodontology page are pixel-aligned copies of one
+  frame after an AI light-and-angle pass. The user confirmed the case is the
+  clinic's own and instructed publication three times; it is published as their
+  case. The measurement and the reasoning are recorded on `illustration` in
+  `perioContent.ts`, along with the one thing only the clinic can answer.
+
+  Verified before pushing: 338 tests, lint, TypeScript, production build of 21
+  routes, `git diff --check`, and a credential scan of every changed file.
+
+  Still outstanding from the clinic: X-rays for endodontics and periodontology,
+  how long periodontal treatment runs, closed versus open curettage, the
+  190/220 € composite veneer difference, the sinus lift price, and whether the
+  healing screw is billed on every implant.
+
+  Netlify is still not verified from this environment. No files reserved.
+
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
 credentials, tokens, or local configuration values in repository files,
