@@ -5,6 +5,23 @@ update it before taking or handing off work.
 
 ## Current Task
 
+- Status: mobile gallery moved to a native scroll timeline; awaiting handset review
+- Owner: Claude
+- Branch: `claude/native-gallery-scroll`
+- Task: the mobile gallery pan ran on the main thread — twelve style writes a
+  sample, one across eight elements — which is why it still stuttered after the
+  viewport-geometry fix. A view timeline on the section now drives the track's
+  transform on the compositor, gated on `@supports (animation-timeline:
+  view())` with the GSAP write kept as the fallback. Mobile also had no
+  entrance (`grow` is hardcoded to `1` for the profile and the CSS reading it
+  is overridden), so the dead 0–36vh window now carries a zoom on `.photo` —
+  never `.frame`, which GSAP owns for the detail handoff. Verified: 341 tests,
+  lint, TypeScript, production build of 21 routes. Do not merge before the
+  user sees it on a handset; the animated values cannot be sampled in a hidden
+  preview pane.
+
+### Previously published
+
 - Status: mobile viewport geometry fix approved for publication
 - Owner: Claude
 - Branch: `claude/mobile-viewport-geometry`
