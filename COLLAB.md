@@ -18,7 +18,14 @@ update it before taking or handing off work.
   never `.frame`, which GSAP owns for the detail handoff. Verified: 341 tests,
   lint, TypeScript, production build of 21 routes. Do not merge before the
   user sees it on a handset; the animated values cannot be sampled in a hidden
-  preview pane.
+  preview pane. Follow-ups on the same branch, all from handset review: the
+  view timeline was reverted (two clocks, GSAP behind the compositor, which is
+  what cut when the finger left the glass), `scrub` is smoothed to `0.3` in
+  place of the damping the GSAP rewrite dropped, the arrival moved from the
+  photograph to the card's own `scale`, and the jaw scene is full-bleed on
+  mobile — it was a 9:16 card in a taller screen, so its `#817866` ground
+  showed above and below, and the sequence now covers rather than fits. The
+  zone controls moved inside that scene, since the gap they hung in is gone.
 
 ### Previously published
 

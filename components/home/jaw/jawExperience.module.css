@@ -1001,15 +1001,20 @@
     will-change: transform;
   }
 
+  /*
+   * These used to hang off the bottom edge of the jaw card, in the gap
+   * between it and the foot of the screen. The card now fills the screen, so
+   * there is no gap to hang in — they sit inside it, over the scrim.
+   */
   .zoneButtons {
-    top: 100%;
+    top: auto;
     right: 0;
-    bottom: auto;
+    bottom: max(1rem, 3svh);
     left: 0;
     display: grid;
     gap: 0.4rem;
     grid-template-columns: 1fr 1fr;
-    padding: 0.9rem 0.65rem 0;
+    padding: 0 0.65rem;
   }
 
   .zoneButton {
