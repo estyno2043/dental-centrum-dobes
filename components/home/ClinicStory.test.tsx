@@ -3,7 +3,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { readFileSync } from "node:fs";
 import { afterEach, expect, test, vi } from "vitest";
 import { ClinicStory } from "./ClinicStory";
-import { MOBILE_PHASES } from "./clinicStoryMotion";
 import { photoFrames } from "./photoStripContent";
 
 const jawSequenceMetrics = vi.hoisted(() => ({ renders: 0 }));
@@ -93,11 +92,6 @@ function mobileMediaBlock(): string {
   return blocks.join("\n");
 }
 
-/* jsdom answers `CSS.supports` optimistically, so the fallback has to be asked
-   for explicitly rather than assumed to be what a test environment gets. */
-function stubNoViewTimelines() {
-  vi.stubGlobal("CSS", { supports: vi.fn(() => false) });
-}
 
 function triggerResizeObservers() {
   for (const callback of resizeCallbacks) callback([], {} as ResizeObserver);
@@ -376,7 +370,6 @@ test("does not rerender jaw subtree for every mobile scroll sample", () => {
 });
 
 test("holds mobile gallery on frame one before moving it through GSAP transform", () => {
-  stubNoViewTimelines();
   stubMatchMedia(false, false);
   render(<ClinicStory />);
   const track = screen.getByRole("list");
@@ -457,7 +450,12 @@ test("links mobile gallery directly to scroll and ignores browser-bar resizes", 
   installMobilePerformanceGeometry();
   const trigger = ScrollTrigger.getAll().find((candidate) => candidate.trigger === section);
 
-  expect(trigger?.vars.scrub).toBe(true);
+  /*
+   * A number, not `true`: iOS delivers scroll samples in bursts under
+   * momentum, and applying each the instant it lands is what stepped the
+   * scene and hard-cut it when the finger left the glass.
+   */
+  expect(trigger?.vars.scrub).toBe(0.3);
   expect(configSpy).toHaveBeenCalledWith({ ignoreMobileResize: true });
 });
 
@@ -539,53 +537,16 @@ test("keeps gallery geometry when sequence reports permanent failure", () => {
   expect(section).toHaveAttribute("data-desktop-vh", "1030");
 });
 
-test("maps the native gallery timeline onto the same phases GSAP drives", () => {
-  /*
-   * `contain` is the span the sticky pin is stuck for, which is the section
-   * minus the pin's own height rather than the whole section — the pin
-   * releases 100lvh before the story ends. If the phase constants move and
-   * these percentages do not, the compositor pan and the GSAP fallback would
-   * silently disagree about where the gallery stops.
-   */
-  const pinnedRange = MOBILE_PHASES.storyEnd - 100;
-  const percent = (vh: number) => `${((vh / pinnedRange) * 100).toFixed(3)}%`;
-  const mobile = mobileMediaBlock();
-
-  expect(mobile).toContain(
-    `animation-range: contain ${percent(MOBILE_PHASES.galleryStart)} contain ${percent(MOBILE_PHASES.galleryEnd)};`,
-  );
-  expect(mobile).toContain(
-    `animation-range: contain 0% contain ${percent(MOBILE_PHASES.galleryStart)};`,
-  );
-  expect(mobile).toMatch(/animation-timeline:\s*--clinic-story;/);
-  expect(mobile).toMatch(/@supports \(animation-timeline: view\(\)\)/);
-});
-
-test("zooms the photograph and never the frame GSAP hands off", () => {
+test("brings the mobile card forward without touching the transform GSAP owns", () => {
   const mobile = mobileMediaBlock();
 
   /*
-   * A filling animation outranks inline styles for good, so a transform
-   * animation on `.frame` would take the detail handoff away from GSAP
-   * permanently. The zoom moves the image inside the frame instead — which is
-   * also where lavadental.lv puts it.
+   * The independent `scale` property, so it composes with the fullscreen
+   * handoff GSAP writes to the detail frame's `transform` instead of one
+   * clobbering the other. Driven by `--grow`, which is already written once
+   * per sample, so the arrival costs no extra work.
    */
-  expect(mobile).toMatch(/\.photo\s*\{[^}]*animation:\s*clinic-story-zoom-in/);
-  expect(mobile).not.toMatch(/\.frame\s*\{[^}]*animation:/);
-  expect(cssText).toMatch(/@keyframes clinic-story-zoom-in\s*\{[^}]*transform:\s*scale\(/);
-});
-
-test("leaves the track transform to the compositor when the browser has view timelines", () => {
-  const supports = vi.fn((query: string) => query.includes("animation-timeline"));
-  vi.stubGlobal("CSS", { supports });
-  stubMatchMedia(false, false);
-  render(<ClinicStory />);
-  const track = screen.getByRole("list");
-  const { setProgress } = installMobilePerformanceGeometry();
-
-  setProgress(138);
-
-  /* CSS owns the pan here; GSAP writing it too would be work for a value the
-     animation overrides anyway. */
-  expect(track.style.transform).toBe("");
+  expect(mobile).toMatch(/\.frame\s*\{[^}]*scale:\s*calc\(0\.88 \+ var\(--grow\) \* 0\.12\);/);
+  expect(mobile).not.toMatch(/\.frame\s*\{[^}]*transform:/);
+  expect(mobile).not.toMatch(/animation-timeline/);
 });

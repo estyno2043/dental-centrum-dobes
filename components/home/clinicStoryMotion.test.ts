@@ -173,6 +173,18 @@ describe("mapClinicStoryMotion gallery-first contract", () => {
 
   test.each([
     [0, 0],
+    [18, 0.5],
+    [36, 1],
+    [120, 1],
+  ])("brings the mobile gallery forward before it pans, at %svh", (progressVh, expectedGrow) => {
+    /* Mobile used to hold this at 1, so the frames were already at full size
+       before anything moved and the pan simply began. */
+    expect(mapMobile(progressVh).grow).toBeCloseTo(expectedGrow, 4);
+    if (progressVh <= 36) expect(mapMobile(progressVh).pan).toBe(0);
+  });
+
+  test.each([
+    [0, 0],
     [35.99, 0],
     [87, 0.25],
     [138, 0.5],

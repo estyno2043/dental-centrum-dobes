@@ -136,7 +136,14 @@ function mapSequenceMotion(input: ClinicStoryMotionInput): ClinicStoryMotionStat
     ? MOBILE_PHASES.interactiveEnd
     : DESKTOP_PHASES.interactiveEnd;
 
-  const grow = isMobile ? 1 : range(progressVh, 0, 84);
+  /*
+   * Mobile used to hold this at 1: the frames were already at full size before
+   * anything moved, so the gallery simply started panning with no arrival at
+   * all. It now ramps across the dwell that precedes the pan.
+   */
+  const grow = isMobile
+    ? range(progressVh, 0, MOBILE_PHASES.galleryStart)
+    : range(progressVh, 0, 84);
   const pan = isMobile
     ? range(progressVh, MOBILE_PHASES.galleryStart, MOBILE_PHASES.galleryEnd)
     : range(progressVh, 84, DESKTOP_PHASES.galleryEnd);

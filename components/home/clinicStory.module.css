@@ -380,6 +380,16 @@
   .frame {
     width: min(calc(var(--ratio) * var(--frame-h)), 82vw);
     height: 100%;
+    /*
+     * The card approaches before the gallery starts moving, rather than the
+     * photograph zooming inside a card that never moves.
+     *
+     * This is the independent `scale` property, not `transform`: GSAP owns the
+     * detail frame's `transform` for the fullscreen handoff, and the two
+     * compose instead of overwriting each other. `--grow` is already written
+     * once per sample, so the entrance costs no extra work.
+     */
+    scale: calc(0.88 + var(--grow) * 0.12);
   }
 
   .scrim {
@@ -471,74 +481,5 @@
 
   .scrollHint svg {
     animation: none;
-  }
-}
-
-/*
- * Native scroll-driven gallery — mobile only.
- *
- * The pan used to be written by JS on every scroll sample: twelve style
- * writes a frame, one of them across eight elements, all on the main thread
- * while the finger is moving. That is what the phone could not keep up with,
- * and no amount of trimming those writes changes where they run.
- *
- * A view timeline moves the same transform on the compositor instead, so the
- * gallery keeps moving through a busy main thread. `contain` is the pinned
- * range exactly: for a section taller than the viewport it runs from the
- * section's top meeting the viewport's top to its bottom meeting the
- * viewport's bottom, which is the span the sticky child is stuck for.
- *
- * The percentages below are that span in `MOBILE_PHASES` terms, over
- * `storyEnd - 100` (the pin's own height) rather than `storyEnd`, because the
- * pin releases 100lvh before the section ends. A test asserts they still
- * match the constants, so the two cannot drift apart silently.
- *
- * The zoom moves `.photo` and never `.frame`: GSAP owns the frame's transform
- * for the detail handoff, and a filling animation would outrank its inline
- * writes for good.
- */
-@keyframes clinic-story-pan {
-  to {
-    transform: translate3d(calc(-1 * var(--travel, 0px)), 0, 0);
-  }
-}
-
-@keyframes clinic-story-zoom-in {
-  to {
-    transform: scale(1.06);
-  }
-}
-
-@media (max-width: 767px) {
-  @supports (animation-timeline: view()) {
-    .section {
-      view-timeline-name: --clinic-story;
-      view-timeline-axis: block;
-    }
-
-    .track {
-      animation: clinic-story-pan linear both;
-      animation-timeline: --clinic-story;
-      animation-range: contain 5.294% contain 35.294%;
-    }
-
-    .photo {
-      /* lavadental.lv's curve: decisive, and it settles rather than arrives. */
-      animation: clinic-story-zoom-in cubic-bezier(0.33, 0, 0.11, 1) both;
-      animation-timeline: --clinic-story;
-      animation-range: contain 0% contain 5.294%;
-      will-change: transform;
-    }
-  }
-}
-
-@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
-  @supports (animation-timeline: view()) {
-    /* A scroll-linked zoom is vestibular motion; the pan still carries the
-       gallery, so only the zoom is dropped. */
-    .photo {
-      animation: none;
-      will-change: auto;
-    }
   }
 }

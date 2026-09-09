@@ -154,17 +154,6 @@ export function ClinicStory(): JSX.Element {
       (frame) => frame !== finalFrame,
     );
 
-    /*
-     * The compositor drives the mobile pan where the browser can: a view
-     * timeline keeps it moving through a busy main thread, which is the whole
-     * reason the gallery stuttered. Where it cannot, GSAP still writes the
-     * transform and the behaviour is unchanged.
-     */
-    const nativeGalleryScroll =
-      profile === "mobile" &&
-      typeof CSS !== "undefined" &&
-      CSS.supports?.("animation-timeline: view()") === true;
-
     const currentManifest = jawSequenceManifests[profile as JawSequenceProfile];
     const storyEnd = profile === "mobile" ? MOBILE_STORY_SCROLL_VH : DESKTOP_STORY_SCROLL_VH;
     const playhead = { progressVh: 0 };
@@ -211,7 +200,7 @@ export function ClinicStory(): JSX.Element {
         "--jaw-opacity",
         String(motion.state.handoff * (1 - motion.state.exit)),
       );
-      if (!nativeGalleryScroll) gsap.set(track, { force3D: true, x: trackX });
+      gsap.set(track, { force3D: true, x: trackX });
       gsap.set(finalFrame, {
         force3D: true,
         scale: detailScale,
@@ -279,13 +268,10 @@ export function ClinicStory(): JSX.Element {
       };
 
       /*
-       * The only write, and it happens on measurement rather than per sample:
-       * the pan keyframe needs the distance in CSS. Heights are not written at
-       * all — the pinned scene is sized in `lvh`/`svh`, which the retracting
-       * mobile URL bar cannot move, so there is no mount-time pixel height to
-       * freeze here and later disagree with.
+       * Nothing is written back. The pinned scene is sized in CSS `lvh`/`svh`,
+       * which the retracting mobile URL bar cannot move, so there is no
+       * mount-time pixel height to freeze here and later disagree with.
        */
-      section.style.setProperty("--travel", `${layout.trackTravel}px`);
     };
 
     const sync = () => {
@@ -334,7 +320,16 @@ export function ClinicStory(): JSX.Element {
         measure();
         sync();
       },
-      scrub: true,
+      /*
+       * A number, not `true`. `true` applies every scroll sample the instant it
+       * lands, and iOS delivers them in bursts while momentum runs — so the
+       * scene stepped between positions and hard-cut when the finger left the
+       * glass. Easing the playhead toward the scroll position turns those
+       * bursts back into continuous motion. This restores what the critically
+       * damped filter used to do before the GSAP rewrite, using the one clock
+       * that already owns this scene rather than a second one beside it.
+       */
+      scrub: profile === "mobile" ? 0.3 : true,
       start: "top top",
       trigger: section,
     });
