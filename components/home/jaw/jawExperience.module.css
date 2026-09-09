@@ -1002,19 +1002,38 @@
   }
 
   /*
-   * These used to hang off the bottom edge of the jaw card, in the gap
-   * between it and the foot of the screen. The card now fills the screen, so
-   * there is no gap to hang in — they sit inside it, over the scrim.
+   * The artboard is locked to 16:9, so on a portrait screen it is a wide
+   * strip across the middle — and anything anchored to its bottom lands on
+   * the teeth. That is only the right frame while the markers point at them,
+   * and on a phone the markers are hidden and the controls are a plain grid.
+   * It fills the scene here so the grid can dock to the foot of the screen.
+   */
+  .zoneArtboard {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+    transform: none;
+  }
+
+  /*
+   * Docked above the assistance bar, both clear of the band a retracted URL
+   * bar can come back over.
    */
   .zoneButtons {
     top: auto;
     right: 0;
-    bottom: max(1rem, 3svh);
+    bottom: calc(var(--jaw-safe-bottom, 0px) + 5.75rem);
     left: 0;
     display: grid;
     gap: 0.4rem;
     grid-template-columns: 1fr 1fr;
     padding: 0 0.65rem;
+  }
+
+  .assistanceBar {
+    bottom: calc(var(--jaw-safe-bottom, 0px) + 0.85rem);
   }
 
   .zoneButton {

@@ -435,11 +435,18 @@ test("sizes the mobile pinned scene in viewport units the URL bar cannot move", 
   expect(mobile).toMatch(/--frame-h:\s*56svh;/);
 });
 
-test("composes mobile scene layers inside the always-visible viewport box", () => {
+test("composes mobile scene layers against the viewport each one needs", () => {
   const mobile = mobileMediaBlock();
 
-  expect(mobile).toMatch(/\.galleryLayer,\s*\n?\s*\.jawLayer\s*\{[^}]*height:\s*100svh;/);
-  expect(mobile).toMatch(/\.galleryLayer,\s*\n?\s*\.jawLayer\s*\{[^}]*bottom:\s*auto;/);
+  /*
+   * The gallery composes in the always-visible box, so nothing it shows can
+   * hide behind the browser bar. The jaw scene is full-bleed and has to reach
+   * the bottom of the glass, so it fills `lvh` and publishes the difference
+   * for its own controls to keep clear of.
+   */
+  expect(mobile).toMatch(/\.galleryLayer\s*\{[^}]*height:\s*100svh;/);
+  expect(mobile).toMatch(/\.jawLayer\s*\{[^}]*height:\s*100lvh;/);
+  expect(mobile).toMatch(/--jaw-safe-bottom:\s*calc\(100lvh - 100svh\);/);
 });
 
 test("links mobile gallery directly to scroll and ignores browser-bar resizes", () => {

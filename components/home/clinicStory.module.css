@@ -339,9 +339,22 @@
     height: 100lvh;
   }
 
-  .galleryLayer,
-  .jawLayer {
+  .galleryLayer {
     height: 100svh;
+    bottom: auto;
+  }
+
+  /*
+   * The jaw scene is the one layer that must reach the bottom of the glass:
+   * composed in `svh` it stopped short of a retracted URL bar and left the
+   * pin's ground showing under it. It fills `lvh` and publishes the
+   * difference, so the controls inside can sit at the foot of the screen
+   * without dropping into the band the bar can cover.
+   */
+  .jawLayer {
+    --jaw-safe-bottom: calc(100lvh - 100svh);
+
+    height: 100lvh;
     bottom: auto;
   }
 
@@ -416,7 +429,12 @@
     border-radius: 0;
     aspect-ratio: auto;
     box-shadow: none;
-    transform: scale(calc(0.94 + var(--handoff) * 0.06));
+    /*
+     * Settles from slightly over full size rather than growing into it. A
+     * fullscreen box scaled below 1 shows whatever is behind it around every
+     * edge, and drags anything anchored to its bottom up with it.
+     */
+    transform: scale(calc(1 + (1 - var(--handoff)) * 0.04));
   }
 
   .jawMedia {
