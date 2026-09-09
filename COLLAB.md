@@ -5,7 +5,7 @@ update it before taking or handing off work.
 
 ## Current Task
 
-- Status: mobile gallery moved to a native scroll timeline; awaiting handset review
+- Status: mobile gallery and jaw scene pass approved for publication
 - Owner: Claude
 - Branch: `claude/native-gallery-scroll`
 - Task: the mobile gallery pan ran on the main thread — twelve style writes a
@@ -26,6 +26,13 @@ update it before taking or handing off work.
   mobile — it was a 9:16 card in a taller screen, so its `#817866` ground
   showed above and below, and the sequence now covers rather than fits. The
   zone controls moved inside that scene, since the gap they hung in is gone.
+  A second handset round then found the controls sitting on the teeth and the
+  scene's foot still unfilled: the controls live inside `.zoneArtboard`, which
+  is locked to 16:9 and so is a mid-screen strip on a phone, and the jaw layer
+  composed in `svh`. The artboard fills the scene on mobile, the jaw layer
+  fills `lvh` and publishes `--jaw-safe-bottom` for the controls to clear the
+  browser bar's band. User approved publication on 2026-09-09; `main` and
+  `develop` fast-forward to the same commit.
 
 ### Previously published
 
