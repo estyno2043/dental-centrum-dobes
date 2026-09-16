@@ -76,6 +76,11 @@
   border-radius: 4px;
   background: #dcd6cb;
   isolation: isolate;
+  /*
+   * Already the right split, and now the frame is the element that uses it:
+   * the horizontal drag comes here and the page keeps the vertical one, so
+   * wiping the comparison and scrolling past it are separate gestures.
+   */
   touch-action: pan-y;
 }
 
@@ -218,9 +223,11 @@
 }
 
 /*
- * The control itself: invisible, covering the whole frame, so a drag anywhere
- * moves the divider. Kept in the DOM rather than faked with pointer handlers,
- * which is what gives keyboard and screen-reader support for free.
+ * The keyboard's and the screen reader's control, and no longer the pointer's.
+ * Stretched across the frame it only ever worked with a mouse: a touch has to
+ * land on a range's thumb for it to respond, so the photograph could be
+ * dragged from a 44px strip and nowhere else. The frame handles pointers now
+ * and this stays for arrow keys, Home/End and the announced value.
  */
 .range {
   position: absolute;
@@ -233,6 +240,7 @@
   cursor: ew-resize;
   inset: 0;
   opacity: 0;
+  pointer-events: none;
 }
 
 .range::-webkit-slider-thumb {
@@ -376,4 +384,16 @@
   margin: -1px;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+  /*
+   * A backdrop blur on the knob is a full re-blur of whatever is behind it on
+   * every frame of a drag, and the knob is the one thing that moves the whole
+   * time. The ring reads well enough on a solid tint, which costs nothing.
+   */
+  .knob {
+    backdrop-filter: none;
+    background: rgb(250 249 246 / 82%);
+  }
 }
