@@ -10,6 +10,7 @@ import {
 } from "./servicesContent";
 import { useServiceTransition } from "./useServiceTransition";
 import styles from "./services.module.css";
+import { stableViewportHeight } from "../scroll/stableViewportHeight";
 
 /**
  * "Služby" — the homepage's catalogue, between the drifting photographs and
@@ -48,7 +49,7 @@ export function ServicesSection(): JSX.Element {
       const rect = section.getBoundingClientRect();
       section.style.setProperty(
         "--enter",
-        String(Math.min(1, Math.max(0, 1 - rect.top / window.innerHeight))),
+        String(Math.min(1, Math.max(0, 1 - rect.top / stableViewportHeight()))),
       );
     };
 

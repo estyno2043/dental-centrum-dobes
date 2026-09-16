@@ -54,7 +54,7 @@
   top: 0;
   display: grid;
   height: 100vh;
-  height: 100dvh;
+  height: 100lvh;
   padding: 0 clamp(20px, 5vw, 88px);
   place-items: center;
   overflow: hidden;

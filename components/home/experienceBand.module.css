@@ -7,15 +7,21 @@
  */
 .band {
   position: relative;
+  /*
+   * `lvh`, not `dvh`. A retracting iOS address bar changes `dvh`, and 380 of
+   * them change the document's height by roughly 500px mid-flick — the scroll
+   * offset then points at different content, which is the page jumping under
+   * the finger. `lvh` is the largest viewport height and does not move.
+   */
   height: 380vh;
-  height: 380dvh;
+  height: 380lvh;
 }
 
 .pin {
   position: sticky;
   top: 0;
   height: 100vh;
-  height: 100dvh;
+  height: 100lvh;
   overflow: hidden;
   isolation: isolate;
 }
@@ -158,7 +164,7 @@
   .band {
     height: auto;
     min-height: 100vh;
-    min-height: 100dvh;
+    min-height: 100lvh;
   }
 
   .pin {
