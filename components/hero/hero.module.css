@@ -458,6 +458,30 @@
   backdrop-filter: blur(8px);
 }
 
+/*
+ * The sweep that follows the panel out. It has no presence while the menu is
+ * open: it is drawn only by the exit, travelling the same direction as the
+ * panel so the close reads as one movement.
+ */
+.mobileMenuSheen {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgb(174 155 126 / 22%) 38%,
+    rgb(250 249 246 / 26%) 52%,
+    rgb(174 155 126 / 18%) 66%,
+    transparent 100%
+  );
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
 .mobileMenuPanel {
   position: fixed;
   z-index: 81;

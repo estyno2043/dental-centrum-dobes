@@ -32,13 +32,29 @@ export function MobileMenu(): JSX.Element {
           aria-label="Otvoriť menu"
           className={styles.mobileMenuTrigger}
           animate={{ scale: open && !prefersReducedMotion ? 0.96 : 1 }}
-          transition={{ duration: prefersReducedMotion ? 0 : 0.35, ease: premiumEase }}
+          /*
+           * A spring on the way back, so the corner settles rather than
+           * arriving. Only the release is worth a bounce; the press is not.
+           */
+          transition={
+            prefersReducedMotion
+              ? { duration: 0 }
+              : open
+                ? { duration: 0.35, ease: premiumEase }
+                : { type: "spring", bounce: 0.28, duration: 0.6 }
+          }
         >
           <motion.span
             className={styles.mobileMenuOrbit}
             aria-hidden="true"
-            animate={{ rotate: open && !prefersReducedMotion ? 38 : 0 }}
-            transition={{ duration: prefersReducedMotion ? 0 : 0.6, ease: premiumEase }}
+              animate={{ rotate: open && !prefersReducedMotion ? 38 : 0 }}
+            transition={
+              prefersReducedMotion
+                ? { duration: 0 }
+                : open
+                  ? { duration: 0.6, ease: premiumEase }
+                  : { type: "spring", bounce: 0.24, duration: 0.7 }
+            }
           />
           <span className={styles.mobileMenuTooth} aria-hidden="true">
             <IconDental stroke={1.6} />
@@ -51,7 +67,13 @@ export function MobileMenu(): JSX.Element {
         </motion.button>
       </Dialog.Trigger>
 
-      <Dialog.Portal>
+      {/*
+        * `forceMount` on the portal as well as its children. Without it Radix
+        * removes the portal subtree the moment `open` turns false, so the
+        * panel is gone before `AnimatePresence` can run an exit and the menu
+        * appears to vanish rather than leave.
+        */}
+      <Dialog.Portal forceMount>
         <AnimatePresence>
           {open ? (
             <>
@@ -70,12 +92,33 @@ export function MobileMenu(): JSX.Element {
                   className={styles.mobileMenuPanel}
                   initial={{ opacity: 0, x: movement }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: movement }}
+                  /*
+                   * Further out than it came in, and with the ease mirrored,
+                   * so leaving reads as travel rather than a cut. Enter and
+                   * exit still follow the same path.
+                   */
+                  exit={{ opacity: 0, x: movement * 2.4 }}
                   transition={{
-                    duration: prefersReducedMotion ? 0 : 0.58,
+                    duration: prefersReducedMotion ? 0 : 0.52,
                     ease: premiumEase,
                   }}
                 >
+                  {/*
+                   * A gradient that only exists on the way out: it sweeps
+                   * across the panel as the panel slides, so the two read as
+                   * one movement instead of the panel simply fading.
+                   */}
+                  <motion.span
+                    aria-hidden="true"
+                    className={styles.mobileMenuSheen}
+                    initial={{ opacity: 0, x: "-120%" }}
+                    animate={{ opacity: 0, x: "-120%" }}
+                    exit={{ opacity: prefersReducedMotion ? 0 : 1, x: "120%" }}
+                    transition={{
+                      duration: prefersReducedMotion ? 0 : 0.52,
+                      ease: premiumEase,
+                    }}
+                  />
                   <Dialog.Title className={styles.visuallyHidden}>
                     Hlavná navigácia
                   </Dialog.Title>

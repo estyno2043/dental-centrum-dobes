@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element -- Preserve the approved logo markup and extracted asset without an image-service rewrite. */
 
 import Link from "next/link";
-import { useState, type JSX } from "react";
+import { useEffect, useRef, useState, type JSX } from "react";
 import { motion } from "motion/react";
 import { ReviewsTrigger } from "@/components/reviews/ReviewsTrigger";
 import { RotatingHeadline } from "./RotatingHeadline";
@@ -61,6 +61,46 @@ export function Hero(): JSX.Element {
   );
   const sources = isWideViewport ? wideSources : narrowSources;
 
+  /*
+   * Phones wait for the page before they fetch the loop.
+   *
+   * The 720p encode is 9MB, and `preload="auto"` with `autoPlay` asks for all
+   * of it at once, at the highest priority the browser has. The first scroll
+   * lands inside that window, so the opening zoom dropped its first frames to
+   * a download it was competing with. The poster already holds the frame the
+   * video starts on, so nothing is missing while it waits.
+   *
+   * Desktop keeps the eager fetch: bandwidth there is rarely the thing that
+   * costs the first animation its frames.
+   */
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [deferVideo, setDeferVideo] = useState(() => !isWideViewport);
+  /* Only a video that was actually held back needs starting by hand. */
+  const wasDeferred = useRef(!isWideViewport);
+
+  useEffect(() => {
+    if (!deferVideo) return;
+    const start = () => setDeferVideo(false);
+    if (document.readyState === "complete") {
+      const id = window.setTimeout(start, 0);
+      return () => window.clearTimeout(id);
+    }
+    window.addEventListener("load", start, { once: true });
+    return () => window.removeEventListener("load", start);
+  }, [deferVideo]);
+
+  useEffect(() => {
+    if (deferVideo || !wasDeferred.current) return;
+    const video = videoRef.current;
+    if (!video) return;
+    video.load();
+    /*
+     * Autoplay can still be refused, and not every environment returns a
+     * promise here; the poster stays in either case.
+     */
+    void Promise.resolve(video.play()).catch(() => {});
+  }, [deferVideo]);
+
   return (
     <>
 
@@ -69,13 +109,19 @@ export function Hero(): JSX.Element {
           <video
             key={isWideViewport ? "wide" : "narrow"}
             className={styles.backgroundMedia}
-            autoPlay
+            autoPlay={!deferVideo}
             muted
             loop
             playsInline
-            preload="auto"
+            preload={deferVideo ? "none" : "auto"}
             poster="/media/hero-poster.jpg"
+            ref={videoRef}
           >
+            {/*
+              * The sources stay in the markup. `preload="none"` with autoplay
+              * off is what holds the fetch back; removing them would only
+              * make the element harder to read.
+              */}
             {sources.map((source) => (
               <source key={source.src} src={source.src} type={source.type} />
             ))}

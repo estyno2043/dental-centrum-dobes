@@ -166,9 +166,20 @@ describe("InvestmentShowcase", () => {
     ).replace(/\/\*[\s\S]*?\*\//g, "");
     const flat = css.replace(/\s+/g, " ");
 
-    // Gone by two thirds of the hold, not merely dimmed.
-    expect(flat).toContain("opacity: clamp(0, calc(1 - var(--intro) * 1.5), 1)");
-    expect(flat).toContain("calc(var(--intro-height, 0px) * var(--intro) * -1)");
+    /*
+     * Sequential, not simultaneous. Both used to run off `--intro` directly:
+     * the text faded across the first two thirds while the negative margin
+     * pulled the card up from the first pixel, so on a phone — where the
+     * title is four lines — the card climbed into text that was still more
+     * than half opaque. The fade finishes at 0.45 and the pull begins there.
+     */
+    expect(flat).toContain("opacity: clamp(0, calc(1 - var(--intro) * 2.22), 1)");
+    expect(flat).toContain(
+      "--intro-pull: clamp(0, calc((var(--intro) - 0.45) / 0.55), 1)",
+    );
+    expect(flat).toContain(
+      "calc(var(--intro-height, 0px) * var(--intro-pull) * -1)",
+    );
     expect(flat).toContain("--grow: calc(1 + var(--intro) * 0.07)");
 
     /*
