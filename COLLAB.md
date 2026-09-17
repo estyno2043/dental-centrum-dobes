@@ -5,6 +5,37 @@ update it before taking or handing off work.
 
 ## Current Task
 
+- Status: mobile gallery and jaw scene pass approved for publication
+- Owner: Claude
+- Branch: `claude/native-gallery-scroll`
+- Task: the mobile gallery pan ran on the main thread — twelve style writes a
+  sample, one across eight elements — which is why it still stuttered after the
+  viewport-geometry fix. A view timeline on the section now drives the track's
+  transform on the compositor, gated on `@supports (animation-timeline:
+  view())` with the GSAP write kept as the fallback. Mobile also had no
+  entrance (`grow` is hardcoded to `1` for the profile and the CSS reading it
+  is overridden), so the dead 0–36vh window now carries a zoom on `.photo` —
+  never `.frame`, which GSAP owns for the detail handoff. Verified: 341 tests,
+  lint, TypeScript, production build of 21 routes. Do not merge before the
+  user sees it on a handset; the animated values cannot be sampled in a hidden
+  preview pane. Follow-ups on the same branch, all from handset review: the
+  view timeline was reverted (two clocks, GSAP behind the compositor, which is
+  what cut when the finger left the glass), `scrub` is smoothed to `0.3` in
+  place of the damping the GSAP rewrite dropped, the arrival moved from the
+  photograph to the card's own `scale`, and the jaw scene is full-bleed on
+  mobile — it was a 9:16 card in a taller screen, so its `#817866` ground
+  showed above and below, and the sequence now covers rather than fits. The
+  zone controls moved inside that scene, since the gap they hung in is gone.
+  A second handset round then found the controls sitting on the teeth and the
+  scene's foot still unfilled: the controls live inside `.zoneArtboard`, which
+  is locked to 16:9 and so is a mid-screen strip on a phone, and the jaw layer
+  composed in `svh`. The artboard fills the scene on mobile, the jaw layer
+  fills `lvh` and publishes `--jaw-safe-bottom` for the controls to clear the
+  browser bar's band. User approved publication on 2026-09-09; `main` and
+  `develop` fast-forward to the same commit.
+
+### Previously published
+
 - Status: mobile viewport geometry fix approved for publication
 - Owner: Claude
 - Branch: `claude/mobile-viewport-geometry`

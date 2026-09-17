@@ -77,12 +77,21 @@ function stubMatchMedia(reduced: boolean, wide = true) {
 }
 
 function mobileMediaBlock(): string {
-  const start = cssText.indexOf("@media (max-width: 767px) {");
-  if (start < 0) throw new Error("mobile media block missing from clinicStory.module.css");
-  const end = cssText.indexOf("\n}\n", start);
-  if (end < 0) throw new Error("mobile media block is unterminated");
-  return cssText.slice(start, end);
+  /* There is more than one: the layout block, and the scroll-timeline block
+     that only applies where the browser has view timelines. */
+  const marker = "@media (max-width: 767px) {";
+  const blocks: string[] = [];
+  for (let at = cssText.indexOf(marker); at >= 0; at = cssText.indexOf(marker, at + 1)) {
+    const end = cssText.indexOf("\n}\n", at);
+    if (end < 0) throw new Error("mobile media block is unterminated");
+    blocks.push(cssText.slice(at, end));
+  }
+  if (blocks.length === 0) {
+    throw new Error("mobile media block missing from clinicStory.module.css");
+  }
+  return blocks.join("\n");
 }
+
 
 function triggerResizeObservers() {
   for (const callback of resizeCallbacks) callback([], {} as ResizeObserver);
@@ -426,11 +435,18 @@ test("sizes the mobile pinned scene in viewport units the URL bar cannot move", 
   expect(mobile).toMatch(/--frame-h:\s*56svh;/);
 });
 
-test("composes mobile scene layers inside the always-visible viewport box", () => {
+test("composes mobile scene layers against the viewport each one needs", () => {
   const mobile = mobileMediaBlock();
 
-  expect(mobile).toMatch(/\.galleryLayer,\s*\n?\s*\.jawLayer\s*\{[^}]*height:\s*100svh;/);
-  expect(mobile).toMatch(/\.galleryLayer,\s*\n?\s*\.jawLayer\s*\{[^}]*bottom:\s*auto;/);
+  /*
+   * The gallery composes in the always-visible box, so nothing it shows can
+   * hide behind the browser bar. The jaw scene is full-bleed and has to reach
+   * the bottom of the glass, so it fills `lvh` and publishes the difference
+   * for its own controls to keep clear of.
+   */
+  expect(mobile).toMatch(/\.galleryLayer\s*\{[^}]*height:\s*100svh;/);
+  expect(mobile).toMatch(/\.jawLayer\s*\{[^}]*height:\s*100lvh;/);
+  expect(mobile).toMatch(/--jaw-safe-bottom:\s*calc\(100lvh - 100svh\);/);
 });
 
 test("links mobile gallery directly to scroll and ignores browser-bar resizes", () => {
@@ -441,7 +457,12 @@ test("links mobile gallery directly to scroll and ignores browser-bar resizes", 
   installMobilePerformanceGeometry();
   const trigger = ScrollTrigger.getAll().find((candidate) => candidate.trigger === section);
 
-  expect(trigger?.vars.scrub).toBe(true);
+  /*
+   * A number, not `true`: iOS delivers scroll samples in bursts under
+   * momentum, and applying each the instant it lands is what stepped the
+   * scene and hard-cut it when the finger left the glass.
+   */
+  expect(trigger?.vars.scrub).toBe(0.3);
   expect(configSpy).toHaveBeenCalledWith({ ignoreMobileResize: true });
 });
 
@@ -521,4 +542,18 @@ test("keeps gallery geometry when sequence reports permanent failure", () => {
   expect(screen.getAllByTestId("clinic-frame")).toHaveLength(photoFrames.length);
   expect(screen.queryByTestId("clinic-handoff")).not.toBeInTheDocument();
   expect(section).toHaveAttribute("data-desktop-vh", "1030");
+});
+
+test("brings the mobile card forward without touching the transform GSAP owns", () => {
+  const mobile = mobileMediaBlock();
+
+  /*
+   * The independent `scale` property, so it composes with the fullscreen
+   * handoff GSAP writes to the detail frame's `transform` instead of one
+   * clobbering the other. Driven by `--grow`, which is already written once
+   * per sample, so the arrival costs no extra work.
+   */
+  expect(mobile).toMatch(/\.frame\s*\{[^}]*scale:\s*calc\(0\.88 \+ var\(--grow\) \* 0\.12\);/);
+  expect(mobile).not.toMatch(/\.frame\s*\{[^}]*transform:/);
+  expect(mobile).not.toMatch(/animation-timeline/);
 });

@@ -320,7 +320,16 @@ export function ClinicStory(): JSX.Element {
         measure();
         sync();
       },
-      scrub: true,
+      /*
+       * A number, not `true`. `true` applies every scroll sample the instant it
+       * lands, and iOS delivers them in bursts while momentum runs — so the
+       * scene stepped between positions and hard-cut when the finger left the
+       * glass. Easing the playhead toward the scroll position turns those
+       * bursts back into continuous motion. This restores what the critically
+       * damped filter used to do before the GSAP rewrite, using the one clock
+       * that already owns this scene rather than a second one beside it.
+       */
+      scrub: profile === "mobile" ? 0.3 : true,
       start: "top top",
       trigger: section,
     });

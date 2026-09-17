@@ -46,14 +46,22 @@ function clampFrame(index: number, count: number): number {
   return Math.max(1, Math.min(count, Math.round(index)));
 }
 
-function drawContained(
+/*
+ * Covers the canvas rather than fitting inside it. Where the box and the
+ * sequence share an aspect — every desktop frame, which is 16:9 in a 16:9
+ * box — this is the same drawing. Where they do not, fitting left the box's
+ * own background showing as bars, which on a phone is the grey the jaw was
+ * sitting in. Cropping the render's margins costs nothing: the mobile zone
+ * markers are `display: none`, so no control is anchored to these pixels.
+ */
+function drawCovering(
   context: CanvasRenderingContext2D,
   frame: DecodedJawFrame,
   canvas: HTMLCanvasElement,
   sourceWidth: number,
   sourceHeight: number,
 ): void {
-  const scale = Math.min(canvas.width / sourceWidth, canvas.height / sourceHeight);
+  const scale = Math.max(canvas.width / sourceWidth, canvas.height / sourceHeight);
   const width = sourceWidth * scale;
   const height = sourceHeight * scale;
   const left = (canvas.width - width) / 2;
@@ -196,7 +204,7 @@ const AnimatedJawFrameSequence = forwardRef<JawFrameSequenceHandle, AnimatedJawF
       }
 
       try {
-        drawContained(context, frame, canvas, manifest.width, manifest.height);
+        drawCovering(context, frame, canvas, manifest.width, manifest.height);
       } catch {
         if (isCurrentWindow) reportRelevantFailure(frame.index);
         return;
