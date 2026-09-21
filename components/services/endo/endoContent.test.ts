@@ -15,6 +15,7 @@ import {
   opening,
   pain,
   visit,
+  xray,
 } from "./endoContent";
 
 const published = new Map(
@@ -211,6 +212,34 @@ describe("endodontics", () => {
     expect(pain.body).not.toMatch(/vždy bezbolestné|úplne bezbolestné/i);
     /* It answers the question in its own heading, so scanning finds it. */
     expect(pain.heading).toMatch(/bolí/i);
+  });
+
+  /*
+   * The clinic's two radiographs, at the size the srcset claims. A misspelt
+   * stem is a broken image in production and silent in development.
+   */
+  it("ships both radiographs at the size it advertises", async () => {
+    const sharp = (await import("sharp")).default;
+    for (const shot of [xray.before, xray.after]) {
+      for (const [file, w] of [
+        [`${shot.src}.webp`, xray.width],
+        [`${shot.src}-mobile.webp`, xray.width / 2],
+      ] as const) {
+        const meta = await sharp(
+          join(process.cwd(), "public/media/sluzby", file),
+        ).metadata();
+        expect(meta.width, file).toBe(w);
+      }
+    }
+  });
+
+  /*
+   * The caption may say only what the two frames show. Nothing in them shows
+   * healing around the root, so no line may claim it.
+   */
+  it("captions the radiographs with what is visible, and nothing more", () => {
+    expect(xray.caption).toMatch(/koreňová výplň/i);
+    expect(xray.caption).not.toMatch(/zápal|zahoj|ustúp/i);
   });
 
   /* Nothing on this page may imply a guarantee the clinic refused to give. */

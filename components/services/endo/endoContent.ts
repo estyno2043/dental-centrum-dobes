@@ -151,6 +151,47 @@ export const microscope = {
   ],
 } as const;
 
+/* ------------------------------------------------------------- the proof --- */
+
+/**
+ * Two periapical X-rays of the same area, before and after the root canal,
+ * supplied by the clinic on 2026-09-21. On this service the X-ray is the
+ * evidence a smile photograph cannot be: the root filling shows as a white
+ * line inside the root. No face, so consent does not arise the way it does
+ * for the case photographs.
+ *
+ * Shown side by side rather than on a slider. These are two separate
+ * exposures, taken at different times from slightly different angles, and a
+ * wipe between frames that do not register would make the teeth jump and
+ * read as a trick. Side by side is also how a dentist would show them.
+ *
+ * The caption says only what is visible. Nothing about healing around the
+ * root, because nothing in these two frames shows it.
+ */
+export const xray = {
+  heading: "Takto to vyzerá na snímke",
+  lead:
+    "Ten istý úsek chrupu pred ošetrením a po ňom. Na endodoncii je dôkaz " +
+    "práve na RTG snímke, nie na fotke úsmevu.",
+  before: {
+    src: "endo-rtg-pred",
+    label: "Pred ošetrením",
+    alt: "RTG snímka zubov pred koreňovým ošetrením",
+  },
+  after: {
+    src: "endo-rtg-po",
+    label: "Po ošetrení",
+    alt:
+      "RTG snímka toho istého úseku po koreňovom ošetrení, koreňová výplň je " +
+      "viditeľná ako biela línia v koreni",
+  },
+  width: 1300,
+  height: 1000,
+  caption:
+    "Biela línia v koreni na snímke vpravo je koreňová výplň. Na snímke " +
+    "vľavo je ten istý kanálik ešte neošetrený.",
+} as const;
+
 /* ------------------------------------------------------------- the visit --- */
 
 export const visit = {

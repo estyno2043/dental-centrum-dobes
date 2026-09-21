@@ -2,7 +2,6 @@ import Link from "next/link";
 import type { JSX } from "react";
 import { IconArrowNarrowRight } from "@tabler/icons-react";
 
-import { PhotoFrame } from "../PhotoFrame";
 import {
   compare,
   cost,
@@ -12,6 +11,7 @@ import {
   microscope,
   odds,
   opening,
+  xray,
   pain,
   visit,
 } from "./endoContent";
@@ -108,6 +108,35 @@ export function EndoBody(): JSX.Element {
             </li>
           ))}
         </ul>
+      </section>
+
+      {/* --- what the microscope's work looks like afterwards ------------- */}
+      <section aria-labelledby="xray-heading" className={styles.block}>
+        <h2 className={styles.sectionHeading} id="xray-heading">
+          {xray.heading}
+        </h2>
+        <p className={styles.lead}>{xray.lead}</p>
+        <div className={styles.xrays}>
+          {[xray.before, xray.after].map((shot) => (
+            <figure className={styles.xray} key={shot.src}>
+              {/* eslint-disable-next-line @next/next/no-img-element -- Pre-sized clinic radiograph. */}
+              <img
+                alt={shot.alt}
+                decoding="async"
+                height={xray.height}
+                sizes="(max-width: 860px) 100vw, 30rem"
+                src={`/media/sluzby/${shot.src}.webp`}
+                srcSet={
+                  `/media/sluzby/${shot.src}-mobile.webp ${xray.width / 2}w, ` +
+                  `/media/sluzby/${shot.src}.webp ${xray.width}w`
+                }
+                width={xray.width}
+              />
+              <figcaption className={styles.xrayLabel}>{shot.label}</figcaption>
+            </figure>
+          ))}
+        </div>
+        <p className={styles.xrayCaption}>{xray.caption}</p>
       </section>
 
       {/* --- the appointment ---------------------------------------------- */}
@@ -210,11 +239,6 @@ export function EndoBody(): JSX.Element {
           <span>{limit.linkLabel}</span>
           <IconArrowNarrowRight size={18} stroke={1.7} />
         </Link>
-
-        <PhotoFrame
-          brief="RTG snímka pred reliečbou a po nej, vedľa seba. Na endodoncii je dôkaz práve na snímke: kanáliky zaplnené po hrot koreňa a ustupujúci zápal okolo neho. Doktor snímky má a vyberá ich (2026-09-06). Nie je na nich nikoho tvár."
-          ratio="16 / 9"
-        />
       </section>
     </>
   );
