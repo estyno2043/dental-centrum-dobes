@@ -172,8 +172,11 @@ export function PerioBody(): JSX.Element {
           <ul>
             {cost.later.map((item) => (
               <li key={item.label}>
-                <span>{item.label}</span>
-                <span className={styles.costPrice}>{item.price}</span>
+                <div className={styles.laterRow}>
+                  <span>{item.label}</span>
+                  <span className={styles.costPrice}>{item.price}</span>
+                </div>
+                {item.note ? <p>{item.note}</p> : null}
               </li>
             ))}
           </ul>

@@ -10,12 +10,12 @@
  *
  * Every price is the clinic's, quoted from the list valid 1. 3. 2026.
  *
- * ⚠️ One reading is mine and still needs confirming: the list bills
- * `Fazetovanie zuba` at 190 € and `Fazetovanie zuba Empress Direct` at 220 €.
- * Both are direct composite done chairside; Empress Direct is Ivoclar's
- * premium nano-hybrid, so the difference is described here as the material
- * rather than the method. If the 30 € is in fact extent or something else,
- * this is the line to fix. Asked on 2026-09-04; not answered.
+ * The 190 € against 220 € composite veneer, answered 2026-09-21: the plain
+ * one is a single monochromatic material, and Empress Direct is built up from
+ * several shades and translucencies, dentine and enamel layers plus effects —
+ * *"sofistikovanejší druh kompozitu"*. The earlier copy had guessed that it
+ * "holds its lustre longer"; the clinic said nothing of the kind, so that
+ * claim is gone and the difference is described as what it is, layering.
  *
  * Clinic answers, 2026-09-05, and what each one changed here:
  *
@@ -115,7 +115,8 @@ export const solutions: readonly Solution[] = [
       "Chcete zmeniť tvar alebo odštiepenie jedného-dvoch zubov, a chcete to " +
       "vidieť hneď.",
     body:
-      "Kompozit sa nanáša a modeluje priamo na zub, v ten istý deň. Brúsi sa " +
+      "Kompozit z jedného odtieňa sa nanáša a modeluje priamo na zub, v ten " +
+      "istý deň. Brúsi sa " +
       "minimálne alebo vôbec. Je to najdostupnejší spôsob, ako zmeniť tvar. " +
       "A keď sa časom ošúcha, dá sa opraviť bez toho, aby sa začínalo odznova.",
     facts: [
@@ -127,18 +128,20 @@ export const solutions: readonly Solution[] = [
   {
     id: "empress",
     name: "Kompozitná fazeta Empress Direct",
-    kind: "To isté, z prémiového materiálu",
+    kind: "Vrstvená z viacerých odtieňov",
     price: "220 €",
     solves:
       "Rovnaké zadanie ako vyššie, ale chcete, aby to zblízka nebolo vidieť.",
     body:
-      "Rovnaký postup za jednu návštevu, iný kompozit. Empress Direct sa " +
-      "vrstvi v odtieňoch a drží lesk dlhšie, takže sa lepšie stráca medzi " +
-      "vlastnými zubami, čo je pri predných jednotkách celý rozdiel.",
+      "Rovnaký postup za jednu návštevu, ale fazeta sa nestavia z jedného " +
+      "odtieňa. Vrství sa z viacerých, dentínových a sklovinových, s rôznou " +
+      "priehľadnosťou a efektmi, tak ako je postavený vlastný zub. Preto sa " +
+      "lepšie stráca medzi ostatnými zubami, čo je pri predných jednotkách " +
+      "celý rozdiel.",
     facts: [
       { label: "Zub sa brúsi", value: "Minimálne" },
       { label: "Hotové", value: "Za jednu návštevu" },
-      { label: "Vydrží", value: "Dlhšie drží lesk" },
+      { label: "Vydrží", value: "Roky, dá sa doplniť" },
     ],
   },
   {

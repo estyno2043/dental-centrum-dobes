@@ -155,7 +155,8 @@ export const protocol = {
   lead:
     "Bežný postup pri krvácajúcich ďasnách je vyčistiť a dúfať. My najprv " +
     "urobíme výter a necháme z neho určiť konkrétne baktérie aj vaše " +
-    "genetické predpoklady na zápal. Až potom sa rozhoduje, čím sa lieči.",
+    "genetické predpoklady na zápal. Až potom sa rozhoduje, čím sa lieči. " +
+    "Celá liečba trvá minimálne tri mesiace, podľa stavu.",
   steps: [
     {
       name: "Vyšetrenie",
@@ -171,8 +172,8 @@ export const protocol = {
     {
       name: "Eradikácia",
       note:
-        "Dentálna hygiena a antibiotiká cielené na to, čo laboratórium našlo, " +
-        "a nie na to, čo sa dáva zvyčajne.",
+        "FMD, teda hygiena určená pre paro pacientov, a antibiotiká cielené " +
+        "na to, čo laboratórium našlo, a nie na to, čo sa dáva zvyčajne.",
     },
     {
       name: "Osídlenie",
@@ -246,6 +247,12 @@ export const plasma = {
  *
  * The sum is checked by a test against the clinic's own rows.
  */
+export type LaterItem = {
+  readonly label: string;
+  readonly price: string;
+  readonly note?: string;
+};
+
 export const cost = {
   heading: "Čo stojí zistiť, na čom ste",
   lead:
@@ -277,14 +284,29 @@ export const cost = {
   laterHeading: "Čo prichádza potom",
   laterNote:
     "Rozsah určí nález. Toto sú ceny úkonov, z ktorých sa liečba skladá.",
+  /*
+   * The clinic's answer of 2026-09-21 reshaped this list. For a periodontal
+   * patient the hygiene *is* FMD, and closed curettage is part of it rather
+   * than a separate line, so the ordinary 100 € hygiene and the standalone
+   * 45 € curettage both came off: listed beside FMD they read as three
+   * charges for what is one. Open curettage stays, said plainly to be the
+   * surgical step for places FMD cannot reach.
+   */
   later: [
-    { label: "Dentálna hygiena", price: "100 €" },
-    { label: "FMD – full mouth dezinfekcia", price: "115 €" },
-    { label: "Zatvorená kyretáž koreňa", price: "45 €" },
-    { label: "Otvorená kyretáž", price: "180 €" },
+    {
+      label: "FMD – full mouth dezinfekcia",
+      price: "115 €",
+      note: "Hygiena pre paro pacientov. Zatvorená kyretáž je jej súčasťou.",
+    },
+    {
+      label: "Otvorená kyretáž",
+      price: "180 €",
+      note:
+        "Chirurgický zákrok pre miesta, ktoré sa pri FMD nedajú dočiahnuť.",
+    },
     { label: "PRF – krvná plazma", price: "75 €" },
     { label: "Probiotiká", price: "18 – 23 €" },
-  ],
+  ] satisfies readonly LaterItem[],
 } as const;
 
 /* ---------------------------------------------------------------- the close */

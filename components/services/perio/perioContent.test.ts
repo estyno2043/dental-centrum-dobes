@@ -31,11 +31,10 @@ describe("periodontology", () => {
   });
 
   /*
-   * The follow-on list quotes figures rather than labels — some are shortened
-   * for a reader ("Zatvorená kyretáž koreňa" without its "(root planing)"),
-   * one spans three rows ("Probiotiká", 18 – 23 €), and the hygiene figure is
-   * the clinic's confirmed flat 100 € rather than the list's 90 – 100 € span.
-   * The prices are what must not drift, so those are what is checked.
+   * The follow-on list quotes figures rather than labels: "FMD – full mouth
+   * dezinfekcia" is the list's own row with its English spelling put into
+   * Slovak, and "Probiotiká" spans three rows at 18 – 23 €. The prices are
+   * what must not drift, so those are what is checked.
    */
   it("prices the follow-on work from the published list", () => {
     const prices = new Set(published.values());

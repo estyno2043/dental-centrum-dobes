@@ -225,7 +225,8 @@ export const cost = {
  * ⚠️ Both sides are estimates and both are marked as such. The left is the
  * example above plus a `Celokeramická korunka Zirkón` (455 €); the right is
  * the implant page's own lower bound, which is itself a whole tooth — implant,
- * abutment and crown — and not an "od" teased off the cheapest part.
+ * healing screw, abutment and crown — and not an "od" teased off the
+ * cheapest part.
  */
 export const compare = {
   heading: "Zachrániť, alebo nahradiť",
@@ -239,8 +240,8 @@ export const compare = {
   },
   replace: {
     label: "Nahradiť ho implantátom",
-    value: "od 1 490 €",
-    note: "Implantát, nadstavba aj korunka.",
+    value: "od 1 610 €",
+    note: "Implantát, vhojovacia skrutka, nadstavba a celokeramická korunka.",
     href: "/sluzby/zubne-implantaty",
   },
   note:

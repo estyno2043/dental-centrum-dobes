@@ -51,21 +51,28 @@ export type CrownChoice = {
 };
 
 /*
- * The three items that make one implanted tooth, in the order they are placed.
- * Not a "od" price teased off the cheapest of them — that is the practice this
+ * The items that make one implanted tooth, in the order they are placed. Not
+ * a "od" price teased off the cheapest of them — that is the practice this
  * section exists to answer.
  *
- * ⚠️ `Vhojovacia skrutka` (120 €) is deliberately not in the base. It is in
- * the clinic's list and a two-stage protocol normally uses one, but whether it
- * is billed on every case was not asked. It sits below among what can be
- * added, where being wrong costs the reader nothing; putting it in the total
- * and being wrong would understate every quote on the page. Ask the clinic.
+ * `Vhojovacia skrutka` (120 €) is in the base. It used to sit among the
+ * optional extras because nobody had asked whether it is billed every time;
+ * the clinic answered on 2026-09-21: *"Pri každom impl sa účtuje vhojovacia
+ * skrutka. Je to nutný krok."* Every total on the site moved up by 120 € with
+ * it — here, on the pricing showcase and in the endodontics comparison — and
+ * the tests read the endodontics figure from this module so the three cannot
+ * disagree again.
  */
 export const costBase: readonly CostItem[] = [
   {
     label: "Implantát",
     price: "810 €",
     note: "Titánový koreň Osstem, zavedený podľa 3D plánu.",
+  },
+  {
+    label: "Vhojovacia skrutka",
+    price: "120 €",
+    note: "Uzatvára implantát počas hojenia. Účtuje sa pri každom implantáte.",
   },
   {
     label: "Abutment",
@@ -79,7 +86,7 @@ export const crowns: readonly CrownChoice[] = [
     id: "celokeramicka",
     name: "Celokeramická korunka",
     price: "460 €",
-    total: "1 490 – 1 605 €",
+    total: "1 610 – 1 725 €",
     note:
       "Bez kovového jadra, takže cez ňu prechádza svetlo tak ako cez vlastný " +
       "zub a pri ďasne nevzniká tmavý lem. Na predné zuby prakticky vždy toto.",
@@ -88,7 +95,7 @@ export const crowns: readonly CrownChoice[] = [
     id: "kovokeramicka",
     name: "Kovokeramická korunka",
     price: "355 €",
-    total: "1 385 – 1 500 €",
+    total: "1 505 – 1 620 €",
     note:
       "Keramika na kovovej konštrukcii. Vzadu, kde na vzhľade tak nezáleží a " +
       "žuvací tlak je najväčší, je to úplne rozumná voľba.",
@@ -98,7 +105,8 @@ export const crowns: readonly CrownChoice[] = [
 export const cost = {
   heading: "Čo stojí jeden zub, celý",
   lead:
-    "Implantát nie je jedna položka. Sú to tri: koreň, nadstavba a korunka. " +
+    "Implantát nie je jedna položka. Sú to štyri: koreň, vhojovacia " +
+    "skrutka, nadstavba a korunka. " +
     "Väčšina cenníkov ukáže prvú z nich a zvyšok necháte zistiť v kresle. " +
     "Tu je celá suma, aj s tým, čo ju mení.",
   crownHeading: "Korunka",
@@ -113,11 +121,6 @@ export const cost = {
     "Či niečo z toho budete potrebovať, sa vie až z 3D snímku. Neúčtuje sa " +
     "to preto, že to je v cenníku, ale preto, že to bolo treba.",
   addOns: [
-    {
-      label: "Vhojovacia skrutka",
-      price: "120 €",
-      note: "Uzatvára implantát počas hojenia.",
-    },
     {
       label: "Membrána",
       price: "120 €",
@@ -308,7 +311,7 @@ export const crossSection = {
     "nadstavba a korunka, vedľa vlastné zuby s koreňmi a ďasnom",
   width: 780,
   height: 520,
-  caption: "Skrutka, nadstavba, korunka. Tri položky, ktoré vidíte vyššie.",
+  caption: "Koreň v kosti, nadstavba a korunka nad ním.",
 } as const;
 
 /**

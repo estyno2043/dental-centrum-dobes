@@ -14,6 +14,7 @@ import {
   systemPhoto,
   timeline,
 } from "./implantContent";
+import { slides } from "@/components/pricing/investmentContent";
 
 const published = new Set(
   priceGroups.flatMap((group) => group.entries.map((entry) => entry.price)),
@@ -44,6 +45,18 @@ describe("dental implants", () => {
    * Both ends of the range are checked — a total that is right at the bottom
    * and wrong at the top is the quote somebody arrives holding.
    */
+  /*
+   * The homepage showcase quotes "od" for an implant, and "od" has to be the
+   * true floor: the cheapest whole tooth this page itemises. It used to quote
+   * the full-ceramic figure while the metal-ceramic tooth was cheaper, and it
+   * moved again when the healing screw joined the base. Read, not retyped.
+   */
+  it("gives the pricing showcase the real floor", () => {
+    const slide = slides.find((s) => s.slug === "zubne-implantaty")!;
+    const floor = Math.min(...crowns.map((c) => bounds(c.total)[0]!));
+    expect(toNumber(slide.price.value)).toBe(floor);
+  });
+
   it("totals what it itemises, at both ends of the range", () => {
     for (const crown of crowns) {
       const parts = [...costBase.map((item) => item.price), crown.price];

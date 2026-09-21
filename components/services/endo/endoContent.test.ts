@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { priceGroups } from "@/components/pricing/pricingContent";
+import { crowns } from "@/components/services/implants/implantContent";
 import {
   compare,
   cost,
@@ -77,7 +78,20 @@ describe("endodontics", () => {
     const sum = cost.lines.reduce((n, line) => n + euros(line.price), 0);
 
     expect(euros(compare.keep.value)).toBe(sum + crownPrice);
-    expect(euros(compare.replace.value)).toBe(1490);
+    /*
+     * Read from the implant page, not typed here. When the clinic confirmed
+     * the healing screw is billed on every implant, that page's total moved
+     * by 120 € and this one had to move with it; a hardcoded 1490 is exactly
+     * how the two would have ended up contradicting each other.
+     */
+    /*
+     * Like for like. The saving side ends in a full-ceramic crown, so the
+     * replacing side is the implant page's full-ceramic figure. Comparing it
+     * against the cheaper metal-ceramic tooth would flatter the implant and
+     * undersell the reason to keep your own.
+     */
+    const ceramic = crowns.find((c) => c.id === "celokeramicka")!;
+    expect(euros(compare.replace.value)).toBe(euros(ceramic.total));
     expect(compare.replace.href).toBe("/sluzby/zubne-implantaty");
     /* Both sides are estimates and the page has to say so. */
     expect(compare.note).toMatch(/odhad/i);

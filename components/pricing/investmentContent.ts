@@ -180,13 +180,17 @@ export const slides: readonly ShowcaseSlide[] = [
     ],
     price: {
       /*
-       * "od" off a whole tooth, not off its cheapest part. 1 490 € is the
-       * complete implant, abutment and crown at the lower abutment price; the
+       * "od" off a whole tooth, not off its cheapest part. 1 505 € is the
+       * complete implant, healing screw, abutment and a metal-ceramic crown
+       * at the lower abutment price, which is the true floor; the old figure
+       * quoted the full-ceramic crown under "od" while the real minimum sat
+       * lower, and a test now holds it to the implant page's cheapest total.
+       * The
        * note carries the top of the range so the figure cannot be read as the
        * whole story. See the rule on `anchorPrices` in `pricingContent.ts`.
        */
-      value: "od 1 490 €",
-      note: "Celý zub: implantát, nadstavba aj korunka. Podľa nadstavby do 1 605 €.",
+      value: "od 1 505 €",
+      note: "Celý zub: implantát, vhojovacia skrutka, nadstavba aj korunka. S celokeramickou korunkou od 1 610 €.",
     },
   },
 ];
