@@ -1522,6 +1522,29 @@ not achievable without interpolation artifacts, whatever the export is tagged.
 
   Netlify is still not verified from this environment. No files reserved.
 
+- 2026-09-17 — Claude published `/sluzby/osetrenie-deti` to `main`, merged
+  over six Codex commits (mobile gallery and jaw scene) that touched only
+  `components/home/**`, `COLLAB.md` and `package-lock.json`; no overlap.
+
+  The one service page that leaves the taupe and charcoal behind, at the
+  user's request: soft pink and blue, rounder corners, and a pink-to-blue
+  ground over the whole page. The ground is a `data-tone` attribute on the
+  shell's `<main>` plus one rule in `service.module.css`, because the body
+  renders inside the padded column and cannot reach the page; every other
+  service page keeps the cream. Each chapter of a first visit is told twice,
+  once to the child and once to the parent. Clinic answers used: from three
+  years old, the parent may stay, an uncooperative child is talked to rather
+  than held, and there are no photographs of children (a test fails if one is
+  added). `Ťažko ošetriteľné dieťa` (40 €) is shown with a note saying it is
+  time set aside, not a penalty.
+
+  Seven of ten service pages written. Remaining: `biele-vyplne`, `protetika`,
+  `stomatochirurgia`. The back-navigation scroll issue is still unresolved and
+  still awaiting the user's console trace.
+
+  Verified on the merged tree: 349 tests, lint, TypeScript, build of 21 routes,
+  `git diff --check`. No files reserved.
+
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
 credentials, tokens, or local configuration values in repository files,

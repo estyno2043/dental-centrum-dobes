@@ -9,6 +9,7 @@ import { EndoBody } from "@/components/services/endo/EndoBody";
 import { EntryBody } from "@/components/services/entry/EntryBody";
 import { HygieneBody } from "@/components/services/hygiene/HygieneBody";
 import { ImplantBody } from "@/components/services/implants/ImplantBody";
+import { KidsBody } from "@/components/services/kids/KidsBody";
 import { PerioBody } from "@/components/services/perio/PerioBody";
 import { CaseGallery } from "@/components/patients/CaseGallery";
 import {
@@ -97,6 +98,19 @@ function Photo({
  * A slug absent here falls back to the shared layout, so adding a bespoke page
  * is one line and never a rewrite.
  */
+/**
+ * Pages that want a different ground under them.
+ *
+ * The shell's cream is the site's, and every service page keeps it except the
+ * children's one, which the user asked to carry a pink-to-blue wash. Declared
+ * here as an attribute rather than painted from inside the body, because the
+ * body renders *inside* the shell's padded, max-width column and cannot reach
+ * the full page. One attribute, one rule in `service.module.css`.
+ */
+const BESPOKE_TONES: Readonly<Record<string, string>> = {
+  "osetrenie-deti": "kids",
+};
+
 const BESPOKE_BODIES: Readonly<Record<string, () => JSX.Element>> = {
   "dentalna-hygiena": HygieneBody,
   "vstupna-prehliadka": EntryBody,
@@ -104,6 +118,7 @@ const BESPOKE_BODIES: Readonly<Record<string, () => JSX.Element>> = {
   "zubne-implantaty": ImplantBody,
   parodontologia: PerioBody,
   endodoncia: EndoBody,
+  "osetrenie-deti": KidsBody,
 };
 
 export default async function ServicePage({
@@ -121,7 +136,11 @@ export default async function ServicePage({
       {/* The page knows it is quiet, so the header need not wait for a
           measurement to find out — see `SiteHeader`. */}
       <SiteHeader initialMode="quiet" />
-      <main className={styles.page} data-header-mode="quiet">
+      <main
+        className={styles.page}
+        data-header-mode="quiet"
+        data-tone={BESPOKE_TONES[sluzba]}
+      >
         {/*
           The service's own photograph, filling the page behind everything.
           It carries the `view-transition-name` the catalogue card hands over,

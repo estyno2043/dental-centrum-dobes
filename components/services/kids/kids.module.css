@@ -1,0 +1,425 @@
+/*
+ * Ošetrenie detí.
+ *
+ * The one service page that leaves the taupe and charcoal behind. It keeps the
+ * site's typography and its section rhythm, so it still reads as the same
+ * clinic; what changes is the palette, the corner radius and the amount of
+ * air. Soft pink and soft blue, alternating, on the shell's own cream.
+ *
+ * ⚠️ Read by the parent, not the child. Every value below is deliberately
+ * pale: the colour is a warmth, not a theme, and a page that went full cartoon
+ * would tell a parent this clinic does not take children seriously. Text stays
+ * ink, which measures 13:1 or better on every ground here.
+ */
+
+.opening,
+.story,
+.worries,
+.money {
+  --pink: #f7dbe2;
+  --pink-soft: #fbeaee;
+  --pink-deep: #a84a60;
+  --blue: #dbe8f5;
+  --blue-soft: #eaf1fa;
+  --blue-deep: #3f6d99;
+}
+
+.sectionHeading {
+  margin: 0 0 clamp(14px, 2vw, 20px);
+  font-size: clamp(1.4rem, 2.6vw, 2.1rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: 46ch;
+  margin: 0 0 clamp(22px, 3vw, 32px);
+  color: rgb(38 38 42 / 74%);
+  font-size: 0.98rem;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+/* -------------------------------------------------------------- opening --- */
+
+/*
+ * `overflow: clip` rather than `hidden`: the wash below is positioned outside
+ * this box on purpose, and at 390px its `right: -4%` pushed the document 15px
+ * wider than the screen. `clip` contains it without making the element a
+ * scroll container, which `hidden` would, and which would break any sticky
+ * positioning inside it.
+ */
+.opening {
+  position: relative;
+  overflow: clip;
+  padding-top: clamp(32px, 4.5vw, 56px);
+}
+
+/*
+ * Two soft washes behind the opening, one pink and one blue, bleeding into
+ * each other. Decorative and `aria-hidden`; it adds no height because it is
+ * absolutely positioned, and it is the only ornament on the page that is not
+ * also carrying information.
+ */
+.blob {
+  position: absolute;
+  z-index: -1;
+  top: -6%;
+  right: -4%;
+  width: min(46rem, 70%);
+  height: 120%;
+  background:
+    radial-gradient(46% 40% at 72% 22%, var(--pink) 0%, transparent 68%),
+    radial-gradient(42% 44% at 30% 62%, var(--blue) 0%, transparent 70%);
+  filter: blur(6px);
+  /*
+   * Held back since the page gained its own pink-to-blue ground. At full
+   * strength the two washes stacked into a muddy patch behind the headline;
+   * at half it still gives the opening some local depth without competing
+   * with the gradient underneath it.
+   */
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.openingHeading {
+  max-width: 20ch;
+  margin: 0 0 clamp(14px, 2vw, 20px);
+  font-size: clamp(1.7rem, 4vw, 3rem);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+.openingBody {
+  max-width: 50ch;
+  margin: 0 0 clamp(26px, 3.4vw, 40px);
+  font-size: clamp(1rem, 1.7vw, 1.15rem);
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.facts {
+  display: grid;
+  gap: clamp(10px, 1.6vw, 16px);
+  margin: 0;
+  grid-template-columns: repeat(3, minmax(0, max-content));
+}
+
+/* Each fact on its own soft pill, alternating the two colours. */
+.facts > div {
+  padding: 14px 20px;
+  border-radius: 18px;
+  background: var(--blue-soft);
+}
+
+.facts > div:nth-child(2) {
+  background: var(--pink-soft);
+}
+
+.facts dt {
+  color: rgb(38 38 42 / 60%);
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.facts dd {
+  margin: 5px 0 0;
+  font-size: clamp(0.98rem, 1.5vw, 1.1rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+/* ------------------------------------------------------------- chapters --- */
+
+.story {
+  padding-top: clamp(52px, 7vw, 96px);
+}
+
+.chapters {
+  display: grid;
+  gap: clamp(14px, 2vw, 20px);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+/*
+ * A trail rather than a table. The step disc sits in its own column and a
+ * dotted line runs between the discs, so the five read as one journey the
+ * child is taken along instead of five separate facts.
+ */
+.chapters li {
+  position: relative;
+  display: grid;
+  gap: clamp(14px, 2.4vw, 26px);
+  grid-template-columns: 3rem minmax(0, 1fr);
+  align-items: start;
+}
+
+.chapters li::before {
+  position: absolute;
+  z-index: -1;
+  top: 3rem;
+  bottom: calc(clamp(14px, 2vw, 20px) * -1);
+  left: 1.5rem;
+  width: 0;
+  border-left: 2px dotted rgb(63 109 153 / 34%);
+  content: "";
+}
+
+.chapters li:last-child::before {
+  display: none;
+}
+
+.step {
+  display: grid;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: var(--blue);
+  color: var(--blue-deep);
+  font-size: 1.05rem;
+  font-weight: 600;
+  place-items: center;
+}
+
+.chapters li:nth-child(even) .step {
+  background: var(--pink);
+  color: var(--pink-deep);
+}
+
+.chapterBody {
+  padding: clamp(16px, 2.2vw, 24px) clamp(18px, 2.4vw, 28px);
+  border-radius: 22px;
+  background: var(--blue-soft);
+}
+
+.chapters li:nth-child(even) .chapterBody {
+  background: var(--pink-soft);
+}
+
+.chapterBody h3 {
+  margin: 0 0 10px;
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/*
+ * What the child hears, set apart: larger, warmer, and quoted by an indent
+ * rather than by quotation marks, which on a page of short lines would read
+ * as clutter.
+ */
+.child {
+  padding-left: 14px;
+  margin: 0 0 10px;
+  border-left: 3px solid var(--blue-deep);
+  font-size: clamp(0.98rem, 1.5vw, 1.08rem);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.chapters li:nth-child(even) .child {
+  border-left-color: var(--pink-deep);
+}
+
+/* The same moment for the parent, plainly. */
+.parent {
+  max-width: 56ch;
+  margin: 0;
+  color: rgb(38 38 42 / 72%);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* -------------------------------------------------------------- worries --- */
+
+.worries {
+  padding-top: clamp(52px, 7vw, 96px);
+}
+
+.worryList {
+  display: grid;
+  gap: clamp(14px, 2vw, 22px);
+  padding: 0;
+  margin: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  list-style: none;
+}
+
+.worryList li {
+  padding: clamp(18px, 2.4vw, 26px);
+  border: 1px solid rgb(63 109 153 / 18%);
+  border-radius: 22px;
+}
+
+.worryList li:nth-child(even) {
+  border-color: rgb(168 74 96 / 18%);
+}
+
+.worryList h3 {
+  margin: 0 0 8px;
+  color: var(--blue-deep);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.worryList li:nth-child(even) h3 {
+  color: var(--pink-deep);
+}
+
+.worryList p {
+  margin: 0;
+  color: rgb(38 38 42 / 76%);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* ---------------------------------------------------------------- money --- */
+
+.money {
+  padding-top: clamp(52px, 7vw, 96px);
+}
+
+/*
+ * A panel rather than the section, because `.page > *` puts the shell's
+ * `padding-inline` on every direct child and a background on the section
+ * would paint across the page gutter and run to both screen edges.
+ */
+.moneyInner {
+  padding: clamp(26px, 4vw, 48px) clamp(22px, 3.4vw, 44px);
+  border-radius: 26px;
+  background: linear-gradient(152deg, var(--pink-soft) 0%, var(--blue-soft) 100%);
+}
+
+.costItems {
+  padding: 0;
+  margin: 0 0 clamp(22px, 3vw, 30px);
+  list-style: none;
+}
+
+.costItems > li {
+  padding: 13px 0;
+  border-top: 1px solid rgb(38 38 42 / 12%);
+}
+
+.costRow {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.costRow h3 {
+  margin: 0;
+  font-size: 0.96rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.costPrice {
+  color: var(--pink-deep);
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.costItems p {
+  max-width: 52ch;
+  margin: 5px 0 0;
+  color: rgb(38 38 42 / 70%);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.ctaText {
+  max-width: 42ch;
+  margin: 0 0 14px;
+  color: rgb(38 38 42 / 78%);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/*
+ * The deep rose rather than the site's charcoal: on this page charcoal would
+ * be the only hard thing on it. `#a84a60` carries white at 5.2:1, which the
+ * lighter pinks do not — `#c0687d` came out at 3.6:1 and was rejected.
+ */
+.cta {
+  display: inline-flex;
+  gap: 9px;
+  align-items: center;
+  padding: 13px 24px;
+  border-radius: 999px;
+  background: var(--pink-deep);
+  color: #fff;
+  font-size: 0.92rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  transition:
+    background-color 240ms var(--ease),
+    translate 240ms var(--ease);
+}
+
+.cta svg {
+  transition: translate 240ms var(--ease);
+}
+
+.cta:hover,
+.cta:focus-visible {
+  background: #8f3d51;
+}
+
+.cta:hover svg,
+.cta:focus-visible svg {
+  translate: 4px 0;
+}
+
+.cta:focus-visible {
+  outline: 2px solid var(--pink-deep);
+  outline-offset: 3px;
+}
+
+@media (max-width: 860px) {
+  .worryList {
+    grid-template-columns: 1fr;
+  }
+
+  .facts {
+    grid-template-columns: 1fr;
+  }
+
+  .chapters li {
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+  }
+
+  .chapters li::before {
+    left: 1.25rem;
+    top: 2.5rem;
+  }
+
+  .step {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta,
+  .cta svg {
+    transition: none;
+  }
+}
