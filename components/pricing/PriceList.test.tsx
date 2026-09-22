@@ -39,6 +39,56 @@ describe("PriceList", () => {
   });
 
   /*
+   * Most people type without diacritics. "vysetrenie" has to find
+   * "vyšetrenie", or the search reads as broken to nearly everyone using it.
+   */
+  it("finds rows when the query is typed without diacritics", async () => {
+    const user = userEvent.setup();
+    render(<PriceList />);
+
+    await user.type(screen.getByRole("searchbox"), "akutne vysetrenie");
+
+    expect(await screen.findByText("Akútne vyšetrenie")).toBeInTheDocument();
+  });
+
+  it("says 0 položiek, not 0 položky, when nothing matches", async () => {
+    const user = userEvent.setup();
+    render(<PriceList />);
+
+    await user.type(screen.getByRole("searchbox"), "xyzneexistuje");
+
+    expect(await screen.findByText(/^0 položiek pre/)).toBeInTheDocument();
+  });
+
+  it("finds a product typed without diacritics on the products tab", async () => {
+    const user = userEvent.setup();
+    render(<PriceList />);
+
+    await user.click(screen.getByRole("button", { name: "Produkty" }));
+    await user.type(screen.getByRole("searchbox"), "zubna kefka");
+
+    expect(await screen.findByText("MISWAK zubná kefka")).toBeInTheDocument();
+  });
+
+  it("still finds rows when the query keeps its diacritics", async () => {
+    const user = userEvent.setup();
+    render(<PriceList />);
+
+    await user.type(screen.getByRole("searchbox"), "Akútne");
+
+    expect(await screen.findByText("Akútne vyšetrenie")).toBeInTheDocument();
+  });
+
+  it("matches a section name typed without diacritics", async () => {
+    const user = userEvent.setup();
+    render(<PriceList />);
+
+    await user.type(screen.getByRole("searchbox"), "konzultacie");
+
+    expect(await screen.findByText("Komplexné stomatologické vyšetrenie")).toBeInTheDocument();
+  });
+
+  /*
    * Someone typing a section name wants the section, not the four rows that
    * happen to repeat the word inside it.
    */
