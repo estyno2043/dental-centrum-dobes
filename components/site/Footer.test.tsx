@@ -93,9 +93,15 @@ describe("Footer", () => {
     expect(src).not.toContain("google");
     expect(src).toContain(`marker=${clinicMap.lat},${clinicMap.lon}`);
 
-    expect(
-      screen.getByRole("link", { name: "Otvoriť v mapách" }),
-    ).toHaveAttribute("href", clinicAddress.mapHref);
+    /*
+     * The clinic's listing, not an address search: Google resolves the written
+     * address to the neighbouring building, 13A, and shows no name at all.
+     */
+    const open = screen.getByRole("link", { name: "Otvoriť v mapách" });
+    expect(open).toHaveAttribute("href", clinicAddress.mapHref);
+    expect(clinicAddress.mapHref).toBe(
+      "https://maps.app.goo.gl/arRfSKTh6kTZFTT86",
+    );
   });
 
   /*

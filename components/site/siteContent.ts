@@ -32,13 +32,15 @@ export const clinicAddress = {
   street: "Vlárska 13/c",
   city: "831 01 Bratislava-Kramáre",
   /*
-   * A maps *search* for the written address, not a claimed place id. If the
-   * clinic's own listing moves, a search still lands on the right street; a
-   * stale place id would send somebody to a pin that no longer exists.
+   * The clinic's own Google listing, supplied by the user on 2026-09-24.
+   *
+   * It used to be a search for the written address, on the reasoning that a
+   * search outlives a moved listing. In practice the search was worse: Google
+   * resolves "Vlárska 13/c" to Vlárska 13A, the neighbouring building, and
+   * showed a bare address with no name, no hours and no reviews. The listing
+   * is where somebody actually wants to land, with "Trasa" one tap away.
    */
-  mapHref:
-    "https://www.google.com/maps/search/?api=1&query=" +
-    encodeURIComponent("Vlárska 13/c, 831 01 Bratislava"),
+  mapHref: "https://maps.app.goo.gl/arRfSKTh6kTZFTT86",
 } as const;
 
 /**
