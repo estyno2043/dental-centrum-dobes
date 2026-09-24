@@ -4,6 +4,8 @@
   --charcoal: #26262a;
   --ink: #1c1c1f;
   --porcelain: #faf9f6;
+  /* The Ambulancia ground, and the colour the statement above it fades into. */
+  --sand: #e2d8c2;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
