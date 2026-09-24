@@ -38,6 +38,15 @@ export function DesktopMenu({ ground, scrolled }: DesktopMenuProps): JSX.Element
   const openTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const closeTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const suppressFocusOpenRef = useRef(false);
+  /*
+   * Whether the reader asked for the menu with a click, as opposed to the
+   * pointer merely passing over it. Hover opens it after a short delay, so by
+   * the time someone who meant to click actually clicks, it is usually already
+   * open — and a plain toggle closed it under their cursor. A click on a menu
+   * that hover opened keeps it open and takes ownership; only a click on a
+   * menu that a click opened closes it.
+   */
+  const heldByClickRef = useRef(false);
   const prefersReducedMotion = useReducedMotion() ?? false;
 
   useEffect(() => {
@@ -54,6 +63,7 @@ export function DesktopMenu({ ground, scrolled }: DesktopMenuProps): JSX.Element
 
   const close = () => {
     clearTimers();
+    heldByClickRef.current = false;
     setOpen(false);
   };
 
@@ -65,7 +75,7 @@ export function DesktopMenu({ ground, scrolled }: DesktopMenuProps): JSX.Element
 
   const handleMouseLeave = () => {
     clearTimeout(openTimer.current);
-    closeTimer.current = setTimeout(() => setOpen(false), closeDelayMs);
+    closeTimer.current = setTimeout(close, closeDelayMs);
   };
 
   const handleFocus = () => {
@@ -122,7 +132,12 @@ export function DesktopMenu({ ground, scrolled }: DesktopMenuProps): JSX.Element
         onClick={() => {
           suppressFocusOpenRef.current = false;
           clearTimers();
-          setOpen((value) => !value);
+          if (open && heldByClickRef.current) {
+            close();
+            return;
+          }
+          heldByClickRef.current = true;
+          setOpen(true);
         }}
       >
         <span className={styles.mobileMenuTooth} aria-hidden="true">
@@ -177,7 +192,7 @@ export function DesktopMenu({ ground, scrolled }: DesktopMenuProps): JSX.Element
                 const id = sectionIdFromHref(item.href);
                 if (id && scrollToSection(id)) {
                   event.preventDefault();
-                  setOpen(false);
+                  close();
                 }
               }}
               variants={{

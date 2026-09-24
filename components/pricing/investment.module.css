@@ -110,9 +110,23 @@
  * in advance.
  */
 .intro {
+  /*
+   * The title leaves before the card rises into its place.
+   *
+   * `--intro` used to drive both at once: the text faded out over the first
+   * two thirds while the negative margin pulled the card up from the very
+   * first pixel. On a phone the title is four lines, so a third of the way in
+   * the card had already climbed into text that was still more than half
+   * opaque, and the two sat on top of each other until the fade finished.
+   *
+   * The fade now finishes at 0.45 and the pull starts there, so the handoff is
+   * sequential rather than simultaneous.
+   */
+  --intro-pull: clamp(0, calc((var(--intro) - 0.45) / 0.55), 1);
+
   max-width: 46rem;
-  margin: 0 auto calc(var(--intro-height, 0px) * var(--intro) * -1);
-  opacity: clamp(0, calc(1 - var(--intro) * 1.5), 1);
+  margin: 0 auto calc(var(--intro-height, 0px) * var(--intro-pull) * -1);
+  opacity: clamp(0, calc(1 - var(--intro) * 2.22), 1);
   pointer-events: none;
   text-align: center;
 }

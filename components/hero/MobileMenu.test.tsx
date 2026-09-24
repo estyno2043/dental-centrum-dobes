@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
+import { SCROLL_REQUEST } from "@/components/scroll/scrollToSection";
 import { MobileMenu } from "./MobileMenu";
 
 test("renders the Dental Menu Mark with an explicit accessible name", () => {
@@ -61,4 +62,54 @@ test("Escape closes the dialog and restores focus to the trigger", async () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
   expect(trigger).toHaveFocus();
+});
+
+/*
+ * Eased scrolling is off on touch devices, so on a phone nobody answers the
+ * scroll request the menu sends. The menu used to cancel the link and send
+ * the request anyway, which left every section link doing nothing at all.
+ */
+test("scrolls to the section natively when no eased scroller answers", async () => {
+  const user = userEvent.setup();
+  const section = document.createElement("section");
+  section.id = "sluzby";
+  const scrollIntoView = vi.fn();
+  section.scrollIntoView = scrollIntoView;
+  document.body.appendChild(section);
+
+  try {
+    render(<MobileMenu />);
+    await user.click(screen.getByRole("button", { name: "Otvoriť menu" }));
+    await user.click(await screen.findByRole("link", { name: "Služby" }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+    await waitFor(() => expect(scrollIntoView).toHaveBeenCalledTimes(1));
+  } finally {
+    section.remove();
+  }
+});
+
+test("leaves the trip to the eased scroller when one is running", async () => {
+  const user = userEvent.setup();
+  const section = document.createElement("section");
+  section.id = "sluzby";
+  const scrollIntoView = vi.fn();
+  section.scrollIntoView = scrollIntoView;
+  document.body.appendChild(section);
+  const handled = vi.fn((event: Event) => event.preventDefault());
+  window.addEventListener(SCROLL_REQUEST, handled);
+
+  try {
+    render(<MobileMenu />);
+    await user.click(screen.getByRole("button", { name: "Otvoriť menu" }));
+    await user.click(await screen.findByRole("link", { name: "Služby" }));
+
+    await waitFor(() => expect(handled).toHaveBeenCalledTimes(1));
+    expect(scrollIntoView).not.toHaveBeenCalled();
+  } finally {
+    window.removeEventListener(SCROLL_REQUEST, handled);
+    section.remove();
+  }
 });

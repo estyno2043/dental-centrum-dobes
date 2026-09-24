@@ -132,6 +132,44 @@ test("serves the phone encode on narrow viewports", () => {
   expect(videoSources(container)).toEqual(["/media/hero-720.mp4"]);
 });
 
+test("holds the phone's 9MB fetch back until the page has loaded", () => {
+  stubMatchMedia({
+    "(prefers-reduced-motion: reduce)": false,
+    "(min-width: 768px)": false,
+  });
+  Object.defineProperty(document, "readyState", {
+    configurable: true,
+    value: "loading",
+  });
+
+  const { container } = render(inProvider);
+  const video = container.querySelector("video");
+
+  /*
+   * `preload="auto"` with autoplay asks for the whole 720p encode at the
+   * highest priority the browser has, and the first scroll lands inside that
+   * window — which is what cost the opening zoom its first frames. The poster
+   * already holds the frame the loop starts on, so nothing is missing while
+   * it waits.
+   */
+  expect(video).toHaveAttribute("preload", "none");
+  expect(video).not.toHaveAttribute("autoplay");
+  expect(video).toHaveAttribute("poster", "/media/hero-poster.jpg");
+});
+
+test("fetches eagerly on desktop, where bandwidth is not what costs the frames", () => {
+  stubMatchMedia({
+    "(prefers-reduced-motion: reduce)": false,
+    "(min-width: 768px)": true,
+  });
+
+  const { container } = render(inProvider);
+  const video = container.querySelector("video");
+
+  expect(video).toHaveAttribute("preload", "auto");
+  expect(video).toHaveAttribute("autoplay");
+});
+
 test("serves the 1080p pair on wide viewports, WebM first", () => {
   stubMatchMedia({
     "(prefers-reduced-motion: reduce)": false,

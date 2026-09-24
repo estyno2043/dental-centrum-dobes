@@ -25,15 +25,25 @@ import styles from "./pricing.module.css";
  * No billing codes. `1/D01` is for the practice software; on this page it is
  * noise in the one column a reader scans.
  */
+/*
+ * Lower case with the diacritics stripped. Most people type "vysetrenie", not
+ * "vyšetrenie", so both the query and the price list are compared in this
+ * form. Every Slovak accent — š, č, ž, ľ, ô, ä, á — decomposes under NFD into
+ * a base letter and a combining mark, and the marks are what is removed.
+ */
+function fold(text: string): string {
+  return text.toLocaleLowerCase("sk").normalize("NFD").replace(/\p{M}/gu, "");
+}
+
 function matches(group: PriceGroup, needle: string): PriceGroup | null {
   if (!needle) return group;
 
   // A group whose own name matches keeps all of its rows: someone typing
   // "protetika" wants the section, not the four rows with the word in them.
-  if (group.name.toLocaleLowerCase("sk").includes(needle)) return group;
+  if (fold(group.name).includes(needle)) return group;
 
   const entries = group.entries.filter((entry) =>
-    entry.label.toLocaleLowerCase("sk").includes(needle),
+    fold(entry.label).includes(needle),
   );
   return entries.length > 0 ? { ...group, entries } : null;
 }
@@ -49,7 +59,7 @@ export function PriceList(): JSX.Element {
    * that must not wait.
    */
   const deferred = useDeferredValue(query);
-  const needle = deferred.trim().toLocaleLowerCase("sk");
+  const needle = fold(deferred.trim());
 
   const groups = useMemo(
     () =>
@@ -117,7 +127,7 @@ export function PriceList(): JSX.Element {
       */}
       <p aria-live="polite" className={styles.count}>
         {needle
-          ? `${found} ${found === 1 ? "položka" : found < 5 ? "položky" : "položiek"} pre „${deferred.trim()}“`
+          ? `${found} ${found === 1 ? "položka" : found >= 2 && found <= 4 ? "položky" : "položiek"} pre „${deferred.trim()}“`
           : `Ceny platné od ${priceValidFrom}.`}
       </p>
 

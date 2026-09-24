@@ -3,6 +3,7 @@
 import { useEffect, useRef, type CSSProperties, type JSX } from "react";
 import { driftCards, driftIntro } from "./driftContent";
 import styles from "./drift.module.css";
+import { stableViewportHeight } from "../scroll/stableViewportHeight";
 
 /**
  * A pinned scene the clinic's photographs drift through.
@@ -37,7 +38,7 @@ export function DriftScene(): JSX.Element {
     const update = () => {
       const rect = section.getBoundingClientRect();
 
-      const pinned = section.offsetHeight - window.innerHeight;
+      const pinned = section.offsetHeight - stableViewportHeight();
       section.style.setProperty(
         "--p",
         String(pinned > 0 ? clamp(-rect.top / pinned) : 0),
@@ -52,7 +53,7 @@ export function DriftScene(): JSX.Element {
        */
       section.style.setProperty(
         "--enter",
-        String(clamp(1 - rect.top / window.innerHeight)),
+        String(clamp(1 - rect.top / stableViewportHeight())),
       );
     };
 

@@ -30,7 +30,7 @@
   z-index: 0;
   top: 0;
   height: 100vh;
-  height: 100dvh;
+  height: 100lvh;
   overflow: hidden;
 }
 
@@ -49,7 +49,7 @@
   position: relative;
   z-index: 1;
   margin-top: -100vh;
-  margin-top: -100dvh;
+  margin-top: -100lvh;
 }
 
 /* Reduced motion returns to ordinary sequential full-screen sections. */

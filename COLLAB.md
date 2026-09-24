@@ -5,6 +5,79 @@ update it before taking or handing off work.
 
 ## Current Task
 
+- Status: menu navigation fixes published
+- Owner: Claude
+- Branch: `claude/menu-navigation` (merged to `main`)
+- Task: mobile menu links did nothing on the homepage — they cancelled the
+  browser's navigation and asked for an eased scroll that nothing answers on
+  touch devices, and `Dialog.Close` skips its own close when the link calls
+  `preventDefault`, so the panel also stayed open. The panel now closes by
+  hand and the trip starts once its exit animation has finished, falling back
+  to the browser's scroll. Landing on `/#sluzby` from another page came up
+  4,856px short because ClinicStory hydrates in its reduced layout (1,478px)
+  and grows to 6,334px afterwards; the section is re-aligned while the layout
+  settles. On desktop a click on a hover-opened menu now keeps it open instead
+  of toggling it shut. 373 tests, lint, TypeScript, production build. Not
+  verifiable in the preview: it halts rendering frames, so the menu's exit and
+  `ResizeObserver` never fire there. Merged at the user's request so it could
+  be tested over mobile data; branch deploys are not enabled on Netlify.
+  Still open: `Kontakt` and the tour link are `#` placeholders, and
+  ClinicStory's hydration growth is a layout shift for every visitor.
+
+### Previously published
+
+- Status: mobile interaction and scroll-stability pass published
+- Owner: Claude
+- Branch: `claude/stable-viewport-scroll` (merged to `main`)
+- Task: six fixes from handset review, all verified before merge.
+
+  The before/after divider answered only a mouse. A native range stretched
+  across the frame responds to a touch that lands on its thumb and ignores the
+  rest of the track, so a 44px strip was the only grab point on a phone. The
+  frame takes pointer events now; the range stays for keyboard and screen
+  reader with `pointer-events: none`.
+
+  The page jumped on a flick because the document changed height mid-scroll:
+  `.band` in ExperienceBand was `380dvh`, and a retracting iOS address bar
+  moved it 513px. Every document-height driver and sticky pin is `lvh` now.
+  Scroll progress had the same fault in JavaScript — DriftScene, TeamSection
+  and ServicesSection divided by `window.innerHeight`, which changes at that
+  same instant. `stableViewportHeight()` reads `100lvh` once and caches it per
+  width, so a rotation re-measures and a browser bar does not.
+
+  The menu never played its exit: `AnimatePresence` owned the overlay and
+  panel, but `Dialog.Portal` was still conditional, so Radix removed the
+  subtree before Motion could animate it. `forceMount` on the portal, plus a
+  gradient that sweeps as the panel leaves and a spring on the corner trigger's
+  return.
+
+  The pricing intro overlapped the first card because `--intro` drove the fade
+  and the negative margin together; the fade now finishes at 0.45 and the pull
+  begins there. The intro's height is re-measured through a `ResizeObserver`,
+  since the first measurement predates the web font.
+
+  The opening zoom dropped frames while the phone fetched 9MB: `preload="auto"`
+  with autoplay asks for the whole 720p encode at top priority. Phones hold the
+  fetch until `load` and keep the poster; desktop is unchanged.
+
+  The price search ignored diacritics — "vysetrenie" did not find
+  "vyšetrenie", which is how most people type. Query, group names and row
+  labels are folded through NFD with combining marks removed. The empty-result
+  count also read "0 položky"; Slovak takes "0 položiek".
+
+  Verified: 364 tests, lint, TypeScript, production build of 22 routes,
+  `git diff --check`, credential scan of the diff. Browser checks at 430x880
+  and 1440x900: touch drag moves the divider from anywhere on the photograph,
+  mouse drag and right-press behave, no horizontal overflow, no console
+  errors, every route 200 and an unknown route 404.
+
+  Not verifiable off-device: this environment resolves `lvh`, `svh` and `dvh`
+  identically because it has no retracting browser bar, and it halts
+  `requestAnimationFrame`, so neither the unit swap nor the menu's exit
+  completing could be measured here.
+
+### Previously published
+
 - Status: mobile gallery and jaw scene pass approved for publication
 - Owner: Claude
 - Branch: `claude/native-gallery-scroll`

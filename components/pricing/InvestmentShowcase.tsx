@@ -118,7 +118,19 @@ export function InvestmentShowcase(): JSX.Element {
     update();
     window.addEventListener("scroll", update, { passive: true });
     window.addEventListener("resize", onResize);
+
+    /*
+     * The intro is measured again whenever it actually changes height. On
+     * mount the web font has usually not arrived, so the first measurement
+     * describes fallback metrics and the pull that removes the intro is short
+     * by a line — which lands the card inside the text instead of under it.
+     */
+    const intro = section.querySelector<HTMLElement>("[data-intro]");
+    const observer = intro ? new ResizeObserver(onResize) : null;
+    if (intro && observer) observer.observe(intro);
+
     return () => {
+      observer?.disconnect();
       window.removeEventListener("scroll", update);
       window.removeEventListener("resize", onResize);
     };

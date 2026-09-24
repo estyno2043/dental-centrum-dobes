@@ -73,3 +73,88 @@ describe("BeforeAfter", () => {
     expect(screen.getByAltText(/^Po ošetrení/)).toBeInTheDocument();
   });
 });
+
+describe("BeforeAfter pointer dragging", () => {
+  function frameWithWidth() {
+    render(<BeforeAfter patientCase={testCase} />);
+    const frame = screen.getByTestId("before-after");
+    /* jsdom measures nothing, so the frame is given a box to map against. */
+    frame.getBoundingClientRect = () =>
+      ({
+        bottom: 200,
+        height: 200,
+        left: 100,
+        right: 400,
+        top: 0,
+        width: 300,
+        x: 100,
+        y: 0,
+        toJSON: () => ({}),
+      }) satisfies DOMRect;
+    return frame;
+  }
+
+  it("moves the divider from a drag that starts anywhere on the frame", () => {
+    const frame = frameWithWidth();
+    frame.setPointerCapture = () => {};
+
+    /*
+     * A touch on the photograph, well away from the divider. The old control
+     * was a range stretched across the frame, which on iOS only answers a
+     * touch that lands on its thumb — so this did nothing and the page
+     * scrolled instead.
+     */
+    fireEvent.pointerDown(frame, { pointerId: 1, pointerType: "touch", clientX: 250 });
+
+    expect(frame.style.getPropertyValue("--pos")).toBe("50%");
+
+    fireEvent.pointerMove(frame, { pointerId: 1, pointerType: "touch", clientX: 340 });
+
+    expect(frame.style.getPropertyValue("--pos")).toBe("80%");
+  });
+
+  it("clamps to the frame when the finger travels past its edges", () => {
+    const frame = frameWithWidth();
+    frame.setPointerCapture = () => {};
+
+    fireEvent.pointerDown(frame, { pointerId: 1, pointerType: "touch", clientX: 250 });
+    fireEvent.pointerMove(frame, { pointerId: 1, pointerType: "touch", clientX: 40 });
+    expect(frame.style.getPropertyValue("--pos")).toBe("0%");
+
+    fireEvent.pointerMove(frame, { pointerId: 1, pointerType: "touch", clientX: 900 });
+    expect(frame.style.getPropertyValue("--pos")).toBe("100%");
+  });
+
+  it("ignores movement that is not part of a drag", () => {
+    const frame = frameWithWidth();
+
+    fireEvent.pointerMove(frame, { pointerId: 1, pointerType: "touch", clientX: 340 });
+
+    expect(frame.style.getPropertyValue("--pos")).toBe("50%");
+  });
+
+  it("commits the dragged value to the native control on release", () => {
+    const frame = frameWithWidth();
+    frame.setPointerCapture = () => {};
+    const slider = screen.getByRole("slider");
+
+    fireEvent.pointerDown(frame, { pointerId: 1, pointerType: "touch", clientX: 250 });
+    fireEvent.pointerMove(frame, { pointerId: 1, pointerType: "touch", clientX: 340 });
+    fireEvent.pointerUp(frame, { pointerId: 1, pointerType: "touch" });
+
+    /* So arrowing after a drag continues from where the finger left off. */
+    expect(slider).toHaveValue("80");
+  });
+
+  it("leaves the native range out of the pointer path but keeps it for the keyboard", () => {
+    const frame = frameWithWidth();
+    const slider = screen.getByRole("slider");
+
+    expect(slider).toHaveAttribute("type", "range");
+
+    fireEvent.change(slider, { target: { value: "30" } });
+
+    expect(frame.style.getPropertyValue("--pos")).toBe("30%");
+    expect(slider).toHaveValue("30");
+  });
+});

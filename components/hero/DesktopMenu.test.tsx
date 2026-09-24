@@ -168,3 +168,59 @@ test("withdraws the tour button in quiet mode", () => {
   );
   expect(header).toContain('declared === "quiet"');
 });
+
+test("a click after hover keeps the menu open instead of closing it", () => {
+  vi.useFakeTimers();
+  render(<DesktopMenu ground="dark" scrolled={false} />);
+
+  const trigger = screen.getByRole("button", { name: "Otvoriť navigáciu" });
+  const root = trigger.parentElement as Element;
+
+  /*
+   * Moving the pointer onto the trigger opens the menu after a short delay,
+   * and the reader's click lands a moment later. That click used to toggle,
+   * so the menu they had just seen open closed under their cursor.
+   */
+  fireEvent.mouseEnter(root);
+  act(() => vi.advanceTimersByTime(100));
+  expect(trigger).toHaveAttribute("aria-expanded", "true");
+
+  fireEvent.mouseDown(trigger);
+  fireEvent.click(trigger);
+
+  expect(trigger).toHaveAttribute("aria-expanded", "true");
+});
+
+test("a click before the hover delay elapses opens the menu once", () => {
+  vi.useFakeTimers();
+  render(<DesktopMenu ground="dark" scrolled={false} />);
+
+  const trigger = screen.getByRole("button", { name: "Otvoriť navigáciu" });
+  const root = trigger.parentElement as Element;
+
+  fireEvent.mouseEnter(root);
+  fireEvent.mouseDown(trigger);
+  fireEvent.click(trigger);
+  expect(trigger).toHaveAttribute("aria-expanded", "true");
+
+  /* The pending hover open must not flip it again. */
+  act(() => vi.advanceTimersByTime(200));
+  expect(trigger).toHaveAttribute("aria-expanded", "true");
+});
+
+test("once the menu is held open by a click, a second click closes it", () => {
+  vi.useFakeTimers();
+  render(<DesktopMenu ground="dark" scrolled={false} />);
+
+  const trigger = screen.getByRole("button", { name: "Otvoriť navigáciu" });
+  const root = trigger.parentElement as Element;
+
+  fireEvent.mouseEnter(root);
+  act(() => vi.advanceTimersByTime(100));
+  fireEvent.mouseDown(trigger);
+  fireEvent.click(trigger);
+  fireEvent.mouseDown(trigger);
+  fireEvent.click(trigger);
+
+  expect(trigger).toHaveAttribute("aria-expanded", "false");
+});

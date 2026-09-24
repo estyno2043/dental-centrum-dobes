@@ -9,7 +9,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { useState, type JSX } from "react";
+import { useRef, useState, type JSX } from "react";
 import {
   scrollToSection,
   sectionIdFromHref,
@@ -21,6 +21,32 @@ const premiumEase = [0.22, 1, 0.36, 1] as const;
 
 export function MobileMenu(): JSX.Element {
   const [open, setOpen] = useState(false);
+  /*
+   * The section a link asked for, travelled to once the panel has left.
+   *
+   * Not on click: the dialog holds the page's scroll locked for as long as it
+   * is mounted, and it stays mounted through its exit animation, so a scroll
+   * started any earlier goes nowhere.
+   */
+  const pendingSectionRef = useRef<string | null>(null);
+
+  const travelToPendingSection = () => {
+    const id = pendingSectionRef.current;
+    pendingSectionRef.current = null;
+    if (!id) return;
+    /*
+     * One task later, so the scroll lock is released before we move. Eased
+     * scrolling takes the trip where it runs; it is off on touch devices, and
+     * there the browser's own scroll is the answer rather than nothing.
+     */
+    setTimeout(() => {
+      if (scrollToSection(id)) return;
+      document.getElementById(id)?.scrollIntoView({
+        behavior: prefersReducedMotion ? "auto" : "smooth",
+        block: "start",
+      });
+    }, 0);
+  };
   const prefersReducedMotion = useReducedMotion() ?? false;
   const movement = prefersReducedMotion ? 0 : 28;
 
@@ -32,13 +58,29 @@ export function MobileMenu(): JSX.Element {
           aria-label="Otvoriť menu"
           className={styles.mobileMenuTrigger}
           animate={{ scale: open && !prefersReducedMotion ? 0.96 : 1 }}
-          transition={{ duration: prefersReducedMotion ? 0 : 0.35, ease: premiumEase }}
+          /*
+           * A spring on the way back, so the corner settles rather than
+           * arriving. Only the release is worth a bounce; the press is not.
+           */
+          transition={
+            prefersReducedMotion
+              ? { duration: 0 }
+              : open
+                ? { duration: 0.35, ease: premiumEase }
+                : { type: "spring", bounce: 0.28, duration: 0.6 }
+          }
         >
           <motion.span
             className={styles.mobileMenuOrbit}
             aria-hidden="true"
-            animate={{ rotate: open && !prefersReducedMotion ? 38 : 0 }}
-            transition={{ duration: prefersReducedMotion ? 0 : 0.6, ease: premiumEase }}
+              animate={{ rotate: open && !prefersReducedMotion ? 38 : 0 }}
+            transition={
+              prefersReducedMotion
+                ? { duration: 0 }
+                : open
+                  ? { duration: 0.6, ease: premiumEase }
+                  : { type: "spring", bounce: 0.24, duration: 0.7 }
+            }
           />
           <span className={styles.mobileMenuTooth} aria-hidden="true">
             <IconDental stroke={1.6} />
@@ -51,8 +93,14 @@ export function MobileMenu(): JSX.Element {
         </motion.button>
       </Dialog.Trigger>
 
-      <Dialog.Portal>
-        <AnimatePresence>
+      {/*
+        * `forceMount` on the portal as well as its children. Without it Radix
+        * removes the portal subtree the moment `open` turns false, so the
+        * panel is gone before `AnimatePresence` can run an exit and the menu
+        * appears to vanish rather than leave.
+        */}
+      <Dialog.Portal forceMount>
+        <AnimatePresence onExitComplete={travelToPendingSection}>
           {open ? (
             <>
               <Dialog.Overlay asChild forceMount>
@@ -70,12 +118,33 @@ export function MobileMenu(): JSX.Element {
                   className={styles.mobileMenuPanel}
                   initial={{ opacity: 0, x: movement }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: movement }}
+                  /*
+                   * Further out than it came in, and with the ease mirrored,
+                   * so leaving reads as travel rather than a cut. Enter and
+                   * exit still follow the same path.
+                   */
+                  exit={{ opacity: 0, x: movement * 2.4 }}
                   transition={{
-                    duration: prefersReducedMotion ? 0 : 0.58,
+                    duration: prefersReducedMotion ? 0 : 0.52,
                     ease: premiumEase,
                   }}
                 >
+                  {/*
+                   * A gradient that only exists on the way out: it sweeps
+                   * across the panel as the panel slides, so the two read as
+                   * one movement instead of the panel simply fading.
+                   */}
+                  <motion.span
+                    aria-hidden="true"
+                    className={styles.mobileMenuSheen}
+                    initial={{ opacity: 0, x: "-120%" }}
+                    animate={{ opacity: 0, x: "-120%" }}
+                    exit={{ opacity: prefersReducedMotion ? 0 : 1, x: "120%" }}
+                    transition={{
+                      duration: prefersReducedMotion ? 0 : 0.52,
+                      ease: premiumEase,
+                    }}
+                  />
                   <Dialog.Title className={styles.visuallyHidden}>
                     Hlavná navigácia
                   </Dialog.Title>
@@ -134,15 +203,18 @@ export function MobileMenu(): JSX.Element {
                             href={item.href}
                             onClick={(event) => {
                               const id = sectionIdFromHref(item.href);
+                              /* Another page, or no such section here: let the
+                                 browser navigate as usual. */
                               if (!id || !document.getElementById(id)) return;
                               event.preventDefault();
+                              pendingSectionRef.current = id;
                               /*
-                                Deferred by a beat. `Dialog.Close` wraps this
-                                link, and Radix holds the body's scroll locked
-                                until the dialog has finished closing —
-                                scrolling into that lock goes nowhere.
+                                Closed by hand: `Dialog.Close` skips its own
+                                close when the link's handler has called
+                                `preventDefault`, so without this the panel
+                                stayed open over a page that never moved.
                               */
-                              setTimeout(() => scrollToSection(id), 140);
+                              setOpen(false);
                             }}
                           >
                             <span aria-hidden="true">

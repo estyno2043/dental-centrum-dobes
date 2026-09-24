@@ -4,6 +4,7 @@ import { useEffect, useRef, type JSX } from "react";
 import { TeamGrid } from "./TeamGrid";
 import { teamIntro } from "./teamContent";
 import styles from "./team.module.css";
+import { stableViewportHeight } from "../scroll/stableViewportHeight";
 
 /**
  * The team section — the homepage's closing section, and the whole of `/tim`.
@@ -71,7 +72,7 @@ export function TeamSection({
 
       section.style.setProperty(
         "--enter",
-        String(clamp(1 - rect.top / window.innerHeight)),
+        String(clamp(1 - rect.top / stableViewportHeight())),
       );
 
       /*
@@ -79,10 +80,10 @@ export function TeamSection({
        * which any part of it is on screen — so a tall grid and a short one
        * drift at the same rate rather than the tall one crawling.
        */
-      const span = rect.height + window.innerHeight;
+      const span = rect.height + stableViewportHeight();
       section.style.setProperty(
         "--p",
-        String(clamp((window.innerHeight - rect.top) / span)),
+        String(clamp((stableViewportHeight() - rect.top) / span)),
       );
 
       /*
@@ -104,9 +105,9 @@ export function TeamSection({
        * each other should gain and lose colour together — that is the whole
        * effect — so the position used is the one the drift does not touch.
        */
-      const middle = window.innerHeight / 2;
-      const hold = window.innerHeight * HOLD;
-      const fade = window.innerHeight * FADE;
+      const middle = stableViewportHeight() / 2;
+      const hold = stableViewportHeight() * HOLD;
+      const fade = stableViewportHeight() * FADE;
       for (let index = 0; index < cards.length; index += 1) {
         const value = clamp(
           (hold + fade - Math.abs(rect.top + centres[index] - middle)) / fade,

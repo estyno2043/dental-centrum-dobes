@@ -13,7 +13,7 @@
 
   position: relative;
   height: 1030vh;
-  height: 1030dvh;
+  height: 1030lvh;
   background: var(--ink);
 }
 
@@ -21,7 +21,7 @@
   position: sticky;
   top: 0;
   height: 100vh;
-  height: 100dvh;
+  height: 100lvh;
   /*
    * The gallery track intentionally exceeds the viewport. `clip` contains
    * that paint without creating the scrolling ancestor that `hidden` would,
