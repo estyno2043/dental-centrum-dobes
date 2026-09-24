@@ -2,96 +2,115 @@ import Link from "next/link";
 import type { JSX } from "react";
 
 import { navigationItems } from "@/components/hero/heroContent";
+import { FooterHours } from "./FooterHours";
+import { FooterMark } from "./FooterMark";
 import {
   clinicAddress,
   clinicLandline,
+  clinicMap,
   clinicName,
   clinicPhone,
-  openingHours,
 } from "./siteContent";
 import styles from "./footer.module.css";
 
 /**
- * The site footer, on every page.
+ * The site footer, on every page, and the destination of the menu's Kontakt
+ * entry — hence `id="kontakt"`.
  *
- * A plain server component: nothing here moves, so nothing here needs a client
- * bundle.
+ * Shaped after the reference the user supplied: a footer nearly a screen tall,
+ * a wordmark standing still on the left while a column of labelled blocks
+ * travels past it on the right. What was not taken is the reference's bank
+ * details and funding notice, which are its legal obligation rather than its
+ * design.
  *
- * `data-header-mode="none"` is not decoration. The header reads the mode off
- * whichever zone sits under it, and without a declaration here it would keep
- * the mode of the section above, which on most pages is a pale one. Over an
- * ink footer that would put a white logo on light-mode chrome.
- *
- * `id="kontakt"` is the menu's destination: the Kontakt entry scrolls here
- * rather than opening a page of its own, so the details live in exactly one
- * place and are reachable from every route.
+ * `data-header-mode="none"` is not decoration. The header takes its appearance
+ * from whichever zone sits under it, and without a declaration here it would
+ * keep the pale mode of the section above and put a white logo on light chrome
+ * over an ink footer.
  *
  * ⚠️ No legal row yet. Zásady ochrany osobných údajov and the operator's
  * identification (obchodné meno, sídlo, IČO) belong here and none of them
  * exist. Inventing a link target or a company number would put a false claim
- * in the one part of a site people read as factual, so the row is absent
- * rather than approximated.
+ * in the one part of a site people read as factual.
  */
 export function Footer(): JSX.Element {
   return (
     <footer className={styles.footer} data-header-mode="none" id="kontakt">
       <div className={styles.inner}>
-        <div className={styles.brand}>
-          <Link className={styles.logo} href="/">
-            {/* eslint-disable-next-line @next/next/no-img-element -- The approved logo asset, used at its own size. */}
-            <img
-              alt={clinicName}
-              height="381"
-              src="/media/dobes-logo-white.png"
-              width="900"
-            />
-          </Link>
+        {/* Stands still; the blocks travel past it. */}
+        <div className={styles.markColumn}>
+          <FooterMark />
           <p className={styles.tagline}>
             Súkromná zubná klinika pri Kramároch v&nbsp;Bratislave
           </p>
-          <a className={styles.phone} href={clinicPhone.href}>
-            <span className={styles.phoneLabel}>Objednajte sa</span>
-            <span className={styles.phoneNumber}>{clinicPhone.label}</span>
-          </a>
         </div>
 
-        <div className={styles.contact}>
-          <h2 className={styles.heading}>Kde nás nájdete</h2>
-          <address className={styles.address}>
-            <a href={clinicAddress.mapHref} rel="noreferrer" target="_blank">
+        <div className={styles.blocks}>
+          <section className={styles.block}>
+            <h2 className={styles.label}>Kontakt</h2>
+            <a className={styles.line} href={clinicPhone.href}>
+              {clinicPhone.label}
+            </a>
+            <a className={styles.line} href={clinicLandline.href}>
+              {clinicLandline.label}
+            </a>
+          </section>
+
+          <section className={styles.block}>
+            <h2 className={styles.label}>Kde nás nájdete</h2>
+            <address className={styles.address}>
               {clinicAddress.street}
               <br />
               {clinicAddress.city}
-            </a>
-          </address>
-          <dl className={styles.hours}>
-            {openingHours.map((row) => (
-              <div key={row.days}>
-                <dt>{row.days}</dt>
-                <dd>{row.hours}</dd>
-              </div>
-            ))}
-          </dl>
-          <a className={styles.landline} href={clinicLandline.href}>
-            {clinicLandline.label}
-          </a>
-        </div>
-
-        <nav aria-label="Pätička" className={styles.nav}>
-          <ul>
+            </address>
             {/*
-              Everything except Kontakt, which is this block. A link that
-              scrolls to the element it sits inside is a link to nowhere.
+              OpenStreetMap, not Google: an embedded Google map calls home and
+              sets cookies before anybody has consented to anything, and this
+              site has no consent banner yet. Lazy, so it costs nothing until
+              somebody reaches the bottom of a page.
             */}
-            {navigationItems
-              .filter((item) => item.href !== "#kontakt")
-              .map((item) => (
-                <li key={item.href}>
-                  <Link href={item.href}>{item.label}</Link>
-                </li>
-              ))}
-          </ul>
-        </nav>
+            <div className={styles.map}>
+              <iframe
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                src={clinicMap.embedHref}
+                title={clinicMap.title}
+              />
+            </div>
+            <a
+              className={styles.mapLink}
+              href={clinicAddress.mapHref}
+              rel="noreferrer"
+              target="_blank"
+            >
+              Otvoriť v mapách
+            </a>
+          </section>
+
+          <section className={styles.block}>
+            <h2 className={styles.label}>Ordinačné hodiny</h2>
+            <FooterHours />
+          </section>
+
+          <section className={styles.block}>
+            <h2 className={styles.label}>Na webe</h2>
+            <nav aria-label="Pätička">
+              <ul className={styles.nav}>
+                {/*
+                  Everything except Kontakt, which is this footer. A link that
+                  scrolls to the element it sits inside is a link to nowhere.
+                */}
+                {navigationItems
+                  .filter((item) => item.href !== "#kontakt")
+                  .map((item) => (
+                    <li key={item.href}>
+                      <Link href={item.href}>{item.label}</Link>
+                    </li>
+                  ))}
+              </ul>
+            </nav>
+          </section>
+        </div>
       </div>
 
       <p className={styles.legal}>

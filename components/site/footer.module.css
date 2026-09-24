@@ -1,7 +1,17 @@
+/*
+ * The site footer.
+ *
+ * Modelled on the reference the user supplied: nearly a screen tall, a
+ * wordmark standing still on the left while labelled blocks travel past it on
+ * the right. The reference fills its letters with a photographic texture; ours
+ * fills with taupe as the footer arrives, which is the same move the entry
+ * package's tooth already makes on hover.
+ */
+
 .footer {
   position: relative;
   z-index: 1;
-  padding: clamp(48px, 7vw, 88px) clamp(20px, 5vw, 64px) 28px;
+  padding: clamp(56px, 8vw, 104px) clamp(20px, 5vw, 64px) 28px;
   background: var(--ink);
   color: var(--porcelain);
 }
@@ -9,33 +19,78 @@
 .inner {
   display: grid;
   max-width: 1240px;
-  gap: clamp(36px, 5vw, 64px);
+  gap: clamp(40px, 6vw, 80px);
   margin: 0 auto;
 }
 
 @media (min-width: 900px) {
   .inner {
-    /* Brand, then the facts somebody came here for, then the destinations. */
-    grid-template-columns: 1.3fr 1fr 0.7fr;
+    grid-template-columns: 1.05fr 0.95fr;
     align-items: start;
   }
 }
 
-.brand {
+/* ----------------------------------------------------------- the mark --- */
+
+/*
+ * Sticky, so the wordmark holds while the blocks beside it scroll past. It
+ * only has anywhere to travel because the right column is tall; on a phone
+ * the columns stack and stickiness would pin it over the content, so it is
+ * only sticky from the two-column breakpoint up.
+ */
+.markColumn {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  align-items: flex-start;
+  gap: 18px;
 }
 
-.logo img {
-  display: block;
-  width: auto;
-  height: 44px;
+@media (min-width: 900px) {
+  .markColumn {
+    position: sticky;
+    top: clamp(90px, 14vh, 150px);
+  }
+}
+
+/*
+ * The letters are an outline that fills from the bottom. `--fill` is written
+ * by `FooterMark`; the declaration here defaults it to 1, so a page whose
+ * script never runs shows a filled wordmark rather than an empty outline.
+ *
+ * `background-clip: text` over a hard-stopped gradient does the filling, and
+ * the stroke keeps the unfilled part legible against the ink.
+ */
+.mark {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  font-size: clamp(2.6rem, 7.5vw, 5.4rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 0.92;
+  text-transform: uppercase;
+
+  background-image: linear-gradient(
+    to top,
+    var(--taupe) calc(var(--fill, 1) * 100%),
+    rgb(174 155 126 / 0%) calc(var(--fill, 1) * 100%)
+  );
+  background-clip: text;
+  color: transparent;
+  -webkit-text-stroke: 1px rgb(174 155 126 / 45%);
+  transition: none;
+}
+
+.mark span:nth-child(2) {
+  padding-left: 0.14em;
+}
+
+.mark span:nth-child(3) {
+  padding-left: 0.28em;
 }
 
 .tagline {
-  max-width: 28ch;
+  max-width: 26ch;
+  margin: 0;
   color: var(--taupe);
   font-size: 10.5px;
   font-weight: 600;
@@ -44,98 +99,150 @@
   text-transform: uppercase;
 }
 
-.phone {
-  display: inline-flex;
+/* --------------------------------------------------------- the blocks --- */
+
+.blocks {
+  display: grid;
+  gap: clamp(34px, 5vw, 56px);
+}
+
+.block {
+  display: flex;
   flex-direction: column;
-  gap: 3px;
-  margin-top: 6px;
+  gap: 10px;
+}
+
+.label {
+  margin: 0 0 4px;
+  color: var(--taupe);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/*
+ * The dotted rule under each contact line is the reference's, and it earns its
+ * place: it makes a phone number look like something you act on rather than
+ * a line of text.
+ */
+.line {
+  padding-bottom: 10px;
+  border-bottom: 1px dotted rgb(250 249 246 / 28%);
   color: var(--porcelain);
+  font-size: clamp(19px, 2.4vw, 24px);
+  letter-spacing: 0.01em;
   text-decoration: none;
+  transition: border-color 0.25s var(--ease), color 0.25s var(--ease);
 }
 
-.phoneLabel {
+.line:hover {
+  border-bottom-color: var(--taupe);
   color: var(--taupe);
-  font-size: 8.5px;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-
-.phoneNumber {
-  font-size: 22px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
-.phone:hover .phoneNumber {
-  color: var(--taupe);
-}
-
-.heading {
-  margin: 0 0 14px;
-  color: var(--taupe);
-  font-size: 8.5px;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
 }
 
 .address {
-  margin: 0 0 18px;
-  font-size: 15px;
+  margin: 0;
+  font-size: 17px;
   font-style: normal;
   line-height: 1.6;
 }
 
-.address a {
-  color: var(--porcelain);
-  text-decoration: none;
+.map {
+  overflow: hidden;
+  margin-top: 6px;
+  border: 1px solid rgb(250 249 246 / 14%);
+  border-radius: 6px;
+  /* The pin plus about a block each way; wider than tall reads as a street. */
+  aspect-ratio: 16 / 10;
 }
 
-.address a:hover {
-  color: var(--taupe);
+.map iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  /*
+   * OSM's tiles are bright and this footer is ink. Held back so the map sits
+   * in the page rather than glaring out of it; it lifts on hover, when
+   * somebody is actually reading it.
+   */
+  filter: grayscale(0.55) brightness(0.86) contrast(1.04);
+  transition: filter 0.35s var(--ease);
 }
+
+.map:hover iframe {
+  filter: none;
+}
+
+.mapLink {
+  align-self: flex-start;
+  color: rgb(250 249 246 / 78%);
+  font-size: 14px;
+  text-decoration: none;
+  border-bottom: 1px solid rgb(250 249 246 / 28%);
+}
+
+.mapLink:hover {
+  color: var(--taupe);
+  border-bottom-color: var(--taupe);
+}
+
+/* ---------------------------------------------------------- the hours --- */
 
 .hours {
   display: grid;
-  gap: 6px;
-  margin: 0 0 18px;
+  gap: 8px;
+  margin: 0;
 }
 
 .hours > div {
   display: flex;
-  gap: 16px;
+  gap: 18px;
   justify-content: space-between;
-  max-width: 24rem;
+  max-width: 26rem;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgb(250 249 246 / 10%);
 }
 
 .hours dt {
   color: rgb(250 249 246 / 62%);
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .hours dd {
   margin: 0;
-  font-size: 14px;
+  font-size: 15px;
   font-variant-numeric: tabular-nums;
 }
 
-.landline {
-  color: rgb(250 249 246 / 82%);
-  font-size: 15px;
-  text-decoration: none;
+/* Today, marked by `FooterHours` once it knows what day it is. */
+.hours > div[data-today="true"] dt,
+.hours > div[data-today="true"] dd {
+  color: var(--porcelain);
+  font-weight: 600;
 }
 
-.landline:hover {
+.hours > div[data-today="true"] {
+  border-bottom-color: var(--taupe);
+}
+
+.status {
+  margin: 4px 0 0;
   color: var(--taupe);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
-.nav ul {
+/* ----------------------------------------------------------- the links -- */
+
+.nav {
   display: flex;
-  padding: 0;
-  margin: 0;
   flex-direction: column;
   gap: 12px;
+  padding: 0;
+  margin: 0;
   list-style: none;
 }
 
@@ -153,13 +260,22 @@
 .legal {
   max-width: 1240px;
   padding-top: 26px;
-  margin: clamp(36px, 5vw, 60px) auto 0;
+  margin: clamp(44px, 6vw, 72px) auto 0;
   border-top: 1px solid rgb(250 249 246 / 12%);
   color: rgb(250 249 246 / 45%);
   font-size: 12px;
 }
 
-.footer a:focus-visible {
+.footer a:focus-visible,
+.footer iframe:focus-visible {
   outline: 2px solid var(--taupe);
   outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .line,
+  .map iframe,
+  .nav a {
+    transition: none;
+  }
 }

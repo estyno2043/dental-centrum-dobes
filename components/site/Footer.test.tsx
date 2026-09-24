@@ -6,6 +6,7 @@ import { Footer } from "./Footer";
 import {
   clinicAddress,
   clinicLandline,
+  clinicMap,
   clinicPhone,
   openingHours,
 } from "./siteContent";
@@ -18,10 +19,8 @@ describe("Footer", () => {
   it("carries the address, the hours and both numbers", () => {
     render(<Footer />);
 
-    /* Street and city are two text nodes inside one link, split by a <br>. */
-    const address = screen.getByRole("link", {
-      name: new RegExp(clinicAddress.street),
-    });
+    /* Street and city are two text nodes split by a <br> inside <address>. */
+    const address = document.querySelector("address")!;
     expect(address.textContent).toContain(clinicAddress.street);
     expect(address.textContent).toContain(clinicAddress.city);
     /* The booking link reads "Objednajte sa 0918 800 002" to a screen reader. */
@@ -72,6 +71,31 @@ describe("Footer", () => {
 
     expect(screen.getByRole("contentinfo")).toHaveAttribute("id", "kontakt");
     expect(navigationItems.map((item) => item.href)).toContain("#kontakt");
+  });
+
+  /*
+   * The map is OpenStreetMap on purpose. An embedded Google map calls home and
+   * sets cookies before anybody has consented to anything, and this site has
+   * no consent banner yet; OSM's export embed sets none and needs no key.
+   *
+   * The coordinates are a house-level match for Vlárska 13/c rather than a
+   * town-centre fallback, so the test pins them: a map is the one thing on a
+   * clinic page somebody acts on by driving.
+   */
+  it("shows an OpenStreetMap of the clinic, not a Google embed", () => {
+    render(<Footer />);
+    const map = screen.getByTitle(clinicMap.title);
+
+    expect(map.tagName).toBe("IFRAME");
+    expect(map).toHaveAttribute("loading", "lazy");
+    const src = map.getAttribute("src") ?? "";
+    expect(src).toContain("openstreetmap.org");
+    expect(src).not.toContain("google");
+    expect(src).toContain(`marker=${clinicMap.lat},${clinicMap.lon}`);
+
+    expect(
+      screen.getByRole("link", { name: "Otvoriť v mapách" }),
+    ).toHaveAttribute("href", clinicAddress.mapHref);
   });
 
   /*
