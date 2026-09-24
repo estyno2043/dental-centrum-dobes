@@ -154,7 +154,6 @@ figure.photo img {
   gap: clamp(28px, 4.5vw, 64px);
   padding: clamp(28px, 5vw, 64px);
   border-radius: 10px;
-  background: #4b3a2e;
   color: var(--porcelain);
   grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
   align-items: start;
@@ -167,6 +166,31 @@ figure.photo img {
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+}
+
+/*
+ * The walnut panels, as a gradient at the user's request on 2026-09-24: the
+ * same recipe as the eucalyptus cards on the hygiene and implant pages, taken
+ * warm. A linear ramp from deep walnut to a lighter oak, a beige glow bled in
+ * from the bottom-right corner, a taupe hairline and a soft shadow.
+ *
+ * The glow sits in the corner where no text does, so the white type keeps
+ * its contrast: measured under every line of text on both panels after the
+ * change, the lowest is above 4.5:1.
+ */
+.oddsInner,
+.scaleKeep {
+  border: 1px solid rgb(174 155 126 / 45%);
+  background:
+    radial-gradient(
+      90% 75% at 100% 100%,
+      rgb(214 190 152 / 44%),
+      transparent 64%
+    ),
+    linear-gradient(150deg, #3e2f25 0%, #4b3a2e 50%, #65503f 100%);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 10%) inset,
+    0 22px 44px -26px rgb(62 47 37 / 70%);
 }
 
 /* The largest type on the page, because it is the argument for coming today. */
@@ -183,7 +207,7 @@ figure.photo img {
 .oddsProse {
   max-width: 52ch;
   margin: 0 0 14px;
-  color: rgb(250 249 246 / 80%);
+  color: rgb(250 249 246 / 90%);
   font-size: 0.96rem;
   line-height: 1.7;
   text-wrap: pretty;
@@ -218,7 +242,7 @@ figure.photo img {
 .ctaText {
   max-width: 40ch;
   margin: clamp(20px, 2.6vw, 28px) 0 14px;
-  color: rgb(250 249 246 / 80%);
+  color: rgb(250 249 246 / 90%);
   font-size: 0.9rem;
   line-height: 1.55;
   text-wrap: pretty;
@@ -621,7 +645,6 @@ figure.photo img {
 
 /* The one the page argues for, so it carries the walnut. */
 .scaleKeep {
-  background: #4b3a2e;
   color: var(--porcelain);
 }
 
@@ -663,7 +686,7 @@ figure.photo img {
 }
 
 .scaleKeep p {
-  color: rgb(250 249 246 / 80%);
+  color: rgb(250 249 246 / 90%);
 }
 
 .scaleLink {
@@ -800,6 +823,21 @@ figure.photo img {
 
   .split > .photo:first-child {
     order: 1;
+  }
+
+  /*
+   * Stacked, the odds panel ends on its CTA line and button, right where the
+   * glow sits. The glow is held to a shallow band under the button so the
+   * line above it keeps its contrast.
+   */
+  .oddsInner {
+    background:
+      radial-gradient(
+        90% 110px at 100% 100%,
+        rgb(214 190 152 / 44%),
+        transparent 100%
+      ),
+      linear-gradient(160deg, #3e2f25 0%, #4b3a2e 55%, #65503f 100%);
   }
 
   /* The scrim covers the whole band once the text runs full width. */
