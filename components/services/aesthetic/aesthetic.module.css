@@ -1,38 +1,55 @@
 /*
  * Estetická stomatológia.
  *
- * Slower and quieter than its siblings: wider margins, larger type, a single
- * column of prose. These are the clinic's expensive procedures, and a page that
- * hurries the reader through them reads as a page that is selling. The luxury
- * here is space and restraint rather than ornament — one gold hairline, one
- * weight of shadow, and nothing that moves unless it was asked to.
+ * Dressed on 2026-09-24, when the user found the page plain: porcelain, pearl
+ * and champagne gold, with one espresso band for the material itself. Still
+ * slow and spacious, because these are the clinic's expensive procedures and
+ * a page that hurries reads as a page that is selling. The richness comes from
+ * the materials the work is made of, not from anything that moves.
+ *
+ * Contrast, measured: the deep gold #7a5b2c for small labels 5.5:1 on the
+ * cream and 5.9:1 on pearl; on espresso, the champagne #e6d3b3 11.7:1 and the
+ * gold #c9a86a 7.6:1.
  */
 
+.solutions,
+.material,
+.preview,
+.option,
+.work,
+.longevity {
+  --gold: #c9a86a;
+  --gold-deep: #7a5b2c;
+  --champagne: #e6d3b3;
+  --pearl: #fbf8f2;
+  --espresso: #211a15;
+}
+
 .headline {
-  max-width: 24ch;
-  margin: 0 0 16px;
-  font-size: clamp(1.75rem, 4vw, 3rem);
+  max-width: 20ch;
+  margin: 0 0 18px;
+  font-size: clamp(1.9rem, 4.4vw, 3.3rem);
   font-weight: 500;
-  letter-spacing: -0.04em;
-  line-height: 1.05;
+  letter-spacing: -0.045em;
+  line-height: 1.04;
   text-wrap: balance;
 }
 
 .lead {
-  max-width: 40ch;
-  margin: 0 0 clamp(32px, 4.5vw, 56px);
-  color: rgb(38 38 42 / 70%);
-  font-size: clamp(0.98rem, 1.6vw, 1.12rem);
+  max-width: 42ch;
+  margin: 0;
+  color: rgb(38 38 42 / 74%);
+  font-size: clamp(1rem, 1.6vw, 1.14rem);
   line-height: 1.65;
   text-wrap: pretty;
 }
 
 .sectionHeading {
   margin: 0 0 clamp(16px, 2.2vw, 24px);
-  font-size: clamp(1.4rem, 2.6vw, 2.1rem);
+  font-size: clamp(1.5rem, 2.8vw, 2.3rem);
   font-weight: 500;
-  letter-spacing: -0.035em;
-  line-height: 1.1;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
   text-wrap: balance;
 }
 
@@ -40,35 +57,77 @@
   padding-top: clamp(38px, 5vw, 64px);
 }
 
+/* ----------------------------------------------------------------- intro --- */
+
+.intro {
+  display: grid;
+  gap: clamp(24px, 4vw, 64px);
+  margin-bottom: clamp(36px, 5vw, 64px);
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  align-items: center;
+}
+
+.shadeGuide {
+  display: block;
+  width: 100%;
+  max-width: 26rem;
+  height: auto;
+  justify-self: end;
+  filter: drop-shadow(0 18px 24px rgb(122 91 44 / 16%));
+}
+
+/* The glints on the brightest tab, slowly. Off under reduced motion. */
+.glint {
+  animation: glint 3.2s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.glint + .glint {
+  animation-delay: 1.4s;
+}
+
+@keyframes glint {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+
+  50% {
+    opacity: 0.35;
+    transform: scale(0.6) rotate(45deg);
+  }
+}
+
 /* ------------------------------------------------------------- switcher --- */
 
 .switcher {
   display: grid;
   gap: clamp(16px, 2.4vw, 30px);
-  grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 16.5rem) minmax(0, 1fr);
   align-items: start;
 }
 
 .tabs {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 6px;
 }
 
 /*
- * A rail rather than a row of pills: five names of this length wrap into an
- * unreadable block horizontally, and read as a menu vertically. The price sits
- * on the tab, so the choice is never made blind.
+ * A rail of small cards: a glyph in a pearl disc, the name, and the price, so
+ * the choice is never made blind.
  */
 .tab {
   display: flex;
-  flex-direction: column;
-  gap: 3px;
-  padding: 13px 16px;
+  gap: 12px;
+  align-items: center;
+  padding: 11px 14px;
   border: 1px solid transparent;
-  border-radius: 12px;
+  border-radius: 14px;
   background: none;
-  color: rgb(38 38 42 / 62%);
+  color: rgb(38 38 42 / 66%);
   cursor: pointer;
   font-family: inherit;
   text-align: left;
@@ -78,20 +137,48 @@
     color 0.35s var(--ease);
 }
 
+.tabIcon {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border: 1px solid rgb(201 168 106 / 45%);
+  border-radius: 50%;
+  background: var(--pearl);
+  color: var(--gold-deep);
+  place-items: center;
+  transition:
+    background-color 0.35s var(--ease),
+    color 0.35s var(--ease);
+}
+
+.tabText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
 .tab:hover {
-  background: rgb(174 155 126 / 12%);
+  background: rgb(201 168 106 / 12%);
   color: var(--ink);
 }
 
 .tab[aria-selected="true"] {
-  border-color: rgb(174 155 126 / 55%);
-  background: rgb(255 255 255 / 62%);
+  border-color: rgb(201 168 106 / 60%);
+  background: #fff;
   color: var(--ink);
-  box-shadow: 0 10px 26px -20px rgb(60 48 34 / 55%);
+  box-shadow: 0 14px 30px -22px rgb(122 91 44 / 60%);
+}
+
+.tab[aria-selected="true"] .tabIcon {
+  border-color: transparent;
+  background: linear-gradient(145deg, #dcc08a, #b08a4a);
+  color: #fff;
 }
 
 .tab:focus-visible {
-  outline: 2px solid var(--taupe-deep);
+  outline: 2px solid var(--gold-deep);
   outline-offset: 2px;
 }
 
@@ -103,26 +190,31 @@
 }
 
 .tabPrice {
-  color: var(--taupe-deep);
-  font-size: 0.76rem;
+  color: var(--gold-deep);
+  font-size: 0.78rem;
   font-variant-numeric: tabular-nums;
   font-weight: 600;
 }
 
 /* ---------------------------------------------------------------- panel --- */
 
+/* Pearl, with a champagne glow from the top corner and a gold hairline. */
 .panel {
-  padding: clamp(24px, 3.4vw, 42px);
-  border: 1px solid rgb(174 155 126 / 42%);
-  border-radius: 20px;
+  position: relative;
+  padding: clamp(26px, 3.6vw, 46px);
+  border: 1px solid rgb(201 168 106 / 50%);
+  border-radius: 24px;
   background:
-    radial-gradient(130% 100% at 6% 0%, rgb(174 155 126 / 14%), transparent 58%),
-    rgb(255 255 255 / 58%);
-  box-shadow: 0 26px 54px -38px rgb(60 48 34 / 55%);
+    radial-gradient(120% 90% at 0% 0%, rgb(230 211 179 / 55%), transparent 60%),
+    radial-gradient(80% 70% at 100% 100%, rgb(201 168 106 / 16%), transparent 62%),
+    var(--pearl);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 90%) inset,
+    0 30px 60px -40px rgb(122 91 44 / 60%);
 }
 
 .panel:focus-visible {
-  outline: 2px solid var(--taupe-deep);
+  outline: 2px solid var(--gold-deep);
   outline-offset: 3px;
 }
 
@@ -133,14 +225,14 @@
   align-items: flex-start;
   justify-content: space-between;
   padding-bottom: clamp(16px, 2vw, 22px);
-  border-bottom: 1px solid rgb(138 115 88 / 26%);
+  border-bottom: 1px solid rgb(201 168 106 / 40%);
   margin-bottom: clamp(16px, 2vw, 22px);
 }
 
 .panelKind {
-  margin: 0 0 5px;
-  color: var(--taupe-deep);
-  font-size: 0.7rem;
+  margin: 0 0 6px;
+  color: var(--gold-deep);
+  font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -148,10 +240,10 @@
 
 .panelName {
   margin: 0;
-  font-size: clamp(1.15rem, 2.2vw, 1.55rem);
+  font-size: clamp(1.25rem, 2.4vw, 1.75rem);
   font-weight: 500;
-  letter-spacing: -0.03em;
-  line-height: 1.15;
+  letter-spacing: -0.035em;
+  line-height: 1.12;
 }
 
 .panelPrice {
@@ -159,19 +251,19 @@
   flex-direction: column;
   align-items: flex-end;
   margin: 0;
-  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  font-size: clamp(1.8rem, 3.6vw, 2.6rem);
   font-variant-numeric: tabular-nums;
   font-weight: 500;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.04em;
   line-height: 1;
   white-space: nowrap;
 }
 
-/* Per tooth, said out loud — a four-figure smile quoted as a three-figure
+/* Per tooth, said out loud: a four-figure smile quoted as a three-figure
    number is the surprise that ends the appointment. */
 .panelPrice span {
-  margin-top: 5px;
-  color: rgb(38 38 42 / 55%);
+  margin-top: 6px;
+  color: var(--gold-deep);
   font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -179,41 +271,85 @@
 }
 
 .panelSolves {
+  max-width: 44ch;
   margin: 0 0 12px;
-  font-size: clamp(1rem, 1.8vw, 1.18rem);
+  font-size: clamp(1.05rem, 1.9vw, 1.25rem);
   font-weight: 500;
-  letter-spacing: -0.018em;
-  line-height: 1.45;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
   text-wrap: pretty;
 }
 
 .panelBody {
-  max-width: 46ch;
+  max-width: 50ch;
   margin: 0 0 clamp(20px, 2.6vw, 28px);
-  color: rgb(38 38 42 / 72%);
-  font-size: 0.92rem;
-  line-height: 1.65;
+  color: rgb(38 38 42 / 74%);
+  font-size: 0.93rem;
+  line-height: 1.68;
   text-wrap: pretty;
+}
+
+/* How much tooth it takes, as four segments filled in gold. */
+.grind {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: center;
+  margin: 0 0 clamp(18px, 2.4vw, 24px);
+}
+
+.grindLabel {
+  color: rgb(38 38 42 / 62%);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.grindMeter {
+  display: inline-flex;
+  gap: 5px;
+}
+
+.grindMeter span {
+  width: 34px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgb(201 168 106 / 22%);
+  transition: background-color 0.35s var(--ease);
+}
+
+.grindMeter span[data-on="true"] {
+  background: linear-gradient(90deg, #d8bb82, #b08a4a);
 }
 
 .panelFacts {
   display: grid;
   margin: 0;
-  gap: 16px 30px;
+  gap: 12px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+/* Each fact on its own white tile. */
+.panelFacts > div {
+  padding: 12px 14px;
+  border: 1px solid rgb(201 168 106 / 30%);
+  border-radius: 14px;
+  background: rgb(255 255 255 / 75%);
+}
+
 .panelFacts dt {
-  color: rgb(38 38 42 / 52%);
-  font-size: 0.67rem;
-  letter-spacing: 0.14em;
+  color: var(--gold-deep);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
 }
 
 .panelFacts dd {
-  margin: 5px 0 0;
+  margin: 6px 0 0;
   color: var(--ink);
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   font-weight: 600;
   letter-spacing: -0.012em;
   line-height: 1.3;
@@ -225,91 +361,239 @@
   flex-wrap: wrap;
   gap: 4px 12px;
   align-items: baseline;
-  margin: clamp(20px, 2.6vw, 28px) 0 0;
+  margin: clamp(18px, 2.4vw, 24px) 0 0;
   padding: 12px 16px;
-  border-left: 2px solid var(--taupe);
-  border-radius: 0 10px 10px 0;
-  background: rgb(174 155 126 / 13%);
-  color: rgb(38 38 42 / 75%);
-  font-size: 0.84rem;
+  border-radius: 12px;
+  background: linear-gradient(90deg, rgb(201 168 106 / 22%), rgb(201 168 106 / 6%));
+  color: rgb(38 38 42 / 80%);
+  font-size: 0.86rem;
   line-height: 1.5;
 }
 
 .gentlest span {
-  color: var(--taupe-deep);
-  font-size: 0.66rem;
+  color: var(--gold-deep);
+  font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+}
+
+/* ------------------------------------------------------ material, dark --- */
+
+/*
+ * The espresso band: the clinic's own porcelain on black, with the one
+ * sentence about it that matters to somebody choosing. A panel inside the
+ * section, because `.page > *` gives every section the page gutter.
+ */
+.material {
+  padding-top: clamp(64px, 8.5vw, 120px);
+}
+
+.materialInner {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid rgb(201 168 106 / 35%);
+  border-radius: 26px;
+  background:
+    radial-gradient(90% 80% at 0% 0%, rgb(201 168 106 / 22%), transparent 60%),
+    linear-gradient(150deg, #2c231c 0%, var(--espresso) 60%, #15110e 100%);
+  box-shadow: 0 34px 70px -40px rgb(33 26 21 / 80%);
+  color: var(--porcelain);
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.materialText {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(30px, 5vw, 68px);
+}
+
+.materialEyebrow {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin: 0 0 16px;
+  color: var(--gold);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.materialEyebrow::before {
+  width: 40px;
+  height: 1px;
+  background: var(--gold);
+  content: "";
+}
+
+.materialHeading {
+  max-width: 14ch;
+  margin: 0 0 18px;
+  font-size: clamp(1.9rem, 4vw, 3.1rem);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+.materialBody {
+  max-width: 40ch;
+  margin: 0 0 clamp(22px, 3vw, 32px);
+  color: rgb(250 249 246 / 80%);
+  font-size: 0.98rem;
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+
+.materialPrice {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  margin: 0;
+  color: var(--champagne);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+}
+
+.materialPrice span {
+  color: var(--gold);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.materialPhoto {
+  position: relative;
+  min-height: 100%;
+  margin: 0;
+}
+
+figure.materialPhoto img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  inset: 0;
+  object-fit: cover;
 }
 
 /* -------------------------------------------------------------- preview --- */
 
 .preview {
   display: grid;
-  gap: clamp(22px, 3.5vw, 48px);
-  padding-top: clamp(58px, 8vw, 110px);
-  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-  align-items: start;
+  gap: clamp(26px, 4.5vw, 64px);
+  padding-top: clamp(64px, 8.5vw, 120px);
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  align-items: center;
 }
 
 .previewLead {
-  max-width: 42ch;
-  margin: 0 0 clamp(22px, 3vw, 32px);
-  color: rgb(38 38 42 / 72%);
-  font-size: 0.96rem;
+  max-width: 44ch;
+  margin: 0 0 clamp(24px, 3.2vw, 34px);
+  color: rgb(38 38 42 / 74%);
+  font-size: 0.98rem;
   line-height: 1.65;
   text-wrap: pretty;
 }
 
+/*
+ * A numbered path: gold discs joined by a hairline, the three visits reading
+ * as one short journey rather than a list.
+ */
 .previewSteps {
   padding: 0;
-  margin: 0 0 clamp(18px, 2.4vw, 26px);
+  margin: 0 0 clamp(20px, 2.6vw, 28px);
   list-style: none;
 }
 
 .previewSteps li {
-  padding: 14px 0;
-  border-top: 1px solid rgb(138 115 88 / 24%);
+  position: relative;
+  padding: 0 0 22px 58px;
+}
+
+.previewSteps li::before {
+  position: absolute;
+  top: 40px;
+  bottom: 0;
+  left: 19px;
+  width: 1px;
+  background: linear-gradient(rgb(201 168 106 / 70%), rgb(201 168 106 / 20%));
+  content: "";
 }
 
 .previewSteps li:last-child {
-  border-bottom: 1px solid rgb(138 115 88 / 24%);
+  padding-bottom: 0;
+}
+
+.previewSteps li:last-child::before {
+  display: none;
+}
+
+.stepNumber {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #dcc08a, #b08a4a);
+  box-shadow: 0 8px 18px -10px rgb(122 91 44 / 70%);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  place-items: center;
 }
 
 .previewStepHead {
   display: flex;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 4px 12px;
   align-items: baseline;
   justify-content: space-between;
+  padding-top: 8px;
 }
 
 .previewStepHead h3 {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 1.02rem;
   font-weight: 600;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.02em;
 }
 
 .previewStepHead span {
-  color: var(--taupe-deep);
-  font-size: 0.85rem;
+  padding: 3px 11px;
+  border-radius: 999px;
+  background: rgb(201 168 106 / 18%);
+  color: var(--gold-deep);
+  font-size: 0.78rem;
   font-variant-numeric: tabular-nums;
   font-weight: 600;
   white-space: nowrap;
 }
 
 .previewSteps p {
-  margin: 4px 0 0;
-  color: rgb(38 38 42 / 68%);
-  font-size: 0.85rem;
-  line-height: 1.5;
+  max-width: 48ch;
+  margin: 6px 0 0;
+  color: rgb(38 38 42 / 72%);
+  font-size: 0.88rem;
+  line-height: 1.55;
   text-wrap: pretty;
 }
 
 .previewNote {
-  max-width: 40ch;
+  max-width: 44ch;
   margin: 0;
+  padding: 14px 18px;
+  border-left: 2px solid var(--gold);
+  border-radius: 0 12px 12px 0;
+  background: rgb(201 168 106 / 10%);
   color: var(--ink);
   font-size: 0.92rem;
   font-weight: 500;
@@ -317,65 +601,99 @@
   text-wrap: pretty;
 }
 
-/*
- * The scanner photograph. Sized by the column it sits in rather than by a
- * ratio of its own, since it is already cropped 4:5 to match the frame the
- * placeholder reserved, so nothing reflows now that the file has landed.
- */
+/* The scanner photograph, in a gold-edged frame. */
 .coursePhoto {
+  position: relative;
   margin: 0;
 }
 
-.coursePhoto img {
-  border-radius: 4px;
+.coursePhoto::after {
+  position: absolute;
+  z-index: -1;
+  border: 1px solid rgb(201 168 106 / 55%);
+  border-radius: 24px;
+  content: "";
+  inset: 16px -16px -16px 16px;
+}
+
+figure.coursePhoto img {
+  border-radius: 20px;
+  box-shadow: 0 28px 50px -34px rgb(33 26 21 / 60%);
 }
 
 /* --------------------------------------------------------------- option --- */
 
 /*
- * The mock-up, demoted. It reads as an aside rather than a step: inset from
- * the text column, on its own hairline, with the two prices carried at the
- * same weight the preview steps use so the reader can see what it costs
- * without reading the sentence that says so.
+ * The mock-up, offered rather than sold: a pearl card with a dashed gold
+ * edge, which reads as optional before a word of it is read.
  */
 .option {
-  max-width: 62ch;
-  padding: clamp(20px, 2.6vw, 30px) 0 0;
-  margin-top: clamp(38px, 5vw, 62px);
-  border-top: 1px solid rgb(138 115 88 / 30%);
+  padding-top: clamp(56px, 7vw, 96px);
+}
+
+.optionInner {
+  max-width: 50rem;
+  padding: clamp(24px, 3.4vw, 40px);
+  border: 1.5px dashed rgb(201 168 106 / 70%);
+  border-radius: 22px;
+  background: var(--pearl);
+}
+
+.optionTag {
+  display: inline-block;
+  padding: 4px 12px;
+  margin: 0 0 12px;
+  border-radius: 999px;
+  background: rgb(201 168 106 / 20%);
+  color: var(--gold-deep);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 .optionHeading {
   max-width: 32ch;
   margin: 0 0 10px;
-  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+  font-size: clamp(1.15rem, 1.9vw, 1.45rem);
   font-weight: 500;
-  letter-spacing: -0.02em;
-  line-height: 1.25;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
 }
 
 .optionBody {
-  max-width: 52ch;
+  max-width: 56ch;
   margin: 0 0 clamp(16px, 2.2vw, 24px);
-  color: rgb(38 38 42 / 72%);
-  font-size: 0.92rem;
+  color: rgb(38 38 42 / 74%);
+  font-size: 0.93rem;
   line-height: 1.65;
   text-wrap: pretty;
 }
 
 .optionSteps {
   display: grid;
-  gap: clamp(14px, 2vw, 26px);
+  gap: 12px;
   padding: 0;
   margin: 0;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   list-style: none;
 }
 
+.optionSteps li {
+  padding: 14px 16px;
+  border: 1px solid rgb(201 168 106 / 30%);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.optionSteps .previewStepHead {
+  padding-top: 0;
+}
+
 .optionSteps p {
-  margin: 4px 0 0;
-  color: rgb(38 38 42 / 68%);
-  font-size: 0.85rem;
+  margin: 6px 0 0;
+  color: rgb(38 38 42 / 70%);
+  font-size: 0.86rem;
   line-height: 1.5;
   text-wrap: pretty;
 }
@@ -383,17 +701,17 @@
 /* ----------------------------------------------------------------- work --- */
 
 .work {
-  padding-top: clamp(58px, 8vw, 110px);
+  padding-top: clamp(64px, 8.5vw, 120px);
 }
 
 .case {
-  max-width: 42rem;
+  max-width: 44rem;
   margin: 0;
 }
 
 .caseNote {
   margin-top: 12px;
-  color: rgb(38 38 42 / 58%);
+  color: rgb(38 38 42 / 60%);
   font-size: 0.8rem;
   line-height: 1.5;
 }
@@ -401,26 +719,47 @@
 /* ------------------------------------------------------------ longevity --- */
 
 .longevity {
-  padding-top: clamp(58px, 8vw, 110px);
+  padding-top: clamp(64px, 8.5vw, 120px);
+}
+
+/* The answer on pearl, with champagne light from both corners. */
+.longevityInner {
+  padding: clamp(30px, 5vw, 64px);
+  border: 1px solid rgb(201 168 106 / 45%);
+  border-radius: 26px;
+  background:
+    radial-gradient(70% 90% at 100% 0%, rgb(230 211 179 / 70%), transparent 60%),
+    radial-gradient(60% 80% at 0% 100%, rgb(201 168 106 / 18%), transparent 60%),
+    var(--pearl);
+  text-align: center;
+}
+
+.longevityHeading {
+  margin: 0 0 14px;
+  color: var(--gold-deep);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
 }
 
 /* The answer, given the size of the question it settles. */
 .longevityClaim {
-  max-width: 22ch;
-  margin: 0 0 16px;
-  font-size: clamp(1.4rem, 3.2vw, 2.3rem);
+  max-width: 20ch;
+  margin: 0 auto 18px;
+  font-size: clamp(1.7rem, 3.8vw, 2.8rem);
   font-weight: 500;
-  letter-spacing: -0.04em;
-  line-height: 1.12;
+  letter-spacing: -0.045em;
+  line-height: 1.08;
   text-wrap: balance;
 }
 
 .longevityBody {
-  max-width: 46ch;
-  margin: 0 0 clamp(22px, 3vw, 30px);
-  color: rgb(38 38 42 / 72%);
-  font-size: 0.94rem;
-  line-height: 1.65;
+  max-width: 48ch;
+  margin: 0 auto clamp(22px, 3vw, 30px);
+  color: rgb(38 38 42 / 74%);
+  font-size: 0.96rem;
+  line-height: 1.68;
   text-wrap: pretty;
 }
 
@@ -428,18 +767,16 @@
   display: inline-flex;
   gap: 10px;
   align-items: center;
-  padding: 14px 24px;
-  border: 1px solid rgb(138 115 88 / 45%);
+  padding: 15px 26px;
   border-radius: 999px;
-  color: var(--ink);
+  background: var(--espresso);
+  color: var(--porcelain);
   font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.07em;
   text-decoration: none;
   text-transform: uppercase;
-  transition:
-    background-color 0.35s var(--ease),
-    border-color 0.35s var(--ease);
+  transition: background-color 0.35s var(--ease);
 }
 
 .longevityLink svg {
@@ -448,8 +785,12 @@
 
 .longevityLink:hover,
 .longevityLink:focus-visible {
-  border-color: var(--taupe-deep);
-  background: rgb(174 155 126 / 16%);
+  background: var(--gold-deep);
+}
+
+.longevityLink:focus-visible {
+  outline: 2px solid var(--gold-deep);
+  outline-offset: 3px;
 }
 
 .longevityLink:hover svg,
@@ -457,18 +798,27 @@
   transform: translateX(4px);
 }
 
+/* --------------------------------------------------------------- narrow --- */
+
 @media (max-width: 860px) {
+  .intro,
   .switcher,
   .preview,
-  .optionSteps {
+  .optionSteps,
+  .materialInner {
     grid-template-columns: 1fr;
+  }
+
+  .shadeGuide {
+    max-width: 20rem;
+    justify-self: start;
   }
 
   /* Horizontal on a phone, where a five-item rail costs a screen of height. */
   .tabs {
     flex-direction: row;
     overflow-x: auto;
-    padding-bottom: 4px;
+    padding-bottom: 6px;
     scrollbar-width: none;
   }
 
@@ -478,12 +828,43 @@
 
   .panelFacts {
     grid-template-columns: 1fr;
-    gap: 12px;
+  }
+
+  /* Once the price wraps under the name, it reads on one line with its unit. */
+  .panelPrice {
+    flex-direction: row;
+    gap: 10px;
+    align-items: baseline;
+  }
+
+  .panelPrice span {
+    margin-top: 0;
+  }
+
+  /* The veneers become a strip above the words. */
+  .materialPhoto {
+    order: -1;
+    min-height: 0;
+    aspect-ratio: 4 / 3;
+  }
+
+  .coursePhoto {
+    max-width: 22rem;
+  }
+
+  .coursePhoto::after {
+    inset: 12px -10px -12px 12px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .glint {
+    animation: none;
+  }
+
   .tab,
+  .tabIcon,
+  .grindMeter span,
   .longevityLink,
   .longevityLink svg {
     transition: none;

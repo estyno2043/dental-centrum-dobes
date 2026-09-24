@@ -155,4 +155,19 @@ describe("aesthetic dentistry", () => {
       expect(found?.treatments.join()).toMatch(/Fazety|Kompozitné dostavby/);
     }
   });
+
+  /*
+   * The grind meter restates the "Zub sa brúsi" fact as a picture. It must
+   * never disagree with it: the option that is not ground at all shows an
+   * empty meter, and every option that is ground shows at least one step.
+   */
+  it("draws the grind meter from the fact it restates", () => {
+    for (const solution of solutions) {
+      const fact = solution.facts.find((f) => f.label === "Zub sa brúsi");
+      if (fact?.value === "Vôbec") expect(solution.grind, solution.id).toBe(0);
+      else expect(solution.grind, solution.id).toBeGreaterThan(0);
+    }
+    const korunka = solutions.find((s) => s.id === "korunka")!;
+    expect(korunka.grind).toBe(Math.max(...solutions.map((s) => s.grind)));
+  });
 });

@@ -54,6 +54,12 @@ export type Solution = {
   readonly facts: readonly { readonly label: string; readonly value: string }[];
   /** Marked on the one that touches the tooth least. */
   readonly gentlest?: boolean;
+  /**
+   * How much of the tooth is ground away, 0 to 4, drawn as a meter beside the
+   * "Zub sa brúsi" fact. It restates that fact as a picture and says nothing
+   * the fact does not: none, minimal, a thin layer of enamel, all round.
+   */
+  readonly grind: 0 | 1 | 2 | 3 | 4;
 };
 
 export const aestheticIntro = {
@@ -99,6 +105,7 @@ export const solutions: readonly Solution[] = [
       "dva roky, pri každodennej káve skôr pol roka. Potom sa dá zopakovať. " +
       "Jednorazové ordinačné bielenie v kresle nerobíme. Nemá podľa nás " +
       "dostatočne dobré výsledky na to, aby sme ho ponúkali.",
+    grind: 0,
     facts: [
       { label: "Zub sa brúsi", value: "Vôbec" },
       { label: "Hotové", value: "Za dva týždne doma" },
@@ -119,6 +126,7 @@ export const solutions: readonly Solution[] = [
       "istý deň. Brúsi sa " +
       "minimálne alebo vôbec. Je to najdostupnejší spôsob, ako zmeniť tvar. " +
       "A keď sa časom ošúcha, dá sa opraviť bez toho, aby sa začínalo odznova.",
+    grind: 1,
     facts: [
       { label: "Zub sa brúsi", value: "Minimálne" },
       { label: "Hotové", value: "Za jednu návštevu" },
@@ -138,6 +146,7 @@ export const solutions: readonly Solution[] = [
       "priehľadnosťou a efektmi, tak ako je postavený vlastný zub. Preto sa " +
       "lepšie stráca medzi ostatnými zubami, čo je pri predných jednotkách " +
       "celý rozdiel.",
+    grind: 1,
     facts: [
       { label: "Zub sa brúsi", value: "Minimálne" },
       { label: "Hotové", value: "Za jednu návštevu" },
@@ -156,6 +165,7 @@ export const solutions: readonly Solution[] = [
       "Keramika sa nezafarbuje od kávy ani vína a odtieň si drží roky. " +
       "Vyžaduje tri návštevy, lebo medzi nimi pracuje laboratórium. " +
       "Medzitým nosíte dočasné korunky, nie obrúsené zuby.",
+    grind: 2,
     facts: [
       { label: "Zub sa brúsi", value: "Tenká vrstva skloviny" },
       { label: "Hotové", value: "3 návštevy, zhruba dva týždne" },
@@ -174,6 +184,7 @@ export const solutions: readonly Solution[] = [
       "Fazeta rieši vzhľad, korunka aj pevnosť. Keď zo zuba veľa chýba alebo " +
       "je po ošetrení koreňových kanálikov, fazeta ho neudrží. Korunka ho " +
       "obopne celý a prevezme naň žuvací tlak.",
+    grind: 4,
     facts: [
       { label: "Zub sa brúsi", value: "Po obvode" },
       { label: "Hotové", value: "3 návštevy, zhruba dva týždne" },
@@ -318,3 +329,28 @@ export const aestheticCaseIds = [
   "stiesnene-rezaky",
   "dostavba-hran",
 ] as const;
+
+/**
+ * The dark band between the comparison and the visits, added 2026-09-24 when
+ * the user found the page too plain. Its words are the ceramic option's own,
+ * restated, not a new claim: the veneer does not stain from coffee or wine and
+ * keeps its shade for years, and it is made in a laboratory to measure.
+ *
+ * The photograph is from the clinic's own shoot: finished porcelain pieces on
+ * black with a slice of agate. No patient in it.
+ */
+export const material = {
+  eyebrow: "Keramická fazeta",
+  heading: "Nezafarbí sa od kávy ani od vína.",
+  body:
+    "Tenká keramická škrupinka vyrobená v laboratóriu na mieru. Odtieň si " +
+    "drží roky, a preto je to riešenie pre toho, kto chce zmeniť viac zubov " +
+    "naraz a na dlho.",
+  priceNote: "za zub",
+  photo: {
+    src: "estetika-fazety",
+    width: 900,
+    height: 1125,
+    alt: "Hotové keramické fazety a korunky na čiernom podklade vedľa plátku achátu",
+  },
+} as const;
