@@ -5,6 +5,27 @@ update it before taking or handing off work.
 
 ## Current Task
 
+- Status: menu navigation fixes published
+- Owner: Claude
+- Branch: `claude/menu-navigation` (merged to `main`)
+- Task: mobile menu links did nothing on the homepage — they cancelled the
+  browser's navigation and asked for an eased scroll that nothing answers on
+  touch devices, and `Dialog.Close` skips its own close when the link calls
+  `preventDefault`, so the panel also stayed open. The panel now closes by
+  hand and the trip starts once its exit animation has finished, falling back
+  to the browser's scroll. Landing on `/#sluzby` from another page came up
+  4,856px short because ClinicStory hydrates in its reduced layout (1,478px)
+  and grows to 6,334px afterwards; the section is re-aligned while the layout
+  settles. On desktop a click on a hover-opened menu now keeps it open instead
+  of toggling it shut. 373 tests, lint, TypeScript, production build. Not
+  verifiable in the preview: it halts rendering frames, so the menu's exit and
+  `ResizeObserver` never fire there. Merged at the user's request so it could
+  be tested over mobile data; branch deploys are not enabled on Netlify.
+  Still open: `Kontakt` and the tour link are `#` placeholders, and
+  ClinicStory's hydration growth is a layout shift for every visitor.
+
+### Previously published
+
 - Status: mobile interaction and scroll-stability pass published
 - Owner: Claude
 - Branch: `claude/stable-viewport-scroll` (merged to `main`)
