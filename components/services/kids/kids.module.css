@@ -1,34 +1,77 @@
 /*
  * Ošetrenie detí.
  *
- * The one service page that leaves the taupe and charcoal behind. It keeps the
- * site's typography and its section rhythm, so it still reads as the same
- * clinic; what changes is the palette, the corner radius and the amount of
- * air. Soft pink and soft blue, alternating, on the shell's own cream.
+ * Rebuilt on 2026-09-24, when the user asked for the page to feel much more
+ * like a children's page. Four pastels take turns down it (blue, pink, yellow,
+ * mint), headings are set in the rounded Fredoka, a cartoon tooth waves from
+ * the opening, the clinic's photographs are pinned up like polaroids with
+ * stickers, and each step of the visit has its own little drawing.
  *
- * ⚠️ Read by the parent, not the child. Every value below is deliberately
- * pale: the colour is a warmth, not a theme, and a page that went full cartoon
- * would tell a parent this clinic does not take children seriously. Text stays
- * ink, which measures 13:1 or better on every ground here.
+ * ⚠️ Still read by the parent. Body text stays in the site's face and in ink,
+ * the facts are stated plainly, and every accent colour used for text is
+ * measured: the deep accents carry 4.7:1 or better on their soft grounds.
+ * The step numbers sit on the stronger pastels at 4.2:1, which holds because
+ * they are large bold type and decorative (`aria-hidden`).
  */
 
-.opening,
-.story,
-.worries,
-.money {
+.kids {
   --pink: #f7dbe2;
   --pink-soft: #fbeaee;
   --pink-deep: #a84a60;
   --blue: #dbe8f5;
   --blue-soft: #eaf1fa;
   --blue-deep: #3f6d99;
+  --yellow: #fcebb6;
+  --yellow-soft: #fef6dc;
+  --yellow-deep: #7a5709;
+  --mint: #d3efe3;
+  --mint-soft: #eaf8f1;
+  --mint-deep: #2d6f58;
+
+  --display: var(--font-kids), "Hanken Grotesk", sans-serif;
+}
+
+/*
+ * The four colours as one set of custom properties, so a list item picks its
+ * colour once and everything inside it follows.
+ */
+.chapters > li,
+.worryList > li,
+.facts > div {
+  --accent: var(--blue);
+  --accent-soft: var(--blue-soft);
+  --accent-deep: var(--blue-deep);
+}
+
+.chapters > li:nth-child(4n + 2),
+.worryList > li:nth-child(4n + 2),
+.facts > div:nth-child(4n + 2) {
+  --accent: var(--pink);
+  --accent-soft: var(--pink-soft);
+  --accent-deep: var(--pink-deep);
+}
+
+.chapters > li:nth-child(4n + 3),
+.worryList > li:nth-child(4n + 3),
+.facts > div:nth-child(4n + 3) {
+  --accent: var(--yellow);
+  --accent-soft: var(--yellow-soft);
+  --accent-deep: var(--yellow-deep);
+}
+
+.chapters > li:nth-child(4n + 4),
+.worryList > li:nth-child(4n + 4) {
+  --accent: var(--mint);
+  --accent-soft: var(--mint-soft);
+  --accent-deep: var(--mint-deep);
 }
 
 .sectionHeading {
   margin: 0 0 clamp(14px, 2vw, 20px);
-  font-size: clamp(1.4rem, 2.6vw, 2.1rem);
-  font-weight: 500;
-  letter-spacing: -0.035em;
+  font-family: var(--display);
+  font-size: clamp(1.55rem, 2.8vw, 2.3rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
   line-height: 1.1;
   text-wrap: balance;
 }
@@ -46,23 +89,20 @@
 
 /*
  * `overflow: clip` rather than `hidden`: the wash below is positioned outside
- * this box on purpose, and at 390px its `right: -4%` pushed the document 15px
- * wider than the screen. `clip` contains it without making the element a
- * scroll container, which `hidden` would, and which would break any sticky
- * positioning inside it.
+ * this box on purpose, and `clip` contains it without making the element a
+ * scroll container.
  */
 .opening {
   position: relative;
+  display: grid;
   overflow: clip;
+  gap: clamp(20px, 4vw, 56px);
   padding-top: clamp(32px, 4.5vw, 56px);
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  align-items: center;
 }
 
-/*
- * Two soft washes behind the opening, one pink and one blue, bleeding into
- * each other. Decorative and `aria-hidden`; it adds no height because it is
- * absolutely positioned, and it is the only ornament on the page that is not
- * also carrying information.
- */
+/* Two soft washes behind the opening, pink and blue. Decorative only. */
 .blob {
   position: absolute;
   z-index: -1;
@@ -74,23 +114,18 @@
     radial-gradient(46% 40% at 72% 22%, var(--pink) 0%, transparent 68%),
     radial-gradient(42% 44% at 30% 62%, var(--blue) 0%, transparent 70%);
   filter: blur(6px);
-  /*
-   * Held back since the page gained its own pink-to-blue ground. At full
-   * strength the two washes stacked into a muddy patch behind the headline;
-   * at half it still gives the opening some local depth without competing
-   * with the gradient underneath it.
-   */
-  opacity: 0.5;
+  opacity: 0.6;
   pointer-events: none;
 }
 
 .openingHeading {
-  max-width: 20ch;
+  max-width: 18ch;
   margin: 0 0 clamp(14px, 2vw, 20px);
-  font-size: clamp(1.7rem, 4vw, 3rem);
-  font-weight: 500;
-  letter-spacing: -0.045em;
-  line-height: 1.04;
+  font-family: var(--display);
+  font-size: clamp(1.9rem, 4.2vw, 3.2rem);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.06;
   text-wrap: balance;
 }
 
@@ -103,41 +138,180 @@
 }
 
 .facts {
-  display: grid;
-  gap: clamp(10px, 1.6vw, 16px);
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(10px, 1.4vw, 14px);
   margin: 0;
-  grid-template-columns: repeat(3, minmax(0, max-content));
 }
 
-/* Each fact on its own soft pill, alternating the two colours. */
+/* Each fact on its own round pill in the next colour along. */
 .facts > div {
-  padding: 14px 20px;
-  border-radius: 18px;
-  background: var(--blue-soft);
-}
-
-.facts > div:nth-child(2) {
-  background: var(--pink-soft);
+  padding: 13px 20px;
+  border: 2px solid var(--accent);
+  border-radius: 22px;
+  background: var(--accent-soft);
 }
 
 .facts dt {
-  color: rgb(38 38 42 / 60%);
+  color: var(--accent-deep);
   font-size: 0.74rem;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .facts dd {
-  margin: 5px 0 0;
-  font-size: clamp(0.98rem, 1.5vw, 1.1rem);
+  margin: 4px 0 0;
+  font-family: var(--display);
+  font-size: clamp(1.02rem, 1.5vw, 1.15rem);
+  font-weight: 600;
+}
+
+/*
+ * The mascot. It floats a few pixels up and down on `transform` only, so the
+ * compositor carries it, and its sparkles twinkle in turn. Both stop under
+ * reduced motion.
+ */
+.buddy {
+  display: block;
+  width: 100%;
+  max-width: 22rem;
+  height: auto;
+  justify-self: center;
+  animation: kids-float 4.8s ease-in-out infinite alternate;
+}
+
+.twinkle {
+  animation: kids-twinkle 2.6s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.twinkle:nth-last-of-type(2) {
+  animation-delay: 0.6s;
+}
+
+.twinkle:nth-last-of-type(3) {
+  animation-delay: 1.2s;
+}
+
+.twinkle:nth-last-of-type(4) {
+  animation-delay: 1.8s;
+}
+
+@keyframes kids-float {
+  from {
+    transform: translateY(0) rotate(-1.5deg);
+  }
+
+  to {
+    transform: translateY(-10px) rotate(1.5deg);
+  }
+}
+
+@keyframes kids-twinkle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.55;
+    transform: scale(0.72);
+  }
+}
+
+/* --------------------------------------------------------------- photos --- */
+
+/*
+ * `overflow-x: clip`: a tilted polaroid's corner sticker reached 3px past a
+ * 390px screen. `clip` on one axis leaves the other visible, so the stickers
+ * above the frames are not cut off.
+ */
+.photos {
+  overflow-x: clip;
+  padding-top: clamp(56px, 7.5vw, 104px);
+}
+
+.polaroids {
+  display: grid;
+  gap: clamp(22px, 3vw, 40px);
+  padding: 12px 0 0;
+  margin: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  list-style: none;
+}
+
+/*
+ * Pinned up rather than laid out: a white frame with a deeper foot for the
+ * caption, each at its own small tilt, and a sticker on the corner.
+ */
+.polaroid {
+  position: relative;
+  padding: 12px 12px 16px;
+  margin: 0;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow:
+    0 1px 2px rgb(38 38 42 / 8%),
+    0 18px 36px -18px rgb(63 109 153 / 38%);
+  rotate: -2.5deg;
+  transition:
+    rotate 320ms var(--ease),
+    scale 320ms var(--ease);
+}
+
+.polaroids > li:nth-child(2) .polaroid {
+  rotate: 2deg;
+}
+
+.polaroids > li:nth-child(3) .polaroid {
+  rotate: -1deg;
+}
+
+.polaroid:hover {
+  rotate: 0deg;
+  scale: 1.03;
+}
+
+.polaroids > li:nth-child(n) .polaroid:hover {
+  rotate: 0deg;
+}
+
+figure.polaroid img {
+  aspect-ratio: 4 / 3;
+  border-radius: 4px;
+}
+
+.polaroid figcaption {
+  margin-top: 12px;
+  font-family: var(--display);
+  font-size: 1.05rem;
   font-weight: 500;
-  letter-spacing: -0.02em;
+  text-align: center;
+}
+
+.sticker {
+  position: absolute;
+  top: -16px;
+  right: -12px;
+  width: 48px;
+  height: 48px;
+  filter: drop-shadow(0 4px 6px rgb(38 38 42 / 14%));
+  rotate: 12deg;
+}
+
+.polaroids > li:nth-child(2) .sticker {
+  right: auto;
+  left: -14px;
+  rotate: -10deg;
 }
 
 /* ------------------------------------------------------------- chapters --- */
 
 .story {
-  padding-top: clamp(52px, 7vw, 96px);
+  padding-top: clamp(56px, 7.5vw, 104px);
 }
 
 .chapters {
@@ -149,26 +323,25 @@
 }
 
 /*
- * A trail rather than a table. The step disc sits in its own column and a
- * dotted line runs between the discs, so the five read as one journey the
- * child is taken along instead of five separate facts.
+ * A trail rather than a table: the step disc in its own column and a dotted
+ * line running between the discs, so the five read as one journey.
  */
 .chapters li {
   position: relative;
   display: grid;
   gap: clamp(14px, 2.4vw, 26px);
-  grid-template-columns: 3rem minmax(0, 1fr);
+  grid-template-columns: 3.4rem minmax(0, 1fr);
   align-items: start;
 }
 
 .chapters li::before {
   position: absolute;
   z-index: -1;
-  top: 3rem;
+  top: 3.4rem;
   bottom: calc(clamp(14px, 2vw, 20px) * -1);
-  left: 1.5rem;
+  left: 1.7rem;
   width: 0;
-  border-left: 2px dotted rgb(63 109 153 / 34%);
+  border-left: 3px dotted rgb(63 109 153 / 34%);
   content: "";
 }
 
@@ -178,61 +351,68 @@
 
 .step {
   display: grid;
-  width: 3rem;
-  height: 3rem;
+  width: 3.4rem;
+  height: 3.4rem;
   border-radius: 50%;
-  background: var(--blue);
-  color: var(--blue-deep);
-  font-size: 1.05rem;
+  background: var(--accent);
+  box-shadow: 0 0 0 5px #fff;
+  color: var(--accent-deep);
+  font-family: var(--display);
+  font-size: 1.35rem;
   font-weight: 600;
   place-items: center;
 }
 
-.chapters li:nth-child(even) .step {
-  background: var(--pink);
-  color: var(--pink-deep);
-}
-
 .chapterBody {
-  padding: clamp(16px, 2.2vw, 24px) clamp(18px, 2.4vw, 28px);
-  border-radius: 22px;
-  background: var(--blue-soft);
+  display: flex;
+  gap: clamp(12px, 2vw, 24px);
+  align-items: flex-start;
+  padding: clamp(18px, 2.4vw, 26px) clamp(18px, 2.6vw, 30px);
+  border-radius: 26px;
+  background: var(--accent-soft);
 }
 
-.chapters li:nth-child(even) .chapterBody {
-  background: var(--pink-soft);
+.chapterText {
+  flex: 1;
+  min-width: 0;
 }
 
 .chapterBody h3 {
-  margin: 0 0 10px;
-  font-size: 1.02rem;
+  margin: 0 0 12px;
+  font-family: var(--display);
+  font-size: clamp(1.1rem, 1.8vw, 1.3rem);
   font-weight: 600;
-  letter-spacing: -0.02em;
+}
+
+.chapterIcon {
+  width: clamp(3.2rem, 6vw, 4.6rem);
+  height: auto;
+  flex: none;
 }
 
 /*
- * What the child hears, set apart: larger, warmer, and quoted by an indent
- * rather than by quotation marks, which on a page of short lines would read
- * as clutter.
+ * What the child hears, as a speech bubble: white, rounded, with a tail
+ * pointing back to the step, in the chapter's own colour.
  */
 .child {
-  padding-left: 14px;
-  margin: 0 0 10px;
-  border-left: 3px solid var(--blue-deep);
-  font-size: clamp(0.98rem, 1.5vw, 1.08rem);
+  position: relative;
+  width: fit-content;
+  max-width: 44ch;
+  padding: 11px 16px;
+  margin: 0 0 12px;
+  border: 2px solid var(--accent);
+  border-radius: 18px 18px 18px 6px;
+  background: #fff;
+  font-size: clamp(0.98rem, 1.5vw, 1.06rem);
   line-height: 1.5;
   text-wrap: pretty;
-}
-
-.chapters li:nth-child(even) .child {
-  border-left-color: var(--pink-deep);
 }
 
 /* The same moment for the parent, plainly. */
 .parent {
   max-width: 56ch;
   margin: 0;
-  color: rgb(38 38 42 / 72%);
+  color: rgb(38 38 42 / 76%);
   font-size: 0.9rem;
   line-height: 1.6;
   text-wrap: pretty;
@@ -241,7 +421,7 @@
 /* -------------------------------------------------------------- worries --- */
 
 .worries {
-  padding-top: clamp(52px, 7vw, 96px);
+  padding-top: clamp(56px, 7.5vw, 104px);
 }
 
 .worryList {
@@ -254,31 +434,36 @@
 }
 
 .worryList li {
-  padding: clamp(18px, 2.4vw, 26px);
-  border: 1px solid rgb(63 109 153 / 18%);
-  border-radius: 22px;
+  padding: clamp(20px, 2.6vw, 28px);
+  border-radius: 26px;
+  background: var(--accent-soft);
 }
 
-.worryList li:nth-child(even) {
-  border-color: rgb(168 74 96 / 18%);
+/* An odd last question takes the full row rather than leaving a hole. */
+.worryList li:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.worryIcon {
+  display: block;
+  width: 2.4rem;
+  height: auto;
+  margin-bottom: 10px;
+  color: var(--accent-deep);
 }
 
 .worryList h3 {
   margin: 0 0 8px;
-  color: var(--blue-deep);
-  font-size: 1rem;
+  color: var(--accent-deep);
+  font-family: var(--display);
+  font-size: 1.15rem;
   font-weight: 600;
-  letter-spacing: -0.02em;
-}
-
-.worryList li:nth-child(even) h3 {
-  color: var(--pink-deep);
 }
 
 .worryList p {
   margin: 0;
-  color: rgb(38 38 42 / 76%);
-  font-size: 0.9rem;
+  color: rgb(38 38 42 / 78%);
+  font-size: 0.92rem;
   line-height: 1.6;
   text-wrap: pretty;
 }
@@ -286,18 +471,33 @@
 /* ---------------------------------------------------------------- money --- */
 
 .money {
-  padding-top: clamp(52px, 7vw, 96px);
+  padding-top: clamp(56px, 7.5vw, 104px);
 }
 
 /*
  * A panel rather than the section, because `.page > *` puts the shell's
- * `padding-inline` on every direct child and a background on the section
- * would paint across the page gutter and run to both screen edges.
+ * `padding-inline` on every direct child. Pink into yellow into blue, with
+ * the toothbrush lying across its top corner.
  */
 .moneyInner {
+  position: relative;
   padding: clamp(26px, 4vw, 48px) clamp(22px, 3.4vw, 44px);
-  border-radius: 26px;
-  background: linear-gradient(152deg, var(--pink-soft) 0%, var(--blue-soft) 100%);
+  border-radius: 30px;
+  background: linear-gradient(
+    140deg,
+    var(--pink-soft) 0%,
+    var(--yellow-soft) 50%,
+    var(--blue-soft) 100%
+  );
+}
+
+.brush {
+  position: absolute;
+  top: clamp(-34px, -3vw, -20px);
+  right: clamp(12px, 3vw, 44px);
+  width: clamp(10rem, 22vw, 15rem);
+  height: auto;
+  rotate: -8deg;
 }
 
 .costItems {
@@ -308,7 +508,7 @@
 
 .costItems > li {
   padding: 13px 0;
-  border-top: 1px solid rgb(38 38 42 / 12%);
+  border-top: 1px dashed rgb(38 38 42 / 16%);
 }
 
 .costRow {
@@ -325,9 +525,14 @@
   letter-spacing: -0.015em;
 }
 
+/* Each price on a small white pill, so the column reads at a glance. */
 .costPrice {
+  padding: 3px 11px;
+  border-radius: 999px;
+  background: #fff;
   color: var(--pink-deep);
-  font-size: 0.9rem;
+  font-family: var(--display);
+  font-size: 0.95rem;
   font-variant-numeric: tabular-nums;
   font-weight: 600;
   white-space: nowrap;
@@ -336,7 +541,7 @@
 .costItems p {
   max-width: 52ch;
   margin: 5px 0 0;
-  color: rgb(38 38 42 / 70%);
+  color: rgb(38 38 42 / 72%);
   font-size: 0.85rem;
   line-height: 1.55;
   text-wrap: pretty;
@@ -345,28 +550,28 @@
 .ctaText {
   max-width: 42ch;
   margin: 0 0 14px;
-  color: rgb(38 38 42 / 78%);
-  font-size: 0.92rem;
+  color: rgb(38 38 42 / 80%);
+  font-size: 0.94rem;
   line-height: 1.55;
   text-wrap: pretty;
 }
 
 /*
- * The deep rose rather than the site's charcoal: on this page charcoal would
- * be the only hard thing on it. `#a84a60` carries white at 5.2:1, which the
- * lighter pinks do not — `#c0687d` came out at 3.6:1 and was rejected.
+ * The deep rose rather than the site's charcoal. `#a84a60` carries white at
+ * 5.5:1.
  */
 .cta {
   display: inline-flex;
   gap: 9px;
   align-items: center;
-  padding: 13px 24px;
+  padding: 14px 26px;
   border-radius: 999px;
   background: var(--pink-deep);
+  box-shadow: 0 10px 22px -12px rgb(168 74 96 / 70%);
   color: #fff;
-  font-size: 0.92rem;
+  font-family: var(--display);
+  font-size: 1.02rem;
   font-weight: 500;
-  letter-spacing: -0.01em;
   text-decoration: none;
   transition:
     background-color 240ms var(--ease),
@@ -380,6 +585,7 @@
 .cta:hover,
 .cta:focus-visible {
   background: #8f3d51;
+  translate: 0 -2px;
 }
 
 .cta:hover svg,
@@ -392,32 +598,65 @@
   outline-offset: 3px;
 }
 
+/* --------------------------------------------------------------- narrow --- */
+
 @media (max-width: 860px) {
+  .opening,
   .worryList {
     grid-template-columns: 1fr;
   }
 
-  .facts {
+  .buddy {
+    max-width: 13rem;
+  }
+
+  .polaroids {
+    max-width: 24rem;
+    margin-inline: auto;
     grid-template-columns: 1fr;
   }
 
   .chapters li {
-    grid-template-columns: 2.5rem minmax(0, 1fr);
+    grid-template-columns: 2.6rem minmax(0, 1fr);
   }
 
   .chapters li::before {
-    left: 1.25rem;
-    top: 2.5rem;
+    top: 2.6rem;
+    left: 1.3rem;
   }
 
   .step {
-    width: 2.5rem;
-    height: 2.5rem;
-    font-size: 0.95rem;
+    width: 2.6rem;
+    height: 2.6rem;
+    box-shadow: 0 0 0 4px #fff;
+    font-size: 1.1rem;
+  }
+
+  /* The drawing moves above the text, small, so the text keeps its width. */
+  .chapterBody {
+    flex-direction: column-reverse;
+  }
+
+  .chapterIcon {
+    width: 2.8rem;
+  }
+
+  /* On a phone the brush lies above the heading instead of over it. */
+  .brush {
+    position: static;
+    display: block;
+    width: 9.5rem;
+    margin: -8px 0 10px auto;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .buddy,
+  .twinkle {
+    animation: none;
+  }
+
+  .polaroid,
   .cta,
   .cta svg {
     transition: none;

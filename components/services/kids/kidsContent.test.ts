@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { priceGroups } from "@/components/pricing/pricingContent";
-import { cost, opening, story, worries } from "./kidsContent";
+import { cost, opening, photos, story, worries } from "./kidsContent";
 
 const published = new Map(
   priceGroups.flatMap((group) =>
@@ -78,18 +78,28 @@ describe("children's dentistry", () => {
   });
 
   /*
-   * No photographs of children: the clinic has none, and stock imagery of a
-   * child in a dental chair is exactly the note this page must not hit. The
-   * page has to work on type and colour alone, and this fails if anybody adds
-   * an image record to it.
+   * No photographs of children. The clinic has none, and a stock child in a
+   * dental chair is the wrong note for this page. Since 2026-09-24 the page
+   * does carry the clinic's own photographs, at the user's request, and each
+   * one is a file encoded from the clinic's shoot: this pins the list so a
+   * stock image cannot slip in unnoticed, and checks that none is described
+   * as showing a child.
    */
-  it("carries no child photography", () => {
-    const source = readFileSync(
-      join(process.cwd(), "components/services/kids/kidsContent.ts"),
-      "utf8",
-    );
-    const prose = source.replace(/\/\*[\s\S]*?\*\//g, "");
-    expect(prose).not.toMatch(/\.webp|\.jpg|src:/i);
+  it("carries only the clinic's own photographs, none of a child", () => {
+    expect(photos.items.map((p) => p.src)).toEqual([
+      "deti-kefka",
+      "deti-tim",
+      "deti-kreslo",
+    ]);
+    for (const photo of photos.items) {
+      expect(photo.alt, photo.src).not.toMatch(/diet|chlap|dievč|detsk/i);
+      expect(
+        existsSync(
+          join(process.cwd(), "public/media/sluzby", `${photo.src}.webp`),
+        ),
+        photo.src,
+      ).toBe(true);
+    }
   });
 
   /* The habit stays gone on new pages too. */

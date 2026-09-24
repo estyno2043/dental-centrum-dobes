@@ -6,11 +6,11 @@
  * reassures a parent that their child will not be frightened, and that is a
  * different job with a different feeling.
  *
- * ⚠️ It is still read by the parent, not the child. That is the line the
- * design walks: soft pink and blue, rounder shapes, more air, but the site's
- * own typography and structure. A page that went full cartoon would tell a
- * parent the clinic does not take this seriously, and with a child the bar for
- * trust is higher than with an adult, not lower.
+ * ⚠️ It is still read by the parent, not the child. On 2026-09-24 the user
+ * asked for it to feel much more like a children's page, so the look went
+ * playful (a cartoon tooth, a toothbrush, stickers, four pastel colours and a
+ * rounded display face) while the words stayed written for the parent. The
+ * warmth is in the drawing; the facts are still stated plainly.
  *
  * Clinic answers, 2026-09-07: from three years old; the parent may stay in the
  * surgery; when a child will not cooperate they talk to it and try to help it
@@ -50,8 +50,8 @@ export type Chapter = {
 export const story = {
   heading: "Ako to u nás vyzerá",
   lead:
-    "Nič sa nedeje nasilu a nič bez toho, aby sme to najprv povedali. Vľavo " +
-    "je to, čo počuje dieťa. Vpravo to isté pre vás.",
+    "Nič sa nedeje nasilu a nič bez toho, aby sme to najprv povedali. V " +
+    "bublinke je to, čo počuje dieťa. Pod ňou to isté pre vás.",
   chapters: [
     {
       title: "Prídete spolu",
@@ -174,4 +174,45 @@ export const cost = {
     label: "Objednať dieťa na prehliadku",
     href: "#booking",
   },
+} as const;
+
+/* ------------------------------------------------------------ the photos */
+
+export type KidsPhoto = {
+  readonly src: string;
+  readonly alt: string;
+  readonly caption: string;
+};
+
+/**
+ * Three photographs from the clinic's own shoot, added at the user's request
+ * on 2026-09-24. None shows a child: the clinic has no such photographs, and
+ * a stock child in a dental chair would still be the wrong note. What they
+ * show instead is what a child will actually meet: the big model teeth and a
+ * toothbrush, the two smiling people in the surgery, and the chair.
+ *
+ * The captions describe the picture and nothing more. They promise no game
+ * or routine the clinic has not described.
+ */
+export const photos = {
+  heading: "Čo u nás uvidíte",
+  items: [
+    {
+      src: "deti-kefka",
+      alt: "Veľký model zubov a tyrkysová zubná kefka",
+      caption: "Veľké zúbky a kefka",
+    },
+    {
+      src: "deti-tim",
+      alt: "Dve usmiate zdravotníčky v ordinácii pri zubárskom kresle",
+      caption: "Takto sa usmievame",
+    },
+    {
+      src: "deti-kreslo",
+      alt: "Zubárske kreslo v svetlej ordinácii s okrúhlym zrkadlom",
+      caption: "Kreslo, ktoré sa hýbe hore a dole",
+    },
+  ] satisfies readonly KidsPhoto[],
+  width: 1200,
+  height: 900,
 } as const;
