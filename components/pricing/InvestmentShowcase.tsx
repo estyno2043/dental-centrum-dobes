@@ -174,14 +174,9 @@ export function InvestmentShowcase(): JSX.Element {
 
       <div className={styles.stage}>
         <header className={styles.intro} data-intro>
-          <p className={styles.eyebrow}>
-            <span aria-hidden="true" className={styles.eyebrowRule} />
-            {investmentIntro.eyebrow}
-          </p>
           <h2 className={styles.headline} id="investment-heading">
             {investmentIntro.headline}
           </h2>
-          <p className={styles.lead}>{investmentIntro.lead}</p>
         </header>
 
         <div className={styles.slides}>

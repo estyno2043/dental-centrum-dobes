@@ -194,7 +194,8 @@ describe("InvestmentShowcase", () => {
      * The card is back to the size it was; the title is what yields on a short
      * screen, so its size is height-aware rather than width-only.
      */
-    expect(flat).toContain("font-size: clamp(1.6rem, min(4.4vw, 4.4vh), 3.4rem)");
+    /* A notch larger since 2026-09-24, when it became the only line. */
+    expect(flat).toContain("font-size: clamp(1.9rem, min(5vw, 5.2vh), 3.8rem)");
     /*
      * The card's height is not a guessed clamp any more — every guess was
      * wrong in one direction or the other. The row flexes to fill the stage

@@ -54,12 +54,14 @@ export type ShowcaseSlide = {
   readonly price: { readonly value: string; readonly was?: string; readonly note: string };
 };
 
+/*
+ * The heading alone. The eyebrow and the grey lead under it came off at the
+ * user's request on 2026-09-24: the section's cards and bullets say what the
+ * lead was saying, and a single line reads as a statement where three read as
+ * a preamble.
+ */
 export const investmentIntro = {
-  eyebrow: "Cenník",
   headline: "Investujte do svojho úsmevu.",
-  lead:
-    "Cenu vám povieme skôr, než začneme. A tu je, čo za ňu dostanete. " +
-    "Zvyšok nájdete v cenníku.",
 } as const;
 
 /**

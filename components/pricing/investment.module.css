@@ -131,49 +131,22 @@
   text-align: center;
 }
 
-.eyebrow {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  justify-content: center;
-  margin: 0 0 14px;
-  color: var(--taupe);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
-.eyebrowRule {
-  display: block;
-  width: 34px;
-  height: 1px;
-  background: var(--taupe);
-}
-
 .headline {
-  margin: 0 0 12px;
+  margin: 0;
   /*
-   * Height-aware, not only width-aware. The card is back to full size, and on
+   * Standing alone now, so it carries a little more than it did beside an
+   * eyebrow and a lead. Still height-aware, not only width-aware. The card is back to full size, and on
    * a short laptop screen the two cannot both have everything they want — so
    * the title is what gives, rather than the stage overflowing and taking the
    * lurch back with it.
    */
-  font-size: clamp(1.6rem, min(4.4vw, 4.4vh), 3.4rem);
+  font-size: clamp(1.9rem, min(5vw, 5.2vh), 3.8rem);
   font-weight: 500;
   letter-spacing: -0.04em;
   line-height: 1.04;
   text-wrap: balance;
 }
 
-.lead {
-  max-width: 34rem;
-  margin: 0 auto;
-  color: rgb(250 249 246 / 68%);
-  font-size: clamp(0.86rem, min(1.4vw, 1.7vh), 1.05rem);
-  line-height: 1.6;
-  text-wrap: pretty;
-}
 
 /* --------------------------------------------------------------- slides --- */
 
