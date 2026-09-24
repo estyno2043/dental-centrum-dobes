@@ -1757,6 +1757,57 @@ not achievable without interpolation artifacts, whatever the export is tagged.
 
   No files reserved.
 
+- 2026-09-24 — Claude published a round of the user's visual requests: the
+  homepage Ambulancia ground, pricing, the footer map link, and three service
+  pages (endodontics, periodontology, children, aesthetic).
+
+  **Ambulancia is a walnut gradient.** The user first asked for a colour
+  between walnut and latte, then a sand (`#e2d8c2`), then rejected the sand
+  and asked for dark brown with a gradient. The pin now runs from a solid
+  `--walnut-deep` (`#3e2f25`, new token in `globals.css`) through `#4b3a2e`
+  with a beige glow from the bottom-right; the statement's `exitVeil` and
+  `storySurface` resolve to the same `--walnut-deep`, so the handover has no
+  edge. Type on it is porcelain, eyebrow latte `#d9c9b1` (6.7:1). The header is
+  hidden over this section, so its white logo never meets the ground.
+
+  **Pricing** opens on "Investujte do svojho úsmevu." alone; the grey eyebrow
+  and lead are gone. **Footer map link** now opens the Dental Centrum Dobeš
+  place (`maps.app.goo.gl/arRfSKTh6kTZFTT86`); the address search resolved to
+  the neighbouring Vlárska 13A.
+
+  **Endodontics** was a wall of text. Each section keeps one strong line and
+  folds its explanation into a native `<details>` ("Zobraziť viac", new
+  `components/services/More.tsx`); the price breakdown and the two follow-on
+  questions fold too. The odds panel and the keep-your-tooth card are a
+  walnut-to-beige gradient (the eucalyptus cards' recipe taken warm, contrast
+  measured on rendered pixels at four widths, above 5.7:1); the microscope
+  section is a dark band over the clinic's microscope photo; four new photos
+  from the shoot (`endo-detail`, `endo-praca`, `endo-snimka`, `endo-mikroskop`).
+
+  **Periodontology** checklist is deep sage `#465a4f` with porcelain type.
+
+  **Children** was rebuilt to feel made for children: an inline-SVG cartoon
+  tooth with a toothbrush (`KidsArt.tsx`), three clinic photos as tilted
+  polaroids with stickers (`deti-kefka`, `deti-tim`, `deti-kreslo`), a drawing
+  per visit step, four pastels, the child's line as a speech bubble, and
+  Fredoka for headings via `next/font` (self-hosted, latin-ext). ⚠️ The old
+  test banned photographs on this page; the user asked for them, so it now
+  pins the three clinic files and forbids any alt describing a child. The
+  clinic still has no photographs of children and none are used.
+
+  **Aesthetic** was plain. Porcelain, pearl and champagne gold: a drawn shade
+  guide (`ShadeGuide.tsx`), glyphs and a four-step "Koľko zuba sa obrúsi" meter
+  per option (new `grind` field, tested against the "Zub sa brúsi" fact), an
+  espresso band with the clinic's ceramic veneers (`estetika-fazety`), the
+  three visits as a numbered gold path, the mock-up as a dashed optional card.
+  Copy is unchanged apart from the band, which restates the ceramic option and
+  reads its price from it.
+
+  Verified before pushing: 388 tests, lint, TypeScript, production build,
+  `git diff --check`; every page checked for horizontal overflow at 360–1440.
+
+  No files reserved.
+
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
 credentials, tokens, or local configuration values in repository files,
