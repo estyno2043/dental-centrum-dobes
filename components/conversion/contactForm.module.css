@@ -1,0 +1,155 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: clamp(22px, 3vw, 34px);
+  border: 1px solid rgb(174 155 126 / 28%);
+  border-radius: 16px;
+
+  /* Solid charcoal, not a translucent tint: 55% ink over the cream ground
+     resolved to a muddy grey, which is the one thing this palette is not. */
+  background: var(--charcoal);
+}
+
+/* Off-screen rather than display:none — a hidden input some bots still fill. */
+.honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.fieldGrid {
+  display: grid;
+  gap: 16px;
+}
+
+@media (min-width: 620px) {
+  .fieldGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .fieldGrid .field:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--porcelain);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.optional {
+  color: rgb(250 249 246 / 45%);
+  font-weight: 500;
+}
+
+.field input,
+.field textarea {
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid rgb(250 249 246 / 20%);
+  border-radius: 10px;
+  background: rgb(250 249 246 / 5%);
+  color: var(--porcelain);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 400;
+  transition:
+    border-color 0.3s var(--ease),
+    background 0.3s var(--ease);
+}
+
+.field textarea {
+  resize: vertical;
+}
+
+.field input:focus-visible,
+.field textarea:focus-visible {
+  border-color: var(--taupe);
+  background: rgb(250 249 246 / 8%);
+  outline: 2px solid var(--taupe);
+  outline-offset: 2px;
+}
+
+.consent {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  color: rgb(250 249 246 / 78%);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.consent input {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  margin-top: 1px;
+  accent-color: var(--taupe);
+}
+
+.formError,
+.formSuccess {
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.formError {
+  border: 1px solid rgb(206 118 98 / 45%);
+  background: rgb(206 118 98 / 12%);
+  color: #f0c3b7;
+}
+
+.formError a {
+  color: inherit;
+}
+
+.formSuccess {
+  border: 1px solid rgb(174 155 126 / 45%);
+  background: rgb(174 155 126 / 14%);
+  color: var(--porcelain);
+}
+
+.submit {
+  min-height: 56px;
+  padding: 16px 28px;
+  border: 1px solid var(--taupe);
+  border-radius: 999px;
+  background: var(--taupe);
+  color: var(--ink);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  transition:
+    background 0.45s var(--ease),
+    border-color 0.45s var(--ease);
+}
+
+.submit:hover:not(:disabled) {
+  border-color: var(--porcelain);
+  background: var(--porcelain);
+}
+
+.submit:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+.submit:focus-visible {
+  outline: 2px solid var(--porcelain);
+  outline-offset: 4px;
+}

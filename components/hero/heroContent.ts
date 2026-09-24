@@ -26,7 +26,11 @@ export const navigationItems = [
    */
   { label: "Cenník", href: "/#cennik" },
   { label: "Tím", href: "/#tim" },
-  { label: "Kontakt", href: "#" },
+  /*
+   * A real page since 2026-09-24. It was a placeholder `#` from before the
+   * route existed, which left a dead link in the menu on every page.
+   */
+  { label: "Kontakt", href: "/kontakt" },
 ] as const;
 
 /*

@@ -3,6 +3,7 @@
 import type { Metadata } from "next";
 
 import { ReviewsProvider } from "@/components/reviews/ReviewsProvider";
+import { Footer } from "@/components/site/Footer";
 import { SmoothScroll } from "@/components/scroll/SmoothScroll";
 import "./globals.css";
 
@@ -46,7 +47,10 @@ export default function RootLayout({
           Component tree; only the provider and its triggers cross to the
           client.
         */}
-        <ReviewsProvider>{children}</ReviewsProvider>
+        <ReviewsProvider>
+          {children}
+          <Footer />
+        </ReviewsProvider>
       </body>
     </html>
   );
