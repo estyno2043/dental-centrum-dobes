@@ -1,0 +1,72 @@
+.more {
+  margin-top: 14px;
+}
+
+/* #6f5a44 rather than the brand taupe-deep: that measures 3.9:1 on the cream,
+ * this 5.7:1, and the label is small. */
+.more summary {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid rgb(111 90 68 / 45%);
+  color: #6f5a44;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  list-style: none;
+}
+
+.more summary::-webkit-details-marker {
+  display: none;
+}
+
+.more summary svg {
+  transition: rotate 220ms var(--ease);
+}
+
+.more[open] summary svg {
+  rotate: 180deg;
+}
+
+.more summary:hover {
+  border-bottom-color: #6f5a44;
+}
+
+.more summary:focus-visible {
+  outline: 2px solid #6f5a44;
+  outline-offset: 4px;
+}
+
+.close {
+  display: none;
+}
+
+.more[open] .open {
+  display: none;
+}
+
+.more[open] .close {
+  display: inline;
+}
+
+.body {
+  padding-top: 12px;
+}
+
+/* On a dark panel the label has to be light to read. */
+.more[data-tone="light"] summary {
+  border-bottom-color: rgb(250 249 246 / 40%);
+  color: var(--porcelain);
+}
+
+.more[data-tone="light"] summary:focus-visible {
+  outline-color: var(--porcelain);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .more summary svg {
+    transition: none;
+  }
+}

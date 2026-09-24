@@ -320,3 +320,42 @@ export const limit = {
   linkLabel: "Zubné implantáty",
   linkHref: "/sluzby/zubne-implantaty",
 } as const;
+
+/* -------------------------------------------------------------- photos --- */
+
+/**
+ * The clinic's own photographs from the professional shoot, chosen because
+ * each shows something this page is about rather than the clinic in general:
+ * the doctor at the eyepiece, a treatment under the microscope, a radiograph
+ * on the surgery's screen, and the microscope itself for the band behind that
+ * section. Staff and a masked patient; no identifiable patient face.
+ *
+ * Three portraits at 4:5, cropped from 4000×6000 originals by salience, and
+ * the microscope at 3:2 because it sits behind a wide panel.
+ */
+export const photos = {
+  detail: {
+    src: "endo-detail",
+    width: 1000,
+    height: 1250,
+    alt: "Lekárka sa pozerá do operačného mikroskopu počas ošetrenia",
+  },
+  work: {
+    src: "endo-praca",
+    width: 1000,
+    height: 1250,
+    alt: "Ošetrenie koreňových kanálikov pod mikroskopom v ordinácii",
+  },
+  xray: {
+    src: "endo-snimka",
+    width: 1000,
+    height: 1250,
+    alt: "RTG snímka zubov na monitore v ordinácii",
+  },
+  microscope: {
+    src: "endo-mikroskop",
+    width: 1800,
+    height: 1200,
+  },
+} as const;
+
