@@ -208,4 +208,88 @@ describe("SmoothScroll", () => {
     unmount();
     expect(destroy).toHaveBeenCalledTimes(1);
   });
+
+  describe("landing on a section from another page", () => {
+    let resized: (() => void) | undefined;
+
+    beforeEach(() => {
+      resized = undefined;
+      vi.stubGlobal(
+        "ResizeObserver",
+        class {
+          constructor(callback: () => void) {
+            resized = callback;
+          }
+          observe() {}
+          disconnect() {}
+        },
+      );
+    });
+
+    function section() {
+      const el = document.createElement("section");
+      el.id = "sluzby";
+      el.scrollIntoView = vi.fn();
+      document.body.appendChild(el);
+      return el;
+    }
+
+    afterEach(() => {
+      document.getElementById("sluzby")?.remove();
+      window.history.replaceState(null, "", "/");
+    });
+
+    /*
+     * The browser jumps to the anchor while the page is still loading, and the
+     * sections above keep growing after it. On a phone that left the heading
+     * thousands of pixels short.
+     */
+    it("aligns the section again once the page has loaded on a touch device", () => {
+      stubMedia({ coarse: true });
+      window.history.replaceState(null, "", "/#sluzby");
+      const el = section();
+
+      render(<SmoothScroll />);
+
+      expect(el.scrollIntoView).toHaveBeenCalledWith({ block: "start" });
+    });
+
+    /*
+     * Sections that read a media query render their fallback first and grow
+     * once hydrated, which is what left the heading thousands of pixels short.
+     */
+    it("aligns again when the page grows after hydration", () => {
+      stubMedia({ coarse: true });
+      window.history.replaceState(null, "", "/#sluzby");
+      const el = section();
+
+      render(<SmoothScroll />);
+      resized?.();
+
+      expect(el.scrollIntoView).toHaveBeenCalledTimes(2);
+    });
+
+    it("stops holding the section once the reader starts to scroll", () => {
+      stubMedia({ coarse: true });
+      window.history.replaceState(null, "", "/#sluzby");
+      const el = section();
+
+      render(<SmoothScroll />);
+      window.dispatchEvent(new Event("touchstart"));
+      resized?.();
+      window.dispatchEvent(new Event("load"));
+
+      expect(el.scrollIntoView).toHaveBeenCalledTimes(1);
+    });
+
+    it("does nothing where Lenis owns the scroll", () => {
+      stubMedia();
+      window.history.replaceState(null, "", "/#sluzby");
+      const el = section();
+
+      render(<SmoothScroll />);
+
+      expect(el.scrollIntoView).not.toHaveBeenCalled();
+    });
+  });
 });

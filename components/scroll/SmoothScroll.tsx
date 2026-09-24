@@ -50,6 +50,54 @@ export function SmoothScroll() {
   const lenisRef = useRef<Lenis | null>(null);
   const pathname = usePathname();
 
+  /*
+   * Landing on `/#sluzby` from another page, where nothing eases the trip.
+   *
+   * The browser jumps to the anchor during load, and the page keeps growing
+   * after hydration: sections that read a media query render their fallback
+   * first (ClinicStory's reduced-motion layout is far shorter than its pinned
+   * one) and only take their real height once the query has been read. On a
+   * phone that left the services heading nearly 4,900px below the top of the
+   * screen. So the section is held in place while the layout settles — every
+   * time the document changes size it is aligned again — for a short window,
+   * and never after the reader has started to scroll themselves.
+   *
+   * Only where Lenis is not running (touch, or reduced motion).
+   */
+  useEffect(() => {
+    const id = decodeURIComponent(globalThis.location?.hash.slice(1) ?? "");
+    if (!id) return;
+    const coarse = globalThis.matchMedia?.("(pointer: coarse)").matches ?? false;
+    const reduced =
+      globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+    if (!coarse && !reduced) return;
+
+    let done = false;
+    const intents = ["wheel", "touchstart", "keydown"] as const;
+    const align = () => {
+      if (done) return;
+      document.getElementById(id)?.scrollIntoView({ block: "start" });
+    };
+    const observer = new ResizeObserver(align);
+    const stop = () => {
+      if (done) return;
+      done = true;
+      observer.disconnect();
+      clearTimeout(settleTimer);
+      window.removeEventListener("load", align);
+      for (const type of intents) window.removeEventListener(type, stop);
+    };
+    for (const type of intents) {
+      window.addEventListener(type, stop, { once: true, passive: true });
+    }
+    window.addEventListener("load", align, { once: true });
+    observer.observe(document.documentElement);
+    const settleTimer = setTimeout(stop, 3000);
+    align();
+
+    return stop;
+  }, [pathname]);
+
   useEffect(() => {
     const query = globalThis.matchMedia?.("(prefers-reduced-motion: reduce)");
     if (!query) return;

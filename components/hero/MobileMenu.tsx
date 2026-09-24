@@ -9,7 +9,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { useState, type JSX } from "react";
+import { useRef, useState, type JSX } from "react";
 import {
   scrollToSection,
   sectionIdFromHref,
@@ -21,6 +21,32 @@ const premiumEase = [0.22, 1, 0.36, 1] as const;
 
 export function MobileMenu(): JSX.Element {
   const [open, setOpen] = useState(false);
+  /*
+   * The section a link asked for, travelled to once the panel has left.
+   *
+   * Not on click: the dialog holds the page's scroll locked for as long as it
+   * is mounted, and it stays mounted through its exit animation, so a scroll
+   * started any earlier goes nowhere.
+   */
+  const pendingSectionRef = useRef<string | null>(null);
+
+  const travelToPendingSection = () => {
+    const id = pendingSectionRef.current;
+    pendingSectionRef.current = null;
+    if (!id) return;
+    /*
+     * One task later, so the scroll lock is released before we move. Eased
+     * scrolling takes the trip where it runs; it is off on touch devices, and
+     * there the browser's own scroll is the answer rather than nothing.
+     */
+    setTimeout(() => {
+      if (scrollToSection(id)) return;
+      document.getElementById(id)?.scrollIntoView({
+        behavior: prefersReducedMotion ? "auto" : "smooth",
+        block: "start",
+      });
+    }, 0);
+  };
   const prefersReducedMotion = useReducedMotion() ?? false;
   const movement = prefersReducedMotion ? 0 : 28;
 
@@ -74,7 +100,7 @@ export function MobileMenu(): JSX.Element {
         * appears to vanish rather than leave.
         */}
       <Dialog.Portal forceMount>
-        <AnimatePresence>
+        <AnimatePresence onExitComplete={travelToPendingSection}>
           {open ? (
             <>
               <Dialog.Overlay asChild forceMount>
@@ -177,15 +203,18 @@ export function MobileMenu(): JSX.Element {
                             href={item.href}
                             onClick={(event) => {
                               const id = sectionIdFromHref(item.href);
+                              /* Another page, or no such section here: let the
+                                 browser navigate as usual. */
                               if (!id || !document.getElementById(id)) return;
                               event.preventDefault();
+                              pendingSectionRef.current = id;
                               /*
-                                Deferred by a beat. `Dialog.Close` wraps this
-                                link, and Radix holds the body's scroll locked
-                                until the dialog has finished closing —
-                                scrolling into that lock goes nowhere.
+                                Closed by hand: `Dialog.Close` skips its own
+                                close when the link's handler has called
+                                `preventDefault`, so without this the panel
+                                stayed open over a page that never moved.
                               */
-                              setTimeout(() => scrollToSection(id), 140);
+                              setOpen(false);
                             }}
                           >
                             <span aria-hidden="true">
