@@ -40,18 +40,38 @@ describe("Footer", () => {
 
   /*
    * One source of destinations. The footer reads the same list both menus do,
-   * so a link cannot be right in the menu and stale down here.
+   * so a link cannot be right in the menu and stale down here. Kontakt is the
+   * exception and has to be: it points at this footer, and a link that scrolls
+   * to the element it sits inside is a link to nowhere.
    */
-  it("lists the same destinations as the menus", () => {
+  it("lists the same destinations as the menus, except itself", () => {
     render(<Footer />);
     const nav = screen.getByRole("navigation", { name: "Pätička" });
 
     for (const item of navigationItems) {
-      expect(
-        screen.getByRole("link", { name: item.label }),
-      ).toHaveAttribute("href", item.href);
+      if (item.href === "#kontakt") {
+        expect(
+          screen.queryByRole("link", { name: item.label }),
+        ).not.toBeInTheDocument();
+        continue;
+      }
+      expect(screen.getByRole("link", { name: item.label })).toHaveAttribute(
+        "href",
+        item.href,
+      );
     }
     expect(nav).toBeInTheDocument();
+  });
+
+  /*
+   * The menu's Kontakt entry scrolls here instead of opening a page, so this
+   * id is the destination. Without it the menu link goes nowhere.
+   */
+  it("is the anchor the menu's Kontakt entry points at", () => {
+    render(<Footer />);
+
+    expect(screen.getByRole("contentinfo")).toHaveAttribute("id", "kontakt");
+    expect(navigationItems.map((item) => item.href)).toContain("#kontakt");
   });
 
   /*

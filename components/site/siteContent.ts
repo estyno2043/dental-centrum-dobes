@@ -45,14 +45,3 @@ export const openingHours = [
   { days: "Pondelok – štvrtok", hours: "8:00 – 19:00" },
   { days: "Piatok", hours: "8:00 – 14:00" },
 ] as const;
-
-/**
- * Practical facts, every one of them already stated somewhere else on this
- * site by the clinic: free parking in the hero's trust row, card payment and
- * the month's waiting time in the entry examination's objections.
- */
-export const clinicFacts: readonly string[] = [
-  "Parkovanie pre pacientov zdarma",
-  "Platba kartou aj v hotovosti",
-  "Termín spravidla do mesiaca",
-] as const;

@@ -22,6 +22,10 @@ import styles from "./footer.module.css";
  * the mode of the section above, which on most pages is a pale one. Over an
  * ink footer that would put a white logo on light-mode chrome.
  *
+ * `id="kontakt"` is the menu's destination: the Kontakt entry scrolls here
+ * rather than opening a page of its own, so the details live in exactly one
+ * place and are reachable from every route.
+ *
  * ⚠️ No legal row yet. Zásady ochrany osobných údajov and the operator's
  * identification (obchodné meno, sídlo, IČO) belong here and none of them
  * exist. Inventing a link target or a company number would put a false claim
@@ -30,7 +34,7 @@ import styles from "./footer.module.css";
  */
 export function Footer(): JSX.Element {
   return (
-    <footer className={styles.footer} data-header-mode="none">
+    <footer className={styles.footer} data-header-mode="none" id="kontakt">
       <div className={styles.inner}>
         <div className={styles.brand}>
           <Link className={styles.logo} href="/">
@@ -75,11 +79,17 @@ export function Footer(): JSX.Element {
 
         <nav aria-label="Pätička" className={styles.nav}>
           <ul>
-            {navigationItems.map((item) => (
-              <li key={item.href}>
-                <Link href={item.href}>{item.label}</Link>
-              </li>
-            ))}
+            {/*
+              Everything except Kontakt, which is this block. A link that
+              scrolls to the element it sits inside is a link to nowhere.
+            */}
+            {navigationItems
+              .filter((item) => item.href !== "#kontakt")
+              .map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href}>{item.label}</Link>
+                </li>
+              ))}
           </ul>
         </nav>
       </div>

@@ -27,10 +27,12 @@ export const navigationItems = [
   { label: "Cenník", href: "/#cennik" },
   { label: "Tím", href: "/#tim" },
   /*
-   * A real page since 2026-09-24. It was a placeholder `#` from before the
-   * route existed, which left a dead link in the menu on every page.
+   * The footer, not a page. `#kontakt` rather than `/#kontakt` on purpose:
+   * the footer is in the root layout, so it is on every route, and a
+   * path-qualified anchor would send somebody on a service page back to the
+   * homepage to read a block that was already under their feet.
    */
-  { label: "Kontakt", href: "/kontakt" },
+  { label: "Kontakt", href: "#kontakt" },
 ] as const;
 
 /*
