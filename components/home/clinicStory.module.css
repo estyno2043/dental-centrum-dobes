@@ -12,13 +12,16 @@
   --travel: 0px;
 
   /*
-   * Light sand, the exact colour the user sent on 2026-09-24 (#e2d8c2). It
-   * replaced a darker greige, so everything written on the ground turned from
-   * porcelain to ink. The header is hidden over this cinematic section, so
-   * its white logo never meets the light ground. The jaw scene keeps its own
-   * dark card and chrome; it sits on this ground rather than being it.
+   * Dark walnut with a beige glow, at the user's request on 2026-09-24 after
+   * the light sand did not sit well: the same gradient as the walnut panels on
+   * the endodontics page, so the homepage and the service pages share it.
+   *
+   * `--ground` is the solid top of the ramp. The statement above fades into
+   * exactly this colour, and the pin's gradient starts from it, so there is
+   * no edge where one section hands over to the next. The glow comes in from
+   * the bottom-right corner, away from the heading.
    */
-  --ground: var(--sand);
+  --ground: var(--walnut-deep);
 
   position: relative;
   height: 1030vh;
@@ -37,7 +40,13 @@
    * so the sticky story remains pinned while the document itself cannot pan.
    */
   overflow: clip;
-  background: var(--ground);
+  background:
+    radial-gradient(
+      80% 70% at 100% 100%,
+      rgb(214 190 152 / 30%),
+      transparent 66%
+    ),
+    linear-gradient(180deg, var(--ground) 0%, #4b3a2e 55%, #5a4636 100%);
   isolation: isolate;
 }
 
@@ -63,8 +72,8 @@
   display: flex;
   align-items: center;
   margin-bottom: 14px;
-  /* A deep brown rather than the brand taupe: taupe on sand is 3.2:1, this 5.8:1. */
-  color: #5e4b38;
+  /* Latte rather than the brand taupe: taupe on walnut is 4:1, this 6.7:1. */
+  color: #d9c9b1;
   font-size: 12px;
   font-weight: 600;
   gap: 16px;
@@ -76,12 +85,12 @@
   display: block;
   width: clamp(28px, 5vw, 64px);
   height: 1px;
-  background: rgb(94 75 56 / 60%);
+  background: rgb(217 201 177 / 60%);
 }
 
 .headline {
   max-width: 18ch;
-  color: var(--ink);
+  color: var(--porcelain);
   font-size: clamp(1.7rem, 3.4vw, 3rem);
   font-weight: 600;
   letter-spacing: -0.025em;
@@ -306,8 +315,8 @@
   max-width: 56rem;
   margin: 0 auto;
   padding: 2rem;
-  color: var(--ink);
-  background: var(--sand);
+  color: var(--porcelain);
+  background: var(--walnut-deep);
   gap: 1rem;
 }
 
@@ -326,7 +335,7 @@
 }
 
 .noScriptFallback a {
-  color: var(--ink);
+  color: var(--porcelain);
 }
 
 @media (max-width: 767px) {

@@ -30,17 +30,16 @@
   position: absolute;
   z-index: 1;
   overflow: hidden;
-  background: var(--sand);
+  background: var(--walnut-deep);
   inset: 0;
   will-change: clip-path;
 }
 
 /*
  * The surface stays full-size and opaque after opening. Only its inner visual
- * settles back during the exit, exposing `var(--sand)` at the edges instead of
- * exposing the hero underneath. Sand, not ink, because that is the ground the
- * Ambulancia section opens on, so the edges and the next section are one
- * colour.
+ * settles back during the exit, exposing `var(--walnut-deep)` at the edges
+ * instead of exposing the hero underneath. That is the colour the Ambulancia
+ * section opens on, so the edges and the next section are one colour.
  */
 .storyContent {
   position: absolute;
@@ -111,9 +110,9 @@
 
 /*
  * This veil belongs to the statement surface. Its lower edge resolves to the
- * exact gallery background, `--sand`, so the next section cannot reveal the
- * hero or a contrasting horizontal cut. It was ink while the gallery was dark;
- * on 2026-09-24 the user asked for the gradient to match the new ground.
+ * exact top of the gallery background, `--walnut-deep`, so the next section
+ * cannot reveal the hero or a contrasting horizontal cut. On 2026-09-24 the
+ * user asked for this gradient to match the ground it hands over to.
  */
 .exitVeil {
   position: absolute;
@@ -122,11 +121,11 @@
     radial-gradient(
       86% 68% at 50% 18%,
       transparent 0%,
-      rgb(226 216 194 / 12%) 42%,
-      rgb(226 216 194 / 70%) 78%,
-      var(--sand) 100%
+      rgb(62 47 37 / 12%) 42%,
+      rgb(62 47 37 / 70%) 78%,
+      var(--walnut-deep) 100%
     ),
-    linear-gradient(180deg, transparent 0%, rgb(226 216 194 / 28%) 48%, var(--sand) 100%);
+    linear-gradient(180deg, transparent 0%, rgb(62 47 37 / 28%) 48%, var(--walnut-deep) 100%);
   inset: 0;
   pointer-events: none;
 }
