@@ -1664,6 +1664,50 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   The back-navigation scroll issue is still open and still awaiting the user's
   console trace. No files reserved.
 
+- 2026-09-24 — Claude published the site footer and `/kontakt` to `main`.
+
+  Both existed on `claude/trust-conversion-shell`, pushed 2026-08-24 and never
+  merged. **Do not merge that branch.** It is 139 commits behind: it predates
+  the team page, the price list, seven service pages and the pricing showcase,
+  and it rewrites eight files that have since been rebuilt. The pieces `main`
+  lacked were taken from it and brought up to date; the branch stays on GitHub
+  as the record of where they came from.
+
+  What had to change on the way over: its footer navigation pointed at
+  `/problemy`, which has no index route and 404s, so the footer now reads the
+  same `navigationItems` both menus read, and the Kontakt entry finally has a
+  destination instead of `#`. Its contact form carried `data-netlify` on markup
+  that exists only in App Router output, which is what Codex's migration
+  removed two days after that branch was written; it posts to `/__forms.html`
+  now and a `kontakt` schema was added to `public/__forms.html`. Its button
+  quoted a 100 € entry examination that is an 80 € package today.
+
+  `PageShell` was deliberately left behind. `/cennik` and `/tim` each carry
+  their own intro and `/kontakt` is built the same way; a third parallel shell
+  is one abstraction more than three pages justify.
+
+  The address and hours are the whole point and that branch had left them out,
+  because in August the clinic had not confirmed them. They are on record here
+  from `bratislavazubar.sk` (2026-08-17), so they are published and flagged in
+  `components/site/siteContent.ts` as needing one read-back from the clinic.
+  Still no e-mail, because none has ever been supplied. Still no legal row:
+  zásady ochrany osobných údajov and the operator's identification (obchodné
+  meno, sídlo, IČO) do not exist, and a test fails if a link to either appears
+  before the page does.
+
+  Verified before pushing: 383 tests, lint, TypeScript, build of 22 routes,
+  `git diff --check`, credential scan; the footer measured at 1440 and 390 on
+  five routes.
+
+  Next, in this order: the three remaining service pages (`biele-vyplne`,
+  `protetika`, `stomatochirurgia` — every answer needed is in hand), the
+  `/problemy/*` redirects onto the service pages together with the jaw's own
+  buttons, then SEO (`metadataBase`, OG images, `robots.txt`, sitemap,
+  LocalBusiness JSON-LD) and the Netlify connection, which is the only way to
+  prove the booking forms actually deliver.
+
+  No files reserved.
+
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
 credentials, tokens, or local configuration values in repository files,
