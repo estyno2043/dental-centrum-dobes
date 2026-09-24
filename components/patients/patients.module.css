@@ -77,6 +77,14 @@
   background: #dcd6cb;
   isolation: isolate;
   /*
+   * A drag across the frame must not sweep a text selection with it, and the
+   * photographs must not be draggable objects in their own right: a mouse
+   * press on an <img> otherwise starts the browser's image drag, which takes
+   * the pointer and cancels the wipe. Touch has no such drag, which is why
+   * this only ever broke on a desktop.
+   */
+  user-select: none;
+  /*
    * Already the right split, and now the frame is the element that uses it:
    * the horizontal drag comes here and the page keeps the vertical one, so
    * wiping the comparison and scrolling past it are separate gestures.
@@ -101,6 +109,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  -webkit-user-drag: none;
 }
 
 /*

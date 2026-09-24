@@ -67,6 +67,18 @@ export function BeforeAfter({
   const onPointerDown = useCallback(
     (event: ReactPointerEvent<HTMLDivElement>) => {
       if (event.pointerType === "mouse" && event.button !== 0) return;
+      /*
+       * Before anything else, and before the early return below.
+       *
+       * A mouse press that lands on an <img> starts the browser's own image
+       * drag. That drag takes the pointer, fires `pointercancel`, and ends
+       * this one on its first move — which is why the wipe worked under a
+       * finger, where no such drag exists, and died under a mouse. Preventing
+       * the default stops both that and the text selection a drag would
+       * otherwise sweep across the caption, and it has to happen on every
+       * press inside the frame, not only the ones we can turn into a position.
+       */
+      event.preventDefault();
       const next = positionFrom(event.clientX);
       if (next === null) return;
       draggingRef.current = true;
@@ -113,7 +125,11 @@ export function BeforeAfter({
       <div className={styles.layerAfter}>
         {hasPhotos ? (
           // eslint-disable-next-line @next/next/no-img-element -- Pre-cropped case photography; the image service adds nothing here.
-          <img src={patientCase.after} alt={`Po ošetrení — ${patientCase.problem}`} />
+          <img
+            alt={`Po ošetrení — ${patientCase.problem}`}
+            draggable={false}
+            src={patientCase.after}
+          />
         ) : (
           <span className={styles.placeholder} data-side="po">
             Po
@@ -124,7 +140,11 @@ export function BeforeAfter({
       <div className={styles.layerBefore}>
         {hasPhotos ? (
           // eslint-disable-next-line @next/next/no-img-element -- Pre-cropped case photography; the image service adds nothing here.
-          <img src={patientCase.before} alt={`Pred ošetrením — ${patientCase.problem}`} />
+          <img
+            alt={`Pred ošetrením — ${patientCase.problem}`}
+            draggable={false}
+            src={patientCase.before}
+          />
         ) : (
           <span className={styles.placeholder} data-side="pred">
             Pred

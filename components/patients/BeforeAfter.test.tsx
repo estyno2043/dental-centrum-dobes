@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { createEvent, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { BeforeAfter } from "./BeforeAfter";
@@ -9,6 +9,12 @@ const testCase: PatientCase = {
   treatments: ["Fazety"],
   problem: "Tmavé predné zuby.",
   facts: [{ label: "Návštev", value: "3" }],
+};
+
+const caseWithPhotos: PatientCase = {
+  ...testCase,
+  before: "/media/pred.jpg",
+  after: "/media/po.jpg",
 };
 
 describe("BeforeAfter", () => {
@@ -156,5 +162,37 @@ describe("BeforeAfter pointer dragging", () => {
 
     expect(frame.style.getPropertyValue("--pos")).toBe("30%");
     expect(slider).toHaveValue("30");
+  });
+
+  /*
+   * The regression this pair of assertions exists for.
+   *
+   * When the frame took over pointer handling, the press started landing on
+   * the <img> underneath. A mouse press on an image starts the browser's own
+   * image drag, which takes the pointer, fires `pointercancel` and ends the
+   * wipe on its first move. A finger starts no such drag, so the slider
+   * worked on a phone and was dead on a desktop.
+   */
+  it("stops the browser taking the press for its own image drag", () => {
+    render(<BeforeAfter patientCase={caseWithPhotos} />);
+    const frame = screen.getByTestId("before-after");
+
+    const down = createEvent.pointerDown(frame, {
+      pointerId: 1,
+      pointerType: "mouse",
+      button: 0,
+      clientX: 40,
+    });
+    fireEvent(frame, down);
+
+    expect(down.defaultPrevented).toBe(true);
+  });
+
+  it("marks both photographs as not draggable", () => {
+    render(<BeforeAfter patientCase={caseWithPhotos} />);
+
+    for (const img of screen.getAllByRole("img")) {
+      expect(img).toHaveAttribute("draggable", "false");
+    }
   });
 });
