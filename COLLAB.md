@@ -1618,6 +1618,52 @@ not achievable without interpolation artifacts, whatever the export is tagged.
   Verified on the merged tree: 349 tests, lint, TypeScript, build of 21 routes,
   `git diff --check`. No files reserved.
 
+- 2026-09-24 — Claude published the clinic's last round of answers and the
+  endodontics radiographs to `main`, merged over eight commits from the
+  parallel branches (stable viewport height, menu navigation, price search
+  without diacritics, before/after touch target). No file overlapped.
+
+  **The implant price moved, everywhere.** The clinic confirmed the healing
+  screw is billed on every implant, so it left the optional extras for the
+  base: 1 610 – 1 725 € with a full-ceramic crown, 1 505 – 1 620 € with
+  metal-ceramic. Moving it exposed an older mistake: the homepage showcase
+  quoted "od 1 490 €", which was the full-ceramic floor while the
+  metal-ceramic tooth was cheaper all along. It now reads od 1 505 €, and two
+  tests read those figures from `implantContent.ts` rather than trusting typed
+  numbers — the endodontics comparison stays like for like on the full-ceramic
+  crown, and that test is what caught the floor.
+
+  **Periodontology.** Treatment runs at least three months. For a periodontal
+  patient the hygiene *is* FMD and closed curettage is part of it, so the
+  ordinary hygiene and the standalone curettage came off the follow-on list;
+  beside FMD they read as three charges for one. Open curettage stays, named
+  as the surgical step for places FMD cannot reach.
+
+  **Aesthetics.** 190 € against 220 € is monochromatic against layered: Empress
+  Direct is built from dentine and enamel shades, translucencies and effects.
+  The page had guessed it "holds its lustre longer"; the clinic never said so
+  and that claim is gone.
+
+  **Endodontics has its proof.** Two periapical radiographs of the same area,
+  before and after, in their own section after the microscope. Side by side
+  rather than on a slider: they are separate exposures from slightly different
+  angles and a wipe between frames that do not register reads as a trick. No
+  face on either. The caption says only what is visible, and a test forbids
+  claiming healing around the root, which these frames do not show.
+
+  Verified on the merged tree: 376 tests, lint, TypeScript, build of 21 routes,
+  `git diff --check`, credential scan.
+
+  Still outstanding from the clinic: the sinus lift price, before/after X-rays
+  for periodontology, consent for the two photographs that show a face (the
+  3Shape scan on aesthetics, the blood draw on periodontology), and whether a
+  bridge gets a next-day temporary like a crown. Everything else needed for
+  `biele-vyplne`, `protetika` and `stomatochirurgia` is in hand; those three
+  pages are not built yet at the user's request.
+
+  The back-navigation scroll issue is still open and still awaiting the user's
+  console trace. No files reserved.
+
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
 credentials, tokens, or local configuration values in repository files,
