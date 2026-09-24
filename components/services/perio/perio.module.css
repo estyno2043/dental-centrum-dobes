@@ -65,11 +65,21 @@
   align-items: center;
 }
 
+/*
+ * Deep sage, at the user's request on 2026-09-24 for something calm that still
+ * pulls the eye. It is the only cool colour on a warm page, which is what
+ * makes it stand out without being loud, and green reads as calm rather than
+ * as an alarm on a page about a disease. Measured: porcelain on it 7.0:1, the
+ * 84% body text 5.6:1, the 72% fine print 4.6:1.
+ */
 .check {
-  padding: clamp(22px, 3vw, 34px);
-  border: 1px solid rgb(138 115 88 / 30%);
-  border-radius: 6px;
-  background: rgb(250 249 246 / 70%);
+  --sage: #465a4f;
+
+  padding: clamp(24px, 3.4vw, 40px);
+  border-radius: 10px;
+  background: var(--sage);
+  box-shadow: 0 24px 60px -30px rgb(40 56 47 / 55%);
+  color: var(--porcelain);
 }
 
 .checkFields {
@@ -81,7 +91,7 @@
 .checkQuestion {
   padding: 0;
   margin: 0 0 14px;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 600;
   letter-spacing: -0.015em;
 }
@@ -90,9 +100,9 @@
   display: flex;
   gap: 12px;
   align-items: flex-start;
-  padding: 10px 0;
-  border-top: 1px solid rgb(138 115 88 / 20%);
-  color: rgb(38 38 42 / 84%);
+  padding: 11px 0;
+  border-top: 1px solid rgb(250 249 246 / 18%);
+  color: rgb(250 249 246 / 84%);
   cursor: pointer;
   font-size: 0.92rem;
   line-height: 1.45;
@@ -112,21 +122,22 @@
   width: 19px;
   height: 19px;
   margin-top: 1px;
-  border: 1px solid rgb(138 115 88 / 55%);
+  border: 1px solid rgb(250 249 246 / 60%);
   border-radius: 3px;
   transition:
     background-color 180ms var(--ease),
     border-color 180ms var(--ease);
 }
 
+/* The tick is drawn in the panel's own green on a porcelain box. */
 .checkBox::after {
   position: absolute;
   top: 3px;
   left: 6px;
   width: 5px;
   height: 9px;
-  border: solid var(--porcelain);
-  border-width: 0 1.7px 1.7px 0;
+  border: solid var(--sage);
+  border-width: 0 1.9px 1.9px 0;
   content: "";
   opacity: 0;
   rotate: 45deg;
@@ -134,8 +145,8 @@
 }
 
 .checkItem input:checked + .checkBox {
-  border-color: var(--taupe-deep);
-  background: var(--taupe-deep);
+  border-color: var(--porcelain);
+  background: var(--porcelain);
 }
 
 .checkItem input:checked + .checkBox::after {
@@ -143,31 +154,31 @@
 }
 
 .checkItem input:focus-visible + .checkBox {
-  outline: 2px solid var(--taupe-deep);
+  outline: 2px solid var(--porcelain);
   outline-offset: 2px;
 }
 
 /*
  * The absence of a symptom, set apart from the five that are symptoms — a
- * heavier rule above it and the type in ink, because this is the line the
- * section is really about.
+ * heavier rule above it and the type at full strength, because this is the
+ * line the section is really about.
  */
 .checkPainless {
   margin-top: 6px;
-  border-top: 1px solid var(--charcoal);
-  color: var(--ink);
+  border-top: 1px solid rgb(250 249 246 / 70%);
+  color: var(--porcelain);
   font-weight: 500;
 }
 
 .checkVerdict {
-  padding-top: 16px;
+  padding-top: 18px;
   margin-top: 16px;
-  border-top: 1px solid rgb(138 115 88 / 30%);
+  border-top: 1px solid rgb(250 249 246 / 22%);
 }
 
 .checkVerdictText {
   margin: 0;
-  font-size: 1.02rem;
+  font-size: 1.05rem;
   font-weight: 500;
   letter-spacing: -0.02em;
   line-height: 1.4;
@@ -176,35 +187,33 @@
 
 .checkPainlessNote {
   margin: 10px 0 0;
-  color: rgb(38 38 42 / 74%);
+  color: rgb(250 249 246 / 84%);
   font-size: 0.87rem;
   line-height: 1.55;
   text-wrap: pretty;
 }
 
 .checkCtaText {
-  margin: 14px 0 12px;
-  color: rgb(38 38 42 / 76%);
+  margin: 14px 0 14px;
+  color: rgb(250 249 246 / 84%);
   font-size: 0.87rem;
   line-height: 1.55;
   text-wrap: pretty;
 }
 
 /*
- * Solid, where every other control on this page is an outline pill. This is
- * the one action the page is built to produce, and the verdict directly above
- * it is what produces it — the outline idiom is for the secondary links out to
- * hygiene and implants.
+ * Filled porcelain on the sage: the one action the page is built to produce,
+ * directly under the verdict that produces it.
  */
 .checkCta {
   display: inline-flex;
   gap: 9px;
   align-items: center;
-  padding: 12px 22px;
-  border: 1px solid var(--charcoal);
+  padding: 13px 22px;
+  border: 1px solid var(--porcelain);
   border-radius: 999px;
-  background: var(--charcoal);
-  color: var(--porcelain);
+  background: var(--porcelain);
+  color: var(--ink);
   font-size: 0.9rem;
   font-weight: 500;
   letter-spacing: -0.01em;
@@ -220,8 +229,8 @@
 
 .checkCta:hover,
 .checkCta:focus-visible {
-  border-color: var(--taupe-deep);
-  background: var(--taupe-deep);
+  border-color: #e4eadf;
+  background: #e4eadf;
 }
 
 .checkCta:hover svg,
@@ -230,14 +239,14 @@
 }
 
 .checkCta:focus-visible {
-  outline: 2px solid var(--taupe-deep);
+  outline: 2px solid var(--porcelain);
   outline-offset: 3px;
 }
 
 /* Never decoration: a checklist that reads as a diagnosis is another document. */
 .checkDisclaimer {
-  margin: 12px 0 0;
-  color: rgb(38 38 42 / 56%);
+  margin: 14px 0 0;
+  color: rgb(250 249 246 / 72%);
   font-size: 0.8rem;
   font-style: italic;
   line-height: 1.5;
