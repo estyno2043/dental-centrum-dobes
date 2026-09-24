@@ -1708,6 +1708,55 @@ not achievable without interpolation artifacts, whatever the export is tagged.
 
   No files reserved.
 
+- 2026-09-24 — Claude replaced `/kontakt` with a footer, rebuilt that footer on
+  a reference the user supplied, and fixed the before/after slider on desktop.
+
+  **`/kontakt` is gone.** The footer already carried the address, both numbers
+  and the hours on every route, so a page repeated them. The menu's Kontakt
+  entry is now `#kontakt`, unqualified on purpose: the footer is in the root
+  layout, so a path-qualified anchor would send somebody on a service page back
+  to the homepage to read a block already under their feet. Deleted with the
+  page: the contact form, the `conversion` components, the `kontakt` schema in
+  `public/__forms.html` and `clinicFacts`.
+
+  **The footer is rebuilt** after a screen recording of lavadental.lv: nearly a
+  screen tall, a wordmark standing still on the left while labelled blocks
+  travel past it, small letter-spaced caps over larger text, a dotted rule
+  under each contact line. Their bank details and funding notice were not
+  taken; that is their legal obligation, not their design. Two things are ours:
+  the wordmark is an outline that fills with taupe as the footer arrives, the
+  move the entry package's tooth already makes on hover (scroll listener writes
+  one custom property, stylesheet defaults it filled), and the opening hours
+  mark today and say whether the clinic is open right now, resolved through
+  `useSyncExternalStore` with a `null` server snapshot so hydration matches.
+
+  **The map is OpenStreetMap, not Google.** An embedded Google map sets cookies
+  and calls home before anybody has consented, and this site still has no
+  consent banner. Coordinates are a house-level Nominatim match for Vlárska
+  13/c (48.1712929, 17.0912107), pinned by a test: a map is the one thing on a
+  clinic page somebody acts on by driving.
+
+  **The desktop before/after slider was broken by `bb58869`.** That commit
+  correctly moved pointer handling to the frame and set `pointer-events: none`
+  on the range — but the press then landed on the `<img>`, and a mouse press on
+  an image starts the browser's own image drag, which takes the pointer, fires
+  `pointercancel` and kills the wipe on its first move. A finger starts no such
+  drag, which is exactly why it worked on a phone. Fixed with `preventDefault`
+  on every primary press (before the early return), `draggable={false}` on both
+  photographs, and `user-select: none` plus `-webkit-user-drag: none`. Two
+  regression tests pin it.
+
+  Verified before pushing: 384 tests, lint, TypeScript, build of 21 routes,
+  `git diff --check`, credential scan. Footer measured at 1440 and 390; the
+  drag measured with mouse-type pointer events at 1440.
+
+  ⚠️ Still no legal row in the footer: zásady ochrany osobných údajov and the
+  operator's identification (obchodné meno, sídlo, IČO) do not exist, and a
+  test fails if a link to either appears before the page does. The address and
+  hours still want one read-back from the clinic.
+
+  No files reserved.
+
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
 credentials, tokens, or local configuration values in repository files,
