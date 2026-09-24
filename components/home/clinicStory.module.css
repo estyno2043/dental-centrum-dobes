@@ -11,10 +11,21 @@
   --jaw-opacity: 0;
   --travel: 0px;
 
+  /*
+   * A warm greige between walnut and latte, at the user's request on
+   * 2026-09-24. It is a quarter of the way from the walnut on the clinic's own
+   * wall (#4b3a2e) towards latte, not the midpoint: halfway, white type falls
+   * to about 3:1 and dark type is no better, so neither reads. At this point
+   * the white headline still holds 5:1, which is what lets the header keep its
+   * white logo and the jaw scene keep its dark chrome — a lighter ground would
+   * have meant re-theming both.
+   */
+  --ground: #78695d;
+
   position: relative;
   height: 1030vh;
   height: 1030lvh;
-  background: var(--ink);
+  background: var(--ground);
 }
 
 .pin {
@@ -28,7 +39,7 @@
    * so the sticky story remains pinned while the document itself cannot pan.
    */
   overflow: clip;
-  background: var(--ink);
+  background: var(--ground);
   isolation: isolate;
 }
 
@@ -54,7 +65,8 @@
   display: flex;
   align-items: center;
   margin-bottom: 14px;
-  color: var(--taupe);
+  /* Porcelain, not taupe: taupe on this ground is about 1.3:1. */
+  color: var(--porcelain);
   font-size: 12px;
   font-weight: 600;
   gap: 16px;
@@ -66,7 +78,7 @@
   display: block;
   width: clamp(28px, 5vw, 64px);
   height: 1px;
-  background: var(--taupe);
+  background: rgb(250 249 246 / 70%);
 }
 
 .headline {
@@ -128,7 +140,7 @@
   width: 100%;
   height: 100%;
   place-items: center;
-  background: linear-gradient(160deg, rgb(174 155 126 / 12%), rgb(28 28 31 / 92%));
+  background: linear-gradient(160deg, rgb(174 155 126 / 12%), rgb(58 48 40 / 92%));
 }
 
 .placeholderLabel {
@@ -178,8 +190,8 @@
   z-index: 1;
   pointer-events: none;
   background:
-    linear-gradient(90deg, rgb(28 28 31 / 38%), transparent 40% 68%, rgb(28 28 31 / 18%)),
-    linear-gradient(180deg, rgb(28 28 31 / 14%), transparent 31% 68%, rgb(28 28 31 / 30%));
+    linear-gradient(90deg, rgb(58 48 40 / 38%), transparent 40% 68%, rgb(58 48 40 / 18%)),
+    linear-gradient(180deg, rgb(58 48 40 / 14%), transparent 31% 68%, rgb(58 48 40 / 30%));
   inset: 0;
 }
 
@@ -297,7 +309,7 @@
   margin: 0 auto;
   padding: 2rem;
   color: var(--porcelain);
-  background: var(--ink);
+  background: #78695d;
   gap: 1rem;
 }
 
@@ -407,8 +419,8 @@
 
   .scrim {
     background:
-      linear-gradient(180deg, rgb(28 28 31 / 12%), transparent 28% 57%, rgb(28 28 31 / 62%)),
-      linear-gradient(90deg, rgb(28 28 31 / 9%), transparent 70%);
+      linear-gradient(180deg, rgb(58 48 40 / 12%), transparent 28% 57%, rgb(58 48 40 / 62%)),
+      linear-gradient(90deg, rgb(58 48 40 / 9%), transparent 70%);
   }
 
   /*
