@@ -1,0 +1,728 @@
+/*
+ * Biele výplne.
+ *
+ * Enamel white and mint, built 2026-09-25: the page is about a repair you
+ * cannot see, so it is clean and bright, with one graphite band for the old
+ * dark fillings people want gone.
+ *
+ * Contrast, measured: the deep mint #2f6f62 for small labels 5.2:1 on the
+ * cream and the pale mint card, 5.9:1 on white; ink on the full mint 12.3:1;
+ * on graphite, porcelain 13.6:1 and the light mint #a8dcc9 9.3:1. The deep
+ * mint is never used for text on the full mint (4.2:1).
+ */
+
+.opening,
+.surfaces,
+.block,
+.amalgam,
+.twoUp {
+  --mint: #bfe3d6;
+  --mint-soft: #e6f4ef;
+  --mint-deep: #2f6f62;
+  --mint-light: #a8dcc9;
+  --enamel: #fbfaf6;
+  --graphite: #262b31;
+}
+
+.sectionHeading {
+  margin: 0 0 clamp(14px, 2vw, 20px);
+  font-size: clamp(1.5rem, 2.8vw, 2.3rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: 48ch;
+  margin: 0 0 clamp(22px, 3vw, 32px);
+  color: rgb(38 38 42 / 74%);
+  font-size: 0.98rem;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.prose {
+  max-width: 50ch;
+  margin: 0 0 16px;
+  color: rgb(38 38 42 / 76%);
+  font-size: 0.95rem;
+  line-height: 1.68;
+  text-wrap: pretty;
+}
+
+.block {
+  padding-top: clamp(60px, 8vw, 112px);
+}
+
+.visuallyHidden {
+  position: absolute;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* -------------------------------------------------------------- opening --- */
+
+.opening {
+  display: grid;
+  gap: clamp(24px, 4vw, 64px);
+  padding-top: clamp(32px, 4.5vw, 56px);
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  align-items: center;
+}
+
+.openingHeading {
+  max-width: 16ch;
+  margin: 0 0 18px;
+  font-size: clamp(1.9rem, 4.4vw, 3.3rem);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+.openingBody {
+  max-width: 48ch;
+  margin: 0 0 clamp(24px, 3.2vw, 36px);
+  font-size: clamp(1rem, 1.7vw, 1.14rem);
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+}
+
+.facts > div {
+  padding: 12px 18px;
+  border: 1px solid rgb(47 111 98 / 22%);
+  border-radius: 16px;
+  background: var(--mint-soft);
+}
+
+.facts dt {
+  color: var(--mint-deep);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.facts dd {
+  margin: 4px 0 0;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.toothSplit {
+  display: block;
+  width: 100%;
+  max-width: 20rem;
+  height: auto;
+  justify-self: center;
+  filter: drop-shadow(0 22px 30px rgb(47 111 98 / 14%));
+}
+
+.glint {
+  animation: glint 3s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.glint + .glint {
+  animation-delay: 1.3s;
+}
+
+@keyframes glint {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.4;
+    transform: scale(0.65);
+  }
+}
+
+/* ------------------------------------------------------------- surfaces --- */
+
+.surfaces {
+  padding-top: clamp(60px, 8vw, 112px);
+}
+
+/* A panel inside the section: `.page > *` gives every section the gutter. */
+.surfacesInner {
+  padding: clamp(26px, 4vw, 52px);
+  border: 1px solid rgb(47 111 98 / 20%);
+  border-radius: 28px;
+  background:
+    radial-gradient(90% 70% at 100% 0%, rgb(191 227 214 / 55%), transparent 60%),
+    linear-gradient(180deg, #fff 0%, var(--enamel) 100%);
+  box-shadow: 0 30px 60px -44px rgb(47 111 98 / 55%);
+}
+
+.picker {
+  display: grid;
+  gap: clamp(20px, 4vw, 56px);
+  margin-bottom: clamp(30px, 4vw, 48px);
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  align-items: center;
+}
+
+.pickerDrawing {
+  padding: clamp(10px, 2vw, 24px);
+  border-radius: 22px;
+  background: var(--mint-soft);
+}
+
+.surfaceMap {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.surfaceMap [data-surface] {
+  transition: fill 240ms ease;
+}
+
+.pickerChoices {
+  display: flex;
+  gap: 8px;
+  padding: 5px;
+  margin: 0 0 22px;
+  border: 1px solid rgb(47 111 98 / 22%);
+  border-radius: 999px;
+  background: #fff;
+  min-inline-size: 0;
+}
+
+.choice {
+  position: relative;
+  flex: 1;
+  cursor: pointer;
+}
+
+.choice input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.choice span {
+  display: block;
+  padding: 11px 14px;
+  border-radius: 999px;
+  color: rgb(38 38 42 / 70%);
+  font-size: 0.92rem;
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+  transition:
+    background-color 220ms var(--ease),
+    color 220ms var(--ease);
+}
+
+.choice:hover span {
+  color: var(--ink);
+}
+
+.choice input:checked + span {
+  background: var(--mint);
+  color: var(--ink);
+}
+
+.choice input:focus-visible + span {
+  outline: 2px solid var(--mint-deep);
+  outline-offset: 2px;
+}
+
+.pickerPrice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  align-items: baseline;
+  margin: 0 0 10px;
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.pickerPrice span {
+  color: var(--mint-deep);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.pickerWhich {
+  max-width: 36ch;
+  min-height: 3.2em;
+  margin: 0;
+  color: rgb(38 38 42 / 78%);
+  font-size: 0.98rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.factorsHeading {
+  margin: 0 0 16px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.factors {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+  margin: 0 0 18px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  list-style: none;
+}
+
+.factors li {
+  padding: 18px;
+  border: 1px solid rgb(47 111 98 / 16%);
+  border-radius: 18px;
+  background: #fff;
+}
+
+.factorIcon {
+  display: block;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 10px;
+}
+
+.factors h4 {
+  margin: 0 0 6px;
+  font-size: 0.96rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.factors p {
+  margin: 0;
+  color: rgb(38 38 42 / 72%);
+  font-size: 0.87rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.deepNote {
+  max-width: 60ch;
+  margin: 0;
+  padding: 12px 16px;
+  border-left: 2px solid var(--mint-deep);
+  border-radius: 0 12px 12px 0;
+  background: var(--mint-soft);
+  color: rgb(38 38 42 / 80%);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+/* ---------------------------------------------------------------- steps --- */
+
+.steps {
+  display: grid;
+  gap: 14px;
+  padding: 0;
+  margin: 0;
+  counter-reset: none;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  list-style: none;
+}
+
+.steps li {
+  position: relative;
+  padding: 22px 20px 20px;
+  border-radius: 20px;
+  background: var(--mint-soft);
+}
+
+/* A hairline joining each step to the next, on wide screens. */
+.steps li:not(:last-child)::after {
+  position: absolute;
+  top: 40px;
+  right: -14px;
+  width: 14px;
+  height: 2px;
+  background: rgb(47 111 98 / 35%);
+  content: "";
+}
+
+.stepNumber {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  background: var(--mint-deep);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  place-items: center;
+}
+
+.steps h3 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.steps p {
+  margin: 0;
+  color: rgb(38 38 42 / 74%);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* ------------------------------------------------------ amalgam, graphite --- */
+
+.amalgam {
+  padding-top: clamp(60px, 8vw, 112px);
+}
+
+.amalgamInner {
+  display: grid;
+  gap: clamp(24px, 4vw, 56px);
+  padding: clamp(30px, 5vw, 64px);
+  border-radius: 28px;
+  background:
+    radial-gradient(80% 90% at 100% 100%, rgb(168 220 201 / 22%), transparent 60%),
+    linear-gradient(150deg, #323840 0%, var(--graphite) 55%, #1d2126 100%);
+  box-shadow: 0 34px 70px -44px rgb(29 33 38 / 85%);
+  color: var(--porcelain);
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+}
+
+/* Dark filling, arrow, white filling: the whole section as one picture. */
+.amalgamSwatches {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  color: var(--mint-light);
+}
+
+.swatchOld,
+.swatchNew {
+  width: clamp(64px, 9vw, 96px);
+  aspect-ratio: 1;
+  border-radius: 38% 38% 44% 44%;
+}
+
+.swatchOld {
+  background: linear-gradient(145deg, #a4acb6, #5f6771);
+  box-shadow: inset 0 2px 0 rgb(255 255 255 / 30%);
+}
+
+.swatchNew {
+  background: linear-gradient(145deg, #fff, #e9efe9);
+  box-shadow:
+    inset 0 2px 0 #fff,
+    0 0 0 2px rgb(168 220 201 / 60%);
+}
+
+.amalgamHeading {
+  margin: 0 0 12px;
+  font-size: clamp(1.6rem, 3.4vw, 2.5rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+}
+
+.amalgamBody {
+  max-width: 46ch;
+  margin: 0 0 22px;
+  color: rgb(250 249 246 / 82%);
+  font-size: 0.98rem;
+  line-height: 1.68;
+  text-wrap: pretty;
+}
+
+.cta {
+  display: inline-flex;
+  gap: 9px;
+  align-items: center;
+  padding: 13px 22px;
+  border-radius: 999px;
+  background: var(--mint-light);
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 240ms var(--ease);
+}
+
+.cta svg {
+  transition: translate 240ms var(--ease);
+}
+
+.cta:hover,
+.cta:focus-visible {
+  background: #c8ecde;
+}
+
+.cta:hover svg,
+.cta:focus-visible svg {
+  translate: 4px 0;
+}
+
+.cta:focus-visible {
+  outline: 2px solid var(--mint-light);
+  outline-offset: 3px;
+}
+
+/* ------------------------------------------------------------ materials --- */
+
+.materials {
+  display: grid;
+  gap: 14px;
+  padding: 0;
+  margin: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  list-style: none;
+}
+
+.materials li {
+  padding: 22px;
+  border: 1px solid rgb(47 111 98 / 18%);
+  border-radius: 20px;
+  background: #fff;
+}
+
+.materials li:first-child {
+  border-color: transparent;
+  background: linear-gradient(160deg, var(--mint-soft), #fff);
+}
+
+.materialUse {
+  display: inline-block;
+  padding: 4px 11px;
+  margin-bottom: 12px;
+  border-radius: 999px;
+  background: var(--mint-soft);
+  color: var(--mint-deep);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.materials li:first-child .materialUse {
+  background: #fff;
+}
+
+.materials h3 {
+  margin: 0 0 6px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.materials p {
+  margin: 0;
+  color: rgb(38 38 42 / 74%);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* ---------------------------------------------------- longevity, beyond --- */
+
+.twoUp {
+  display: grid;
+  gap: clamp(20px, 3vw, 36px);
+  padding-top: clamp(60px, 8vw, 112px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+}
+
+.longevity,
+.beyond {
+  padding: clamp(24px, 3.4vw, 40px);
+  border-radius: 24px;
+}
+
+.longevity {
+  background:
+    radial-gradient(80% 80% at 0% 0%, rgb(191 227 214 / 70%), transparent 62%),
+    var(--mint-soft);
+}
+
+.beyond {
+  border: 1px solid rgb(47 111 98 / 18%);
+  background: #fff;
+}
+
+.longevityHeading,
+.beyondHeading {
+  margin: 0 0 12px;
+  color: var(--mint-deep);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.longevityClaim {
+  margin: 0 0 14px;
+  font-size: clamp(1.6rem, 3.2vw, 2.3rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+}
+
+.beyondList {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.beyondList li {
+  padding: 14px 0;
+  border-top: 1px solid rgb(47 111 98 / 16%);
+}
+
+.beyondRow {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.beyondRow h3 {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.beyondRow span {
+  color: var(--mint-deep);
+  font-size: 0.92rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.beyondList p {
+  margin: 5px 0 0;
+  color: rgb(38 38 42 / 72%);
+  font-size: 0.87rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.textLink {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 18px;
+  border: 1px solid rgb(47 111 98 / 40%);
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    background-color 240ms var(--ease),
+    color 240ms var(--ease);
+}
+
+.textLink svg {
+  transition: translate 240ms var(--ease);
+}
+
+.textLink:hover,
+.textLink:focus-visible {
+  background: var(--mint-deep);
+  color: #fff;
+}
+
+.textLink:hover svg,
+.textLink:focus-visible svg {
+  translate: 4px 0;
+}
+
+/* ---------------------------------------------------------------- cases --- */
+
+.case {
+  max-width: 44rem;
+  margin: 0;
+}
+
+.caseNote {
+  margin-top: 12px;
+  color: rgb(38 38 42 / 60%);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------------------- narrow --- */
+
+@media (max-width: 960px) {
+  .steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .steps li::after {
+    display: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .opening,
+  .picker,
+  .factors,
+  .materials,
+  .twoUp,
+  .amalgamInner {
+    grid-template-columns: 1fr;
+  }
+
+  .toothSplit {
+    max-width: 13rem;
+  }
+
+  .pickerWhich {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glint {
+    animation: none;
+  }
+
+  .choice span,
+  .surfaceMap [data-surface],
+  .cta,
+  .cta svg,
+  .textLink,
+  .textLink svg {
+    transition: none;
+  }
+}

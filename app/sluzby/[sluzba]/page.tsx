@@ -6,6 +6,7 @@ import { ServiceBooking } from "@/components/booking/ServiceBooking";
 import { SiteHeader } from "@/components/hero/SiteHeader";
 import { AestheticBody } from "@/components/services/aesthetic/AestheticBody";
 import { EndoBody } from "@/components/services/endo/EndoBody";
+import { FillingsBody } from "@/components/services/fillings/FillingsBody";
 import { EntryBody } from "@/components/services/entry/EntryBody";
 import { HygieneBody } from "@/components/services/hygiene/HygieneBody";
 import { ImplantBody } from "@/components/services/implants/ImplantBody";
@@ -119,6 +120,7 @@ const BESPOKE_BODIES: Readonly<Record<string, () => JSX.Element>> = {
   parodontologia: PerioBody,
   endodoncia: EndoBody,
   "osetrenie-deti": KidsBody,
+  "biele-vyplne": FillingsBody,
 };
 
 export default async function ServicePage({
