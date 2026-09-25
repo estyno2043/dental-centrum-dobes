@@ -1,0 +1,592 @@
+/*
+ * Protetika: mostíky a protézy.
+ *
+ * Ivory and slate blue, built 2026-09-25 on the theme of *made to measure*:
+ * calm and precise, like a laboratory's work, with one deep slate band for
+ * the clinic's answer about who decides.
+ *
+ * Contrast, measured: slate #3d5a73 for small labels 6.4:1 on the cream,
+ * 5.8:1 on the soft slate, 6.8:1 on ivory; on the dark slate band, porcelain
+ * 11.7:1 and the pale #c9d8e4 8.4:1.
+ */
+
+.opening,
+.block,
+.decision {
+  --ivory: #fbf8f1;
+  --slate: #3d5a73;
+  --slate-soft: #dfe8ef;
+  --slate-pale: #c9d8e4;
+  --slate-dark: #243746;
+  --gum: #f1c9c9;
+}
+
+.sectionHeading {
+  margin: 0 0 clamp(18px, 2.4vw, 28px);
+  font-size: clamp(1.5rem, 2.8vw, 2.3rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.prose {
+  max-width: 50ch;
+  margin: 0 0 16px;
+  color: rgb(38 38 42 / 76%);
+  font-size: 0.95rem;
+  line-height: 1.68;
+  text-wrap: pretty;
+}
+
+.block {
+  padding-top: clamp(60px, 8vw, 112px);
+}
+
+/* -------------------------------------------------------------- opening --- */
+
+.opening {
+  display: grid;
+  gap: clamp(24px, 4vw, 64px);
+  padding-top: clamp(32px, 4.5vw, 56px);
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  align-items: center;
+}
+
+.openingHeading {
+  max-width: 17ch;
+  margin: 0 0 18px;
+  font-size: clamp(1.9rem, 4.2vw, 3.2rem);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.openingBody {
+  max-width: 48ch;
+  margin: 0 0 clamp(24px, 3.2vw, 36px);
+  font-size: clamp(1rem, 1.7vw, 1.14rem);
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+}
+
+.facts > div {
+  padding: 12px 18px;
+  border: 1px solid rgb(61 90 115 / 22%);
+  border-radius: 16px;
+  background: var(--ivory);
+}
+
+.facts > div:last-child {
+  border-color: transparent;
+  background: var(--slate-soft);
+}
+
+.facts dt {
+  color: var(--slate);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.facts dd {
+  margin: 4px 0 0;
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.bridge {
+  display: block;
+  width: 100%;
+  max-width: 22rem;
+  height: auto;
+  justify-self: center;
+  filter: drop-shadow(0 22px 30px rgb(61 90 115 / 14%));
+}
+
+/* The bridge hovers, then settles a few pixels; transform only. */
+.float {
+  animation: settle 3.6s ease-in-out infinite alternate;
+}
+
+@keyframes settle {
+  from {
+    transform: translateY(-6px);
+  }
+
+  to {
+    transform: translateY(6px);
+  }
+}
+
+/* ------------------------------------------------------------- switcher --- */
+
+.switcher {
+  display: grid;
+  gap: 16px;
+}
+
+/* Three large tabs across, each with its drawing. */
+.tabs {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.tab {
+  display: grid;
+  gap: 4px 14px;
+  padding: 16px 18px;
+  border: 1px solid rgb(61 90 115 / 18%);
+  border-radius: 18px;
+  background: var(--ivory);
+  color: var(--ink);
+  cursor: pointer;
+  font-family: inherit;
+  grid-template-columns: auto minmax(0, 1fr);
+  text-align: left;
+  transition:
+    background-color 0.3s var(--ease),
+    border-color 0.3s var(--ease),
+    box-shadow 0.3s var(--ease);
+}
+
+.tabIcon {
+  width: 44px;
+  height: 44px;
+  grid-row: span 2;
+}
+
+.tabName {
+  align-self: end;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.tabKind {
+  color: rgb(38 38 42 / 66%);
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
+.tab:hover {
+  border-color: rgb(61 90 115 / 40%);
+}
+
+.tab[aria-selected="true"] {
+  border-color: var(--slate);
+  background: #fff;
+  box-shadow: 0 16px 34px -24px rgb(61 90 115 / 70%);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--slate);
+  outline-offset: 2px;
+}
+
+.panel {
+  padding: clamp(24px, 3.6vw, 44px);
+  border-radius: 24px;
+  background:
+    radial-gradient(90% 80% at 100% 0%, rgb(223 232 239 / 90%), transparent 60%),
+    #fff;
+  box-shadow: 0 28px 60px -44px rgb(36 55 70 / 55%);
+}
+
+.panel:focus-visible {
+  outline: 2px solid var(--slate);
+  outline-offset: 3px;
+}
+
+.panelWhen {
+  max-width: 40ch;
+  margin: 0 0 12px;
+  font-size: clamp(1.15rem, 2.2vw, 1.5rem);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 1.3;
+  text-wrap: pretty;
+}
+
+.panelBody {
+  max-width: 56ch;
+  margin: 0 0 clamp(20px, 2.6vw, 28px);
+  color: rgb(38 38 42 / 76%);
+  font-size: 0.95rem;
+  line-height: 1.68;
+  text-wrap: pretty;
+}
+
+.panelFacts {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 22px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.panelFacts > div {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--slate-soft);
+}
+
+.panelFacts dt {
+  color: var(--slate);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.panelFacts dd {
+  margin: 6px 0 0;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  line-height: 1.3;
+}
+
+.priceList {
+  display: grid;
+  gap: 0 32px;
+  padding: 0;
+  margin: 0 0 20px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  list-style: none;
+}
+
+.priceList li,
+.immediateList li,
+.repair {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 11px 0;
+  border-bottom: 1px dashed rgb(61 90 115 / 25%);
+  font-size: 0.92rem;
+}
+
+.priceList strong,
+.immediateList strong,
+.repair strong {
+  color: var(--slate);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.example {
+  padding: 16px 20px;
+  margin-bottom: 4px;
+  border-left: 3px solid var(--slate);
+  border-radius: 0 16px 16px 0;
+  background: var(--ivory);
+}
+
+.exampleLabel {
+  margin: 0 0 6px;
+  color: var(--slate);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.exampleTotal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 0 0 6px;
+  font-size: 0.92rem;
+}
+
+.exampleTotal strong {
+  font-size: clamp(1.4rem, 2.8vw, 1.9rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+}
+
+.exampleNote {
+  margin: 0;
+  color: rgb(38 38 42 / 70%);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.textLink {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 18px;
+  border: 1px solid rgb(61 90 115 / 40%);
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    background-color 240ms var(--ease),
+    color 240ms var(--ease);
+}
+
+.textLink svg {
+  transition: translate 240ms var(--ease);
+}
+
+.textLink:hover,
+.textLink:focus-visible {
+  background: var(--slate);
+  color: #fff;
+}
+
+.textLink:hover svg,
+.textLink:focus-visible svg {
+  translate: 4px 0;
+}
+
+/* ------------------------------------------------------------- decision --- */
+
+.decision {
+  padding-top: clamp(60px, 8vw, 112px);
+}
+
+.decisionInner {
+  padding: clamp(30px, 5vw, 64px);
+  border-radius: 28px;
+  background:
+    radial-gradient(80% 90% at 0% 0%, rgb(201 216 228 / 22%), transparent 60%),
+    linear-gradient(150deg, #2f4659 0%, var(--slate-dark) 60%, #1b2a36 100%);
+  box-shadow: 0 34px 70px -44px rgb(27 42 54 / 85%);
+  color: var(--porcelain);
+}
+
+.decisionHeading {
+  margin: 0 0 clamp(20px, 3vw, 32px);
+  font-size: clamp(1.7rem, 3.6vw, 2.6rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.decisionSides {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.decisionSide {
+  padding: clamp(20px, 2.8vw, 30px);
+  border: 1px solid rgb(201 216 228 / 22%);
+  border-radius: 20px;
+  background: rgb(255 255 255 / 5%);
+}
+
+.decisionSide h3 {
+  margin: 0 0 8px;
+  color: var(--slate-pale);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.decisionSide p {
+  margin: 0;
+  font-size: clamp(1rem, 1.7vw, 1.15rem);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* ------------------------------------------------------------- lifespan --- */
+
+.lifespanClaim {
+  max-width: 24ch;
+  margin: 0 0 12px;
+  font-size: clamp(1.4rem, 2.8vw, 2rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.scale {
+  max-width: 44rem;
+  margin: clamp(20px, 3vw, 32px) 0 18px;
+}
+
+.scaleTrack {
+  position: relative;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--slate-soft);
+}
+
+.scaleLiterature,
+.scaleRepairs {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.scaleLiterature {
+  border-radius: 999px 0 0 999px;
+  background: var(--slate);
+}
+
+.scaleRepairs {
+  border-radius: 0 999px 999px 0;
+  background: repeating-linear-gradient(
+    90deg,
+    rgb(61 90 115 / 55%) 0 8px,
+    transparent 8px 14px
+  );
+}
+
+.scaleYears {
+  position: relative;
+  height: 22px;
+  margin-top: 6px;
+}
+
+.scaleYears span {
+  position: absolute;
+  color: rgb(38 38 42 / 62%);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  translate: -50% 0;
+}
+
+.scaleLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: rgb(38 38 42 / 74%);
+}
+
+.legendLiterature::before,
+.legendRepairs::before {
+  display: inline-block;
+  width: 18px;
+  height: 8px;
+  margin-right: 8px;
+  border-radius: 999px;
+  content: "";
+  vertical-align: middle;
+}
+
+.legendLiterature::before {
+  background: var(--slate);
+}
+
+.legendRepairs::before {
+  background: repeating-linear-gradient(
+    90deg,
+    rgb(61 90 115 / 55%) 0 4px,
+    transparent 4px 7px
+  );
+}
+
+.repair {
+  max-width: 26rem;
+  margin: 0;
+}
+
+/* ------------------------------------------------------------ immediate --- */
+
+.immediate {
+  display: grid;
+  gap: clamp(18px, 3vw, 44px);
+  padding: clamp(24px, 3.6vw, 44px);
+  border: 1px solid rgb(61 90 115 / 18%);
+  border-radius: 24px;
+  background: var(--ivory);
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  align-items: center;
+}
+
+.immediateHeading {
+  margin: 0 0 12px;
+  font-size: clamp(1.3rem, 2.4vw, 1.75rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.immediateList {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+/* ---------------------------------------------------------------- cases --- */
+
+.case {
+  max-width: 44rem;
+  margin: 0;
+}
+
+.caseNote {
+  margin-top: 12px;
+  color: rgb(38 38 42 / 60%);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------------------- narrow --- */
+
+@media (max-width: 860px) {
+  .opening,
+  .decisionSides,
+  .immediate,
+  .priceList,
+  .panelFacts {
+    grid-template-columns: 1fr;
+  }
+
+  .bridge {
+    max-width: 15rem;
+  }
+
+  /* The three tabs stack on a phone; three across would not fit a name. */
+  .tabs {
+    grid-template-columns: 1fr;
+  }
+
+  .tab {
+    padding: 12px 16px;
+  }
+
+  .tabIcon {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .float {
+    animation: none;
+  }
+
+  .tab,
+  .textLink,
+  .textLink svg {
+    transition: none;
+  }
+}
