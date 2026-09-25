@@ -70,14 +70,19 @@ describe("JawZoneOverlay pain map", () => {
     expect(screen.queryByRole("heading", { name: "Kde vás to trápi?" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
-    expect(screen.getAllByTestId(/jaw-mask-/)).toHaveLength(7);
+    expect(screen.queryAllByTestId(/jaw-mask-/)).toHaveLength(0);
     expect(container.querySelector('[data-presentation="tease"]')).toBeInTheDocument();
   });
 
-  it("renders seven anatomical masks and four connectors, and no hit paths over the jaw", () => {
+  /*
+   * The translucent zone surfaces were removed on 2026-09-25: over the render
+   * they read as frames laid on the teeth. Nothing is drawn over the anatomy
+   * now except the markers.
+   */
+  it("draws no surfaces over the jaw, only four connectors, and no hit paths", () => {
     const { container } = renderOverlay();
 
-    expect(screen.getAllByTestId(/jaw-mask-/)).toHaveLength(7);
+    expect(screen.queryAllByTestId(/jaw-mask-/)).toHaveLength(0);
     expect(screen.getAllByTestId(/jaw-anchor-/)).toHaveLength(4);
 
     /*
@@ -108,8 +113,6 @@ describe("JawZoneOverlay pain map", () => {
     }
     expect(container.querySelectorAll("polygon")).toHaveLength(0);
     expect(container.querySelector('[data-testid="jaw-debug-rect"]')).not.toBeInTheDocument();
-    expect(screen.getAllByTestId(/jaw-mask-/).every((mask) => mask.getAttribute("d")?.includes("C")))
-      .toBe(true);
   });
 
   it("opens patient-language problems from hover focus and tap", async () => {
@@ -499,9 +502,7 @@ describe("JawZoneOverlay pain map", () => {
     expect(screen.getByTestId("jaw-artboard")).toHaveClass(styles.zoneArtboard);
     expect(cssText).toMatch(/\.zoneArtboard[\s\S]*aspect-ratio:\s*16\s*\/\s*9/);
     expect(cssText).toMatch(/@keyframes\s+zone-pop/);
-    expect(cssText).toMatch(/@keyframes\s+zone-mask-pop[\s\S]*opacity:\s*0\.18/);
-    expect(cssText).toMatch(/\.zoneOverlay\[data-presentation="reveal"\] \.zoneMask[\s\S]*animation:\s*zone-mask-pop/);
-    expect(cssText).toMatch(/@keyframes\s+zone-tease/);
+    expect(cssText).not.toMatch(/\.zoneMask/);
     expect(cssText).toMatch(/@keyframes\s+zone-heading-pop[\s\S]*translate\(-50%,\s*0\)/);
     expect(cssText).toMatch(/@keyframes\s+assistance-pop[\s\S]*translateX\(-50%\)/);
     expect(cssText).toMatch(/\.zoneHeading[\s\S]*animation:\s*zone-heading-pop/);

@@ -20,23 +20,7 @@ import {
 } from "./jawContent";
 import styles from "./jawExperience.module.css";
 
-type JawSurfaceId =
-  | "front"
-  | "premolar-left"
-  | "premolar-right"
-  | "molar-left"
-  | "molar-right"
-  | "gum-upper"
-  | "gum-lower";
-
 type InteractiveZoneId = Extract<JawZoneId, "front" | "premolar" | "molar" | "gum">;
-
-type Surface = Readonly<{
-  id: JawSurfaceId;
-  zone: InteractiveZoneId;
-  path: string;
-  revealIndex: number;
-}>;
 
 type ZoneMarker = Readonly<{
   zone: InteractiveZoneId;
@@ -70,50 +54,12 @@ export type JawZoneOverlayProps = Readonly<{
 const MASTER_WIDTH = 1920;
 const MASTER_HEIGHT = 1080;
 
-const SURFACES: readonly Surface[] = [
-  {
-    id: "front",
-    zone: "front",
-    path: "M 770 410 C 825 365 1095 365 1150 410 C 1160 490 1160 635 1140 700 C 1045 735 875 735 780 700 C 760 625 760 490 770 410 Z",
-    revealIndex: 0,
-  },
-  {
-    id: "premolar-left",
-    zone: "premolar",
-    path: "M 655 405 C 690 380 765 375 810 395 C 805 500 800 625 780 720 C 735 745 675 745 640 710 C 635 610 640 495 655 405 Z",
-    revealIndex: 1,
-  },
-  {
-    id: "premolar-right",
-    zone: "premolar",
-    path: "M 1110 395 C 1155 375 1230 380 1265 405 C 1280 495 1285 610 1280 710 C 1245 745 1185 745 1140 720 C 1120 625 1115 500 1110 395 Z",
-    revealIndex: 1,
-  },
-  {
-    id: "molar-left",
-    zone: "molar",
-    path: "M 545 435 C 575 400 645 390 680 410 C 675 500 670 610 650 700 C 620 730 565 720 535 680 C 525 600 530 505 545 435 Z",
-    revealIndex: 2,
-  },
-  {
-    id: "molar-right",
-    zone: "molar",
-    path: "M 1240 410 C 1275 390 1345 400 1375 435 C 1390 505 1395 600 1385 680 C 1355 720 1300 730 1270 700 C 1250 610 1245 500 1240 410 Z",
-    revealIndex: 2,
-  },
-  {
-    id: "gum-upper",
-    zone: "gum",
-    path: "M 560 305 C 690 250 1230 250 1360 305 C 1345 350 1315 385 1270 410 C 1120 365 800 365 650 410 C 605 385 575 350 560 305 Z",
-    revealIndex: 3,
-  },
-  {
-    id: "gum-lower",
-    zone: "gum",
-    path: "M 600 690 C 745 735 1175 735 1320 690 C 1310 755 1275 805 1225 835 C 1060 875 860 875 695 835 C 645 805 610 755 600 690 Z",
-    revealIndex: 3,
-  },
-] as const;
+/*
+ * The seven translucent zone surfaces that used to sit over the jaw were
+ * removed on 2026-09-25 at the user's request: over the finished render they
+ * read as frames laid on the teeth. The markers, leaders and buttons carry
+ * the zones on their own.
+ */
 
 const MARKERS: readonly ZoneMarker[] = [
   {
@@ -492,31 +438,6 @@ export function JawZoneOverlay({
             className={styles.zoneArtwork}
             viewBox={`0 0 ${MASTER_WIDTH} ${MASTER_HEIGHT}`}
           >
-            <defs>
-              {/*
-                Porcelain into the brand's taupe. It used to run peach into
-                dusty pink — a warm wash over pink gums, which is nearly
-                invisible and, where it did show, looked like a photo filter
-                rather than a highlight.
-              */}
-              <linearGradient id="jaw-zone-fill" x1="0" x2="1" y1="0" y2="1">
-                <stop offset="0" stopColor="#faf9f6" />
-                <stop offset="1" stopColor="#ae9b7e" />
-              </linearGradient>
-            </defs>
-            {SURFACES.map((surface) => (
-              <path
-                className={classNames(
-                  styles.zoneMask,
-                  visibleState.openZone === surface.zone && styles.zoneMaskSelected,
-                )}
-                d={surface.path}
-                data-testid={`jaw-mask-${surface.id}`}
-                data-zone={surface.zone}
-                key={`mask-${surface.id}`}
-                style={{ "--zone-index": surface.revealIndex } as CSSProperties}
-              />
-            ))}
             {mapVisible ? MARKERS.map((marker) => (
               <g
                 className={styles.zoneMarker}
