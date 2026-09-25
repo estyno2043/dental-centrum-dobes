@@ -1,23 +1,26 @@
 /*
  * Protetika: mostíky a protézy.
  *
- * Ivory and slate blue, built 2026-09-25 on the theme of *made to measure*:
- * calm and precise, like a laboratory's work, with one deep slate band for
- * the clinic's answer about who decides.
+ * Built 2026-09-25 on the theme of *made to measure*, first in slate blue;
+ * the same day the user asked for the clinic's own colours instead, something
+ * elegant in beige, gold and brown. So: ivory and latte grounds, a bronze
+ * brown for labels and lines, gold for the details, and one deep walnut band
+ * with a gold glow for the clinic's answer about who decides.
  *
- * Contrast, measured: slate #3d5a73 for small labels 6.4:1 on the cream,
- * 5.8:1 on the soft slate, 6.8:1 on ivory; on the dark slate band, porcelain
- * 11.7:1 and the pale #c9d8e4 8.4:1.
+ * Contrast, measured: bronze #74563a for small labels 5.9:1 on the cream,
+ * 5.4:1 on latte, 6.3:1 on ivory; on the walnut band, porcelain 12.8:1, the
+ * champagne #e3cfae 8.8:1.
  */
 
 .opening,
 .block,
 .decision {
   --ivory: #fbf8f1;
-  --slate: #3d5a73;
-  --slate-soft: #dfe8ef;
-  --slate-pale: #c9d8e4;
-  --slate-dark: #243746;
+  --bronze: #74563a;
+  --latte: #efe5d6;
+  --champagne: #e3cfae;
+  --gold: #c9a86a;
+  --walnut: #3a2c22;
   --gum: #f1c9c9;
 }
 
@@ -80,18 +83,18 @@
 
 .facts > div {
   padding: 12px 18px;
-  border: 1px solid rgb(61 90 115 / 22%);
+  border: 1px solid rgb(116 86 58 / 22%);
   border-radius: 16px;
   background: var(--ivory);
 }
 
 .facts > div:last-child {
   border-color: transparent;
-  background: var(--slate-soft);
+  background: var(--latte);
 }
 
 .facts dt {
-  color: var(--slate);
+  color: var(--bronze);
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -111,7 +114,7 @@
   max-width: 22rem;
   height: auto;
   justify-self: center;
-  filter: drop-shadow(0 22px 30px rgb(61 90 115 / 14%));
+  filter: drop-shadow(0 22px 30px rgb(116 86 58 / 14%));
 }
 
 /* The bridge hovers, then settles a few pixels; transform only. */
@@ -147,7 +150,7 @@
   display: grid;
   gap: 4px 14px;
   padding: 16px 18px;
-  border: 1px solid rgb(61 90 115 / 18%);
+  border: 1px solid rgb(116 86 58 / 18%);
   border-radius: 18px;
   background: var(--ivory);
   color: var(--ink);
@@ -181,17 +184,17 @@
 }
 
 .tab:hover {
-  border-color: rgb(61 90 115 / 40%);
+  border-color: rgb(116 86 58 / 40%);
 }
 
 .tab[aria-selected="true"] {
-  border-color: var(--slate);
+  border-color: var(--gold);
   background: #fff;
-  box-shadow: 0 16px 34px -24px rgb(61 90 115 / 70%);
+  box-shadow: 0 16px 34px -24px rgb(116 86 58 / 70%);
 }
 
 .tab:focus-visible {
-  outline: 2px solid var(--slate);
+  outline: 2px solid var(--bronze);
   outline-offset: 2px;
 }
 
@@ -199,13 +202,13 @@
   padding: clamp(24px, 3.6vw, 44px);
   border-radius: 24px;
   background:
-    radial-gradient(90% 80% at 100% 0%, rgb(223 232 239 / 90%), transparent 60%),
+    radial-gradient(90% 80% at 100% 0%, rgb(239 229 214 / 95%), transparent 60%),
     #fff;
-  box-shadow: 0 28px 60px -44px rgb(36 55 70 / 55%);
+  box-shadow: 0 28px 60px -44px rgb(58 44 34 / 55%);
 }
 
 .panel:focus-visible {
-  outline: 2px solid var(--slate);
+  outline: 2px solid var(--bronze);
   outline-offset: 3px;
 }
 
@@ -238,11 +241,11 @@
 .panelFacts > div {
   padding: 12px 14px;
   border-radius: 14px;
-  background: var(--slate-soft);
+  background: var(--latte);
 }
 
 .panelFacts dt {
-  color: var(--slate);
+  color: var(--bronze);
   font-size: 0.66rem;
   font-weight: 600;
   letter-spacing: 0.13em;
@@ -274,14 +277,14 @@
   align-items: baseline;
   justify-content: space-between;
   padding: 11px 0;
-  border-bottom: 1px dashed rgb(61 90 115 / 25%);
+  border-bottom: 1px dashed rgb(116 86 58 / 25%);
   font-size: 0.92rem;
 }
 
 .priceList strong,
 .immediateList strong,
 .repair strong {
-  color: var(--slate);
+  color: var(--bronze);
   font-variant-numeric: tabular-nums;
   font-weight: 600;
   white-space: nowrap;
@@ -290,14 +293,14 @@
 .example {
   padding: 16px 20px;
   margin-bottom: 4px;
-  border-left: 3px solid var(--slate);
+  border-left: 3px solid var(--gold);
   border-radius: 0 16px 16px 0;
   background: var(--ivory);
 }
 
 .exampleLabel {
   margin: 0 0 6px;
-  color: var(--slate);
+  color: var(--bronze);
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -333,7 +336,7 @@
   gap: 8px;
   align-items: center;
   padding: 10px 18px;
-  border: 1px solid rgb(61 90 115 / 40%);
+  border: 1px solid rgb(116 86 58 / 40%);
   border-radius: 999px;
   color: var(--ink);
   font-size: 0.88rem;
@@ -350,7 +353,7 @@
 
 .textLink:hover,
 .textLink:focus-visible {
-  background: var(--slate);
+  background: var(--bronze);
   color: #fff;
 }
 
@@ -369,9 +372,9 @@
   padding: clamp(30px, 5vw, 64px);
   border-radius: 28px;
   background:
-    radial-gradient(80% 90% at 0% 0%, rgb(201 216 228 / 22%), transparent 60%),
-    linear-gradient(150deg, #2f4659 0%, var(--slate-dark) 60%, #1b2a36 100%);
-  box-shadow: 0 34px 70px -44px rgb(27 42 54 / 85%);
+    radial-gradient(80% 90% at 0% 0%, rgb(201 168 106 / 30%), transparent 60%),
+    linear-gradient(150deg, #4a382b 0%, var(--walnut) 60%, #221912 100%);
+  box-shadow: 0 34px 70px -44px rgb(34 25 18 / 85%);
   color: var(--porcelain);
 }
 
@@ -391,14 +394,14 @@
 
 .decisionSide {
   padding: clamp(20px, 2.8vw, 30px);
-  border: 1px solid rgb(201 216 228 / 22%);
+  border: 1px solid rgb(201 168 106 / 30%);
   border-radius: 20px;
   background: rgb(255 255 255 / 5%);
 }
 
 .decisionSide h3 {
   margin: 0 0 8px;
-  color: var(--slate-pale);
+  color: var(--champagne);
   font-size: 0.76rem;
   font-weight: 600;
   letter-spacing: 0.16em;
@@ -433,7 +436,7 @@
   position: relative;
   height: 16px;
   border-radius: 999px;
-  background: var(--slate-soft);
+  background: var(--latte);
 }
 
 .scaleLiterature,
@@ -445,14 +448,14 @@
 
 .scaleLiterature {
   border-radius: 999px 0 0 999px;
-  background: var(--slate);
+  background: var(--bronze);
 }
 
 .scaleRepairs {
   border-radius: 0 999px 999px 0;
   background: repeating-linear-gradient(
     90deg,
-    rgb(61 90 115 / 55%) 0 8px,
+    var(--gold) 0 8px,
     transparent 8px 14px
   );
 }
@@ -492,13 +495,13 @@
 }
 
 .legendLiterature::before {
-  background: var(--slate);
+  background: var(--bronze);
 }
 
 .legendRepairs::before {
   background: repeating-linear-gradient(
     90deg,
-    rgb(61 90 115 / 55%) 0 4px,
+    var(--gold) 0 4px,
     transparent 4px 7px
   );
 }
@@ -514,7 +517,7 @@
   display: grid;
   gap: clamp(18px, 3vw, 44px);
   padding: clamp(24px, 3.6vw, 44px);
-  border: 1px solid rgb(61 90 115 / 18%);
+  border: 1px solid rgb(116 86 58 / 18%);
   border-radius: 24px;
   background: var(--ivory);
   grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);

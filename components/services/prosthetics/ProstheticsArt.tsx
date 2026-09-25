@@ -2,14 +2,14 @@ import type { JSX, ReactNode } from "react";
 
 /*
  * The prosthetics page's drawings, made for it on 2026-09-25: ivory teeth on
- * a slate-blue line. Decorative and `aria-hidden`; the page says in words
- * everything they show.
+ * a bronze line with gold details, in the clinic's own colours. Decorative
+ * and `aria-hidden`; the page says in words everything they show.
  */
 
 const IVORY = "#fbf8f1";
-const OUTLINE = "#9fb0bf";
-const SLATE = "#3d5a73";
-const SLATE_SOFT = "#dfe8ef";
+const OUTLINE = "#c2ab8c";
+const BRONZE = "#74563a";
+const GOLD = "#c9a86a";
 const GUM = "#f1c9c9";
 
 /**
@@ -49,9 +49,9 @@ export function BridgeScene({
 
       {/* the bridge, above the gap */}
       <g className={floatClassName}>
-        <rect fill={SLATE_SOFT} height="20" rx="10" width="190" x="65" y="64" />
+        <rect fill={GOLD} height="20" rx="10" width="190" x="65" y="64" />
         <path d={crown(46)} fill={IVORY} stroke={OUTLINE} strokeWidth="3" />
-        <path d={crown(130)} fill={IVORY} stroke={SLATE} strokeWidth="3" />
+        <path d={crown(130)} fill={IVORY} stroke={BRONZE} strokeWidth="3" />
         <path d={crown(214)} fill={IVORY} stroke={OUTLINE} strokeWidth="3" />
         {/* shine */}
         <path d="M62 44 C64 36 70 32 78 32" stroke="#fff" strokeLinecap="round" strokeWidth="5" />
@@ -60,8 +60,8 @@ export function BridgeScene({
       </g>
 
       {/* where it goes */}
-      <path d="M76 124 V142 M160 124 V176 M244 124 V142" stroke={SLATE} strokeDasharray="4 6" strokeLinecap="round" strokeOpacity="0.55" strokeWidth="2.5" />
-      <path d="M154 170 L160 178 L166 170" stroke={SLATE} strokeLinecap="round" strokeLinejoin="round" strokeOpacity="0.55" strokeWidth="2.5" />
+      <path d="M76 124 V142 M160 124 V176 M244 124 V142" stroke={BRONZE} strokeDasharray="4 6" strokeLinecap="round" strokeOpacity="0.55" strokeWidth="2.5" />
+      <path d="M154 170 L160 178 L166 170" stroke={BRONZE} strokeLinecap="round" strokeLinejoin="round" strokeOpacity="0.55" strokeWidth="2.5" />
     </svg>
   );
 }
@@ -89,9 +89,9 @@ const smallTooth = (x: number, stroke: string) => (
 export function IconBridge(props: IconProps): JSX.Element {
   return (
     <Icon {...props}>
-      <rect fill={SLATE_SOFT} height="6" rx="3" width="34" x="7" y="17" />
+      <rect fill={GOLD} height="6" rx="3" width="34" x="7" y="17" />
       {smallTooth(4, OUTLINE)}
-      {smallTooth(18, SLATE)}
+      {smallTooth(18, BRONZE)}
       {smallTooth(32, OUTLINE)}
       <path d="M4 38 H44" stroke={GUM} strokeLinecap="round" strokeWidth="4" />
     </Icon>
@@ -120,8 +120,8 @@ export function IconImplantDenture(props: IconProps): JSX.Element {
       ))}
       {[14, 30].map((x) => (
         <g key={x}>
-          <rect fill="#b7c3cd" height="16" rx="2" width="6" x={x} y="28" />
-          <path d={`M${x} 32 H${x + 6} M${x} 36 H${x + 6} M${x} 40 H${x + 6}`} stroke={SLATE} strokeWidth="1.2" />
+          <rect fill="#d6c4a5" height="16" rx="2" width="6" x={x} y="28" />
+          <path d={`M${x} 32 H${x + 6} M${x} 36 H${x + 6} M${x} 40 H${x + 6}`} stroke={BRONZE} strokeWidth="1.2" />
         </g>
       ))}
     </Icon>
