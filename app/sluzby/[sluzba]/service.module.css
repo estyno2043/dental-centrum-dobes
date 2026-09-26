@@ -122,6 +122,33 @@
   gap: clamp(14px, 1.8vw, 20px);
 }
 
+/*
+ * One line above a body that brings its own hero: "Služby · <name>". Same
+ * clearance under the header as the full intro, almost nothing beneath it,
+ * so the body's headline is the first large thing on the page.
+ */
+.introCompact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding-bottom: 0;
+  gap: 8px 14px;
+}
+
+.headlineCompact {
+  margin: 0;
+  color: var(--charcoal);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.headlineCompact::before {
+  margin-right: 14px;
+  color: var(--taupe-deep);
+  content: "·";
+}
+
 .eyebrow {
   display: flex;
   gap: 14px;

@@ -9,6 +9,7 @@ import { EndoBody } from "@/components/services/endo/EndoBody";
 import { FillingsBody } from "@/components/services/fillings/FillingsBody";
 import { ProstheticsBody } from "@/components/services/prosthetics/ProstheticsBody";
 import { SurgeryBody } from "@/components/services/surgery/SurgeryBody";
+import { BackdropFade } from "@/components/services/BackdropFade";
 import { EntryBody } from "@/components/services/entry/EntryBody";
 import { HygieneBody } from "@/components/services/hygiene/HygieneBody";
 import { ImplantBody } from "@/components/services/implants/ImplantBody";
@@ -114,6 +115,25 @@ const BESPOKE_TONES: Readonly<Record<string, string>> = {
   "osetrenie-deti": "kids",
 };
 
+/*
+ * Bodies that open on a hero of their own: a large headline, facts and a
+ * drawing. On these the shell's intro used to stack a second, equally large
+ * headline and lead above it, two openings in a row (2026-09-26 audit). For
+ * them the intro becomes one line, "Služby · <name>", and the body's own
+ * opening is the hero. The name is still the page's `h1`; it is only drawn
+ * small. The hygiene, entry and implant bodies start straight into their
+ * content, so they keep the full intro.
+ */
+const BESPOKE_HEROES: ReadonlySet<string> = new Set([
+  "esteticka-stomatologia",
+  "parodontologia",
+  "endodoncia",
+  "osetrenie-deti",
+  "biele-vyplne",
+  "protetika",
+  "stomatochirurgia",
+]);
+
 const BESPOKE_BODIES: Readonly<Record<string, () => JSX.Element>> = {
   "dentalna-hygiena": HygieneBody,
   "vstupna-prehliadka": EntryBody,
@@ -136,6 +156,7 @@ export default async function ServicePage({
 
   const detail = getServiceDetail(sluzba);
   const BespokeBody = BESPOKE_BODIES[sluzba];
+  const hero = BESPOKE_HEROES.has(sluzba);
 
   return (
     <>
@@ -177,14 +198,26 @@ export default async function ServicePage({
           <span className={styles.scrim} style={{ background: BACKDROP_SCRIM }} />
         </div>
 
-        <header className={styles.intro}>
-          <p className={styles.eyebrow}>
-            <span className={styles.eyebrowRule} aria-hidden="true" />
-            {detail?.kicker ?? "Služby"}
-          </p>
-          <h1 className={styles.headline}>{service.name}</h1>
-          <p className={styles.lead}>{detail?.lead ?? service.lead}</p>
-        </header>
+        <BackdropFade />
+
+        {hero ? (
+          <header className={`${styles.intro} ${styles.introCompact}`}>
+            <p className={styles.eyebrow}>
+              <span className={styles.eyebrowRule} aria-hidden="true" />
+              {detail?.kicker ?? "Služby"}
+            </p>
+            <h1 className={styles.headlineCompact}>{service.name}</h1>
+          </header>
+        ) : (
+          <header className={styles.intro}>
+            <p className={styles.eyebrow}>
+              <span className={styles.eyebrowRule} aria-hidden="true" />
+              {detail?.kicker ?? "Služby"}
+            </p>
+            <h1 className={styles.headline}>{service.name}</h1>
+            <p className={styles.lead}>{detail?.lead ?? service.lead}</p>
+          </header>
+        )}
 
         {BespokeBody ? (
           <BespokeBody />
