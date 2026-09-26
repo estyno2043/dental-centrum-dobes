@@ -292,3 +292,20 @@ export const reviewSummary = {
  */
 export const googleProfileUrl: string | null =
   "https://share.google/iWiOykdKvQOGmW1G2";
+
+/**
+ * The three reviews shown in full on the homepage, below the before/after
+ * cases, added 2026-09-26: until then all fifteen sat behind the `4,5 ★` in
+ * the hero, and most readers never opened them.
+ *
+ * Chosen to say three different things rather than the same thing three
+ * times: a named doctor's manner during a procedure, a family whose
+ * children stopped fearing the dentist, and a short one about the mood. All
+ * three are shown whole, as the rules above require; the rest stay one click
+ * away in the bar.
+ */
+export const highlightedReviewIds = [
+  "vendula-brockova",
+  "martin-mancik",
+  "pavel-horvath",
+] as const;

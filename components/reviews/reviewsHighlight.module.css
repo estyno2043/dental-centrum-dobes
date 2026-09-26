@@ -1,0 +1,267 @@
+/*
+ * "Čo hovoria pacienti" — three reviews in full, below the before/after cases.
+ *
+ * The same greige ground as "Naši pacienti" above it, so the two read as one
+ * section, and the drift scene below still begins from this tone
+ * (`--from-tone` in `drift.module.css`). The top padding is small because
+ * the patients section already ends on its own generous padding.
+ *
+ * Stars in Google's review gold, the only non-brand colour here besides the
+ * Google mark itself, because the rating is Google's and says so.
+ */
+
+.section {
+  padding: 0 0 clamp(72px, 11vw, 148px);
+  background: #edeae4;
+  color: var(--charcoal);
+}
+
+.inner {
+  max-width: 1240px;
+  padding: 0 clamp(20px, 5vw, 88px);
+  margin: 0 auto;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px 48px;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding-top: clamp(40px, 6vw, 72px);
+  margin-bottom: clamp(28px, 4vw, 48px);
+  border-top: 1px solid rgb(138 115 88 / 26%);
+}
+
+.eyebrow {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin: 0 0 18px;
+  color: var(--taupe-deep);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.eyebrowRule {
+  display: block;
+  width: clamp(28px, 5vw, 64px);
+  height: 1px;
+  background: var(--taupe-deep);
+}
+
+.headline {
+  margin: 0;
+  font-size: clamp(1.8rem, 4.4vw, 3.2rem);
+  font-weight: 600;
+  letter-spacing: -0.028em;
+  line-height: 1.12;
+}
+
+/* The score: Google's mark, the average large, stars and count beside it. */
+.score {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 22px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 16px 34px -26px rgb(38 38 42 / 45%);
+}
+
+.google {
+  display: block;
+  width: 26px;
+  height: 26px;
+}
+
+.google svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.scoreValue {
+  font-size: 2rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.scoreMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  color: rgb(38 38 42 / 70%);
+  font-size: 0.8rem;
+}
+
+.stars {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.stars svg {
+  color: rgb(38 38 42 / 18%);
+}
+
+.stars svg[data-on="true"] {
+  color: #f4b400;
+}
+
+/* ---------------------------------------------------------------- cards --- */
+
+.cards {
+  display: grid;
+  gap: clamp(14px, 2vw, 22px);
+  padding: 0;
+  margin: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  list-style: none;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: clamp(22px, 2.6vw, 30px);
+  border-radius: 20px;
+  background: #faf9f6;
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 80%) inset,
+    0 22px 44px -34px rgb(38 38 42 / 45%);
+}
+
+/* A large opening quote in taupe, behind the stars. Decorative. */
+.quote {
+  position: absolute;
+  top: 6px;
+  right: 22px;
+  z-index: 0;
+  color: rgb(174 155 126 / 30%);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 5rem;
+  line-height: 1;
+}
+
+.text {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+}
+
+.text p {
+  margin: 0;
+  color: rgb(38 38 42 / 86%);
+  font-size: 0.95rem;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.author {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding-top: 14px;
+  margin-top: auto;
+  border-top: 1px solid rgb(138 115 88 / 18%);
+}
+
+.author strong {
+  display: block;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.author small {
+  display: block;
+  margin-top: 2px;
+  color: rgb(38 38 42 / 62%);
+  font-size: 0.76rem;
+}
+
+.avatar {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--taupe);
+  color: #fff;
+  font-weight: 600;
+  place-items: center;
+}
+
+/* -------------------------------------------------------------- actions --- */
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  align-items: center;
+  margin-top: clamp(24px, 3vw, 36px);
+}
+
+.more {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  padding: 14px 24px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--charcoal);
+  color: var(--porcelain);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  transition: background-color 240ms var(--ease);
+}
+
+.more svg {
+  transition: translate 240ms var(--ease);
+}
+
+.more:hover,
+.more:focus-visible {
+  background: var(--taupe-deep);
+}
+
+.more:hover svg,
+.more:focus-visible svg {
+  translate: 4px 0;
+}
+
+.more:focus-visible,
+.googleLink:focus-visible {
+  outline: 2px solid var(--taupe-deep);
+  outline-offset: 3px;
+}
+
+.googleLink {
+  /* The deeper brown: taupe-deep on this greige is under 4.5:1. */
+  color: #6f5a44;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-underline-offset: 4px;
+}
+
+/* --------------------------------------------------------------- narrow --- */
+
+@media (max-width: 960px) {
+  .cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .more,
+  .more svg {
+    transition: none;
+  }
+}

@@ -3,6 +3,7 @@ import { Hero } from "@/components/hero/Hero";
 import { ClinicStory } from "@/components/home/ClinicStory";
 import { DriftScene } from "@/components/drift/DriftScene";
 import { PatientsSection } from "@/components/patients/PatientsSection";
+import { ReviewsHighlight } from "@/components/reviews/ReviewsHighlight";
 import { InvestmentShowcase } from "@/components/pricing/InvestmentShowcase";
 import { ServicesSection } from "@/components/services/ServicesSection";
 import { SiteHeader } from "@/components/hero/SiteHeader";
@@ -29,6 +30,7 @@ export default function HomePage() {
         </div>
       </div>
       <PatientsSection />
+      <ReviewsHighlight />
       <DriftScene />
       {/*
        * The services section holds the drifting scene's own end tone rather
