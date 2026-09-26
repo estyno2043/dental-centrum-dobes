@@ -1,0 +1,153 @@
+/*
+ * The booking bar: a pill in the lower right on a desktop, a bar across the
+ * foot of the screen on a phone. Glides in from below; transform and opacity
+ * only, so it costs the compositor and nothing else.
+ */
+
+.bar {
+  position: fixed;
+  z-index: 40;
+  right: clamp(16px, 2.4vw, 32px);
+  bottom: clamp(16px, 2.4vw, 28px);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 8px 8px 20px;
+  border: 1px solid rgb(201 168 106 / 35%);
+  border-radius: 999px;
+  background: rgb(38 30 24 / 92%);
+  box-shadow: 0 20px 44px -18px rgb(0 0 0 / 60%);
+  color: var(--porcelain);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(24px);
+  backdrop-filter: blur(12px);
+  transition:
+    opacity 0.35s var(--ease),
+    transform 0.45s var(--ease);
+}
+
+.bar[data-visible="true"] {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.context {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  max-width: 16rem;
+  margin: 0 6px 0 0;
+  overflow: hidden;
+  color: rgb(250 249 246 / 80%);
+  font-size: 0.84rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.context strong {
+  color: var(--porcelain);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.context s {
+  color: rgb(250 249 246 / 50%);
+  font-size: 0.8rem;
+}
+
+.call,
+.book {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.25s var(--ease);
+}
+
+.call {
+  border: 1px solid rgb(250 249 246 / 25%);
+  color: var(--porcelain);
+}
+
+.call:hover,
+.call:focus-visible {
+  background: rgb(250 249 246 / 10%);
+}
+
+.book {
+  background: var(--porcelain);
+  color: #2a2019;
+}
+
+.book svg {
+  transition: translate 0.25s var(--ease);
+}
+
+.book:hover,
+.book:focus-visible {
+  background: #efe5d6;
+}
+
+.book:hover svg {
+  translate: 3px 0;
+}
+
+.call:focus-visible,
+.book:focus-visible {
+  outline: 2px solid var(--porcelain);
+  outline-offset: 2px;
+}
+
+.callShort {
+  display: none;
+}
+
+/* A phone: a full-width bar with the two actions side by side. */
+@media (max-width: 767px) {
+  .bar {
+    right: 0;
+    bottom: 0;
+    left: 0;
+    gap: 8px;
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+    border: 0;
+    border-top: 1px solid rgb(201 168 106 / 30%);
+    border-radius: 0;
+  }
+
+  .context {
+    display: none;
+  }
+
+  .call,
+  .book {
+    flex: 1;
+    justify-content: center;
+    min-height: 48px;
+  }
+
+  .callLabel {
+    display: none;
+  }
+
+  .callShort {
+    display: inline;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar,
+  .call,
+  .book,
+  .book svg {
+    transition: none;
+  }
+}

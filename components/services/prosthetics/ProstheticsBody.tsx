@@ -1,5 +1,7 @@
 import type { JSX } from "react";
 
+import { ServiceCta } from "@/components/booking/ServiceCta";
+
 import { CaseGallery } from "@/components/patients/CaseGallery";
 import {
   featuredCase,
@@ -81,6 +83,11 @@ export function ProstheticsBody(): JSX.Element {
           </div>
         </div>
       </section>
+
+      <ServiceCta
+        heading="Aká náhrada je tá správna pre vás?"
+        text="To povieme po vyšetrení. Plán aj rozpočet dostanete vopred a o všetkom rozhodujete vy."
+      />
 
       {/* --- how long a denture lasts ----------------------------------- */}
       <section aria-labelledby="lifespan-heading" className={styles.block}>

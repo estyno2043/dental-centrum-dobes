@@ -1,5 +1,7 @@
 import Link from "next/link";
 import type { JSX } from "react";
+
+import { ServiceCta } from "@/components/booking/ServiceCta";
 import { IconArrowNarrowRight } from "@tabler/icons-react";
 
 import { CaseGallery } from "@/components/patients/CaseGallery";
@@ -96,6 +98,11 @@ export function AestheticBody(): JSX.Element {
           </figure>
         </div>
       </section>
+
+      <ServiceCta
+        heading="Neviete, ktorá z ciest je tá vaša?"
+        text="Na konzultácii sa pozrieme na vaše zuby a odporučíme riešenie podľa toho, čo potrebujete, nie podľa ceny."
+      />
 
       {/* --- the fear, answered ------------------------------------------
           Not with the mock-up, which the clinic offers but rarely sells, but

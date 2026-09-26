@@ -1,0 +1,333 @@
+/*
+ * The close of every service page, 2026-09-26.
+ *
+ * A walnut-to-beige panel, the same recipe as the jaw card and the endodontics
+ * panels, with the reasons and the phone on the left in porcelain and the
+ * form on the right in a white card. The one dark, warm block at the foot of
+ * each page, so the eye knows where the page wants it to land.
+ *
+ * Contrast: porcelain on the walnut end 12.8:1, the champagne labels #e3cfae
+ * 8.8:1; the lighter corner is kept behind the white card, not behind text.
+ */
+
+.panel {
+  padding-top: clamp(64px, 9vw, 120px);
+  scroll-margin-top: 90px;
+}
+
+.inner {
+  display: grid;
+  gap: clamp(24px, 4vw, 56px);
+  padding: clamp(24px, 4.4vw, 60px);
+  border-radius: 30px;
+  background:
+    radial-gradient(70% 90% at 100% 100%, rgb(226 205 170 / 55%), transparent 62%),
+    radial-gradient(60% 70% at 0% 0%, rgb(201 168 106 / 18%), transparent 60%),
+    linear-gradient(150deg, #33261d 0%, #45352a 45%, #6b5441 100%);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 10%) inset,
+    0 40px 80px -50px rgb(34 25 18 / 85%);
+  color: var(--porcelain);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  align-items: start;
+}
+
+.eyebrow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 0 0 16px;
+  color: #e3cfae;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.eyebrowRule {
+  width: 34px;
+  height: 1px;
+  flex: none;
+  background: #e3cfae;
+}
+
+.heading {
+  max-width: 16ch;
+  margin: 0 0 14px;
+  font-size: clamp(1.8rem, 3.6vw, 2.7rem);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: 42ch;
+  margin: 0 0 clamp(22px, 3vw, 30px);
+  color: rgb(250 249 246 / 82%);
+  font-size: 1rem;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+/* The phone, as large as the form: people who put this off ring, not type. */
+.phone {
+  display: inline-flex;
+  gap: 14px;
+  align-items: center;
+  padding: 12px 22px 12px 12px;
+  border: 1px solid rgb(250 249 246 / 22%);
+  border-radius: 999px;
+  background: rgb(250 249 246 / 8%);
+  color: var(--porcelain);
+  text-decoration: none;
+  transition:
+    background-color 0.3s var(--ease),
+    border-color 0.3s var(--ease);
+}
+
+.phone:hover,
+.phone:focus-visible {
+  border-color: rgb(250 249 246 / 45%);
+  background: rgb(250 249 246 / 14%);
+}
+
+.phone:focus-visible {
+  outline: 2px solid var(--porcelain);
+  outline-offset: 3px;
+}
+
+.phoneIcon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--porcelain);
+  color: #3a2c22;
+  place-items: center;
+}
+
+.phone small {
+  display: block;
+  color: #e3cfae;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.phone strong {
+  display: block;
+  font-size: clamp(1.3rem, 2.4vw, 1.6rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.phoneMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 12px 0 0 6px;
+  color: rgb(250 249 246 / 72%);
+  font-size: 0.82rem;
+}
+
+.phoneMeta a {
+  color: inherit;
+  text-underline-offset: 3px;
+}
+
+.open {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--porcelain);
+  font-weight: 600;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgb(250 249 246 / 45%);
+}
+
+.dot[data-open="true"] {
+  background: #7ed49b;
+  box-shadow: 0 0 0 4px rgb(126 212 155 / 22%);
+}
+
+.trust {
+  display: grid;
+  gap: 10px;
+  padding: 0;
+  margin: clamp(24px, 3.4vw, 34px) 0 0;
+  list-style: none;
+}
+
+.trust li {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: rgb(250 249 246 / 86%);
+  font-size: 0.9rem;
+}
+
+.trust li > svg {
+  flex: none;
+  color: #e3cfae;
+}
+
+.trustButton {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.trustButton:hover span,
+.trustButton:focus-visible span {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.trustButton:focus-visible {
+  outline: 2px solid var(--porcelain);
+  outline-offset: 3px;
+}
+
+.star {
+  flex: none;
+  color: #f4b400;
+}
+
+.entry {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 26rem;
+  padding: 14px 18px;
+  margin-top: clamp(22px, 3vw, 30px);
+  border: 1px dashed rgb(227 207 174 / 55%);
+  border-radius: 16px;
+  color: var(--porcelain);
+  font-size: 0.94rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.3s var(--ease);
+}
+
+.entry small {
+  display: block;
+  margin-bottom: 2px;
+  color: #e3cfae;
+  font-size: 0.74rem;
+  font-weight: 500;
+}
+
+.entry svg {
+  flex: none;
+  transition: translate 0.3s var(--ease);
+}
+
+.entry:hover,
+.entry:focus-visible {
+  background: rgb(250 249 246 / 8%);
+}
+
+.entry:hover svg,
+.entry:focus-visible svg {
+  translate: 4px 0;
+}
+
+.entry:focus-visible {
+  outline: 2px solid var(--porcelain);
+  outline-offset: 3px;
+}
+
+/* The form, on white, where the beige corner of the panel lights it. */
+.card {
+  padding: clamp(20px, 3vw, 34px);
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 30px 60px -36px rgb(0 0 0 / 55%);
+  color: var(--charcoal);
+}
+
+/*
+ * The children's page: the same panel in its pink, yellow and blue, with ink
+ * type (above 12:1 on every stop) and the deep rose for small labels (5.2:1).
+ */
+.panel[data-tone="kids"] .inner {
+  background: linear-gradient(140deg, #fbeaee 0%, #fef6dc 50%, #eaf1fa 100%);
+  box-shadow: 0 40px 80px -56px rgb(63 109 153 / 55%);
+  color: var(--ink);
+}
+
+.panel[data-tone="kids"] .eyebrow,
+.panel[data-tone="kids"] .phone small,
+.panel[data-tone="kids"] .entry small {
+  color: #a84a60;
+}
+
+.panel[data-tone="kids"] .eyebrowRule {
+  background: #a84a60;
+}
+
+.panel[data-tone="kids"] .lead,
+.panel[data-tone="kids"] .phoneMeta,
+.panel[data-tone="kids"] .trust li {
+  color: rgb(38 38 42 / 80%);
+}
+
+.panel[data-tone="kids"] .open {
+  color: var(--ink);
+}
+
+.panel[data-tone="kids"] .dot {
+  background: rgb(38 38 42 / 30%);
+}
+
+.panel[data-tone="kids"] .trust li > svg {
+  color: #a84a60;
+}
+
+.panel[data-tone="kids"] .phone,
+.panel[data-tone="kids"] .entry {
+  border-color: rgb(168 74 96 / 30%);
+  background: rgb(255 255 255 / 60%);
+  color: var(--ink);
+}
+
+.panel[data-tone="kids"] .phoneIcon {
+  background: #a84a60;
+  color: #fff;
+}
+
+.panel[data-tone="kids"] .phone:focus-visible,
+.panel[data-tone="kids"] .entry:focus-visible,
+.panel[data-tone="kids"] .trustButton:focus-visible {
+  outline-color: #a84a60;
+}
+
+@media (max-width: 900px) {
+  .inner {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .phone,
+  .entry,
+  .entry svg {
+    transition: none;
+  }
+}

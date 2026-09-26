@@ -1,6 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent, type JSX } from "react";
+import { IconArrowNarrowRight } from "@tabler/icons-react";
+
+import { privacyPath, privacyReady } from "@/components/legal/legalContent";
 
 import styles from "./serviceBooking.module.css";
 
@@ -17,8 +21,10 @@ export type ServiceBookingProps = Readonly<{
 /**
  * The booking form at the foot of a service page.
  *
- * Deliberately plain. The page above it is what persuades; a form competing
- * with that for attention only gets in its way.
+ * Rebuilt 2026-09-26 for conversion: filled fields in a card, an optional
+ * "what is it about" field, the privacy notice linked from the consent, and
+ * a full-width button that says what happens. The persuasion around it lives
+ * in `BookingPanel`.
  *
  * It posts the same way `JawAppointmentForm` does — a Netlify form named
  * `jaw-appointment`, honeypot and all — so both land in one place rather than
@@ -35,6 +41,7 @@ export function ServiceBooking({ service }: ServiceBookingProps): JSX.Element {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
   const [consent, setConsent] = useState(false);
   const [botField, setBotField] = useState("");
   const [submission, setSubmission] = useState<SubmissionState>("idle");
@@ -58,6 +65,7 @@ export function ServiceBooking({ service }: ServiceBookingProps): JSX.Element {
       name,
       phone,
       email,
+      message,
       service,
       consent: consent ? "yes" : "",
     });
@@ -132,13 +140,31 @@ export function ServiceBooking({ service }: ServiceBookingProps): JSX.Element {
           />
         </label>
         <label className={styles.field}>
-          <span>E-mail</span>
+          <span>
+            E-mail <small>nepovinné</small>
+          </span>
           <input
             autoComplete="email"
             name="email"
             onChange={(event) => setEmail(event.target.value)}
             type="email"
             value={email}
+          />
+        </label>
+        {/*
+          Optional, and the one field that tells the clinic what the call is
+          about before they make it: "bolí ma stolička" saves a round of
+          questions on the phone.
+        */}
+        <label className={`${styles.field} ${styles.fieldWide}`}>
+          <span>
+            S čím vám môžeme pomôcť? <small>nepovinné</small>
+          </span>
+          <textarea
+            name="message"
+            onChange={(event) => setMessage(event.target.value)}
+            rows={3}
+            value={message}
           />
         </label>
       </div>
@@ -153,16 +179,23 @@ export function ServiceBooking({ service }: ServiceBookingProps): JSX.Element {
         />
         <span>
           Súhlasím so spracovaním údajov na účel objednania termínu.
+          {privacyReady ? (
+            <>
+              {" "}
+              <Link href={privacyPath}>Ako s údajmi zaobchádzame</Link>
+            </>
+          ) : null}
         </span>
       </label>
 
       <div className={styles.actions}>
         <button className={styles.submit} disabled={submission === "submitting"} type="submit">
-          {submission === "submitting" ? "Odosielam…" : "Objednať termín"}
+          {submission === "submitting" ? "Odosielam…" : "Odoslať žiadosť o termín"}
+          {submission === "submitting" ? null : (
+            <IconArrowNarrowRight aria-hidden="true" size={18} stroke={1.8} />
+          )}
         </button>
-        <p className={styles.alt}>
-          alebo volajte <a href={CLINIC_PHONE_HREF}>{CLINIC_PHONE_LABEL}</a>
-        </p>
+        <p className={styles.alt}>Ozveme sa vám a termín dohodneme spolu.</p>
       </div>
 
       {submission === "error" ? (

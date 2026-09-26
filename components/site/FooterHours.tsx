@@ -1,8 +1,9 @@
 "use client";
 
-import { useSyncExternalStore, type JSX } from "react";
+import type { JSX } from "react";
 
 import { openingHours } from "./siteContent";
+import { useOpenStatus } from "./useOpenStatus";
 import styles from "./footer.module.css";
 
 /**
@@ -29,34 +30,10 @@ import styles from "./footer.module.css";
  * exactly and there is no hydration mismatch to paper over. The subscription
  * also keeps it honest across a minute boundary, which matters at 18:59.
  */
-const subscribe = (onChange: () => void): (() => void) => {
-  const timer = setInterval(onChange, 60_000);
-  return () => clearInterval(timer);
-};
 
-const currentMinute = (): number => Math.floor(Date.now() / 60_000);
 
 export function FooterHours(): JSX.Element {
-  const minute = useSyncExternalStore<number | null>(
-    subscribe,
-    currentMinute,
-    () => null,
-  );
-  const now = minute === null ? null : new Date(minute * 60_000);
-
-  const day = now?.getDay();
-  const today = openingHours.find((row) =>
-    day === undefined ? false : (row.weekdays as readonly number[]).includes(day),
-  );
-
-  const status = (() => {
-    if (!now) return null;
-    if (!today) return "Dnes máme zatvorené";
-    const hour = now.getHours() + now.getMinutes() / 60;
-    if (hour < today.opens) return `Dnes otvárame o ${today.opens}:00`;
-    if (hour < today.closes) return `Dnes otvorené do ${today.closes}:00`;
-    return "Dnes máme zatvorené";
-  })();
+  const { today, label: status } = useOpenStatus();
 
   return (
     <>

@@ -24,7 +24,7 @@ describe("Netlify Forms runtime-v5 contract", () => {
       "text/html",
     );
     const form = document.querySelector('form[name="jaw-appointment"]');
-    const fieldNames = [...(form?.querySelectorAll("input") ?? [])].map(
+    const fieldNames = [...(form?.querySelectorAll("input, textarea") ?? [])].map(
       (input) => input.getAttribute("name"),
     );
 
@@ -36,6 +36,7 @@ describe("Netlify Forms runtime-v5 contract", () => {
       "name",
       "phone",
       "email",
+      "message",
       "zone",
       "problem",
       "examination",
@@ -67,9 +68,9 @@ describe("Netlify Forms runtime-v5 contract", () => {
     await user.type(screen.getByLabelText("Meno a priezvisko"), "Anna Pacientka");
     await user.type(screen.getByLabelText("Telefón"), "0918 123 456");
     await user.click(
-      screen.getByLabelText("Súhlasím so spracovaním údajov na účel objednania termínu."),
+      screen.getByLabelText(/Súhlasím so spracovaním údajov na účel objednania termínu/),
     );
-    await user.click(screen.getByRole("button", { name: "Objednať termín" }));
+    await user.click(screen.getByRole("button", { name: "Odoslať žiadosť o termín" }));
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
     expect(fetchMock.mock.calls[0]?.[0]).toBe("/__forms.html");

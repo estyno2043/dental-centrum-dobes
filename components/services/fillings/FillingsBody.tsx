@@ -1,5 +1,7 @@
 import Link from "next/link";
 import type { JSX } from "react";
+
+import { ServiceCta } from "@/components/booking/ServiceCta";
 import { IconArrowNarrowRight } from "@tabler/icons-react";
 
 import { CaseGallery } from "@/components/patients/CaseGallery";
@@ -85,6 +87,11 @@ export function FillingsBody(): JSX.Element {
           <p className={styles.deepNote}>{surfaces.deepNote}</p>
         </div>
       </section>
+
+      <ServiceCta
+        heading="Máte kaz alebo vám vypadla plomba?"
+        text="Biela výplň je hotová za jednu návštevu, zhruba za hodinu."
+      />
 
       {/* --- the visit -------------------------------------------------- */}
       <section aria-labelledby="visit-heading" className={styles.block}>

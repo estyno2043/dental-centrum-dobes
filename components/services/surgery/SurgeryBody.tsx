@@ -1,5 +1,7 @@
 import Link from "next/link";
 import type { JSX } from "react";
+
+import { ServiceCta } from "@/components/booking/ServiceCta";
 import { IconArrowNarrowRight, IconCheck } from "@tabler/icons-react";
 
 import {
@@ -115,6 +117,11 @@ export function SurgeryBody(): JSX.Element {
           ))}
         </ol>
       </section>
+
+      <ServiceCta
+        heading="Trápi vás zub múdrosti alebo zub, ktorý treba vytrhnúť?"
+        text="Objednajte sa na vyšetrenie. Povieme vám, či treba zasiahnuť a ako zákrok prebehne."
+      />
 
       {/* --- aftercare -------------------------------------------------- */}
       <section aria-labelledby="aftercare-heading" className={styles.block}>

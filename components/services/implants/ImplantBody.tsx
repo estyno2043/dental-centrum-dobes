@@ -1,5 +1,7 @@
 import Link from "next/link";
 import type { JSX } from "react";
+
+import { ServiceCta } from "@/components/booking/ServiceCta";
 import { IconArrowNarrowRight } from "@tabler/icons-react";
 
 import { ImplantCost } from "./ImplantCost";
@@ -87,6 +89,11 @@ export function ImplantBody(): JSX.Element {
       </section>
 
       {/* --- the fear under the money ------------------------------------ */}
+      <ServiceCta
+        heading="Chýba vám zub?"
+        text="Objednajte sa a na prvej návšteve vám povieme, či je implantát pre vás to pravé riešenie a čo všetko by obnášal."
+      />
+
       <section aria-labelledby="timeline-heading" className={styles.timeline}>
         <h2 className={styles.sectionHeading} id="timeline-heading">
           {timeline.heading}

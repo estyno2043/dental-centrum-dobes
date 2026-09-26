@@ -135,6 +135,11 @@
   gap: 8px 14px;
 }
 
+/* The two actions, pushed to the far end of the one-line intro. */
+.introActionsCompact {
+  margin-left: auto;
+}
+
 .headlineCompact {
   margin: 0;
   color: var(--charcoal);
@@ -495,8 +500,3 @@
 
 /* -------------------------------------------------------------- booking --- */
 
-.booking {
-  margin-top: clamp(50px, 7vw, 90px);
-  padding-top: clamp(36px, 5vw, 58px);
-  border-top: 1px solid rgb(138 115 88 / 30%);
-}

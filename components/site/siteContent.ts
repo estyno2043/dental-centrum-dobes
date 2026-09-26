@@ -77,6 +77,6 @@ export const clinicMap = {
  * closed: a row that says nothing is a row worth deleting.
  */
 export const openingHours = [
-  { days: "Pondelok – štvrtok", hours: "8:00 – 19:00", weekdays: [1, 2, 3, 4], opens: 8, closes: 19 },
-  { days: "Piatok", hours: "8:00 – 14:00", weekdays: [5], opens: 8, closes: 14 },
+  { days: "Pondelok – štvrtok", short: "Po – Št", hours: "8:00 – 19:00", weekdays: [1, 2, 3, 4], opens: 8, closes: 19 },
+  { days: "Piatok", short: "Pi", hours: "8:00 – 14:00", weekdays: [5], opens: 8, closes: 14 },
 ] as const;
