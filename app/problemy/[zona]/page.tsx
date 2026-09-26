@@ -1,15 +1,21 @@
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 
-import { JawAppointmentForm } from "@/components/home/jaw/JawAppointmentForm";
 import {
-  ENTRY_EXAM_LABEL,
-  JAW_DISCLAIMER,
   JAW_ZONES,
   getJawProblem,
   getJawZoneBySlug,
 } from "@/components/home/jaw/jawContent";
 
-import styles from "../problemy.module.css";
+/*
+ * The retired problem pages.
+ *
+ * Until 2026-09-26 every choice on the jaw landed here, on a placeholder
+ * marked "Demo obsahu" with a form and a stale entry price. The user asked
+ * for these pages to go and for each problem to lead to the service page
+ * that answers it; the jaw now links there directly. This route stays only
+ * so an old link or bookmark lands on the same service rather than a 404:
+ * the problem's own page when the query names one, the zone's otherwise.
+ */
 
 type ProblemSearchParams = Readonly<Record<string, string | string[] | undefined>>;
 type ProblemPageProps = Readonly<{
@@ -17,38 +23,21 @@ type ProblemPageProps = Readonly<{
   searchParams: Promise<ProblemSearchParams>;
 }>;
 
-function selectedProblemId(query: ProblemSearchParams): string | undefined {
-  if (!Object.prototype.hasOwnProperty.call(query, "problem")) return undefined;
-  return typeof query.problem === "string" ? query.problem : undefined;
-}
-
 export function generateStaticParams() {
   return JAW_ZONES.map(({ slug }) => ({ zona: slug }));
 }
 
-export default async function ProblemPage({
+export default async function ProblemRedirect({
   params,
   searchParams,
-}: ProblemPageProps) {
+}: ProblemPageProps): Promise<never> {
   const { zona } = await params;
   const query = await searchParams;
   const zone = getJawZoneBySlug(zona);
-  if (!zone) {
-    notFound();
-    return null;
-  }
+  if (!zone) notFound();
 
-  const problemId = selectedProblemId(query);
+  const problemId = typeof query.problem === "string" ? query.problem : undefined;
   const problem = problemId ? getJawProblem(zone.id, problemId) : undefined;
 
-  return (
-    <main className={styles.page}>
-      <p className={styles.marker}>Demo obsahu</p>
-      <h1>{zone.label}</h1>
-      {problem ? <p data-testid="selected-problem">{problem.patientLabel}</p> : null}
-      <p className={styles.disclaimer}>{JAW_DISCLAIMER}</p>
-      <p className={styles.price}>{ENTRY_EXAM_LABEL}</p>
-      <JawAppointmentForm problem={problem} zone={zone} />
-    </main>
-  );
+  permanentRedirect(problem?.href ?? zone.href);
 }

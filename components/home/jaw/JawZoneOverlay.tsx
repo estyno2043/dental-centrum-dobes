@@ -130,10 +130,6 @@ function getMode(): OverlayState["mode"] {
     : "desktop";
 }
 
-function zoneHref(zone: JawZone, problemId: string): string {
-  const problem = zone.problems.find((candidate) => candidate.id === problemId);
-  return problem ? `${zone.route}?problem=${encodeURIComponent(problem.id)}` : zone.route;
-}
 
 function classNames(...values: Array<string | false | undefined>): string {
   return values.filter(Boolean).join(" ");
@@ -339,7 +335,7 @@ export function JawZoneOverlay({
   const directLinks = useMemo(() => DIRECT_ZONES.map((zone) => (
     <a
       className={styles.directEntry}
-      href={zone.route}
+      href={zone.href}
       key={zone.id}
       onClick={(event) => onDirectClick(zone, event)}
       tabIndex={mobilePanelOpen ? -1 : 0}
@@ -390,7 +386,7 @@ export function JawZoneOverlay({
         {activeZone.problems.map((problem) => (
           <li key={problem.id}>
             <a
-              href={zoneHref(activeZone, problem.id)}
+              href={problem.href}
               onClick={() => {
                 emitJawAnalytics({
                   consent: analyticsConsent,
@@ -402,10 +398,9 @@ export function JawZoneOverlay({
             >
               <span className={styles.problemLabel}>{problem.patientLabel}</span>
               {/*
-                Where the row goes. Deliberately the whole list rather than the
-                first of it: the same symptom leads to more than one treatment
-                and only an examination decides which, so naming one would be a
-                diagnosis the page is not entitled to make.
+                Where the row goes: the service page that answers this problem,
+                by name. It names a page to read, not a diagnosis; the
+                disclaimer on the card says only an examination decides.
               */}
               <span className={styles.problemDestination}>
                 <span>{problem.destination}</span>

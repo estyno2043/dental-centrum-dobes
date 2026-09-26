@@ -1,3 +1,5 @@
+import { getServiceBySlug } from "@/components/services/servicesContent";
+
 export type JawZoneId =
   | "front"
   | "premolar"
@@ -21,40 +23,93 @@ export type JawProblemId =
   | "missing-tooth"
   | "removable-replacement";
 
+/*
+ * Where each choice on the jaw leads, as of 2026-09-26.
+ *
+ * The jaw used to send every choice to a `/problemy/<zone>` placeholder page
+ * marked "Demo obsahu", with a form and a stale 100 € entry price. The user
+ * asked for those pages to go and for each problem to lead straight to the
+ * service page that answers it, with the choice of page left to us. The
+ * reasoning, problem by problem:
+ *
+ * - Front teeth, shape or colour, chipped, gap: aesthetic dentistry. Its
+ *   composite veneer is written for exactly "tvar alebo odštiepenie jedného-
+ *   dvoch zubov", and its comparison covers whitening and veneers.
+ * - Premolars, sensitivity and a lost filling: white fillings. Sensitivity
+ *   to sweet or cold is the classic sign of a cavity.
+ * - Molars, pain on biting, throbbing, a cracked tooth: endodontics, whose
+ *   page opens on "Povedali vám, že zub musí von?" and covers the crown after.
+ * - Gums bleeding and receding: periodontology, whose symptom checklist lists
+ *   both. Bad breath: dental hygiene, the usual first step.
+ * - A missing tooth: implants. Wearing a removable denture: prosthetics,
+ *   which covers dentures and dentures on implants.
+ * - "Neviem / bolí to celé": the entry examination.
+ *
+ * `/problemy/<zone>` still resolves, as a permanent redirect to the same
+ * service, so an old link or bookmark lands somewhere useful.
+ */
+
 export type JawProblem = Readonly<{
   id: string;
   patientLabel: string;
+  /** The service page this problem leads to. */
+  service: string;
+  /** That page's name, shown under the problem as where the row goes. */
   destination: string;
+  href: `/sluzby/${string}`;
 }>;
 
 export type JawZone = Readonly<{
   id: JawZoneId;
+  /** Kept for the redirect from the retired `/problemy/<slug>` pages. */
   slug: string;
   label: string;
-  route: `/problemy/${string}`;
+  /** The zone's own page, for the direct entries and the no-script list. */
+  service: string;
+  href: `/sluzby/${string}`;
   problems: readonly JawProblem[];
 }>;
 
 export const JAW_DISCLAIMER =
   "Orientačná pomôcka. Presnú príčinu určí až vyšetrenie.";
-export const ENTRY_EXAM_LABEL = "Vstupné vyšetrenie — 100 EUR";
 
 type JawProblemSource = Readonly<{
   id: JawProblemId;
   patientLabel: string;
-  destination: string;
+  service: string;
 }>;
 
-type JawZoneSource = Readonly<Omit<JawZone, "problems"> & {
+type JawZoneSource = Readonly<{
+  id: JawZoneId;
+  slug: string;
+  label: string;
+  service: string;
   problems: readonly JawProblemSource[];
 }>;
 
+function serviceName(slug: string): string {
+  const service = getServiceBySlug(slug);
+  if (!service) throw new Error(`Jaw destination "${slug}" is not a service.`);
+  return service.name;
+}
+
 function makeZone(source: JawZoneSource): JawZone {
   const problems = Object.freeze(
-    source.problems.map((problem) => Object.freeze({ ...problem })),
+    source.problems.map((problem) =>
+      Object.freeze({
+        ...problem,
+        destination: serviceName(problem.service),
+        href: `/sluzby/${problem.service}` as const,
+      }),
+    ),
   );
 
-  return Object.freeze({ ...source, problems });
+  serviceName(source.service);
+  return Object.freeze({
+    ...source,
+    href: `/sluzby/${source.service}` as const,
+    problems,
+  });
 }
 
 export const JAW_ZONES: readonly JawZone[] = Object.freeze([
@@ -62,22 +117,22 @@ export const JAW_ZONES: readonly JawZone[] = Object.freeze([
     id: "front",
     slug: "predne-zuby",
     label: "Predné zuby",
-    route: "/problemy/predne-zuby",
+    service: "esteticka-stomatologia",
     problems: [
       {
         id: "shape-color",
         patientLabel: "Nepáči sa mi tvar alebo farba",
-        destination: "Fazety, bielenie, kompozit",
+        service: "esteticka-stomatologia",
       },
       {
         id: "chipped",
         patientLabel: "Odštiepený zub",
-        destination: "Fazety, bielenie, kompozit",
+        service: "esteticka-stomatologia",
       },
       {
         id: "gap",
         patientLabel: "Medzera",
-        destination: "Fazety, bielenie, kompozit",
+        service: "esteticka-stomatologia",
       },
     ],
   }),
@@ -85,17 +140,17 @@ export const JAW_ZONES: readonly JawZone[] = Object.freeze([
     id: "premolar",
     slug: "crenove-zuby",
     label: "Črenové zuby",
-    route: "/problemy/crenove-zuby",
+    service: "biele-vyplne",
     problems: [
       {
         id: "sensitivity",
         patientLabel: "Citlivosť na sladké alebo studené",
-        destination: "Záchovná starostlivosť, inlay, korunka",
+        service: "biele-vyplne",
       },
       {
         id: "lost-filling",
         patientLabel: "Vypadla plomba",
-        destination: "Záchovná starostlivosť, inlay, korunka",
+        service: "biele-vyplne",
       },
     ],
   }),
@@ -103,22 +158,22 @@ export const JAW_ZONES: readonly JawZone[] = Object.freeze([
     id: "molar",
     slug: "stolicky",
     label: "Stoličky",
-    route: "/problemy/stolicky",
+    service: "endodoncia",
     problems: [
       {
         id: "bite-pain",
         patientLabel: "Bolí ma pri hryzení",
-        destination: "Endodoncia pod mikroskopom, korunka, extrakcia",
+        service: "endodoncia",
       },
       {
         id: "pulsing",
         patientLabel: "Pulzujúca bolesť",
-        destination: "Endodoncia pod mikroskopom, korunka, extrakcia",
+        service: "endodoncia",
       },
       {
         id: "cracked",
         patientLabel: "Prasknutý zub",
-        destination: "Endodoncia pod mikroskopom, korunka, extrakcia",
+        service: "endodoncia",
       },
     ],
   }),
@@ -126,22 +181,22 @@ export const JAW_ZONES: readonly JawZone[] = Object.freeze([
     id: "gum",
     slug: "dasna",
     label: "Ďasná",
-    route: "/problemy/dasna",
+    service: "parodontologia",
     problems: [
       {
         id: "bleeding",
         patientLabel: "Krvácajú pri čistení",
-        destination: "Dentálna hygiena GBT, parodontológia",
+        service: "parodontologia",
       },
       {
         id: "receding",
         patientLabel: "Ustupujú",
-        destination: "Dentálna hygiena GBT, parodontológia",
+        service: "parodontologia",
       },
       {
         id: "odor",
         patientLabel: "Zápach",
-        destination: "Dentálna hygiena GBT, parodontológia",
+        service: "dentalna-hygiena",
       },
     ],
   }),
@@ -149,17 +204,17 @@ export const JAW_ZONES: readonly JawZone[] = Object.freeze([
     id: "missing",
     slug: "chybajuci-zub",
     label: "Chýbajúci zub",
-    route: "/problemy/chybajuci-zub",
+    service: "zubne-implantaty",
     problems: [
       {
         id: "missing-tooth",
         patientLabel: "Chýba mi zub",
-        destination: "Implantát Osstem",
+        service: "zubne-implantaty",
       },
       {
         id: "removable-replacement",
         patientLabel: "Nosím snímateľnú náhradu",
-        destination: "Implantát Osstem",
+        service: "protetika",
       },
     ],
   }),
@@ -167,7 +222,7 @@ export const JAW_ZONES: readonly JawZone[] = Object.freeze([
     id: "unsure",
     slug: "neviem",
     label: "Neviem / bolí to celé",
-    route: "/problemy/neviem",
+    service: "vstupna-prehliadka",
     problems: [],
   }),
 ]);

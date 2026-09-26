@@ -1,27 +1,38 @@
-import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { notFound } = vi.hoisted(() => ({ notFound: vi.fn() }));
+const { notFound, permanentRedirect } = vi.hoisted(() => ({
+  notFound: vi.fn(() => {
+    throw new Error("NEXT_NOT_FOUND");
+  }),
+  permanentRedirect: vi.fn((href: string) => {
+    throw new Error(`REDIRECT ${href}`);
+  }),
+}));
 
-vi.mock("next/navigation", () => ({ notFound }));
+vi.mock("next/navigation", () => ({ notFound, permanentRedirect }));
 
-import ProblemPage, { generateStaticParams } from "./page";
+import ProblemRedirect, { generateStaticParams } from "./page";
 
 type Search = Record<string, string | string[] | undefined>;
 
-async function renderPage(zona: string, searchParams: Search = {}) {
-  render(
-    await ProblemPage({
-      params: Promise.resolve({ zona }),
-      searchParams: Promise.resolve(searchParams),
-    }),
-  );
+function visit(zona: string, searchParams: Search = {}) {
+  return ProblemRedirect({
+    params: Promise.resolve({ zona }),
+    searchParams: Promise.resolve(searchParams),
+  });
 }
 
-describe("jaw problem route", () => {
-  beforeEach(() => notFound.mockClear());
+/*
+ * The problem pages were retired on 2026-09-26. The route survives only to
+ * send an old link to the service page that now answers the same problem.
+ */
+describe("retired jaw problem route", () => {
+  beforeEach(() => {
+    notFound.mockClear();
+    permanentRedirect.mockClear();
+  });
 
-  it("prerenders only the six approved zone routes", () => {
+  it("still knows the six old zone slugs", () => {
     expect(generateStaticParams()).toEqual([
       { zona: "predne-zuby" },
       { zona: "crenove-zuby" },
@@ -32,48 +43,30 @@ describe("jaw problem route", () => {
     ]);
   });
 
-  it("shows only a validated patient-language problem selection", async () => {
-    await renderPage("stolicky", { problem: "pulsing" });
-
-    expect(screen.getByText("Pulzujúca bolesť")).toBeVisible();
+  it("sends a named problem to its own service page", async () => {
+    await expect(visit("stolicky", { problem: "bite-pain" })).rejects.toThrow(
+      "REDIRECT /sluzby/endodoncia",
+    );
+    await expect(visit("dasna", { problem: "odor" })).rejects.toThrow(
+      "REDIRECT /sluzby/dentalna-hygiena",
+    );
+    await expect(
+      visit("chybajuci-zub", { problem: "removable-replacement" }),
+    ).rejects.toThrow("REDIRECT /sluzby/protetika");
   });
 
-  it("does not make a selected-problem claim for invalid, repeated, or inherited query data", async () => {
-    await renderPage("stolicky", { problem: "not-a-problem" });
-    expect(screen.queryByTestId("selected-problem")).not.toBeInTheDocument();
-
-    const repeated = await ProblemPage({
-      params: Promise.resolve({ zona: "stolicky" }),
-      searchParams: Promise.resolve({ problem: ["pulsing", "cracked"] }),
-    });
-    const inherited = await ProblemPage({
-      params: Promise.resolve({ zona: "stolicky" }),
-      searchParams: Promise.resolve(Object.create({ problem: "pulsing" }) as Search),
-    });
-
-    const { unmount } = render(repeated);
-    expect(screen.queryByTestId("selected-problem")).not.toBeInTheDocument();
-    unmount();
-    render(inherited);
-    expect(screen.queryByTestId("selected-problem")).not.toBeInTheDocument();
+  it("sends a bare or unknown problem to the zone's page", async () => {
+    await expect(visit("neviem")).rejects.toThrow("REDIRECT /sluzby/vstupna-prehliadka");
+    await expect(visit("stolicky", { problem: "__proto__" })).rejects.toThrow(
+      "REDIRECT /sluzby/endodoncia",
+    );
+    await expect(visit("crenove-zuby", { problem: ["a", "b"] })).rejects.toThrow(
+      "REDIRECT /sluzby/biele-vyplne",
+    );
   });
 
-  it("uses normal not-found handling for an unknown zone", async () => {
-    await ProblemPage({
-      params: Promise.resolve({ zona: "neexistuje" }),
-      searchParams: Promise.resolve({}),
-    });
-
-    expect(notFound).toHaveBeenCalledTimes(1);
-  });
-
-  it("keeps required demo content and exact entry examination label on valid pages", async () => {
-    await renderPage("dasna");
-
-    expect(screen.getByText("Demo obsahu")).toBeVisible();
-    expect(
-      screen.getByText("Orientačná pomôcka. Presnú príčinu určí až vyšetrenie."),
-    ).toBeVisible();
-    expect(screen.getByText("Vstupné vyšetrenie — 100 EUR")).toBeVisible();
+  it("returns 404 for a slug that never existed", async () => {
+    await expect(visit("unknown")).rejects.toThrow("NEXT_NOT_FOUND");
+    expect(permanentRedirect).not.toHaveBeenCalled();
   });
 });

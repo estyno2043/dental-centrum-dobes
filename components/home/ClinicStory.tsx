@@ -493,7 +493,7 @@ export function ClinicStory(): JSX.Element {
             <ul>
               {JAW_ZONES.map((zone) => (
                 <li key={zone.id}>
-                  <a href={zone.route}>{zone.label}</a>
+                  <a href={zone.href}>{zone.label}</a>
                 </li>
               ))}
             </ul>

@@ -133,7 +133,7 @@ describe("JawZoneOverlay pain map", () => {
     expect(screen.getByRole("region", { name: "Stoličky" })).toBeVisible();
   });
 
-  it("uses existing problem routes and consent-gated analytics", async () => {
+  it("links problems to their service pages, with consent-gated analytics", async () => {
     const dataLayer = { push: vi.fn() };
     Object.assign(window, { dataLayer });
     const user = userEvent.setup();
@@ -146,7 +146,7 @@ describe("JawZoneOverlay pain map", () => {
     });
     expect(screen.getByRole("link", { name: /^Pulzujúca bolesť/ })).toHaveAttribute(
       "href",
-      "/problemy/stolicky?problem=pulsing",
+      "/sluzby/endodoncia",
     );
   });
 
@@ -157,11 +157,11 @@ describe("JawZoneOverlay pain map", () => {
     expect(assistance).toHaveTextContent("Nenašli ste miesto?");
     expect(screen.getByRole("link", { name: "Chýba mi zub" })).toHaveAttribute(
       "href",
-      "/problemy/chybajuci-zub",
+      "/sluzby/zubne-implantaty",
     );
     expect(screen.getByRole("link", { name: "Neviem / bolí to celé" })).toHaveAttribute(
       "href",
-      "/problemy/neviem",
+      "/sluzby/vstupna-prehliadka",
     );
     expect(assistance).toHaveClass(styles.assistanceBar);
   });
@@ -427,13 +427,14 @@ describe("JawZoneOverlay pain map", () => {
    * whole list rather than picking the likeliest — and it goes inside the
    * link, where a screen reader hears it without having to hover anything.
    */
-  it("tells each row where it leads, in full", () => {
+  /* Each row names the service page it opens, and opens it. */
+  it("tells each row which service page it leads to", () => {
     renderOverlay();
     fireEvent.pointerEnter(screen.getByTestId("jaw-zone-button-molar"));
 
     const row = screen.getByRole("link", { name: /^Bolí ma pri hryzení/ });
     expect(row.textContent).toContain("Endodoncia pod mikroskopom");
-    expect(row.textContent).toContain("extrakcia");
+    expect(row).toHaveAttribute("href", "/sluzby/endodoncia");
   });
 
   /*
