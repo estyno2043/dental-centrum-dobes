@@ -63,3 +63,18 @@ if (!("ResizeObserver" in globalThis)) {
 }
 
 afterEach(cleanup);
+
+/*
+ * `next/font` is a build-time loader: outside Next it exports nothing
+ * callable. Every font in the app (the site's Hanken Grotesk, the children's
+ * page's Fredoka) is a function returning class names, so each gets a
+ * stand-in returning stable ones. A new font needs a line here.
+ */
+vi.mock("next/font/google", () => {
+  const font = (name: string) => () => ({
+    className: `font-${name}`,
+    style: { fontFamily: name },
+    variable: `font-var-${name}`,
+  });
+  return { Fredoka: font("Fredoka"), Hanken_Grotesk: font("Hanken_Grotesk") };
+});

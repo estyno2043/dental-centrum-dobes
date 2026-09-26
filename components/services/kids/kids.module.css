@@ -28,7 +28,7 @@
   --mint-soft: #eaf8f1;
   --mint-deep: #2d6f58;
 
-  --display: var(--font-kids), "Hanken Grotesk", sans-serif;
+  --display: var(--font-kids), var(--font-sans), sans-serif;
 }
 
 /*

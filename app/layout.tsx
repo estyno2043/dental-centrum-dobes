@@ -1,11 +1,23 @@
-/* eslint-disable @next/next/no-page-custom-font -- The App Router root layout applies the approved font site-wide. */
-
 import type { Metadata } from "next";
+import { Hanken_Grotesk } from "next/font/google";
 
 import { ReviewsProvider } from "@/components/reviews/ReviewsProvider";
 import { Footer } from "@/components/site/Footer";
 import { SmoothScroll } from "@/components/scroll/SmoothScroll";
 import "./globals.css";
+
+/*
+ * The site's face, self-hosted through `next/font` since 2026-09-26. It used
+ * to load from fonts.googleapis.com, which hands every visitor's IP address
+ * to Google before they have agreed to anything; served from this domain it
+ * costs no third-party request and no consent. `latin-ext` carries the Slovak
+ * diacritics, and the variable font covers every weight the site uses.
+ */
+const sans = Hanken_Grotesk({
+  display: "swap",
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-sans",
+});
 
 export const metadata: Metadata = {
   title: "Dental Centrum Dobeš",
@@ -22,19 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="sk">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html className={sans.variable} lang="sk">
       <body>
         {/*
           Renders nothing; it only attaches the eased-scroll loop to the
