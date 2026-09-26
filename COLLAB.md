@@ -1904,6 +1904,40 @@ not achievable without interpolation artifacts, whatever the export is tagged.
 
   No files reserved.
 
+- 2026-09-26 — Claude published the frameless jaw and a conversion layer
+  for every service page, plus a rebuilt entry examination page.
+
+  **Jaw.** Full-bleed at every width (`.jawViewport`), no border, radius or
+  shadow. `.sequenceStage` and `.zoneArtboard` share one contained 16:9 box
+  (`min(100%, 100lvh * 16 / 9)`), so markers stay on the teeth and every
+  label stays on screen at 4:3, 5:4 and portrait tablets; the mask fades the
+  frame edges into the walnut ground. Note: `max(%, lvh)` inside a
+  radial-gradient size is not supported by Chrome and silently drops the
+  declaration; size the box instead.
+
+  **Conversion (all ten pages, `components/booking/`).** `IntroActions` in
+  the shell intro (not on entry/hygiene, which have their own);
+  `ServiceCta` mid-page on implants, aesthetic, prosthetics, surgery,
+  fillings; `StickyBookingBar` rendered outside `main` (the shell's
+  `.page > *` sets `position: relative`), visible after half a screen,
+  hidden when `#booking` is on screen, `inert` while hidden;
+  `BookingPanel` replaces the old booking aside (phone, live open status via
+  the new `useOpenStatus`, Google score, hours, parking, entry offer; pastel
+  `tone="kids"`). `ServiceBooking` gained an optional `message` textarea,
+  added to `public/__forms.html` and the schema test, and links the privacy
+  notice. Every claim is one the site already makes.
+
+  **Entry page.** Rebuilt with the clinic's photographs (hero `deti-tim`,
+  bento of four, waiting room `vstupna-cakaren` from `drift-03`); it is now a
+  `BESPOKE_HEROES` page; its own sticky bar is replaced by the shared one,
+  which shows the 80 € / 105 € price there.
+
+  Verified before pushing: 412 tests, lint, TypeScript, production build;
+  no horizontal overflow on any service page at 360–1440. Netlify delivery
+  of the new `message` field can only be proven on the live deploy.
+
+  No files reserved.
+
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
 credentials, tokens, or local configuration values in repository files,
