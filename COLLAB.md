@@ -1890,6 +1890,20 @@ not achievable without interpolation artifacts, whatever the export is tagged.
 
   No files reserved.
 
+- 2026-09-26 — Claude published the privacy notice. The clinic's facts
+  arrived: both operators (Dental Centrum Dobeš, s.r.o., IČO 36768626,
+  Svébska 20, 851 10 Bratislava, OR MS Bratislava III Sro 45625/B; Dental
+  Centrum Dobeš Vlárska s.r.o., IČO 54966281, Vlárska 13762/13C, Sro
+  164776/B), privacy e-mail dobesdentalcentrum@gmail.com, booking data kept
+  until the booking is dealt with, effective 26. 9. 2026. `privacyReady` is
+  true, `/ochrana-osobnych-udajov` is live and the footer's legal row shows
+  both operators and the link. The notice still wants a read by the clinic's
+  lawyer or DPO. If analytics or any tracking cookie is ever added, the
+  notice and a consent banner must change with it; a test pins the layout
+  free of gtag and Google Fonts.
+
+  No files reserved.
+
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
 credentials, tokens, or local configuration values in repository files,
