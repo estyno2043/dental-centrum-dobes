@@ -26,10 +26,10 @@
 
   /*
    * The surplus over one viewport is the scroll the whole sequence consumes.
-   * Eight cards across 420svh gives each one roughly a third of a screen of
-   * travel, which is slow enough to read and quick enough not to stall.
+   * 380svh since the 2026-09-26 audit (was 420): with the empty screens at
+   * either end gone, the same eight cards need less runway.
    */
-  height: 420svh;
+  height: 380svh;
 
   /*
    * Mixed rather than cross-faded between two layers: the previous section
@@ -84,7 +84,7 @@
  */
 .card {
   --local: clamp(0, calc((var(--p) - var(--in)) / var(--span)), 1);
-  --fade: clamp(0, calc(min(var(--local) * 3, (1 - var(--local)) * 3)), 1);
+  --fade: clamp(0, calc(min(var(--local) * 4, (1 - var(--local)) * 4)), 1);
 
   position: absolute;
   top: var(--at-y);
@@ -111,18 +111,18 @@
 /* ----------------------------------------------------------------- copy --- */
 
 /*
- * Above the cards, and arriving with the scroll rather than sitting there the
- * whole way: in over the first seventh, out over the last, rising into place
- * as it appears.
+ * Above the cards. It arrives on `--enter`, while the section is still
+ * scrolling up into view, and stays for the whole scene: it used to fade in
+ * only after the pin and out before the release, which left the first and
+ * last screen of the section empty (2026-09-26 audit).
  *
  * The width is a stated measure, not `ch`. `ch` resolves against this
  * element's own 16px rather than the headline's ~51px, so even 22ch came out
  * 197px wide and broke the sentence a word to a line.
  */
 .copy {
-  --copy-in: clamp(0, calc(var(--p) / 0.14), 1);
-  --copy-out: clamp(0, calc((1 - var(--p)) / 0.14), 1);
-  --copy-fade: min(var(--copy-in), var(--copy-out));
+  --copy-in: clamp(0, calc((var(--enter) - 0.25) / 0.55), 1);
+  --copy-fade: var(--copy-in);
 
   position: relative;
   z-index: 1;
@@ -216,14 +216,20 @@
  */
 @media (max-width: 767px) {
   .section {
-    height: 320svh;
+    height: 300svh;
   }
 
   .card {
     width: 62%;
   }
 
-  .card:nth-child(even) {
+  /*
+   * Five of the eight: the odd ones down the middle, plus the last, so there
+   * is still a photograph in the air as the scene lets go.
+   */
+  .card:nth-child(2),
+  .card:nth-child(4),
+  .card:nth-child(6) {
     display: none;
   }
 }

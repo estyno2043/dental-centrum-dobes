@@ -1,9 +1,17 @@
+/*
+ * Retimed 2026-09-26 after the audit found about a screen of blurred,
+ * wordless photograph between the statement and the clinic story: the
+ * sentence left at 72% and the veil only closed at 90%, with nothing on
+ * screen in between. The sentence now arrives sooner and stays until 82%,
+ * and the veil closes by 97%, so the handover is a short fade rather than
+ * a screen of nothing.
+ */
 const EXPERIENCE_OPEN_END = 0.3;
-const COPY_IN_START = 0.34;
-const COPY_IN_END = 0.46;
-const COPY_OUT_START = 0.72;
-const COPY_OUT_END = 0.8;
-const EXIT_END = 0.9;
+const COPY_IN_START = 0.31;
+const COPY_IN_END = 0.42;
+const COPY_OUT_START = 0.82;
+const COPY_OUT_END = 0.9;
+const EXIT_END = 0.97;
 const clamp01 = (value: number): number =>
   Math.min(1, Math.max(0, value));
 

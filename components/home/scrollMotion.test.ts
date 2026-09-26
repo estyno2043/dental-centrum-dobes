@@ -31,8 +31,9 @@ describe("mapExperienceMotion", () => {
   });
 
   test("covers the statement photograph with its own exit veil", () => {
-    expect(mapExperienceMotion(0.72).veilOpacity).toBe(0);
-    expect(mapExperienceMotion(0.9)).toMatchObject({
+    expect(mapExperienceMotion(0.8).veilOpacity).toBe(0);
+    expect(mapExperienceMotion(0.8).copyOpacity).toBe(1);
+    expect(mapExperienceMotion(0.97)).toMatchObject({
       veilOpacity: 1,
       storyScale: 0.98,
       copyOpacity: 0,
