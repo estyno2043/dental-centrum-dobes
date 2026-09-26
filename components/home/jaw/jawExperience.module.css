@@ -1,9 +1,31 @@
+/*
+ * The rendered frames carry a blurred, desaturated dental chair behind the
+ * jaw, and the portrait frames also two blurred pink bands above and below
+ * it. Over the finished scene both read as a muddy photograph behind a
+ * translucent card (2026-09-26 audit). The frames cannot be re-rendered
+ * without their source, so the stage is masked to an ellipse around the
+ * jaw, at its widest open frame plus a margin, and the viewport behind it is
+ * a clean walnut ground whose centre matches the wood the frames show next
+ * to the jaw (#7c6446, sampled), so the edge of the mask never shows.
+ */
 .sequenceStage {
   position: absolute;
   overflow: hidden;
   pointer-events: none;
   user-select: none;
   inset: 0;
+  mask-image: radial-gradient(ellipse 27% 35% at 50% 50%, #000 66%, rgb(0 0 0 / 35%) 84%, transparent 100%);
+}
+
+@media (max-width: 767px) {
+  /*
+   * Full-bleed on a phone, the frame is drawn cover into a tall screen: the
+   * jaw spans about 29-72% across and 42-58% down, and the pink bands begin
+   * at about 62%. The ellipse is fitted between them.
+   */
+  .sequenceStage {
+    mask-image: radial-gradient(ellipse 30% 13% at 50% 50%, #000 66%, rgb(0 0 0 / 35%) 84%, transparent 100%);
+  }
 }
 
 .staticFrame,

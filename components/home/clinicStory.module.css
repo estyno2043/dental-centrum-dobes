@@ -181,7 +181,14 @@
   border: 1px solid rgb(230 204 157 / 34%);
   border-radius: clamp(18px, 2.2vw, 32px);
   aspect-ratio: 16 / 9;
-  background: #817866;
+  /*
+   * Walnut with a warm light behind the jaw; the light's centre is the wood
+   * colour the frames show beside the jaw, so the masked frame melts into it.
+   * See `.sequenceStage` in `jawExperience.module.css`.
+   */
+  background:
+    radial-gradient(ellipse 42% 52% at 50% 50%, #7c6446 0%, rgb(124 100 70 / 55%) 45%, transparent 78%),
+    linear-gradient(160deg, #4a382b 0%, #3a2c22 55%, #2a2019 100%);
   box-shadow: 0 2rem 6rem rgb(10 8 7 / 36%);
   transform: translate(-50%, -50%) scale(calc(0.94 + var(--handoff) * 0.06));
   transform-origin: center;
