@@ -257,6 +257,15 @@
   color: var(--taupe);
 }
 
+.legalItem {
+  margin-left: 18px;
+  color: inherit;
+}
+
+a.legalItem {
+  text-underline-offset: 3px;
+}
+
 .legal {
   max-width: 1240px;
   padding-top: 26px;

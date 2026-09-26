@@ -1,4 +1,10 @@
 import Link from "next/link";
+
+import {
+  operators,
+  privacyPath,
+  privacyReady,
+} from "@/components/legal/legalContent";
 import type { JSX } from "react";
 
 import { navigationItems } from "@/components/hero/heroContent";
@@ -28,10 +34,12 @@ import styles from "./footer.module.css";
  * keep the pale mode of the section above and put a white logo on light chrome
  * over an ink footer.
  *
- * ⚠️ No legal row yet. Zásady ochrany osobných údajov and the operator's
- * identification (obchodné meno, sídlo, IČO) belong here and none of them
- * exist. Inventing a link target or a company number would put a false claim
- * in the one part of a site people read as factual.
+ * The legal row, the operator's identification and the privacy notice, is
+ * drafted in `components/legal/legalContent.ts` (2026-09-26) and appears here
+ * only when `privacyReady` is true, which needs facts only the clinic can
+ * give (seat, register entry, a privacy e-mail). Until then the row is the
+ * copyright line alone: inventing a seat or linking a page that answers 404
+ * would put a false claim in the one part of a site people read as factual.
  */
 export function Footer(): JSX.Element {
   return (
@@ -115,6 +123,18 @@ export function Footer(): JSX.Element {
 
       <p className={styles.legal}>
         © {new Date().getFullYear()} {clinicName}
+        {privacyReady ? (
+          <>
+            {operators.map((operator) => (
+              <span className={styles.legalItem} key={operator.ico}>
+                {operator.name}, {operator.seat}, IČO {operator.ico}
+              </span>
+            ))}
+            <Link className={styles.legalItem} href={privacyPath}>
+              Ochrana osobných údajov
+            </Link>
+          </>
+        ) : null}
       </p>
     </footer>
   );

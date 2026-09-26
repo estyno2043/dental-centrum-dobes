@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { navigationItems } from "@/components/hero/heroContent";
 import { Footer } from "./Footer";
+import { privacyPath, privacyReady } from "@/components/legal/legalContent";
 import {
   clinicAddress,
   clinicLandline,
@@ -118,18 +119,16 @@ describe("Footer", () => {
   });
 
   /*
-   * ⚠️ No legal row yet: the privacy notice and the operator's identification
-   * do not exist. This fails if somebody adds a link to a page that is not
-   * there, which in a footer reads as a promise the site cannot keep.
+   * The legal row appears with the privacy notice and not before: a link to
+   * a page that answers 404 reads as a promise the site cannot keep.
    */
-  it("promises no legal pages that do not exist", () => {
+  it("links the privacy notice only once it is published", () => {
     render(<Footer />);
     const hrefs = screen
       .getAllByRole("link")
       .map((link) => link.getAttribute("href") ?? "");
+    const legal = hrefs.filter((href) => /ochran|gdpr|podmienk/i.test(href));
 
-    expect(hrefs.filter((href) => /ochran|gdpr|podmienk/i.test(href))).toEqual(
-      [],
-    );
+    expect(legal).toEqual(privacyReady ? [privacyPath] : []);
   });
 });
