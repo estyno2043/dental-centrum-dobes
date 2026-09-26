@@ -45,11 +45,12 @@ export default function PrivacyPage(): JSX.Element {
 
           <section aria-labelledby="operator-heading" className={styles.card}>
             <h2 className={styles.cardHeading} id="operator-heading">
-              Prevádzkovateľ
+              {operators.length > 1 ? "Prevádzkovatelia" : "Prevádzkovateľ"}
             </h2>
             {operators.map((operator) => (
               <p className={styles.operator} key={operator.ico}>
                 <strong>{operator.name}</strong>
+                <span className={styles.role}>{operator.role}</span>
                 <span>{operator.seat}</span>
                 <span>IČO: {operator.ico}</span>
                 <span>{operator.register}</span>

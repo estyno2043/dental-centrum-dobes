@@ -122,7 +122,9 @@ export function Footer(): JSX.Element {
       </div>
 
       <p className={styles.legal}>
-        © {new Date().getFullYear()} {clinicName}
+        <span>
+          © {new Date().getFullYear()} {clinicName}
+        </span>
         {privacyReady ? (
           <>
             {operators.map((operator) => (

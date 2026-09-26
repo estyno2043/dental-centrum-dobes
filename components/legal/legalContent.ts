@@ -29,6 +29,8 @@
 
 export type Operator = {
   readonly name: string;
+  /** What this company runs at the clinic, as the health register lists it. */
+  readonly role: string;
   readonly ico: string;
   /** Sídlo as registered, e.g. "Vlárska 13/C, 831 01 Bratislava". */
   readonly seat: string | null;
@@ -36,26 +38,44 @@ export type Operator = {
   readonly register: string | null;
 };
 
+/*
+ * Both companies, at the user's instruction of 2026-09-26. Seat and register
+ * entry quoted from the Obchodný register (orsr.sk) the same day: the second
+ * from the extract the user supplied, the first looked up by IČO. "Svébska"
+ * is the register's own spelling, a street in Rusovce (851 10).
+ */
 export const operators: readonly Operator[] = [
   {
     name: "Dental Centrum Dobeš, s.r.o.",
+    role: "zubná ambulancia",
     ico: "36768626",
-    seat: null,
-    register: null,
+    seat: "Svébska 20, 851 10 Bratislava",
+    register:
+      "Obchodný register Mestského súdu Bratislava III, oddiel Sro, vložka č. 45625/B",
+  },
+  {
+    name: "Dental Centrum Dobeš Vlárska s.r.o.",
+    role: "ambulancia dentálnej hygieny",
+    ico: "54966281",
+    seat: "Vlárska 13762/13C, 831 01 Bratislava - mestská časť Nové Mesto",
+    register:
+      "Obchodný register Mestského súdu Bratislava III, oddiel Sro, vložka č. 164776/B",
   },
 ];
 
-/** Where a visitor sends a privacy request. None has ever been supplied. */
+/** Where a visitor sends a privacy request. Supplied by the user 2026-09-26. */
 export const privacyContact: { readonly email: string | null; readonly phone: string } = {
-  email: null,
+  email: "dobesdentalcentrum@gmail.com",
   phone: "0918 800 002",
 };
 
-/** How long a booking request is kept once it has been dealt with. */
-export const bookingRetention: string | null = null;
+/** How long a booking request is kept: "do vybavenia objednávky" (user, 2026-09-26). */
+export const bookingRetention: string | null =
+  "Údaje z objednávkového formulára uchovávame len do vybavenia vašej " +
+  "objednávky. Potom ich vymažeme.";
 
-/** The date the notice takes effect; set when it is published. */
-export const privacyEffective: string | null = null;
+/** The date the notice takes effect: the day it was published. */
+export const privacyEffective: string | null = "26. 9. 2026";
 
 export const privacyReady =
   operators.every((o) => o.seat !== null && o.register !== null) &&

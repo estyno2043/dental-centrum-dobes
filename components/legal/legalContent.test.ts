@@ -12,12 +12,22 @@ import {
 } from "./legalContent";
 
 describe("privacy notice", () => {
-  /* From the regional health register (e-VÚC), 2026-09-26. */
-  it("names the operator by its registered name and IČO", () => {
-    expect(operators[0]).toMatchObject({
-      name: "Dental Centrum Dobeš, s.r.o.",
-      ico: "36768626",
-    });
+  /* From the Obchodný register, 2026-09-26. Both companies, as the user asked. */
+  it("names both operators as the commercial register does", () => {
+    expect(operators).toEqual([
+      expect.objectContaining({
+        name: "Dental Centrum Dobeš, s.r.o.",
+        ico: "36768626",
+        seat: "Svébska 20, 851 10 Bratislava",
+        register: expect.stringContaining("vložka č. 45625/B"),
+      }),
+      expect.objectContaining({
+        name: "Dental Centrum Dobeš Vlárska s.r.o.",
+        ico: "54966281",
+        seat: expect.stringContaining("Vlárska 13762/13C"),
+        register: expect.stringContaining("vložka č. 164776/B"),
+      }),
+    ]);
   });
 
   /*

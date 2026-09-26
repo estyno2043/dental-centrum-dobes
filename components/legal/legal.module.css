@@ -67,6 +67,11 @@
   line-height: 1.5;
 }
 
+.role {
+  color: #6f5a44;
+  font-size: 0.82rem;
+}
+
 .contact {
   margin: 0;
   padding-top: 12px;

@@ -257,9 +257,25 @@
   color: var(--taupe);
 }
 
+/*
+ * The copyright, each operator and the privacy link, one per line on a phone
+ * and in a wrapping row on a wide screen.
+ */
 .legalItem {
-  margin-left: 18px;
   color: inherit;
+}
+
+.legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 22px;
+  line-height: 1.5;
+}
+
+@media (max-width: 767px) {
+  .legal {
+    flex-direction: column;
+  }
 }
 
 a.legalItem {
