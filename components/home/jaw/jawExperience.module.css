@@ -9,11 +9,24 @@
  * to the jaw (#7c6446, sampled), so the edge of the mask never shows.
  */
 .sequenceStage {
+  /*
+   * The 16:9 box the frames are drawn into: the largest that fits the scene,
+   * centred, matching the zone artboard exactly. Contain, not cover: cover
+   * pushed the side labels off screen on anything taller than 16:9 (4:3
+   * laptops, tablets), and because the mask below fades the frame into the
+   * walnut ground, the empty band either side of a contained frame is
+   * invisible anyway.
+   */
   position: absolute;
+  top: 50%;
+  left: 50%;
   overflow: hidden;
+  width: min(100%, calc(100lvh * 16 / 9));
+  aspect-ratio: 16 / 9;
   pointer-events: none;
   user-select: none;
-  inset: 0;
+  transform: translate(-50%, -50%);
+  /* 27% x 35% of the 16:9 box hugs the widest open frame, with a margin. */
   mask-image: radial-gradient(ellipse 27% 35% at 50% 50%, #000 66%, rgb(0 0 0 / 35%) 84%, transparent 100%);
 }
 
@@ -24,6 +37,12 @@
    * at about 62%. The ellipse is fitted between them.
    */
   .sequenceStage {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+    transform: none;
     mask-image: radial-gradient(ellipse 30% 13% at 50% 50%, #000 66%, rgb(0 0 0 / 35%) 84%, transparent 100%);
   }
 }
@@ -121,7 +140,8 @@
    * jaw on a laptop and disappears on a large monitor.
    */
   container-type: inline-size;
-  width: min(100%, calc(100dvh * 16 / 9));
+  /* The same contained 16:9 box as `.sequenceStage`, so markers sit on teeth. */
+  width: min(100%, calc(100lvh * 16 / 9));
   aspect-ratio: 16 / 9;
   transform: translate(-50%, -50%);
 }
@@ -1049,6 +1069,17 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* With motion reduced the scene is a 16:9 box (see `.reduced .jawViewport`). */
+@media (prefers-reduced-motion: reduce) {
+  .zoneArtboard {
+    width: 100%;
+  }
+
+  .sequenceStage[data-jaw-sequence-state="reduced"] {
+    width: 100%;
   }
 }
 

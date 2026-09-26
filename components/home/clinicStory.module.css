@@ -170,34 +170,42 @@
   pointer-events: auto;
 }
 
+/*
+ * Full-bleed at every width since 2026-09-26, when the user asked for the
+ * frame around the jaw to go. It was a 16:9 card with a border, rounded
+ * corners and a shadow floating over the clinic photograph; now the walnut
+ * ground fills the screen and the jaw stands on it with no edge anywhere.
+ * Phones already worked this way (see the mobile block below).
+ *
+ * The frames, the zone artboard and the mask around the jaw all share one
+ * contained 16:9 box in the middle of it (`jawExperience.module.css`), which
+ * keeps the markers on the teeth at any aspect ratio.
+ *
+ * Settles from slightly over full size rather than growing into it: a full
+ * box scaled below 1 would show the gallery behind it around every edge.
+ */
 .jawViewport {
   position: absolute;
   /* `hidden` creates a scroll container: focusing a mobile zone then scrolls
-     every jaw layer upward. `clip` keeps rounded cropping without that jump. */
+     every jaw layer upward. `clip` keeps the cropping without that jump. */
   overflow: clip;
-  top: 50%;
-  left: 50%;
-  width: min(calc(100% - clamp(2rem, 7vw, 7rem)), 1440px, calc(82dvh * 16 / 9));
-  border: 1px solid rgb(230 204 157 / 34%);
-  border-radius: clamp(18px, 2.2vw, 32px);
-  aspect-ratio: 16 / 9;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   /*
-   * Walnut into beige, at the user's request on 2026-09-26: the same recipe
-   * as the walnut panels on the endodontics page. A diagonal ramp from deep
-   * walnut to a lighter oak, beige light bled in from the lower corners, and
-   * a warm light behind the jaw whose centre is the wood colour the frames
-   * show beside it, so the masked frame melts in (see `.sequenceStage` in
-   * `jawExperience.module.css`). The top stays dark for the white heading.
+   * Walnut into beige, the same recipe as the walnut panels on the
+   * endodontics page: a diagonal ramp from deep walnut to a lighter oak,
+   * beige light from the lower corners, and a warm light behind the jaw
+   * whose centre is the wood colour the frames show beside it, so the
+   * masked frame melts in. The top stays dark for the white heading.
    */
   background:
     radial-gradient(ellipse 42% 52% at 50% 50%, #8a6f52 0%, rgb(138 111 82 / 55%) 45%, transparent 78%),
     radial-gradient(75% 85% at 100% 100%, rgb(226 205 170 / 78%), transparent 64%),
     radial-gradient(60% 75% at 0% 100%, rgb(226 205 170 / 42%), transparent 60%),
     linear-gradient(160deg, #33261d 0%, #45352a 38%, #806650 100%);
-  box-shadow:
-    0 1px 0 rgb(255 255 255 / 10%) inset,
-    0 2rem 6rem rgb(10 8 7 / 36%);
-  transform: translate(-50%, -50%) scale(calc(0.94 + var(--handoff) * 0.06));
+  transform: scale(calc(1 + (1 - var(--handoff)) * 0.04));
   transform-origin: center;
 }
 
@@ -533,8 +541,18 @@
   opacity: 1;
 }
 
+/*
+ * Nothing moves with motion reduced, so the scene is a still 16:9 picture in
+ * the page rather than a full screen the reader scrolls through; there the
+ * frames, the artboard and the mask are all exactly this box.
+ */
 .reduced .jawViewport {
+  top: 50%;
+  left: 50%;
   width: min(calc(100% - 2rem), 1200px, calc(72dvh * 16 / 9));
+  height: auto;
+  border-radius: clamp(18px, 2.2vw, 32px);
+  aspect-ratio: 16 / 9;
   transform: translate(-50%, -50%);
 }
 
