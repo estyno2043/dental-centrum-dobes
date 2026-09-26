@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { JSX } from "react";
 
-import { ServiceBooking } from "@/components/booking/ServiceBooking";
+import { BookingPanel } from "@/components/booking/BookingPanel";
+import { IntroActions } from "@/components/booking/IntroActions";
+import { StickyBookingBar } from "@/components/booking/StickyBookingBar";
+import { offer as entryOffer } from "@/components/services/entry/entryContent";
 import { SiteHeader } from "@/components/hero/SiteHeader";
 import { AestheticBody } from "@/components/services/aesthetic/AestheticBody";
 import { EndoBody } from "@/components/services/endo/EndoBody";
@@ -125,6 +128,7 @@ const BESPOKE_TONES: Readonly<Record<string, string>> = {
  * content, so they keep the full intro.
  */
 const BESPOKE_HEROES: ReadonlySet<string> = new Set([
+  "vstupna-prehliadka",
   "esteticka-stomatologia",
   "parodontologia",
   "endodoncia",
@@ -132,6 +136,11 @@ const BESPOKE_HEROES: ReadonlySet<string> = new Set([
   "biele-vyplne",
   "protetika",
   "stomatochirurgia",
+]);
+
+const OWN_OPENING_ACTIONS: ReadonlySet<string> = new Set([
+  "vstupna-prehliadka",
+  "dentalna-hygiena",
 ]);
 
 const BESPOKE_BODIES: Readonly<Record<string, () => JSX.Element>> = {
@@ -157,6 +166,8 @@ export default async function ServicePage({
   const detail = getServiceDetail(sluzba);
   const BespokeBody = BESPOKE_BODIES[sluzba];
   const hero = BESPOKE_HEROES.has(sluzba);
+  /* The entry and hygiene pages open on their own pair of buttons. */
+  const introActions = !OWN_OPENING_ACTIONS.has(sluzba);
 
   return (
     <>
@@ -207,6 +218,11 @@ export default async function ServicePage({
               {detail?.kicker ?? "Služby"}
             </p>
             <h1 className={styles.headlineCompact}>{service.name}</h1>
+            {introActions ? (
+              <div className={styles.introActionsCompact}>
+                <IntroActions />
+              </div>
+            ) : null}
           </header>
         ) : (
           <header className={styles.intro}>
@@ -216,6 +232,7 @@ export default async function ServicePage({
             </p>
             <h1 className={styles.headline}>{service.name}</h1>
             <p className={styles.lead}>{detail?.lead ?? service.lead}</p>
+            {introActions ? <IntroActions /> : null}
           </header>
         )}
 
@@ -356,18 +373,31 @@ export default async function ServicePage({
           <p className={styles.pending}>Obsah tejto stránky pripravujeme.</p>
         )}
 
-        <aside
-          className={styles.booking}
-          aria-labelledby="booking-heading"
-          /* Both CTAs on the entry page point here. */
-          id="booking"
-        >
-          <h2 className={styles.blockHeading} id="booking-heading">
-            Objednať sa
-          </h2>
-          <ServiceBooking service={service.slug} />
-        </aside>
+        {/*
+          The close of every page, and the target of every "Objednať sa" on
+          it (`#booking`). See `BookingPanel` for why it says what it says.
+        */}
+        <BookingPanel
+          service={service.slug}
+          serviceName={service.name}
+          showEntryOffer={sluzba !== "vstupna-prehliadka"}
+          tone={sluzba === "osetrenie-deti" ? "kids" : undefined}
+        />
+
       </main>
+
+      {/*
+        Outside `main` on purpose: the shell gives every direct child of the
+        page `position: relative`, which would take the bar out of `fixed`.
+      */}
+      <StickyBookingBar
+        price={
+          sluzba === "vstupna-prehliadka"
+            ? { now: entryOffer.total, was: entryOffer.listTotal }
+            : undefined
+        }
+        serviceName={service.name}
+      />
     </>
   );
 }

@@ -170,3 +170,62 @@ export const entrySteps: readonly { title: string; note: string }[] = [
     note: "Povieme, čo sme našli, čo je súrne a čo počká. A dohodneme, čo ďalej.",
   },
 ];
+
+/* ------------------------------------------------------------ photos --- */
+
+export type EntryPhoto = {
+  readonly src: string;
+  readonly width: number;
+  readonly height: number;
+  readonly alt: string;
+};
+
+/**
+ * The entry page's photographs, added 2026-09-26 when the user asked for the
+ * page to be more visual. All from the clinic's own shoot, each placed beside
+ * what it shows: the two people who greet you, the examination with loupes,
+ * a radiograph on the surgery's screen, the panoramic scanner, the doctor
+ * talking a patient through the result, and the waiting room.
+ *
+ * `benefits` follows the order of `benefits` in `serviceDetail.ts`.
+ */
+export const entryPhotos = {
+  hero: {
+    src: "deti-tim",
+    width: 1200,
+    height: 900,
+    alt: "Dve usmiate zdravotníčky v ordinácii pri zubárskom kresle",
+  },
+  benefits: [
+    {
+      src: "vstupna-02",
+      width: 900,
+      height: 675,
+      alt: "Lekárka s lupovými okuliarmi vyšetruje pacientku v kresle",
+    },
+    {
+      src: "endo-snimka",
+      width: 1000,
+      height: 1250,
+      alt: "RTG snímka zubov na monitore v ordinácii",
+    },
+    {
+      src: "diagnostika",
+      width: 1000,
+      height: 1250,
+      alt: "Pacientka pri panoramatickom RTG prístroji",
+    },
+    {
+      src: "vstupna-03",
+      width: 900,
+      height: 675,
+      alt: "Lekárka pri pacientke v ordinácii s monitorom",
+    },
+  ],
+  waitingRoom: {
+    src: "vstupna-cakaren",
+    width: 900,
+    height: 1125,
+    alt: "Čakáreň kliniky",
+  },
+} as const satisfies Record<string, EntryPhoto | readonly EntryPhoto[]>;
