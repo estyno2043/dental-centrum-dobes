@@ -1841,6 +1841,55 @@ not achievable without interpolation artifacts, whatever the export is tagged.
 
   No files reserved.
 
+- 2026-09-26 — Claude published the last service page, the jaw's links to
+  the service pages, the fixes from a full visual audit, and the first trust
+  and privacy work.
+
+  **`/sluzby/stomatochirurgia`** (`components/services/surgery/`): sand,
+  walnut and clay; a drawn wisdom tooth lying mesially in the bone; the
+  clinic's own sentence "Po zákroku každý niečo cíti." kept, tablet
+  premedication only, a healing timeline, aftercare marked as general
+  guidance, prices pinned to the list. All ten service pages now exist.
+
+  **The jaw leads to services.** Each problem links to the service page that
+  answers it (mapping and reasoning in `jawContent.ts`); `/problemy/<zone>`
+  is now only a permanent redirect to the same service. The "Demo obsahu"
+  page, `JawAppointmentForm` and the stale 100 € label are gone; the
+  `jaw-appointment` Netlify form schema stays because `ServiceBooking` posts
+  to it.
+
+  **Audit fixes.** The pricing showcase on phones gave the card about 60px;
+  the card's row is now the flexible one and the points are cut to three.
+  The drift scene and the statement band each left a screen empty; both are
+  retimed (drift 380svh, statement copy to 82%, veil by 97%). The jaw frames
+  have a blurred chair and, on portrait, pink bands baked in: the sequence
+  stage is masked to an ellipse and the card is a walnut-to-beige gradient.
+  Seven service pages with their own hero now get a one-line "Služby ·
+  <name>" intro (the name stays the h1); the fixed backdrop photo fades out
+  over the first screen (`BackdropFade`); the scrolled service header rests
+  on a frosted strip.
+
+  **Trust and privacy.** Three Google reviews in full on the homepage
+  (`ReviewsHighlight`, after the patients section, same ground). Hanken
+  Grotesk is self-hosted via `next/font` (no request to Google on load;
+  tests mock `next/font/google` in `vitest.setup.ts`). A privacy notice is
+  drafted in `components/legal/legalContent.ts` from what the site does, with
+  the operator from the e-VÚC register (Dental Centrum Dobeš, s.r.o., IČO
+  36768626). ⚠️ It is held back: `privacyReady` is false until the clinic
+  supplies the seat, the commercial-register entry, a privacy e-mail, the
+  booking retention and the effective date; until then
+  `/ochrana-osobnych-udajov` answers 404 and the footer shows no legal row. A
+  second operator, Dental Centrum Dobeš Vlárska s.r.o. (IČO 54966281, the
+  hygiene surgery), is in the same register; whether it belongs in the notice
+  is an open question for the clinic. No cookie banner: the site sets no
+  cookies and loads no analytics.
+
+  Verified before pushing: 408 tests, lint, TypeScript, production build,
+  `git diff --check`; the privacy page previewed with sample data, then
+  restored.
+
+  No files reserved.
+
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
 credentials, tokens, or local configuration values in repository files,
