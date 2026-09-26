@@ -1808,6 +1808,39 @@ not achievable without interpolation artifacts, whatever the export is tagged.
 
   No files reserved.
 
+- 2026-09-26 — Claude published the jaw overlay fix and two new service pages.
+
+  **No translucent frames over the jaw.** The seven zone surfaces
+  (`jaw-mask-*`, their gradient, `.zoneMask` styles and the `zone-tease` /
+  `zone-mask-pop` keyframes) are removed at the user's request: over the
+  finished render they read as frames laid on the teeth. Markers, leaders and
+  buttons carry the zones; tests now pin that nothing is drawn over the
+  anatomy.
+
+  **`/sluzby/biele-vyplne`** (`components/services/fillings/`): enamel white
+  and mint, a drawn molar half amalgam and half composite, and `SurfacePicker`
+  (native radios) lighting one, two or three surfaces on a tooth seen from
+  above with the list's composite prices. What moves a price inside its range
+  (size and depth, position, layering) is stated as the general rule from
+  published sources, at the user's instruction, not as the clinic's formula;
+  the deep-cavity liner is named as its own list line. Composite cases
+  `medzera-predne` and `dostavba-hran` shown as "the same material".
+
+  **`/sluzby/protetika`** (`components/services/prosthetics/`): bridge,
+  denture and denture on implants as one tablist answering the same three
+  facts, a zirconia three-unit bridge example (3 × 455 €, labelled an
+  example), the clinic's answer about who decides on a walnut band, a
+  ten-year denture lifespan scale (literature 3–5, up to 10 with repairs) and
+  the immediate denture. First built in slate blue, recoloured the same day
+  to beige, gold and brown at the user's request. ⚠️ No next-day temporary is
+  promised for a bridge; still unconfirmed by the clinic, and a test forbids it.
+
+  Remaining service page: `stomatochirurgia`. Verified before pushing: 404
+  tests, lint, TypeScript, production build, `git diff --check`; both pages
+  free of horizontal overflow at 360–1440.
+
+  No files reserved.
+
 Before a handoff, commit or stash work and release or revise the relevant file
 reservations. After the handoff, update this log. Never store secrets,
 credentials, tokens, or local configuration values in repository files,
