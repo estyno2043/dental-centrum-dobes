@@ -1,0 +1,513 @@
+/*
+ * Stomatochirurgia.
+ *
+ * Calm, in the clinic's warm colours, built 2026-09-26: sand and ivory, a
+ * walnut band for the honest part, and a soft clay for accents, chosen over
+ * the teal first proposed because the user asked for the clinic's own
+ * colours on the page before this one. Nothing graphic, nothing that moves
+ * except the wisdom tooth's faint path.
+ *
+ * Contrast, measured: clay #8a4f37 for small labels 5.7:1 on the cream,
+ * 5.4:1 on the soft clay, 6.5:1 on white; on walnut, porcelain 12.8:1 and the
+ * light clay #e8c2ae 8.2:1.
+ */
+
+.opening,
+.block,
+.honesty {
+  --ivory: #fbf8f1;
+  --clay: #8a4f37;
+  --clay-mid: #b9785c;
+  --clay-soft: #f5e8e0;
+  --clay-light: #e8c2ae;
+  --walnut: #3a2c22;
+}
+
+.sectionHeading {
+  margin: 0 0 clamp(18px, 2.4vw, 28px);
+  font-size: clamp(1.5rem, 2.8vw, 2.3rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.block {
+  padding-top: clamp(60px, 8vw, 112px);
+}
+
+/* -------------------------------------------------------------- opening --- */
+
+.opening {
+  display: grid;
+  gap: clamp(24px, 4vw, 64px);
+  padding-top: clamp(32px, 4.5vw, 56px);
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  align-items: center;
+}
+
+.openingHeading {
+  max-width: 16ch;
+  margin: 0 0 18px;
+  font-size: clamp(1.9rem, 4.4vw, 3.3rem);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+.openingBody {
+  max-width: 48ch;
+  margin: 0 0 clamp(24px, 3.2vw, 36px);
+  font-size: clamp(1rem, 1.7vw, 1.14rem);
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+}
+
+.facts > div {
+  padding: 12px 18px;
+  border: 1px solid rgb(138 79 55 / 20%);
+  border-radius: 16px;
+  background: var(--ivory);
+}
+
+.facts > div:last-child {
+  border-color: transparent;
+  background: var(--clay-soft);
+}
+
+.facts dt {
+  color: var(--clay);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.facts dd {
+  margin: 4px 0 0;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.scene {
+  display: block;
+  width: 100%;
+  max-width: 21rem;
+  height: auto;
+  justify-self: center;
+  filter: drop-shadow(0 22px 30px rgb(138 79 55 / 12%));
+}
+
+/* The wisdom tooth's outline above the gum breathes, so the eye finds the way out. */
+.ghost {
+  animation: ghost 3.4s ease-in-out infinite;
+}
+
+@keyframes ghost {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+
+  50% {
+    opacity: 0.9;
+  }
+}
+
+/* ----------------------------------------------------------- procedures --- */
+
+.procedures {
+  display: grid;
+  gap: 14px;
+  padding: 0;
+  margin: 0;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  list-style: none;
+}
+
+/* Three across, then two wider underneath. */
+.procedures li {
+  display: flex;
+  flex-direction: column;
+  padding: 22px;
+  border: 1px solid rgb(138 79 55 / 16%);
+  border-radius: 20px;
+  background: #fff;
+  grid-column: span 2;
+}
+
+.procedures li:nth-child(4),
+.procedures li:nth-child(5) {
+  grid-column: span 3;
+}
+
+.procedureIcon {
+  width: 46px;
+  height: 46px;
+  padding: 6px;
+  margin-bottom: 12px;
+  border-radius: 14px;
+  background: var(--clay-soft);
+}
+
+.procedures h3 {
+  margin: 0 0 6px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.procedures p {
+  margin: 0;
+  color: rgb(38 38 42 / 74%);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.procedureLink {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 14px;
+  color: var(--clay);
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.procedureLink:hover span,
+.procedureLink:focus-visible span {
+  text-decoration: underline;
+}
+
+/* ------------------------------------------------------ honesty, walnut --- */
+
+.honesty {
+  padding-top: clamp(60px, 8vw, 112px);
+}
+
+.honestyInner {
+  display: grid;
+  gap: clamp(22px, 4vw, 56px);
+  padding: clamp(30px, 5vw, 64px);
+  border-radius: 28px;
+  background:
+    radial-gradient(80% 90% at 100% 100%, rgb(185 120 92 / 28%), transparent 60%),
+    linear-gradient(150deg, #4a382b 0%, var(--walnut) 60%, #221912 100%);
+  box-shadow: 0 34px 70px -44px rgb(34 25 18 / 85%);
+  color: var(--porcelain);
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  align-items: center;
+}
+
+.honestyHeading {
+  max-width: 16ch;
+  margin: 0 0 16px;
+  font-size: clamp(1.8rem, 3.8vw, 2.8rem);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.honestyBody {
+  max-width: 44ch;
+  margin: 0;
+  color: rgb(250 249 246 / 84%);
+  font-size: 1rem;
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+
+.sedation {
+  padding: clamp(20px, 2.8vw, 28px);
+  border: 1px solid rgb(232 194 174 / 30%);
+  border-radius: 20px;
+  background: rgb(255 255 255 / 5%);
+}
+
+.sedation h3 {
+  margin: 0 0 8px;
+  color: var(--clay-light);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.sedation p {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* ------------------------------------------------------------- timeline --- */
+
+/*
+ * Three stops on one line: the day of the procedure, the stitches out, the
+ * weeks it closes. Dots on a hairline across, stacked down on a phone.
+ */
+.timeline {
+  position: relative;
+  display: grid;
+  gap: 18px;
+  padding: 0;
+  margin: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  list-style: none;
+}
+
+.timeline::before {
+  position: absolute;
+  top: 9px;
+  right: 16%;
+  left: 9px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--clay-mid), rgb(185 120 92 / 25%));
+  content: "";
+}
+
+.timeline li {
+  position: relative;
+  padding-top: 34px;
+}
+
+.dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  border: 4px solid var(--clay-soft);
+  border-radius: 50%;
+  background: var(--clay-mid);
+  box-shadow: 0 0 0 1px rgb(185 120 92 / 40%);
+}
+
+.when {
+  margin: 0 0 4px;
+  color: var(--clay);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.timeline h3 {
+  margin: 0 0 6px;
+  font-size: clamp(1.15rem, 2vw, 1.4rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+.stepNote {
+  max-width: 30ch;
+  margin: 0;
+  color: rgb(38 38 42 / 74%);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* ------------------------------------------------------------ aftercare --- */
+
+.aftercare {
+  padding: clamp(24px, 3.6vw, 44px);
+  border-radius: 24px;
+  background:
+    radial-gradient(80% 80% at 0% 0%, rgb(232 194 174 / 45%), transparent 60%),
+    var(--ivory);
+  border: 1px solid rgb(138 79 55 / 14%);
+}
+
+.aftercareHeading {
+  margin: 0 0 6px;
+  font-size: clamp(1.3rem, 2.4vw, 1.75rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+.aftercareNote {
+  margin: 0 0 18px;
+  color: rgb(38 38 42 / 66%);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.aftercareList {
+  display: grid;
+  gap: 10px 28px;
+  padding: 0;
+  margin: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  list-style: none;
+}
+
+.aftercareList li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 0.94rem;
+  line-height: 1.5;
+}
+
+.check {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  flex: none;
+  margin-top: 1px;
+  border-radius: 50%;
+  background: var(--clay-mid);
+  color: #fff;
+  place-items: center;
+}
+
+/* --------------------------------------------------------------- prices --- */
+
+.priceGroups {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.priceGroup {
+  padding: clamp(20px, 3vw, 32px);
+  border: 1px solid rgb(138 79 55 / 16%);
+  border-radius: 22px;
+  background: #fff;
+}
+
+.priceGroup h3 {
+  margin: 0 0 10px;
+  color: var(--clay);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.priceGroup ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.priceGroup li {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 11px 0;
+  border-bottom: 1px dashed rgb(138 79 55 / 22%);
+  font-size: 0.93rem;
+}
+
+.priceGroup li:last-child {
+  border-bottom: 0;
+}
+
+.priceGroup strong {
+  color: var(--clay);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.priceGroup strong[data-free="true"] {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--clay-soft);
+}
+
+.priceNote {
+  margin: 14px 0 0;
+  color: rgb(38 38 42 / 70%);
+  font-size: 0.88rem;
+}
+
+.inlineLink {
+  color: var(--clay);
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
+
+/* --------------------------------------------------------------- narrow --- */
+
+@media (max-width: 960px) {
+  .procedures {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .procedures li,
+  .procedures li:nth-child(4),
+  .procedures li:nth-child(5) {
+    grid-column: auto;
+  }
+
+  .procedures li:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 860px) {
+  .opening,
+  .honestyInner,
+  .aftercareList,
+  .priceGroups {
+    grid-template-columns: 1fr;
+  }
+
+  .scene {
+    max-width: 15rem;
+  }
+
+  .timeline {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding-left: 34px;
+  }
+
+  .timeline::before {
+    top: 10px;
+    right: auto;
+    bottom: 10px;
+    left: 9px;
+    width: 2px;
+    height: auto;
+    background: linear-gradient(180deg, var(--clay-mid), rgb(185 120 92 / 25%));
+  }
+
+  .timeline li {
+    padding-top: 0;
+  }
+
+  .dot {
+    left: -34px;
+  }
+}
+
+@media (max-width: 520px) {
+  .procedures {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ghost {
+    animation: none;
+    opacity: 0.6;
+  }
+}

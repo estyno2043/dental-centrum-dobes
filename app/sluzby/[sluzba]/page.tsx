@@ -8,6 +8,7 @@ import { AestheticBody } from "@/components/services/aesthetic/AestheticBody";
 import { EndoBody } from "@/components/services/endo/EndoBody";
 import { FillingsBody } from "@/components/services/fillings/FillingsBody";
 import { ProstheticsBody } from "@/components/services/prosthetics/ProstheticsBody";
+import { SurgeryBody } from "@/components/services/surgery/SurgeryBody";
 import { EntryBody } from "@/components/services/entry/EntryBody";
 import { HygieneBody } from "@/components/services/hygiene/HygieneBody";
 import { ImplantBody } from "@/components/services/implants/ImplantBody";
@@ -123,6 +124,7 @@ const BESPOKE_BODIES: Readonly<Record<string, () => JSX.Element>> = {
   "osetrenie-deti": KidsBody,
   "biele-vyplne": FillingsBody,
   protetika: ProstheticsBody,
+  stomatochirurgia: SurgeryBody,
 };
 
 export default async function ServicePage({
