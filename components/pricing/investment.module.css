@@ -591,9 +591,19 @@
 }
 
 @media (max-width: 1023px) {
+  /*
+   * Stacked, the three parts share one screen, and with auto rows the card
+   * got whatever the name and the six points left over: on a 390 x 844 phone
+   * that was about 60px, a thumbnail with the caption printed over itself.
+   * Found in the 2026-09-26 audit. The card's row is now the flexible one,
+   * so it takes the room first, and the points are cut to the first three,
+   * which is what fits beside a card worth looking at. Every point is on the
+   * service page the card opens.
+   */
   .slides {
-    gap: 20px;
+    gap: 14px;
     grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr) auto;
     justify-items: center;
   }
 
@@ -601,12 +611,39 @@
     text-align: center;
   }
 
+  .name h3 {
+    font-size: clamp(1.5rem, 6.4vw, 2.2rem);
+  }
+
+  .filmWrap {
+    width: 100%;
+    height: 100%;
+  }
+
   .filmstrip {
     height: min(100%, 26rem);
+    min-height: 12rem;
   }
 
   .points {
     width: min(100%, 30rem);
+  }
+
+  .points ul {
+    gap: 7px;
+    margin-bottom: 12px;
+  }
+
+  .points li {
+    font-size: 0.88rem;
+  }
+
+  .points li:nth-child(n + 4) {
+    display: none;
+  }
+
+  .price strong {
+    font-size: clamp(1.5rem, 6vw, 2rem);
   }
 }
 
